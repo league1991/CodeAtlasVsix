@@ -1,0 +1,11 @@
+﻿<UserControl x:Class="CodeAtlasVSIX.CodeUIItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="250" d:DesignWidth="300">
+    <Grid>
+        <Ellipse x:Name="circle" Fill="#FF3FEA6D" HorizontalAlignment="Center" Height="50" Margin="0" Stroke="Black" VerticalAlignment="Center" Width="50" MouseLeave="circle_MouseLeave" DragOver="circle_DragOver" MouseDown="circle_MouseDown"/>
+    </Grid>
+</UserControl>
