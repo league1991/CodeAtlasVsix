@@ -4,7 +4,7 @@
 // </copyright>
 //------------------------------------------------------------------------------
 
-namespace CodeAtlasVSIX
+namespace CodeView
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Windows;

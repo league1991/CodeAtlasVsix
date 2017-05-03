@@ -53,19 +53,12 @@
   <ItemGroup>
     <Compile Include="CodeAtlas.cs" />
     <Compile Include="CodeAtlasCommand.cs" />
-    <Compile Include="CodeAtlasControl.xaml.cs">
-      <DependentUpon>CodeAtlasControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="CodeAtlasPackage.cs" />
-    <Compile Include="CodeUIItem.xaml.cs">
-      <DependentUpon>CodeUIItem.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProvideToolboxControlAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Config\Key.snk" />
-    <None Include="Config\packages.config" />
     <None Include="Config\source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -78,16 +71,6 @@
     <Content Include="Resources\CodeAtlasCommand.png" />
     <Content Include="Resources\CodeAtlasPackage.ico" />
     <Content Include="Config\stylesheet.css" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="CodeAtlasControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="CodeUIItem.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -205,14 +188,18 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CodeView\CodeView.csproj">
+      <Project>{d0e8cac0-1ac9-42a2-813b-156a6df160a1}</Project>
+      <Name>CodeView</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.targets'))" />
   </Target>
   <Import Project="..\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
