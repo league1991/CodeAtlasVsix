@@ -24,7 +24,8 @@ namespace CodeView
             InitializeComponent();
 
             //this.AddChild(new CodeAtlasVSIX.CodeView());
-            this.Content = new CodeAtlasVSIX.CodeView();
+            var codeView = new CodeAtlasVSIX.CodeView();
+            this.Content = codeView;
         }
     }
 }
