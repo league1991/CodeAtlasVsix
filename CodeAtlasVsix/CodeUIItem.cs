@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -19,6 +20,18 @@ namespace CodeAtlasVSIX
             brush.Color = Color.FromArgb(255, 255, 255, 0);
             this.Fill = brush;
             this.Stroke = brush;
+            this.MouseDown += new MouseButtonEventHandler(onMouseDown);
+            this.MouseUp += new MouseButtonEventHandler(onMouseUp);
+        }
+
+        void onMouseDown(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        void onMouseUp(object sender, MouseEventArgs e)
+        {
+
         }
 
         protected override Geometry DefiningGeometry
