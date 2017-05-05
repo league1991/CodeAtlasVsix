@@ -54,6 +54,7 @@
     <Compile Include="CodeAtlas.cs" />
     <Compile Include="CodeAtlasCommand.cs" />
     <Compile Include="CodeAtlasPackage.cs" />
+    <Compile Include="CodeUIItem.cs" />
     <Compile Include="CodeView.xaml.cs">
       <DependentUpon>CodeView.xaml</DependentUpon>
     </Compile>

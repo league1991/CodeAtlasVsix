@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace CodeAtlasVSIX
 {
@@ -10,14 +11,24 @@ namespace CodeAtlasVSIX
     [ProvideToolboxControl("CodeAtlasVSIX.CodeView", true)]
     public partial class CodeView : UserControl
     {
+        public double scaleValue = 1.0;
         public CodeView()
         {
             InitializeComponent();
         }
-
-        private void Button1_Click(object sender, RoutedEventArgs e)
+        
+        private void testButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(string.Format(CultureInfo.CurrentUICulture, "We are inside {0}.Button1_Click()", this.ToString()));
+            this.canvas.Children.Add(new CodeUIItem());
+        }
+
+        private void canvas_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            Point position = e.GetPosition(this.canvas);
+            scaleValue += e.Delta * 0.005;
+            ScaleTransform scale = new ScaleTransform(scaleValue, scaleValue, position.X, position.Y);
+            this.canvas.LayoutTransform = scale;
+            this.canvas.UpdateLayout();
         }
     }
 }
