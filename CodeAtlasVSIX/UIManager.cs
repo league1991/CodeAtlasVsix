@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CodeAtlasVSIX
 {
-    class UIManager
+    public class UIManager
     {
         CodeScene scene = null;
         MainUI mainUI = null;
@@ -19,7 +19,7 @@ namespace CodeAtlasVSIX
 
         public static UIManager Instance()
         {
-            if (uiMgr != null)
+            if (uiMgr == null)
             {
                 uiMgr = new UIManager();
             }
@@ -28,6 +28,10 @@ namespace CodeAtlasVSIX
 
         public MainUI GetMainUI()
         {
+            if(mainUI == null)
+            {
+                mainUI = new MainUI();
+            }
             return mainUI;
         }
 

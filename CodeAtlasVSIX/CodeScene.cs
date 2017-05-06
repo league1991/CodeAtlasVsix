@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CodeAtlasVSIX
 {
-    class CodeScene
+    public class CodeScene
     {
     }
 }

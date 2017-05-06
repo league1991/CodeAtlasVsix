@@ -18,7 +18,7 @@ namespace CodeAtlasVSIX
     /// <summary>
     /// MainUI.xaml 的交互逻辑
     /// </summary>
-    public partial class MainUI : UserControl
+    public partial class MainUI : DockPanel
     {
         public MainUI()
         {

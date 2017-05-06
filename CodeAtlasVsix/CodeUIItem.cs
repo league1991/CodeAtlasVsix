@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -13,6 +14,11 @@ namespace CodeAtlasVSIX
     public class CodeUIItem : Shape
     {
         public float radius = 10.0f;
+        public int nCallers = 0;
+        public int nCallees = 0;
+
+        private Nullable<Point> dragStart = null;
+        private GeometryGroup geometry = null;
 
         public CodeUIItem()
         {
@@ -20,40 +26,52 @@ namespace CodeAtlasVSIX
             brush.Color = Color.FromArgb(255, 255, 255, 0);
             this.Fill = brush;
             this.Stroke = brush;
-            this.MouseDown += new MouseButtonEventHandler(onMouseDown);
-            this.MouseUp += new MouseButtonEventHandler(onMouseUp);
+            this.MouseDown += new MouseButtonEventHandler(MouseDownCallback);
+            this.MouseUp += new MouseButtonEventHandler(MouseUpCallback);
+            this.MouseMove += new MouseEventHandler(MouseMoveCallback);
+            buildGeometry();
         }
 
-        void onMouseDown(object sender, MouseEventArgs e)
+        UIElement GetCanvas()
         {
-
+            return (UIElement)this.Parent;
         }
 
-        void onMouseUp(object sender, MouseEventArgs e)
+        void MouseDownCallback(object sender, MouseEventArgs args)
         {
+            dragStart = args.GetPosition(this);
+            CaptureMouse();
+        }
 
+        void MouseMoveCallback(object sender, MouseEventArgs args)
+        {
+            if (dragStart != null && args.LeftButton == MouseButtonState.Pressed)
+            {
+                var canvas = GetCanvas();
+                var p2 = args.GetPosition(canvas);
+                Canvas.SetLeft(this, p2.X - dragStart.Value.X);
+                Canvas.SetTop(this, p2.Y - dragStart.Value.Y);
+            }
+        }
+        void MouseUpCallback(object sender, MouseEventArgs e)
+        {
+            dragStart = null;
+            ReleaseMouseCapture();
+        }
+
+        void buildGeometry()
+        {
+            EllipseGeometry circle = new EllipseGeometry(new Point(0.0, 0.0), radius, radius);
+
+            geometry = new GeometryGroup();
+            geometry.Children.Add(circle);
         }
 
         protected override Geometry DefiningGeometry
         {
             get
             {
-                Point p1 = new Point(10.0d, 10.0d);
-                Point p2 = new Point(this.radius, 10.0d);
-                Point p3 = new Point(this.radius / 2, -this.radius);
-
-                List<PathSegment> segments = new List<PathSegment>(3);
-                segments.Add(new LineSegment(p1, true));
-                segments.Add(new LineSegment(p2, true));
-                segments.Add(new LineSegment(p3, true));
-
-                List<PathFigure> figures = new List<PathFigure>(1);
-                PathFigure pf = new PathFigure(p1, segments, true);
-                figures.Add(pf);
-
-                Geometry g = new PathGeometry(figures, FillRule.EvenOdd, null);
-
-                return g;
+                return geometry;
             }
         }
     }
