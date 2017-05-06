@@ -24,11 +24,20 @@ namespace CodeAtlasVSIX
 
         private void canvas_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
-            Point position = e.GetPosition(this.canvas);
-            scaleValue += e.Delta * 0.005;
-            ScaleTransform scale = new ScaleTransform(scaleValue, scaleValue, position.X, position.Y);
-            this.canvas.LayoutTransform = scale;
-            this.canvas.UpdateLayout();
+            //Point position = e.GetPosition(this.canvas);
+            //scaleValue += e.Delta * 0.005;
+            //ScaleTransform scale = new ScaleTransform(scaleValue, scaleValue, position.X, position.Y);
+            //this.canvas.RenderTransform = scale;
+            //this.canvas.UpdateLayout();
+
+            var element = this.canvas as UIElement;
+            var position = e.GetPosition(element);
+            var transform = element.RenderTransform as MatrixTransform;
+            var matrix = transform.Matrix;
+            var scale = e.Delta >= 0 ? 1.1 : (1.0 / 1.1); // choose appropriate scaling factor
+
+            matrix.ScaleAtPrepend(scale, scale, position.X, position.Y);
+            transform.Matrix = matrix;
         }
     }
 }
