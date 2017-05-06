@@ -1,15 +1,14 @@
-﻿<UserControl x:Class="CodeAtlasVSIX.CodeView"
+﻿<Canvas x:Class="CodeAtlasVSIX.CodeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" MinWidth="10" MinHeight="10">
-    <Canvas x:Name="background" Background="#FF514947" Margin="0" MinWidth="100" MinHeight="100" MouseWheel="canvas_MouseWheel" ClipToBounds="True">
-        <Canvas x:Name="canvas">
-            <Canvas.RenderTransform>
-                <MatrixTransform/>
-            </Canvas.RenderTransform>
-            <Button x:Name="testButton" Content="Test" Canvas.Left="9" Canvas.Top="6" Width="75" Click="testButton_Click"/>
-        </Canvas>
-    </Canvas>    
-</UserControl>
+             mc:Ignorable="d" 
+        x:Name="background" Background="#FF514947" Margin="0" MinWidth="100" MinHeight="100" MouseWheel="canvas_MouseWheel" ClipToBounds="True">
+    <Canvas x:Name="canvas">
+        <Canvas.RenderTransform>
+            <MatrixTransform/>
+        </Canvas.RenderTransform>
+        <Button x:Name="testButton" Content="Test" Canvas.Left="9" Canvas.Top="6" Width="75" Click="testButton_Click"/>
+    </Canvas>
+</Canvas>
