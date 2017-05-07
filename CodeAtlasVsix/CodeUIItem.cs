@@ -29,7 +29,20 @@ namespace CodeAtlasVSIX
             this.MouseDown += new MouseButtonEventHandler(MouseDownCallback);
             this.MouseUp += new MouseButtonEventHandler(MouseUpCallback);
             this.MouseMove += new MouseEventHandler(MouseMoveCallback);
-            buildGeometry();
+            BuildGeometry();
+        }
+
+        public Point Pos()
+        {
+            double x = Canvas.GetLeft(this);
+            double y = Canvas.GetTop(this);
+            return new Point(x, y);
+        }
+
+        public void SetPos(Point point)
+        {
+            Canvas.SetLeft(this, point.X);
+            Canvas.SetTop(this, point.Y);
         }
 
         UIElement GetCanvas()
@@ -59,7 +72,7 @@ namespace CodeAtlasVSIX
             ReleaseMouseCapture();
         }
 
-        void buildGeometry()
+        void BuildGeometry()
         {
             EllipseGeometry circle = new EllipseGeometry(new Point(0.0, 0.0), radius, radius);
 

@@ -15,11 +15,17 @@ namespace CodeAtlasVSIX
         public CodeView()
         {
             InitializeComponent();
+            var scene = UIManager.Instance().GetScene();
+            scene.SetView(this);
         }
         
         private void testButton_Click(object sender, RoutedEventArgs e)
         {
-            this.canvas.Children.Add(new CodeUIItem());
+            // this.canvas.Children.Add(new CodeUIItem());
+            var scene = UIManager.Instance().GetScene();
+            scene.AddCodeItem("1");
+            scene.AddCodeItem("2");
+            scene.AddCodeEdgeItem("1", "2");
         }
 
         private void canvas_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
