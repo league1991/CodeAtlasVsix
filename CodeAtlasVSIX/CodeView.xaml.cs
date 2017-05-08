@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using Microsoft.Msagl.Drawing;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -26,6 +27,27 @@ namespace CodeAtlasVSIX
             scene.AddCodeItem("1");
             scene.AddCodeItem("2");
             scene.AddCodeEdgeItem("1", "2");
+
+            Graph graph = new Graph();
+            graph.AddEdge("47", "58");
+            graph.AddEdge("70", "71");
+
+
+            //var subgraph = new Subgraph("subgraph1");
+            //graph.RootSubgraph.AddSubgraph(subgraph);
+            //subgraph.AddNode(graph.FindNode("47"));
+            //subgraph.AddNode(graph.FindNode("58"));
+
+            //var subgraph2 = new Subgraph("subgraph2");
+            //subgraph2.Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
+            //subgraph2.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Yellow;
+            //subgraph2.AddNode(graph.FindNode("70"));
+            //subgraph2.AddNode(graph.FindNode("71"));
+            //subgraph.AddSubgraph(subgraph2);
+            //graph.AddEdge("58", subgraph2.Id);
+            graph.Attr.LayerDirection = LayerDirection.LR;
+            graph.CreateGeometryGraph();
+            Microsoft.Msagl.Miscellaneous.LayoutHelpers.CalculateLayout(graph.GeometryGraph, graph.LayoutAlgorithmSettings, new Microsoft.Msagl.Core.CancelToken());
         }
 
         private void canvas_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)

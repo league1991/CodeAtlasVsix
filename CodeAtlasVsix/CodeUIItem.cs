@@ -34,9 +34,8 @@ namespace CodeAtlasVSIX
 
         public Point Pos()
         {
-            double x = Canvas.GetLeft(this);
-            double y = Canvas.GetTop(this);
-            return new Point(x, y);
+            var pnt = this.TranslatePoint(new Point(), (UIElement)this.Parent);
+            return pnt;
         }
 
         public void SetPos(Point point)
