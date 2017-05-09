@@ -9,17 +9,21 @@ namespace CodeAtlasVSIX
     using EdgeKey = Tuple<string, string>;
     using ItemDict = Dictionary<string, CodeUIItem>;
     using EdgeDict = Dictionary<Tuple<string, string>, CodeUIEdgeItem>;
+    using System.Threading;
 
     public class CodeScene
     {
         ItemDict m_itemDict = new ItemDict();
         EdgeDict m_edgeDict = new EdgeDict();
         CodeView m_view = null;
+        SceneUpdateThread m_updateThread = null;
 
         public CodeScene()
         {
-
+            m_updateThread = new SceneUpdateThread(this);
+            m_updateThread.Start();
         }
+        
 
         public void SetView(CodeView view)
         {

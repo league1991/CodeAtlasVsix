@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProvideToolboxControlAttribute.cs" />
+    <Compile Include="SceneUpdateThread.cs" />
     <Compile Include="UIManager.cs" />
   </ItemGroup>
   <ItemGroup>
