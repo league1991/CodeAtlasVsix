@@ -30,6 +30,16 @@ namespace CodeAtlasVSIX
             m_view = view;
         }
 
+        public ItemDict GetItemDict()
+        {
+            return m_itemDict;
+        }
+
+        public EdgeDict GetEdgeDict()
+        {
+            return m_edgeDict;
+        }
+
         public CodeUIItem GetNode(string nodeID)
         {
             return m_itemDict[nodeID];
