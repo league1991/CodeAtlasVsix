@@ -10,6 +10,8 @@ namespace CodeAtlasVSIX
     using ItemDict = Dictionary<string, CodeUIItem>;
     using EdgeDict = Dictionary<Tuple<string, string>, CodeUIEdgeItem>;
     using System.Threading;
+    using System.Windows.Data;
+    using System.Windows.Controls;
 
     public class CodeScene
     {
@@ -23,7 +25,19 @@ namespace CodeAtlasVSIX
             m_updateThread = new SceneUpdateThread(this);
             m_updateThread.Start();
         }
-        
+
+        public void UpdateShape()
+        {
+            foreach(var item in m_itemDict)
+            {
+                item.Value.UpdateShape();
+            }
+
+            foreach(var edge in m_edgeDict)
+            {
+                edge.Value.UpdateShape();
+            }
+        }
 
         public void SetView(CodeView view)
         {
@@ -65,7 +79,13 @@ namespace CodeAtlasVSIX
                 return false;
             }
 
+            var srcNode = m_itemDict[srcUniqueName];
+            var tarNode = m_itemDict[tarUniqueName];
             var edgeItem = new CodeUIEdgeItem(srcUniqueName, tarUniqueName);
+            var srcBinding = new Binding("RightPoint") { Source = srcNode };
+            var tarBinding = new Binding("LeftPoint") { Source = tarNode };
+            BindingOperations.SetBinding(edgeItem, CodeUIEdgeItem.StartPointProperty, srcBinding);
+            BindingOperations.SetBinding(edgeItem, CodeUIEdgeItem.EndPointProperty, tarBinding);
             m_edgeDict.Add(key, edgeItem);
             m_view.canvas.Children.Add(edgeItem);
             return true;

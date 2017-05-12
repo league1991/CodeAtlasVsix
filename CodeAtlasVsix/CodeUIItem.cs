@@ -32,16 +32,44 @@ namespace CodeAtlasVSIX
             BuildGeometry();
         }
 
+        public Point LeftPoint
+        {
+            set { SetValue(LeftPointProperty, value); }
+            get { return (Point)GetValue(LeftPointProperty); }
+        }
+
+        public Point RightPoint
+        {
+            set { SetValue(RightPointProperty, value); }
+            get { return (Point)GetValue(RightPointProperty); }
+        }
+
+        public static readonly DependencyProperty LeftPointProperty =
+    DependencyProperty.Register("LeftPoint", typeof(Point), typeof(CodeUIItem),
+        new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static readonly DependencyProperty RightPointProperty =
+            DependencyProperty.Register("RightPoint", typeof(Point), typeof(CodeUIItem),
+                new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.AffectsRender));
+
+
         public Point Pos()
         {
             var pnt = this.TranslatePoint(new Point(), (UIElement)this.Parent);
             return pnt;
         }
 
+        public void UpdateShape()
+        {
+
+        }
+
         public void SetPos(Point point)
         {
             Canvas.SetLeft(this, point.X);
             Canvas.SetTop(this, point.Y);
+            LeftPoint = point;
+            RightPoint = point;
         }
 
         UIElement GetCanvas()
@@ -61,8 +89,9 @@ namespace CodeAtlasVSIX
             {
                 var canvas = GetCanvas();
                 var p2 = args.GetPosition(canvas);
-                Canvas.SetLeft(this, p2.X - dragStart.Value.X);
-                Canvas.SetTop(this, p2.Y - dragStart.Value.Y);
+                SetPos(new Point(p2.X - dragStart.Value.X, p2.Y - dragStart.Value.Y));
+                //Canvas.SetLeft(this, p2.X - dragStart.Value.X);
+                //Canvas.SetTop(this, p2.Y - dragStart.Value.Y);
             }
         }
         void MouseUpCallback(object sender, MouseEventArgs e)

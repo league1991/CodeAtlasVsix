@@ -47,7 +47,7 @@ namespace CodeAtlasVSIX
             //graph.AddEdge("58", subgraph2.Id);
             graph.Attr.LayerDirection = LayerDirection.LR;
             graph.CreateGeometryGraph();
-            Microsoft.Msagl.Miscellaneous.LayoutHelpers.CalculateLayout(graph.GeometryGraph, graph.LayoutAlgorithmSettings, new Microsoft.Msagl.Core.CancelToken());
+            //Microsoft.Msagl.Miscellaneous.LayoutHelpers.CalculateLayout(graph.GeometryGraph, graph.LayoutAlgorithmSettings, new Microsoft.Msagl.Core.CancelToken());
         }
 
         private void canvas_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)

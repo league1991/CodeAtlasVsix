@@ -13,8 +13,6 @@ namespace CodeAtlasVSIX
         {
 
         }
-
-        CodeScene m_scene = null;
         int m_sleepTime = 300;
         Thread m_thread = null;
         bool m_isActive = true;
@@ -23,7 +21,6 @@ namespace CodeAtlasVSIX
 
         public SceneUpdateThread(CodeScene scene)
         {
-            m_scene = scene;
             m_thread = new Thread(new ThreadStart(Run));
         }
 
@@ -34,16 +31,18 @@ namespace CodeAtlasVSIX
 
         void Run()
         {
+            var scene = UIManager.Instance().GetScene();
             while(true)
             {
                 if(m_isActive)
                 {
-                    var itemDict = m_scene.GetItemDict();
+                    var itemDict = scene.GetItemDict();
                     if(m_itemSet.Count != itemDict.Count || m_itemSet.Keys.SequenceEqual(itemDict.Keys))
                     {
                         UpdateLayeredLayoutWithComp();
                     }
                     MoveItems();
+                    scene.UpdateShape();
                     System.Console.Write("running\n");
                 }
                 Thread.Sleep(m_sleepTime);
