@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,9 +20,25 @@ namespace CodeAtlasVSIX
 
         private Nullable<Point> dragStart = null;
         private GeometryGroup geometry = null;
+        private string m_uniqueName = "";
+        private bool m_isDirty = false;
 
-        public CodeUIItem()
+        public bool IsDirty
         {
+            get { return m_isDirty; }
+            set
+            {
+                m_isDirty = value;
+                if (value == true)
+                {
+                    UIManager.Instance().GetScene().Invalidate();
+                }
+            }
+        }
+
+        public CodeUIItem(string uniqueName)
+        {
+            m_uniqueName = uniqueName;
             SolidColorBrush brush = new SolidColorBrush();
             brush.Color = Color.FromArgb(255, 255, 255, 0);
             this.Fill = brush;
@@ -32,25 +49,25 @@ namespace CodeAtlasVSIX
             BuildGeometry();
         }
 
-        public Point LeftPoint
-        {
-            set { SetValue(LeftPointProperty, value); }
-            get { return (Point)GetValue(LeftPointProperty); }
-        }
+    //    public Point LeftPoint
+    //    {
+    //        set { SetValue(LeftPointProperty, value); }
+    //        get { return (Point)GetValue(LeftPointProperty); }
+    //    }
 
-        public Point RightPoint
-        {
-            set { SetValue(RightPointProperty, value); }
-            get { return (Point)GetValue(RightPointProperty); }
-        }
+    //    public Point RightPoint
+    //    {
+    //        set { SetValue(RightPointProperty, value); }
+    //        get { return (Point)GetValue(RightPointProperty); }
+    //    }
 
-        public static readonly DependencyProperty LeftPointProperty =
-    DependencyProperty.Register("LeftPoint", typeof(Point), typeof(CodeUIItem),
-        new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.AffectsRender));
+    //    public static readonly DependencyProperty LeftPointProperty =
+    //DependencyProperty.Register("LeftPoint", typeof(Point), typeof(CodeUIItem),
+    //    new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.AffectsRender));
 
-        public static readonly DependencyProperty RightPointProperty =
-            DependencyProperty.Register("RightPoint", typeof(Point), typeof(CodeUIItem),
-                new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.AffectsRender));
+    //    public static readonly DependencyProperty RightPointProperty =
+    //        DependencyProperty.Register("RightPoint", typeof(Point), typeof(CodeUIItem),
+    //            new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.AffectsRender));
 
 
         public Point Pos()
@@ -59,17 +76,29 @@ namespace CodeAtlasVSIX
             return pnt;
         }
 
-        public void UpdateShape()
+        public void Invalidate()
         {
+            if (m_isDirty)
+            {
+                this.Dispatcher.Invoke((ThreadStart)delegate
+                {
+                    this._Invalidate();
+                });
+            }
+        }
 
+        void _Invalidate()
+        {
+            InvalidateVisual();
         }
 
         public void SetPos(Point point)
         {
             Canvas.SetLeft(this, point.X);
             Canvas.SetTop(this, point.Y);
-            LeftPoint = point;
-            RightPoint = point;
+            //LeftPoint = point;
+            //RightPoint = point;
+            IsDirty = true;
         }
 
         UIElement GetCanvas()

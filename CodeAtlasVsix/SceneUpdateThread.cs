@@ -36,13 +36,15 @@ namespace CodeAtlasVSIX
             {
                 if(m_isActive)
                 {
+                    scene.AcquireLock();
                     var itemDict = scene.GetItemDict();
                     if(m_itemSet.Count != itemDict.Count || m_itemSet.Keys.SequenceEqual(itemDict.Keys))
                     {
                         UpdateLayeredLayoutWithComp();
                     }
                     MoveItems();
-                    scene.UpdateShape();
+                    InvalidateScene();
+                    scene.ReleaseLock();
                     System.Console.Write("running\n");
                 }
                 Thread.Sleep(m_sleepTime);
@@ -64,6 +66,10 @@ namespace CodeAtlasVSIX
 
         }
 
+        void InvalidateScene()
+        {
+            UIManager.Instance().GetScene().Invalidate();
+        }
 
     }
 }

@@ -24,9 +24,14 @@ namespace CodeAtlasVSIX
         {
             // this.canvas.Children.Add(new CodeUIItem());
             var scene = UIManager.Instance().GetScene();
-            scene.AddCodeItem("1");
-            scene.AddCodeItem("2");
-            scene.AddCodeEdgeItem("1", "2");
+
+            var rand = new System.Random();
+            var srcId = rand.Next().ToString();
+            var tarId = rand.Next().ToString();
+
+            scene.AddCodeItem(srcId);
+            scene.AddCodeItem(tarId);
+            scene.AddCodeEdgeItem(srcId, tarId);
 
             Graph graph = new Graph();
             graph.AddEdge("47", "58");
