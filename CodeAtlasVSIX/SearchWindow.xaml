@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="CodeAtlasVSIX.SearchWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CodeAtlasVSIX"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="21"/>
+            <RowDefinition Height="21"/>
+            <RowDefinition Height="27"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MaxWidth="40" Width="Auto" MinWidth="40"/>
+            <ColumnDefinition FrameworkElement.FlowDirection="RightToLeft" Width="5*"/>
+            <ColumnDefinition Width="Auto" MaxWidth="40" MinWidth="40"/>
+            <ColumnDefinition FrameworkElement.FlowDirection="RightToLeft" Width="5*"/>
+        </Grid.ColumnDefinitions>
+        <Label x:Name="label" Content="Name" HorizontalAlignment="Right" Margin="-2,0,0,0" Width="42" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch" Padding="5,4.7,5,5"/>
+        <TextBox x:Name="nameEdit" Margin="0" TextWrapping="Wrap" TextChanged="textBox_TextChanged" Grid.Column="1" MinWidth="40" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="#FFACACAC"/>
+        <Label x:Name="label1" Content="Type" Margin="0" Height="24" Width="35" Grid.Column="2" HorizontalAlignment="Right"/>
+        <TextBox x:Name="typeEdit" Margin="0" TextWrapping="Wrap" Grid.Column="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" TextChanged="textBox1_TextChanged" Background="#FFACACAC"/>
+        <Label x:Name="label2" Content="File" HorizontalAlignment="Right" Margin="0" Grid.Row="1" Height="24" Width="28"/>
+        <TextBox x:Name="fileEdit" Margin="0" TextWrapping="Wrap" Grid.Column="1" Grid.Row="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="#FFACACAC"/>
+        <Label x:Name="label3" Content="Line" HorizontalAlignment="Right" Margin="0" Grid.Column="2" Grid.Row="1" Height="24" Width="32"/>
+        <TextBox x:Name="lineEdit" TextWrapping="Wrap" Grid.Column="3" Grid.Row="1" Margin="0" Background="#FFACACAC"/>
+        <Button x:Name="searchButton" Content="Search" Grid.Row="2" Grid.ColumnSpan="2" Background="#FFACACAC" Click="searchButton_Click"/>
+        <Button x:Name="addToSceneButton" Content="Add To Scene" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" Background="#FFACACAC" Click="addToSceneButton_Click" HorizontalContentAlignment="Center"/>
+        <ListBox x:Name="listBox" Margin="0" Grid.Row="3" Grid.ColumnSpan="4" Background="#FF4D4D4D" MinHeight="100"/>
+
+    </Grid>
+</UserControl>

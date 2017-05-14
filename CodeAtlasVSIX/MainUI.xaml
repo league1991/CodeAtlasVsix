@@ -9,7 +9,9 @@
     <Menu x:Name="menu" Height="20" DockPanel.Dock="Top" Background="#FF3C3C3C"/>
     <TabControl x:Name="tabControl" Margin="0" DockPanel.Dock="Bottom" Background="#FF8F8F8F" >
         <TabItem Header="Search">
-            <Grid Background="#FFB7C3AC" MinHeight="10"/>
+            <Grid Background="#FFB7C3AC" MinHeight="10">
+                <local:SearchWindow/>
+            </Grid>
         </TabItem>
         <TabItem Header="Symbol">
             <Grid Background="#FFE5E5E5"/>
