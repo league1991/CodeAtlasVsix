@@ -12,6 +12,7 @@ namespace CodeAtlasVSIX
     using System.Threading;
     using System.Windows.Data;
     using System.Windows.Controls;
+    using System.Windows;
 
     public class CodeScene
     {
@@ -20,9 +21,10 @@ namespace CodeAtlasVSIX
         CodeView m_view = null;
         SceneUpdateThread m_updateThread = null;
         object m_lockObj = new object();
+        public bool m_isLayoutDirty = false;
 
         List<string> m_itemLruQueue = new List<string>();
-        int m_lruMaxLength = 5;
+        int m_lruMaxLength = 20;
 
         public CodeScene()
         {
@@ -30,11 +32,16 @@ namespace CodeAtlasVSIX
             m_updateThread.Start();
         }
         
-        public void SetView(CodeView view)
+        public CodeView View
         {
-            m_view = view;
+            set { m_view = value; }
+            get
+            {
+                return m_view;
+            }
         }
 
+        #region data
         public ItemDict GetItemDict()
         {
             return m_itemDict;
@@ -48,6 +55,76 @@ namespace CodeAtlasVSIX
         public CodeUIItem GetNode(string nodeID)
         {
             return m_itemDict[nodeID];
+        }
+        #endregion
+
+        #region selection
+        public bool GetSelectedCenter(out Point centerPnt)
+        {
+            centerPnt = new Point();
+            int nCenter = 0;
+            foreach (var item in m_itemDict)
+            {
+                if(item.Value.IsSelected)
+                {
+                    var pos = item.Value.Pos;
+                    centerPnt.X += pos.X;
+                    centerPnt.Y += pos.Y;
+                    nCenter++;
+                }
+            }
+
+            foreach(var edgeItem in m_edgeDict)
+            {
+                if (edgeItem.Value.IsSelected)
+                {
+                    var srcNode = m_itemDict[edgeItem.Key.Item1];
+                    var tarNode = m_itemDict[edgeItem.Key.Item2];
+                    centerPnt.X += (srcNode.Pos.X + tarNode.Pos.X) * 0.5;
+                    centerPnt.Y += (srcNode.Pos.Y + tarNode.Pos.Y) * 0.5;
+                    nCenter++;
+                }
+            }
+
+            if(nCenter == 0)
+            {
+                return false;
+            }
+            centerPnt.X /= (double)nCenter;
+            centerPnt.Y /= (double)nCenter;
+            return true;
+        }
+
+        public void ClearSelection()
+        {
+            foreach (var item in m_itemDict)
+            {
+                item.Value.IsSelected = false;
+            }
+
+            foreach (var item in m_edgeDict)
+            {
+                item.Value.IsSelected = false;
+            }
+        }
+        #endregion
+
+        public void MoveItems()
+        {
+            if(m_view == null)
+            {
+                return;
+            }
+            m_view.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                AcquireLock();
+                foreach (var node in m_itemDict)
+                {
+                    var item = node.Value;
+                    item.MoveToTarget(0.05);
+                }
+                ReleaseLock();
+            });
         }
 
         #region ThreadSync
@@ -191,6 +268,7 @@ namespace CodeAtlasVSIX
             _DoAddCodeItem(srcUniqueName);
             UpdateLRU(new List<string> { srcUniqueName});
             RemoveItemLRU();
+            m_isLayoutDirty = true;
             ReleaseLock();
         }
 
@@ -204,6 +282,7 @@ namespace CodeAtlasVSIX
             AcquireLock();
             _DoDeleteCodeItem(uniqueName);
             RemoveItemLRU();
+            m_isLayoutDirty = true;
             ReleaseLock();
         }
         #endregion

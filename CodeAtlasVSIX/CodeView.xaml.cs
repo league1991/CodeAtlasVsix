@@ -1,5 +1,6 @@
 ﻿using Microsoft.Msagl.Drawing;
 using System.Globalization;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -17,7 +18,7 @@ namespace CodeAtlasVSIX
         {
             InitializeComponent();
             var scene = UIManager.Instance().GetScene();
-            scene.SetView(this);
+            scene.View = this;
         }
         
         private void testButton_Click(object sender, RoutedEventArgs e)
@@ -33,9 +34,9 @@ namespace CodeAtlasVSIX
             scene.AddCodeItem(tarId);
             scene.AddCodeEdgeItem(srcId, tarId);
 
-            Graph graph = new Graph();
-            graph.AddEdge("47", "58");
-            graph.AddEdge("70", "71");
+            //Graph graph = new Graph();
+            //graph.AddEdge("47", "58");
+            //graph.AddEdge("70", "71");
 
 
             //var subgraph = new Subgraph("subgraph1");
@@ -50,8 +51,13 @@ namespace CodeAtlasVSIX
             //subgraph2.AddNode(graph.FindNode("71"));
             //subgraph.AddSubgraph(subgraph2);
             //graph.AddEdge("58", subgraph2.Id);
-            graph.Attr.LayerDirection = LayerDirection.LR;
-            graph.CreateGeometryGraph();
+            //graph.Attr.LayerDirection = LayerDirection.LR;
+            //graph.CreateGeometryGraph();
+            //foreach(var msaglNode in graph.GeometryGraph.Nodes)
+            //{
+            //    var node = (Microsoft.Msagl.Drawing.Node)msaglNode.UserData;
+            //    msaglNode.BoundaryCurve = NodeBoundaryCurves.GetNodeBoundaryCurve(node, 5, 5);
+            //}
             //Microsoft.Msagl.Miscellaneous.LayoutHelpers.CalculateLayout(graph.GeometryGraph, graph.LayoutAlgorithmSettings, new Microsoft.Msagl.Core.CancelToken());
         }
 
@@ -71,6 +77,42 @@ namespace CodeAtlasVSIX
 
             matrix.ScaleAtPrepend(scale, scale, position.X, position.Y);
             transform.Matrix = matrix;
+        }
+
+        public void MoveView(Point center)
+        {
+            Dispatcher.Invoke((ThreadStart)delegate
+            {
+                var transform = this.canvas.RenderTransform as MatrixTransform;
+                var matrix = transform.Matrix;
+
+                var centerPnt = new Point(ActualWidth * 0.5, ActualHeight * 0.5);
+                var currentPnt = matrix.Transform(center);
+
+                var offset = (centerPnt - currentPnt) * 0.05;
+
+                matrix.TranslatePrepend(offset.X, offset.Y);
+                transform.Matrix = matrix;
+            });
+        }
+
+        private void background_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var source = e.OriginalSource;
+            if (source == this)
+            {
+                UIManager.Instance().GetScene().ClearSelection();
+            }
+        }
+
+        private void background_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+
+        }
+
+        private void background_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+
         }
     }
 }

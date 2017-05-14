@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
@@ -17,11 +18,19 @@ namespace CodeAtlasVSIX
         string m_tarUniqueName;
         PathGeometry m_geometry = new PathGeometry();
         bool m_isDirty = false;
+        bool m_isSelected = false;
+        DateTime m_mouseDownTime = new DateTime();
 
         public CodeUIEdgeItem(string srcName, string tarName)
         {
             m_srcUniqueName = srcName;
             m_tarUniqueName = tarName;
+
+            this.MouseDown += new MouseButtonEventHandler(MouseDownCallback);
+            this.MouseUp += new MouseButtonEventHandler(MouseUpCallback);
+            this.MouseMove += new MouseEventHandler(MouseMoveCallback);
+            this.MouseEnter += new MouseEventHandler(MouseEnterCallback);
+            this.MouseLeave += new MouseEventHandler(MouseLeaveCallback);
 
             SolidColorBrush brush = new SolidColorBrush();
             brush.Color = Color.FromArgb(255, 255, 255, 0);
@@ -43,6 +52,22 @@ namespace CodeAtlasVSIX
             }
         }
 
+        public bool IsSelected
+        {
+            get { return m_isSelected; }
+            set
+            {
+                m_isSelected = value;
+                if (m_isSelected)
+                {
+                    StrokeThickness = 2.0;
+                }
+                else
+                {
+                    StrokeThickness = 1.0;
+                }
+            }
+        }
         //public Point StartPoint
         //{
         //    set { SetValue(StartPointProperty, value); }
@@ -62,6 +87,56 @@ namespace CodeAtlasVSIX
         //public static readonly DependencyProperty EndPointProperty =
         //    DependencyProperty.Register("EndPoint", typeof(Point), typeof(CodeUIEdgeItem),
         //        new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.AffectsRender));
+
+        void MouseDownCallback(object sender, MouseEventArgs args)
+        {
+            var newDownTime = DateTime.Now;
+            double duration = (newDownTime - m_mouseDownTime).TotalMilliseconds;
+            m_mouseDownTime = newDownTime;
+            if (duration > System.Windows.Forms.SystemInformation.DoubleClickTime)
+            {
+                MouseClickCallback(sender, args);
+            }
+            else
+            {
+                MouseDoubleClickCallback(sender, args);
+            }
+        }
+
+        void MouseClickCallback(object sender, MouseEventArgs args)
+        {
+            IsSelected = true;
+        }
+
+        void MouseDoubleClickCallback(object sender, MouseEventArgs args)
+        {
+            IsSelected = true;
+            System.Console.Out.WriteLine("double click");
+        }
+
+        void MouseMoveCallback(object sender, MouseEventArgs args)
+        {
+        }
+
+        void MouseUpCallback(object sender, MouseEventArgs e)
+        {
+        }
+
+        void MouseEnterCallback(object sender, MouseEventArgs e)
+        {
+            if(!IsSelected)
+            {
+                StrokeThickness = 2.0;
+            }
+        }
+
+        void MouseLeaveCallback(object sender, MouseEventArgs e)
+        {
+            if (!IsSelected)
+            {
+                StrokeThickness = 1.0;
+            }
+        }
 
         void BuildGeometry()
         {
@@ -107,8 +182,8 @@ namespace CodeAtlasVSIX
                 var scene = UIManager.Instance().GetScene();
                 var srcNode = scene.GetNode(m_srcUniqueName);
                 var tarNode = scene.GetNode(m_tarUniqueName);
-                var srcPosition = srcNode.Pos();
-                var tarPosition = tarNode.Pos();
+                var srcPosition = srcNode.Pos;
+                var tarPosition = tarNode.Pos;
                 var srcCtrlPnt = new Point(srcPosition.X * 0.4 + tarPosition.X * 0.6, srcPosition.Y);
                 var tarCtrlPnt = new Point(srcPosition.X * 0.6 + tarPosition.X * 0.4, tarPosition.Y);
 
