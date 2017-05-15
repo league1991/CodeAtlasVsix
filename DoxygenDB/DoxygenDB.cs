@@ -262,7 +262,7 @@ namespace DoxygenDB
         Dictionary<string, List<string>> m_compoundToIdDict = new Dictionary<string, List<string>>();
         Dictionary<string, IndexItem> m_idInfoDict = new Dictionary<string, IndexItem>();
         Dictionary<string, XmlDocItem> m_xmlCache = new Dictionary<string, XmlDocItem>();
-        Dictionary<string, XmlNode> m_xmlElementCache = new Dictionary<string, XmlNode>();
+        Dictionary<string, XPathNavigator> m_xmlElementCache = new Dictionary<string, XPathNavigator>();
 
         XPathNavigator _GetXmlDocument(string fileName)
         {
@@ -399,9 +399,101 @@ namespace DoxygenDB
                     m_compoundToIdDict[compoundRefId] = refIdList;
                 }
             }
-            {
+        }
 
+        void _ParseRefLocation(XPathNavigator refElement, out string filePath, out int startLine)
+        {
+            var fileCompoundId = refElement.GetAttribute("compoundref", "");
+            filePath = _GetCompoundPath(fileCompoundId);
+            startLine = Convert.ToInt32(refElement.GetAttribute("startline", ""));
+        }
+
+        void _ReadMemberRef(XPathNavigator memberDef)
+        {
+            if (memberDef.Name != "memberdef")
+            {
+                return;
             }
+
+            var memberId = memberDef.GetAttribute("id", "");
+            if (!m_idInfoDict.ContainsKey(memberId))
+            {
+                return;
+            }
+            var memberItem = m_idInfoDict[memberId];
+
+            // ref location dict for functions
+            var memberRefDict = new Dictionary<string, List<int>>();
+
+            var memberChildIter = memberDef.SelectChildren(XPathNodeType.Element);
+            while (memberChildIter.MoveNext())
+            {
+                var memberChild = memberChildIter.Current;
+                if (memberChild.Name == "references")
+                {
+                    var referenceId = memberChild.GetAttribute("refid","");
+
+                    // build the reference dict first
+                    if (memberRefDict.Count == 0)
+                    {
+                        var refElement = _GetXmlElement(referenceId);
+                        XPathNodeIterator refElementIter = null;
+                        if (refElement != null)
+                        {
+                            refElementIter = refElement.Select(string.Format("./referencedby[@refid=\'{0}\']", memberId));
+                            refElement = refElementIter.Current;
+                        }
+                        if (refElementIter != null && refElementIter.MoveNext())
+                        {
+                            var fileCompoundId = refElement.GetAttribute("compoundref","");
+                            var memberFilePath = _GetCompoundPath(fileCompoundId);
+                            var startLine = Convert.ToInt32(refElement.GetAttribute("startline", ""));
+                            var endLine = Convert.ToInt32(refElement.GetAttribute("endline", ""));
+                            memberRefDict = _GetCodeRefs(fileCompoundId, startLine, endLine);
+                        }
+                    }
+
+                    // TODO: more code....
+                }
+            }
+        }
+
+        XPathNavigator _GetXmlElement(string refid)
+        {
+            if (m_dbFolder == "")
+            {
+                return null;
+            }
+
+            if (m_xmlElementCache.ContainsKey(refid))
+            {
+                return m_xmlElementCache[refid];
+            }
+
+            if (m_idToCompoundDict.ContainsKey(refid))
+            {
+                var fileName = m_idToCompoundDict[refid];
+                var doc = _GetXmlDocument(fileName);
+                var memberIter = doc.Select(string.Format("./compounddef/sectiondef/memberdef[@id=\'{0}\']", refid));
+                while (memberIter.MoveNext())
+                {
+                    var member = memberIter.Current;
+                    m_xmlElementCache[refid] = member;
+                    return member;
+                }
+            }
+            else if (m_compoundToIdDict.ContainsKey(refid))
+            {
+                var doc = _GetXmlDocument(refid);
+                var compoundIter = doc.Select(string.Format("compounddef[@id=\'{0}\']", refid));
+                while (compoundIter.MoveNext())
+                {
+                    var compound = compoundIter.Current;
+                    m_xmlElementCache[refid] = compound;
+                    return compound;
+                }
+            }
+            return null;
         }
     }
 }
