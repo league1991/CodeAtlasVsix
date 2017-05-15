@@ -424,6 +424,7 @@ namespace DoxygenDB
 
             // ref location dict for functions
             var memberRefDict = new Dictionary<string, List<int>>();
+            string memberFilePath = "";
 
             var memberChildIter = memberDef.SelectChildren(XPathNodeType.Element);
             while (memberChildIter.MoveNext())
@@ -446,15 +447,111 @@ namespace DoxygenDB
                         if (refElementIter != null && refElementIter.MoveNext())
                         {
                             var fileCompoundId = refElement.GetAttribute("compoundref","");
-                            var memberFilePath = _GetCompoundPath(fileCompoundId);
+                            memberFilePath = _GetCompoundPath(fileCompoundId);
                             var startLine = Convert.ToInt32(refElement.GetAttribute("startline", ""));
                             var endLine = Convert.ToInt32(refElement.GetAttribute("endline", ""));
                             memberRefDict = _GetCodeRefs(fileCompoundId, startLine, endLine);
                         }
                     }
 
-                    // TODO: more code....
+                    if (m_idInfoDict.ContainsKey(referenceId))
+                    {
+                        var referenceItem = m_idInfoDict[referenceId];
+                        string filePath;
+                        int startLine;
+                        _ParseRefLocation(memberChild, out filePath, out startLine);
+                        if (memberRefDict.ContainsKey(referenceId))
+                        {
+                            startLine = memberRefDict[referenceId][0];
+                            filePath = memberFilePath;
+                        }
+                        var refItem = new IndexRefItem(memberId, referenceId, "unknown", filePath, startLine);
+                        memberItem.AddRefItem(refItem);
+                        referenceItem.AddRefItem(refItem);
+                    }
                 }
+
+                if (memberChild.Name == "referenceby")
+                {
+                    var referenceId = memberChild.GetAttribute("refid", "");
+                    if (m_idInfoDict.ContainsKey(referenceId))
+                    {
+                        var referenceItem = m_idInfoDict[referenceId];
+                        string filePath;
+                        int startLine;
+                        _ParseRefLocation(memberChild, out filePath, out startLine);
+
+                        // find the actual position in caller's function body
+                        if (referenceItem.m_kind == IndexItem.Kind.FUNCTION ||
+                            referenceItem.m_kind == IndexItem.Kind.SLOT)
+                        {
+                            var fileCompoundId = memberChild.GetAttribute("compoundref", "");
+                            var endLine = Convert.ToInt32(memberChild.GetAttribute("endline", ""));
+                            var memberRefByDict = _GetCodeRefs(fileCompoundId, startLine, endLine);
+                            if (memberRefByDict.ContainsKey(memberId))
+                            {
+                                startLine = memberRefByDict[memberId][0];
+                            }
+                        }
+                        var refItem = new IndexRefItem(referenceId, memberId, "unknown", filePath, startLine);
+                        memberItem.AddRefItem(refItem);
+                        referenceItem.AddRefItem(refItem);
+                    }
+                }
+
+                // find override methods
+                if (memberChild.Name == "reimplementedby")
+                {
+                    var overrideId = memberChild.GetAttribute("refid", "");
+                    if (m_idInfoDict.ContainsKey(overrideId))
+                    {
+                        var overrideItem = m_idInfoDict[overrideId];
+                        string filePath;
+                        int startLine;
+                        _ParseRefLocation(memberChild, out filePath, out startLine);
+                        var refItem = new IndexRefItem(memberId, overrideId, "overrides", filePath, startLine);
+                        overrideItem.AddRefItem(refItem);
+                        memberItem.AddRefItem(refItem);
+                    }
+                }
+                
+                if (memberChild.Name == "reimplements")
+                {
+                    var interfaceId = memberChild.GetAttribute("refid", "");
+                    if (m_idInfoDict.ContainsKey(interfaceId))
+                    {
+                        var interfaceItem = m_idInfoDict[interfaceId];
+                        string filePath;
+                        int startLine;
+                        _ParseRefLocation(memberChild, out filePath, out startLine);
+                        var refItem = new IndexRefItem(memberId, memberId, "overrides", filePath, startLine);
+                        interfaceItem.AddRefItem(refItem);
+                        memberItem.AddRefItem(refItem);
+                    }
+                }
+            }
+        }
+
+        void _ReadRef(string compoundId)
+        {
+            var doc = _GetXmlDocument(compoundId);
+            if (doc == null)
+            {
+                return;
+            }
+
+            var xmlDocItem = _GetXmlDocumentItem(compoundId);
+            if (xmlDocItem.GetCacheStatus(XmlDocItem.CacheStatus.REF))
+            {
+                return;
+            }
+
+            // build references
+            var compoundDefIter = doc.Select("compounddef");
+            while (compoundDefIter.MoveNext())
+            {
+                var compoundDef = compoundDefIter.Current;
+                // TODO: more code
             }
         }
 
