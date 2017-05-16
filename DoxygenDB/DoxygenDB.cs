@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.XPath;
@@ -137,8 +138,8 @@ namespace DoxygenDB
         public string m_dstId;
         public Kind m_kind;
         public string m_file;
-        int m_line;
-        int m_column;
+        public int m_line;
+        public int m_column;
 
         public IndexRefItem(string srcId, string dstId, string refKindStr, string file = "", int line = 0, int column = 0)
         {
@@ -861,9 +862,282 @@ namespace DoxygenDB
             _ReadIndex();
         }
 
+        public string GetDBPath()
+        {
+            return m_dbFolder + "/index.xml";
+        }
+
         public void Close()
         {
+            m_doxyFileFolder = "";
+            m_dbFolder = "";
+            m_idToCompoundDict.Clear();
+            m_compoundToIdDict.Clear();
+            m_idInfoDict.Clear();
+            m_xmlCache.Clear();
+            m_xmlElementCache.Clear();
+        }
 
+        public void Reopen()
+        {
+            // TODO: Add code
+        }
+
+        public void Analyze()
+        {
+            // TODO: Add code
+        }
+
+        public void OnOpen()
+        {
+            // TODO: Add code
+        }
+
+        public List<Entity> Search(string name, string kindString = "")
+        {
+            var res = new List<Entity>();
+            if (name == null || name == "")
+            {
+                return res;
+            }
+
+            var kindStr = kindString.ToLower();
+            var kind = IndexItem.Kind.UNKNOWN;
+            if (IndexItem.s_kindDict.ContainsKey(kindStr))
+            {
+                kind = IndexItem.s_kindDict[kindStr];
+            }
+            var nameLower = name.ToLower();
+            foreach (var item in m_idInfoDict)
+            {
+                if (kind != IndexItem.Kind.UNKNOWN && item.Value.m_kind != kind)
+                {
+                    continue;
+                }
+                if (item.Value.m_name.Contains(nameLower))
+                {
+                    var xmlElement = _GetXmlElement(item.Key);
+                    if (xmlElement == null)
+                    {
+                        continue;
+                    }
+                    var entity = _ParseEntity(xmlElement);
+                    res.Add(entity);
+                }
+            }
+            return res;
+        }
+
+        public Entity SearchFromUniqueName(string uniqueName)
+        {
+            if (m_dbFolder == null || m_dbFolder == "")
+            {
+                return null;
+            }
+
+            var xmlElement = _GetXmlElement(uniqueName);
+            if (xmlElement == null)
+            {
+                return null;
+            }
+            var entity = _ParseEntity(xmlElement);
+            return entity;
+        }
+
+        public void _SearchRef(out List<Entity> refEntityList, out List<Reference> refRefList, string uniqueName, string refKindStr = "", string entKindStr = "", bool isUnique = true)
+        {
+            refEntityList = new List<Entity>();
+            refRefList = new List<Reference>();
+            if (!m_idInfoDict.ContainsKey(uniqueName))
+            {
+                return;
+            }
+            var thisItem = m_idInfoDict[uniqueName];
+
+            // parse refKindStr
+            var refKindList = new List<Tuple<IndexRefItem.Kind, bool>>();
+            if (refKindStr != "")
+            {
+                refKindStr = refKindStr.ToLower();
+                string pattern = @"[a-z]+";
+                var matches = Regex.Matches(
+                    refKindStr,
+                    pattern,
+                    RegexOptions.ExplicitCapture
+                    );
+
+                foreach (Match nextMatch in matches)
+                {
+                    var kind = IndexRefItem.s_kindDict[nextMatch.Value];
+                    refKindList.Add(kind);
+                }
+            }
+            else
+            {
+                refKindList = new List<Tuple<IndexRefItem.Kind, bool>>( IndexRefItem.s_kindDict.Values);
+            }
+
+            // parse entKindStr
+            var entKindList = new List<IndexItem.Kind>();
+            if (entKindStr != "")
+            {
+                var entKindNameStr = entKindStr.ToLower();
+                string pattern = @"[a-z]+";
+                var matches = Regex.Matches(
+                    entKindNameStr,
+                    pattern,
+                    RegexOptions.ExplicitCapture
+                    );
+
+                foreach (Match nextMatch in matches)
+                {
+                    var kind = IndexItem.s_kindDict[nextMatch.Value];
+                    entKindList.Add(kind);
+                }
+            }
+
+            // build reference link
+            var compoundId = uniqueName;
+            if (m_idToCompoundDict.ContainsKey(uniqueName))
+            {
+                compoundId = m_idToCompoundDict[uniqueName];
+            }
+            _ReadRef(compoundId);
+
+            // find references
+            var refs = thisItem.GetRefItemList();
+            var thisEntity = SearchFromUniqueName(uniqueName);
+            foreach (var refObj in refs)
+            {
+                var otherId = refObj.m_srcId;
+                if (refObj.m_srcId == uniqueName)
+                {
+                    otherId = refObj.m_dstId;
+                }
+
+                IndexItem otherItem;
+                if (!m_idInfoDict.TryGetValue(otherId, out otherItem))
+                {
+                    continue;
+                }
+                if (entKindList.Count > 0 && entKindList.Contains(otherItem.m_kind))
+                {
+                    continue;
+                }
+                var otherEntity = SearchFromUniqueName(otherId);
+                if (otherEntity == null)
+                {
+                    continue;
+                }
+
+                // match each ref kind
+                foreach (var item in refKindList)
+                {
+                    var refKind = item.Item1;
+                    var isExchange = item.Item2;
+                    var srcItem = thisItem;
+                    var dstItem = otherItem;
+                    var dstMetric = otherEntity.m_metric;
+                    if (isExchange)
+                    {
+                        srcItem = otherItem;
+                        dstItem = thisItem;
+                        dstMetric = thisEntity.m_metric;
+                    }
+
+                    // check edge direction
+                    if (srcItem.m_id != refObj.m_srcId || dstItem.m_id != refObj.m_dstId)
+                    {
+                        continue;
+                    }
+
+                    var isAccepted = false;
+                    var file = refObj.m_file;
+                    var line = refObj.m_line;
+                    var column = refObj.m_column;
+                    if (refKind == IndexRefItem.Kind.CALL && refObj.m_kind == IndexRefItem.Kind.UNKNOWN)
+                    {
+                        if (srcItem.m_kind == IndexItem.Kind.FUNCTION && dstItem.m_kind == IndexItem.Kind.FUNCTION)
+                        {
+                            isAccepted = true;
+                        }
+                    }
+                    else if (refKind == IndexRefItem.Kind.DEFINE && refObj.m_kind == IndexRefItem.Kind.MEMBER)
+                    {
+                        isAccepted = true;
+                        file = dstMetric["file"].m_string;
+                        line = dstMetric["line"].m_int;
+                        column = dstMetric["column"].m_int;
+                    }
+                    else if ((refKind == IndexRefItem.Kind.MEMBER || refKind == IndexRefItem.Kind.DECLARE) && refObj.m_kind == IndexRefItem.Kind.MEMBER)
+                    {
+                        isAccepted = true;
+                        file = dstMetric["declFile"].m_string;
+                        line = dstMetric["declLine"].m_int;
+                        column = dstMetric["declColumn"].m_int;
+                    }
+                    else if (refKind == IndexRefItem.Kind.USE && refObj.m_kind == IndexRefItem.Kind.UNKNOWN)
+                    {
+                        if (srcItem.m_kind == IndexItem.Kind.FUNCTION && dstItem.m_kind == IndexItem.Kind.VARIABLE)
+                        {
+                            isAccepted = true;
+                        }
+                    }
+                    else if (refKind == IndexRefItem.Kind.DERIVE && refObj.m_kind == IndexRefItem.Kind.DERIVE)
+                    {
+                        if ((srcItem.m_kind == IndexItem.Kind.CLASS || srcItem.m_kind == IndexItem.Kind.STRUCT) && 
+                            (dstItem.m_kind == IndexItem.Kind.CLASS || dstItem.m_kind == IndexItem.Kind.STRUCT))
+                        {
+                            isAccepted = true;
+                        }
+                    }
+                    else if (refKind == IndexRefItem.Kind.OVERRIDE && refObj.m_kind == IndexRefItem.Kind.OVERRIDE)
+                    {
+                        isAccepted = true;
+                    }
+
+                    if (isAccepted)
+                    {
+                        refEntityList.Add(otherEntity);
+                        refRefList.Add(new Reference(refKind, otherEntity, file, line, column));
+                    }
+                }
+            }
+        }
+
+        public void SearchRefEntity(out List<Entity> refEntityList, out List<Reference> refRefList,
+            string uniqueName, string refKindStr = "", string entKindStr = "", bool isUnique = true)
+        {
+            _SearchRef(out refEntityList, out refRefList, uniqueName, refKindStr, entKindStr, isUnique);
+        }
+
+        public Reference SearchRefObj(string srcUName, string tarUName)
+        {
+            List<Entity> refEntityList = new List<Entity>();
+            List<Reference> refRefList = new List<Reference>();
+            _SearchRef(out refEntityList, out refRefList, srcUName);
+            for (int i = 0; i < refEntityList.Count; i++)
+            {
+                if (refEntityList[i].UniqueName() == tarUName)
+                {
+                    return refRefList[i];
+                }
+            }
+            return null;
+        }
+
+        public List<Reference> SearchRef(
+            string uniqueName, string refKindStr = "", string entKindStr = "", bool isUnique = true)
+        {
+            var refEntityList = new List<Entity>();
+            var refRefList = new List<Reference>();
+            _SearchRef(out refEntityList, out refRefList, uniqueName, refKindStr, entKindStr, isUnique);
+            return refRefList;
+        }
+
+        public void SearchCallPaths(string srcUniqueName, string tarUniqueName)
+        {
+            // TODO: Add code
         }
     }
 }
