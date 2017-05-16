@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,14 @@ using System.Xml.XPath;
 
 namespace DoxygenDB
 {
+    class Variant
+    {
+        public Variant(string str) { m_string = str; }
+        public Variant(int val) { m_int = val; }
+        public string m_string;
+        public int m_int;
+    }
+
     class IndexItem
     {
         public enum Kind
@@ -183,9 +192,9 @@ namespace DoxygenDB
         public string m_shortName;
         public string m_longName;
         public string m_kindName;
-        public Dictionary<string, object> m_metric = new Dictionary<string, object>();
+        public Dictionary<string, Variant> m_metric = new Dictionary<string, Variant>();
 
-        public Entity(string id, string name, string longName, string kindName, Dictionary<string, object> metric)
+        public Entity(string id, string name, string longName, string kindName, Dictionary<string, Variant> metric)
         {
             m_id = id;
             m_shortName = name;
@@ -214,9 +223,9 @@ namespace DoxygenDB
             return m_kindName;
         }
 
-        public object Metric()
+        public Dictionary<string, Variant> Metric()
         {
-            return null;
+            return m_metric;
         }
     }
 
@@ -241,7 +250,7 @@ namespace DoxygenDB
 
         public Entity File()
         {
-            return new Entity("", m_fileName, m_fileName, "file", new Dictionary<string, object>());
+            return new Entity("", m_fileName, m_fileName, "file", new Dictionary<string, Variant>());
         }
 
         public int Line()
@@ -258,11 +267,55 @@ namespace DoxygenDB
     class DoxygenDB
     {
         string m_dbFolder;
+        string m_doxyFileFolder;
         Dictionary<string, string> m_idToCompoundDict = new Dictionary<string, string>();
         Dictionary<string, List<string>> m_compoundToIdDict = new Dictionary<string, List<string>>();
         Dictionary<string, IndexItem> m_idInfoDict = new Dictionary<string, IndexItem>();
         Dictionary<string, XmlDocItem> m_xmlCache = new Dictionary<string, XmlDocItem>();
         Dictionary<string, XPathNavigator> m_xmlElementCache = new Dictionary<string, XPathNavigator>();
+        Dictionary<string, List<string>> m_metaDict = new Dictionary<string, List<string>>();
+
+        void _ReadDoxyfile(string filePath)
+        {
+            StreamReader sr = new StreamReader(filePath, Encoding.Default);
+            string line;
+            string currentKey = "";
+            List<string> currentValue = new List<string>();
+            while ((line = sr.ReadLine()) != null)
+            {
+                //Console.WriteLine(line.ToString());
+                line = line.Trim();
+                if (line == "")
+                {
+                    continue;
+                }
+
+                if (line.StartsWith("#"))
+                {
+                    continue;
+                }
+
+                var lineList = line.Split('=');
+                if (lineList.Length == 2)
+                {
+                    if (currentKey != "")
+                    {
+                        m_metaDict[currentKey] = currentValue;
+                    }
+                    currentKey = lineList[0].Trim();
+                    var value = lineList[1].Trim('\\');
+                    value = value.Trim();
+                    currentValue = new List<string> { value };
+                }
+                else if (lineList.Length == 1)
+                {
+                    // a value
+                    var value = lineList[0].Trim('\\');
+                    value = value.Trim();
+                    currentValue.Add(value);
+                }
+            }
+        }
 
         XPathNavigator _GetXmlDocument(string fileName)
         {
@@ -532,27 +585,128 @@ namespace DoxygenDB
             }
         }
 
-        void _ReadRef(string compoundId)
+        void _ReadRef(string compoundFileId)
         {
-            var doc = _GetXmlDocument(compoundId);
+            var doc = _GetXmlDocument(compoundFileId);
             if (doc == null)
             {
                 return;
             }
 
-            var xmlDocItem = _GetXmlDocumentItem(compoundId);
+            var xmlDocItem = _GetXmlDocumentItem(compoundFileId);
             if (xmlDocItem.GetCacheStatus(XmlDocItem.CacheStatus.REF))
             {
                 return;
             }
 
             // build references
+            string filePath;
+            int startLine;
             var compoundDefIter = doc.Select("compounddef");
             while (compoundDefIter.MoveNext())
             {
                 var compoundDef = compoundDefIter.Current;
+                var compoundId = compoundDef.GetAttribute("id", "");
+
+                if (!m_idInfoDict.ContainsKey(compoundId))
+                {
+                    continue;
+                }
+                var compoundItem = m_idInfoDict[compoundId];
+
+                var compoundChildrenIter = compoundDef.SelectChildren(XPathNodeType.Element);
+                while (compoundChildrenIter.MoveNext())
+                {
+                    var compoundChild = compoundChildrenIter.Current;
+                    // find base classes
+                    if (compoundChild.Name == "basecompoundref")
+                    {
+                        var baseCompoundId = compoundChild.GetAttribute("refid","");
+                        if (m_idInfoDict.ContainsKey(baseCompoundId))
+                        {
+                            var baseCompoundItem = m_idInfoDict[baseCompoundId];
+                            _ParseRefLocation(compoundChild, out filePath, out startLine);
+                            var refItem = new IndexRefItem(baseCompoundId, compoundId, "derive", filePath, startLine);
+                            baseCompoundItem.AddRefItem(refItem);
+                            compoundItem.AddRefItem(refItem);
+                        }
+                    }
+
+                    // find derived classes
+                    if (compoundChild.Name == "derivedcompoundref")
+                    {
+                        var derivedCompoundId = compoundChild.GetAttribute("refid", "");
+                        if (m_idInfoDict.ContainsKey(derivedCompoundId))
+                        {
+                            var derivedCompoundItem = m_idInfoDict[derivedCompoundId];
+                            _ParseRefLocation(compoundChild, out filePath, out startLine);
+                            var refItem = new IndexRefItem(compoundId, derivedCompoundId, "derive", filePath, startLine);
+                            derivedCompoundItem.AddRefItem(refItem);
+                            compoundItem.AddRefItem(refItem);
+                        }
+                    }
+
+                    // find member's refs
+                    if (compoundChild.Name == "sectiondef")
+                    {
+                        var sectionIter = compoundChild.SelectChildren(XPathNodeType.Element);
+                        while (sectionIter.MoveNext())
+                        {
+                            var sectionChild = sectionIter.Current;
+                            if (sectionChild.Name == "memberdef")
+                            {
+                                _ReadMemberRef(sectionChild);
+
+                                var member = sectionChild;
+                                var memberId = member.GetAttribute("id", "");
+                                if (m_idInfoDict.ContainsKey(memberId))
+                                {
+                                    var memberItem = m_idInfoDict[memberId];
+                                    if (compoundItem != null)
+                                    {
+                                        var memberLocationIter = member.Select("./location");
+                                        if (memberLocationIter.MoveNext())
+                                        {
+                                            var locationDict = _ParseLocationDict(memberLocationIter.Current);
+                                            filePath = locationDict["file"].m_string;
+                                            startLine = locationDict["line"].m_int;
+                                            var refItem = new IndexRefItem(compoundId, memberId, "member", filePath, startLine);
+                                            memberItem.AddRefItem(refItem);
+                                            compoundItem.AddRefItem(refItem);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 // TODO: more code
             }
+
+            xmlDocItem.SetCacheStatus(XmlDocItem.CacheStatus.REF);
+        }
+
+        void _ReadRefs()
+        {
+            if (m_dbFolder == "")
+            {
+                return;
+            }
+
+            foreach(var compoundItem in m_compoundToIdDict)
+            {
+                _ReadRef(compoundItem.Key);
+            }
+        }
+
+        bool _IsCompound(string refid)
+        {
+            return m_compoundToIdDict.ContainsKey(refid);
+        }
+
+        bool _IsMember(string refid)
+        {
+            return m_idToCompoundDict.ContainsKey(refid);
         }
 
         XPathNavigator _GetXmlElement(string refid)
@@ -591,6 +745,125 @@ namespace DoxygenDB
                 }
             }
             return null;
+        }
+
+        Dictionary<string, Variant> _ParseLocationDict(XPathNavigator element)
+        {
+            var declLine = Convert.ToInt32(element.GetAttribute("line", ""));
+            var declColumn = Convert.ToInt32(element.GetAttribute("column", ""));
+            var declFile = m_doxyFileFolder + "/" + element.GetAttribute("file", "");
+
+            var bodyStart = Convert.ToInt32(element.GetAttribute("bodystart", ""));
+            var bodyEnd = Convert.ToInt32(element.GetAttribute("bodyend", ""));
+            var bodyFile = m_doxyFileFolder + "/" + element.GetAttribute("bodyfile", "");
+
+            if (bodyEnd < 0)
+            {
+                bodyEnd = bodyStart;
+            }
+
+            return new Dictionary<string, Variant> {
+                { "file", new Variant(bodyFile) },
+                { "line", new Variant(bodyStart) },
+                { "column", new Variant(bodyEnd) },
+                { "CountLine", new Variant(Math.Max(bodyEnd - bodyStart, 0)) },
+                { "declLine", new Variant(declLine) },
+                { "declColumn", new Variant(declColumn) },
+                { "declFile", new Variant(declFile) },
+            };
+        }
+
+        Entity _ParseEntity(XPathNavigator element)
+        {
+            if (element == null)
+            {
+                return null;
+            }
+
+            if (element.Name == "compounddef")
+            {
+                var name = "";
+                var longName = "";
+                var kind = element.GetAttribute("kind", "");
+                Dictionary<string, Variant> metric = null;
+                var id = element.GetAttribute("id", "");
+                var childrenIter = element.SelectChildren(XPathNodeType.Element);
+                while (childrenIter.MoveNext())
+                {
+                    var elementChild = childrenIter.Current;
+                    if (elementChild.Name == "compoundname")
+                    {
+                        name = elementChild.Value;
+                        longName = name;
+                    }
+                    else if (elementChild.Name == "location")
+                    {
+                        metric = _ParseLocationDict(elementChild);
+                    }
+                }
+                return new Entity(id, name, longName, kind, metric);
+            }
+            else if (element.Name == "memberdef")
+            {
+                var name = "";
+                var longName = "";
+                var kind = element.GetAttribute("kind","");
+                var virt = element.GetAttribute("virt","");
+                if (virt == "virtual")
+                {
+                    kind = "virtual " + kind; 
+                }
+                else if (virt == "pure-virtual")
+                {
+                    kind = "pure virtual " + kind;
+                }
+                Dictionary<string, Variant> metric = null;
+                var id = element.GetAttribute("id", "");
+                var elementChildIter = element.SelectChildren(XPathNodeType.Element);
+                while (elementChildIter.MoveNext())
+                {
+                    var elementChild = elementChildIter.Current;
+                    if (elementChild.Name == "name")
+                    {
+                        name = elementChild.Value;
+                    }
+                    else if (elementChild.Name == "definition")
+                    {
+                        longName = elementChild.Value;
+                    }
+                    else if (elementChild.Name == "location")
+                    {
+                        metric = _ParseLocationDict(elementChild);
+                    }
+                }
+                return new Entity(id, name, longName, kind, metric);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public void Open(string fullPath)
+        {
+            if (m_dbFolder != "")
+            {
+                Close();
+            }
+
+            m_doxyFileFolder = System.IO.Path.GetDirectoryName(fullPath);
+
+            _ReadDoxyfile(fullPath);
+            m_dbFolder = m_metaDict["OUTPUT_DIRECTORY"][0];
+            m_dbFolder += "/" + m_metaDict["XML_OUTPUT"][0];
+            m_dbFolder = m_dbFolder.Replace('\\', '/');
+
+            _ReadIndex();
+        }
+
+        public void Close()
+        {
+
         }
     }
 }
