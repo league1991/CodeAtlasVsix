@@ -18,14 +18,163 @@ namespace CodeAtlasVSIX
         public int nCallers = 0;
         public int nCallees = 0;
 
-        private Nullable<Point> dragStart = null;
-        private GeometryGroup geometry = null;
-        private string m_uniqueName = "";
-        private bool m_isDirty = false;
-        private Point m_targetPos = new Point();
-        private DateTime m_mouseDownTime = new DateTime();
-        private bool m_isSelected = false;
-        private Point m_position = new Point();
+        Nullable<Point> dragStart = null;
+        GeometryGroup geometry = null;
+        string m_uniqueName = "";
+        bool m_isDirty = false;
+        Point m_targetPos = new Point();
+        DateTime m_mouseDownTime = new DateTime();
+        bool m_isSelected = false;
+        Point m_position = new Point();
+
+        string m_name = "";
+        string m_displayName = "";
+        int m_lines = 0;
+        string m_kindName = "";
+        DoxygenDB.EntKind m_kind = DoxygenDB.EntKind.UNKNOWN;
+        static FontFamily s_titleFont = new FontFamily("tahoma");
+        Size m_fontSize = new Size();
+        Size m_commentSize = new Size();
+        int m_lineHeight = 0;
+        bool m_isConnectedToFocusNode = false;
+        Dictionary<string, object> m_customData = new Dictionary<string, object>();
+
+        public CodeUIItem(string uniqueName)
+        {
+            m_uniqueName = uniqueName;
+            SolidColorBrush brush = new SolidColorBrush();
+            brush.Color = Color.FromArgb(255, 255, 255, 0);
+            this.Fill = brush;
+            this.Stroke = Brushes.Transparent;
+            this.MouseDown += new MouseButtonEventHandler(MouseDownCallback);
+            this.MouseUp += new MouseButtonEventHandler(MouseUpCallback);
+            this.MouseMove += new MouseEventHandler(MouseMoveCallback);
+            this.MouseEnter += new MouseEventHandler(MouseEnterCallback);
+            this.MouseLeave += new MouseEventHandler(MouseLeaveCallback);
+
+            var dbObj = DBManager.Instance().GetDB();
+            var scene = UIManager.Instance().GetScene();
+            var entity = dbObj.SearchFromUniqueName(uniqueName);
+
+            if (entity != null)
+            {
+                this.ToolTip = entity.Longname();
+                m_name = entity.Name();
+                BuildDisplayName(m_name);
+                var comment = scene.GetComment(m_uniqueName);
+                BuildCommentSize(comment);
+                m_kindName = entity.KindName();
+                var metricRes = entity.Metric();
+                if (metricRes.ContainsKey("CountLine"))
+                {
+                    var metricLine = metricRes["CountLine"].m_int;
+                    m_lines = metricLine;
+                }
+            }
+
+            var kindStr = m_kindName.ToLower();
+            // custom data
+
+            if (kindStr.Contains("function") || kindStr.Contains("method"))
+            {
+                m_kind = DoxygenDB.EntKind.FUNCTION;
+                // Find caller and callee count
+                var callerList = new List<DoxygenDB.Entity>();
+                var callerRefList = new List<DoxygenDB.Reference>();
+                var calleeList = new List<DoxygenDB.Entity>();
+                var calleeRefList = new List<DoxygenDB.Reference>();
+                dbObj.SearchRefEntity(out callerList, out callerRefList, m_uniqueName, "callby", "function, method", true);
+                dbObj.SearchRefEntity(out calleeList, out calleeRefList, m_uniqueName, "call", "function, method", true);
+                m_customData["nCaller"] = callerList.Count;
+                // TODO: Add more code
+            }
+            BuildGeometry();
+        }
+
+        void BuildDisplayName(string name)
+        {
+
+        }
+
+        void BuildCommentSize(string comment)
+        {
+
+        }
+
+        static public Color HSLToRGB(double H, double S, double L)
+        {
+            double v;
+            double r, g, b;
+
+            r = L;   // default to gray
+            g = L;
+            b = L;
+            v = (L <= 0.5) ? (L * (1.0 + S)) : (L + S - L * S);
+            if (v > 0)
+            {
+                double m;
+                double sv;
+                int sextant;
+                double fract, vsf, mid1, mid2;
+
+                m = L + L - v;
+                sv = (v - m) / v;
+                H *= 6.0;
+                sextant = (int)H;
+                fract = H - sextant;
+                vsf = v * sv * fract;
+                mid1 = m + vsf;
+                mid2 = v - vsf;
+                switch (sextant)
+                {
+                    case 0:
+                        r = v;
+                        g = mid1;
+                        b = m;
+                        break;
+                    case 1:
+                        r = mid2;
+                        g = v;
+                        b = m;
+                        break;
+                    case 2:
+                        r = m;
+                        g = v;
+                        b = mid1;
+                        break;
+                    case 3:
+                        r = m;
+                        g = mid2;
+                        b = v;
+                        break;
+                    case 4:
+                        r = mid1;
+                        g = m;
+                        b = v;
+                        break;
+                    case 5:
+                        r = v;
+                        g = m;
+                        b = mid2;
+                        break;
+                }
+            }
+            Color rgb = new Color();
+            rgb.R = Convert.ToByte(r * 255.0f);
+            rgb.G = Convert.ToByte(g * 255.0f);
+            rgb.B = Convert.ToByte(b * 255.0f);
+            rgb.A = 255;
+            return rgb;
+        }
+
+        static Color NameToColor(string name)
+        {
+            uint hashVal = (uint)name.GetHashCode() & 0xffffffff;
+            var h = (hashVal & 0xff) / 255.0;
+            var s = ((hashVal >> 8) & 0xff) / 255.0;
+            var l = ((hashVal >> 16) & 0xff) / 255.0;
+            return HSLToRGB(h, s, l);
+        }
 
         public bool IsDirty
         {
@@ -40,20 +189,6 @@ namespace CodeAtlasVSIX
             }
         }
 
-        public CodeUIItem(string uniqueName)
-        {
-            m_uniqueName = uniqueName;
-            SolidColorBrush brush = new SolidColorBrush();
-            brush.Color = Color.FromArgb(255, 255, 255, 0);
-            this.Fill = brush;
-            this.Stroke = Brushes.Transparent;
-            this.MouseDown += new MouseButtonEventHandler(MouseDownCallback);
-            this.MouseUp += new MouseButtonEventHandler(MouseUpCallback);
-            this.MouseMove += new MouseEventHandler(MouseMoveCallback);
-            this.MouseEnter += new MouseEventHandler(MouseEnterCallback);
-            this.MouseLeave += new MouseEventHandler(MouseLeaveCallback);
-            BuildGeometry();
-        }
 
     //    public Point LeftPoint
     //    {

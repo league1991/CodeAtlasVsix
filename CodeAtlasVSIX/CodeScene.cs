@@ -45,6 +45,12 @@ namespace CodeAtlasVSIX
         {
         }
 
+        public string GetComment(string id)
+        {
+            // TODO: Add code
+            return "";
+        }
+
         #region data
         public ItemDict GetItemDict()
         {
