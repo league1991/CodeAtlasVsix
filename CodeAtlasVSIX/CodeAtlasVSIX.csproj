@@ -219,6 +219,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DoxygenDB\DoxygenDB.csproj">
+      <Project>{11e2bb96-9955-4b10-b8f7-6fd0209fecb5}</Project>
+      <Name>DoxygenDB</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GraphLayout\GraphLayout\Drawing\drawing.csproj">
       <Project>{b76f8f71-4b00-4242-be36-c9f0732511f7}</Project>
       <Name>drawing</Name>

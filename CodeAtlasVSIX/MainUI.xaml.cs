@@ -24,5 +24,25 @@ namespace CodeAtlasVSIX
         {
             InitializeComponent();
         }
+
+        private void OpenButton_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
+            //ofd.DefaultExt = ".xml";
+            //ofd.Filter = "xml file|*.xml";
+            if (ofd.ShowDialog() == true)
+            {
+                DBManager.Instance().OpenDB(ofd.FileName);
+            }
+        }
+
+        private void TestButton_Click(object sender, RoutedEventArgs e)
+        {
+            // defaultPath = r'C:\Users\me\AppData\Roaming\Sublime Text 3\Packages\CodeAtlas\CodeAtlasSublime.udb'
+            // defaultPath = 'I:/Programs/masteringOpenCV/Chapter3_MarkerlessAR/doc/xml/index.xml'
+            // defaultPath = 'I:/Programs/mitsuba/doxygenData/xml/index.xml'
+            var defaultPath = "D:/Code/NewRapidRT/rapidrt/Doxyfile";
+            DBManager.Instance().OpenDB(defaultPath);
+        }
     }
 }

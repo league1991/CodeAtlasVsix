@@ -41,6 +41,10 @@ namespace CodeAtlasVSIX
             }
         }
 
+        public void OnOpenDB()
+        {
+        }
+
         #region data
         public ItemDict GetItemDict()
         {

@@ -10,7 +10,7 @@ using System.Xml.XPath;
 
 namespace DoxygenDB
 {
-    class Variant
+    public class Variant
     {
         public Variant(string str) { m_string = str; }
         public Variant(int val) { m_int = val; }
@@ -18,58 +18,70 @@ namespace DoxygenDB
         public int m_int;
     }
 
+    public enum EntKind
+    {
+        UNKNOWN = 0,
+        // compound,
+        CLASS = 1,
+        STRUCT = 2,
+        UNION = 3,
+        INTERFACE = 4,
+        PROTOCOL = 5,
+        CATEGORY = 6,
+        EXCEPTION = 7,
+        FILE = 8,
+        NAMESPACE = 9,
+        GROUP = 10,
+        PAGE = 11,
+        EXAMPLE = 12,
+        // member,
+        DIR = 13,
+        DEFINE = 14,
+        PROPERTY = 15,
+        EVENT = 16,
+        VARIABLE = 17,
+        TYPEDEF = 18,
+        ENUM = 19,
+        ENUMVALUE = 20,
+        FUNCTION = 21,
+        SIGNAL = 22,
+        PROTOTYPE = 23,
+        FRIEND = 24,
+        DCOP = 25,
+        SLOT = 26
+    }
+
+    public enum RefKind
+    {
+        UNKNOWN = 0,
+        MEMBER = 1,
+        CALL = 2,
+        DERIVE = 3,
+        USE = 4,
+        OVERRIDE = 5,
+        DECLARE = 6,
+        DEFINE = 7,
+    }
+
     class IndexItem
     {
-        public enum Kind
-        {
-            UNKNOWN = 0,
-            // compound,
-            CLASS = 1,
-            STRUCT = 2,
-            UNION = 3,
-            INTERFACE = 4,
-            PROTOCOL = 5,
-            CATEGORY = 6,
-            EXCEPTION = 7,
-            FILE = 8,
-            NAMESPACE = 9,
-            GROUP = 10,
-            PAGE = 11,
-            EXAMPLE = 12,
-            // member,
-            DIR = 13,
-            DEFINE = 14,
-            PROPERTY = 15,
-            EVENT = 16,
-            VARIABLE = 17,
-            TYPEDEF = 18,
-            ENUM = 19,
-            ENUMVALUE = 20,
-            FUNCTION = 21,
-            SIGNAL = 22,
-            PROTOTYPE = 23,
-            FRIEND = 24,
-            DCOP = 25,
-            SLOT = 26
-        }
-
-        public static Dictionary<string, Kind> s_kindDict = new Dictionary<string, Kind>{
-            {"unknown", Kind.UNKNOWN},      {"class", Kind.CLASS},          {"struct", Kind.STRUCT},
-            {"union", Kind.UNION},          {"interface", Kind.INTERFACE},  {"protocol", Kind.PROTOCOL},
-            {"category", Kind.CATEGORY},    {"exception", Kind.EXCEPTION},  {"file", Kind.FILE},
-            {"namespace", Kind.NAMESPACE},  {"group", Kind.GROUP},          {"page", Kind.PAGE},
-            {"example", Kind.EXAMPLE},      {"dir", Kind.DIR},              {"define", Kind.DEFINE},
-            {"property", Kind.PROPERTY},    {"event", Kind.EVENT},          {"variable", Kind.VARIABLE},
-            {"typedef", Kind.TYPEDEF},      {"enum", Kind.ENUM},            {"enumvalue", Kind.ENUMVALUE},
-            {"function", Kind.FUNCTION},    {"signal", Kind.SIGNAL},        {"prototype", Kind.PROTOTYPE},
-            {"friend", Kind.FRIEND},        {"dcop", Kind.DCOP},            {"slot", Kind.SLOT},
+        public static Dictionary<string, EntKind> s_kindDict = new Dictionary<string, EntKind>{
+            {"unknown", EntKind.UNKNOWN},      {"class", EntKind.CLASS},          {"struct", EntKind.STRUCT},
+            {"union", EntKind.UNION},          {"interface", EntKind.INTERFACE},  {"protocol", EntKind.PROTOCOL},
+            {"category", EntKind.CATEGORY},    {"exception", EntKind.EXCEPTION},  {"file", EntKind.FILE},
+            {"namespace", EntKind.NAMESPACE},  {"group", EntKind.GROUP},          {"page", EntKind.PAGE},
+            {"example", EntKind.EXAMPLE},      {"dir", EntKind.DIR},              {"define", EntKind.DEFINE},
+            {"property", EntKind.PROPERTY},    {"event", EntKind.EVENT},          {"variable", EntKind.VARIABLE},
+            {"typedef", EntKind.TYPEDEF},      {"enum", EntKind.ENUM},            {"enumvalue", EntKind.ENUMVALUE},
+            {"function", EntKind.FUNCTION},    {"signal", EntKind.SIGNAL},        {"prototype", EntKind.PROTOTYPE},
+            {"friend", EntKind.FRIEND},        {"dcop", EntKind.DCOP},            {"slot", EntKind.SLOT},
             // extra keywords
-            {"method", Kind.FUNCTION}
+            {"method", EntKind.FUNCTION}
         };
 
         public string m_id;
         public string m_name;
-        public Kind m_kind;
+        public EntKind m_kind;
         public List<IndexRefItem> m_refs = new List<IndexRefItem>();
 
         public IndexItem(string name, string kindStr, string id)
@@ -102,41 +114,29 @@ namespace DoxygenDB
 
     class IndexRefItem
     {
-        public enum Kind
+        public static Dictionary<string, Tuple<RefKind, bool>> s_kindDict = new Dictionary<string, Tuple<RefKind, bool>>
         {
-            UNKNOWN = 0,
-            MEMBER = 1,
-            CALL = 2,
-            DERIVE = 3,
-            USE = 4,
-            OVERRIDE = 5,
-            DECLARE = 6,
-            DEFINE = 7,
-        }
-        
-        public static Dictionary<string, Tuple<Kind, bool>> s_kindDict = new Dictionary<string, Tuple<Kind, bool>>
-        {
-            {"reference"       , new Tuple<Kind, bool>(Kind.UNKNOWN,  false)},
-            {"unknown"         , new Tuple<Kind, bool>(Kind.UNKNOWN,  false)},
-            {"call"            , new Tuple<Kind, bool>(Kind.CALL,     false)},
-            {"callby"          , new Tuple<Kind, bool>(Kind.CALL,     true)},
-            {"base"            , new Tuple<Kind, bool>(Kind.DERIVE,   true)},
-            {"derive"          , new Tuple<Kind, bool>(Kind.DERIVE,   false)},
-            {"use"             , new Tuple<Kind, bool>(Kind.USE,      false)},
-            {"useby"           , new Tuple<Kind, bool>(Kind.USE,      true)},
-            {"member"          , new Tuple<Kind, bool>(Kind.MEMBER,   false)},
-            {"declare"         , new Tuple<Kind, bool>(Kind.DECLARE,  false)},
-            {"define"          , new Tuple<Kind, bool>(Kind.DEFINE,   false)},
-            {"declarein"       , new Tuple<Kind, bool>(Kind.DECLARE,  true)},
-            {"definein"        , new Tuple<Kind, bool>(Kind.DEFINE,   true)},
-            {"override"        , new Tuple<Kind, bool>(Kind.OVERRIDE, true)},
-            {"overrides"       , new Tuple<Kind, bool>(Kind.OVERRIDE, true)},
-            {"overriddenby"    , new Tuple<Kind, bool>(Kind.OVERRIDE, false)},
+            {"reference"       , new Tuple<RefKind, bool>(RefKind.UNKNOWN,  false)},
+            {"unknown"         , new Tuple<RefKind, bool>(RefKind.UNKNOWN,  false)},
+            {"call"            , new Tuple<RefKind, bool>(RefKind.CALL,     false)},
+            {"callby"          , new Tuple<RefKind, bool>(RefKind.CALL,     true)},
+            {"base"            , new Tuple<RefKind, bool>(RefKind.DERIVE,   true)},
+            {"derive"          , new Tuple<RefKind, bool>(RefKind.DERIVE,   false)},
+            {"use"             , new Tuple<RefKind, bool>(RefKind.USE,      false)},
+            {"useby"           , new Tuple<RefKind, bool>(RefKind.USE,      true)},
+            {"member"          , new Tuple<RefKind, bool>(RefKind.MEMBER,   false)},
+            {"declare"         , new Tuple<RefKind, bool>(RefKind.DECLARE,  false)},
+            {"define"          , new Tuple<RefKind, bool>(RefKind.DEFINE,   false)},
+            {"declarein"       , new Tuple<RefKind, bool>(RefKind.DECLARE,  true)},
+            {"definein"        , new Tuple<RefKind, bool>(RefKind.DEFINE,   true)},
+            {"override"        , new Tuple<RefKind, bool>(RefKind.OVERRIDE, true)},
+            {"overrides"       , new Tuple<RefKind, bool>(RefKind.OVERRIDE, true)},
+            {"overriddenby"    , new Tuple<RefKind, bool>(RefKind.OVERRIDE, false)},
         };
 
         public string m_srcId;
         public string m_dstId;
-        public Kind m_kind;
+        public RefKind m_kind;
         public string m_file;
         public int m_line;
         public int m_column;
@@ -152,7 +152,7 @@ namespace DoxygenDB
         }
     }
 
-    public class XmlDocItem
+    class XmlDocItem
     {
         public enum CacheStatus
         {
@@ -187,7 +187,7 @@ namespace DoxygenDB
         }
     }
 
-    class Entity
+    public class Entity
     {
         public string m_id;
         public string m_shortName;
@@ -230,16 +230,16 @@ namespace DoxygenDB
         }
     }
 
-    class Reference
+    public class Reference
     {
-        public IndexRefItem.Kind m_kind;
+        public RefKind m_kind;
         public string m_entityId;
         public Entity m_entity;
         public string m_fileName;
         public int m_lineNum;
         public int m_columnNum;
 
-        public Reference(IndexRefItem.Kind kind, Entity entity, string file, int line, int column)
+        public Reference(RefKind kind, Entity entity, string file, int line, int column)
         {
             m_kind = kind;
             m_entityId = entity.m_id;
@@ -265,7 +265,7 @@ namespace DoxygenDB
         }
     }
 
-    class DoxygenDB
+    public class DoxygenDB
     {
         string m_dbFolder = "";
         string m_doxyFileFolder = "";
@@ -275,6 +275,8 @@ namespace DoxygenDB
         Dictionary<string, XmlDocItem> m_xmlCache = new Dictionary<string, XmlDocItem>();
         Dictionary<string, XPathNavigator> m_xmlElementCache = new Dictionary<string, XPathNavigator>();
         Dictionary<string, List<string>> m_metaDict = new Dictionary<string, List<string>>();
+
+        public DoxygenDB() { }
 
         void _ReadDoxyfile(string filePath)
         {
@@ -543,8 +545,8 @@ namespace DoxygenDB
                         _ParseRefLocation(memberChild, out filePath, out startLine);
 
                         // find the actual position in caller's function body
-                        if (referenceItem.m_kind == IndexItem.Kind.FUNCTION ||
-                            referenceItem.m_kind == IndexItem.Kind.SLOT)
+                        if (referenceItem.m_kind == EntKind.FUNCTION ||
+                            referenceItem.m_kind == EntKind.SLOT)
                         {
                             var fileCompoundId = memberChild.GetAttribute("compoundref", "");
                             var endLine = Convert.ToInt32(memberChild.GetAttribute("endline", ""));
@@ -924,7 +926,7 @@ namespace DoxygenDB
             }
 
             var kindStr = kindString.ToLower();
-            var kind = IndexItem.Kind.UNKNOWN;
+            var kind = EntKind.UNKNOWN;
             if (IndexItem.s_kindDict.ContainsKey(kindStr))
             {
                 kind = IndexItem.s_kindDict[kindStr];
@@ -932,7 +934,7 @@ namespace DoxygenDB
             var nameLower = name.ToLower();
             foreach (var item in m_idInfoDict)
             {
-                if (kind != IndexItem.Kind.UNKNOWN && item.Value.m_kind != kind)
+                if (kind != EntKind.UNKNOWN && item.Value.m_kind != kind)
                 {
                     continue;
                 }
@@ -977,7 +979,7 @@ namespace DoxygenDB
             var thisItem = m_idInfoDict[uniqueName];
 
             // parse refKindStr
-            var refKindList = new List<Tuple<IndexRefItem.Kind, bool>>();
+            var refKindList = new List<Tuple<RefKind, bool>>();
             if (refKindStr != "")
             {
                 refKindStr = refKindStr.ToLower();
@@ -996,11 +998,11 @@ namespace DoxygenDB
             }
             else
             {
-                refKindList = new List<Tuple<IndexRefItem.Kind, bool>>( IndexRefItem.s_kindDict.Values);
+                refKindList = new List<Tuple<RefKind, bool>>( IndexRefItem.s_kindDict.Values);
             }
 
             // parse entKindStr
-            var entKindList = new List<IndexItem.Kind>();
+            var entKindList = new List<EntKind>();
             if (entKindStr != "")
             {
                 var entKindNameStr = entKindStr.ToLower();
@@ -1077,43 +1079,43 @@ namespace DoxygenDB
                     var file = refObj.m_file;
                     var line = refObj.m_line;
                     var column = refObj.m_column;
-                    if (refKind == IndexRefItem.Kind.CALL && refObj.m_kind == IndexRefItem.Kind.UNKNOWN)
+                    if (refKind == RefKind.CALL && refObj.m_kind == RefKind.UNKNOWN)
                     {
-                        if (srcItem.m_kind == IndexItem.Kind.FUNCTION && dstItem.m_kind == IndexItem.Kind.FUNCTION)
+                        if (srcItem.m_kind == EntKind.FUNCTION && dstItem.m_kind == EntKind.FUNCTION)
                         {
                             isAccepted = true;
                         }
                     }
-                    else if (refKind == IndexRefItem.Kind.DEFINE && refObj.m_kind == IndexRefItem.Kind.MEMBER)
+                    else if (refKind == RefKind.DEFINE && refObj.m_kind == RefKind.MEMBER)
                     {
                         isAccepted = true;
                         file = dstMetric["file"].m_string;
                         line = dstMetric["line"].m_int;
                         column = dstMetric["column"].m_int;
                     }
-                    else if ((refKind == IndexRefItem.Kind.MEMBER || refKind == IndexRefItem.Kind.DECLARE) && refObj.m_kind == IndexRefItem.Kind.MEMBER)
+                    else if ((refKind == RefKind.MEMBER || refKind == RefKind.DECLARE) && refObj.m_kind == RefKind.MEMBER)
                     {
                         isAccepted = true;
                         file = dstMetric["declFile"].m_string;
                         line = dstMetric["declLine"].m_int;
                         column = dstMetric["declColumn"].m_int;
                     }
-                    else if (refKind == IndexRefItem.Kind.USE && refObj.m_kind == IndexRefItem.Kind.UNKNOWN)
+                    else if (refKind == RefKind.USE && refObj.m_kind == RefKind.UNKNOWN)
                     {
-                        if (srcItem.m_kind == IndexItem.Kind.FUNCTION && dstItem.m_kind == IndexItem.Kind.VARIABLE)
+                        if (srcItem.m_kind == EntKind.FUNCTION && dstItem.m_kind == EntKind.VARIABLE)
                         {
                             isAccepted = true;
                         }
                     }
-                    else if (refKind == IndexRefItem.Kind.DERIVE && refObj.m_kind == IndexRefItem.Kind.DERIVE)
+                    else if (refKind == RefKind.DERIVE && refObj.m_kind == RefKind.DERIVE)
                     {
-                        if ((srcItem.m_kind == IndexItem.Kind.CLASS || srcItem.m_kind == IndexItem.Kind.STRUCT) && 
-                            (dstItem.m_kind == IndexItem.Kind.CLASS || dstItem.m_kind == IndexItem.Kind.STRUCT))
+                        if ((srcItem.m_kind == EntKind.CLASS || srcItem.m_kind == EntKind.STRUCT) && 
+                            (dstItem.m_kind == EntKind.CLASS || dstItem.m_kind == EntKind.STRUCT))
                         {
                             isAccepted = true;
                         }
                     }
-                    else if (refKind == IndexRefItem.Kind.OVERRIDE && refObj.m_kind == IndexRefItem.Kind.OVERRIDE)
+                    else if (refKind == RefKind.OVERRIDE && refObj.m_kind == RefKind.OVERRIDE)
                     {
                         isAccepted = true;
                     }

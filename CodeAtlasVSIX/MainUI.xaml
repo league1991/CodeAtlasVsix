@@ -6,7 +6,10 @@
              xmlns:local="clr-namespace:CodeAtlasVSIX"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" Background="#FF464646">
-    <Menu x:Name="menu" Height="20" DockPanel.Dock="Top" Background="#FF3C3C3C"/>
+    <Menu x:Name="menu" Height="20" DockPanel.Dock="Top" Background="#FF3C3C3C">
+        <MenuItem x:Name="OpenButton" Header="Open" Click="OpenButton_Click" Foreground="#FFCFCFCF"/>
+        <MenuItem x:Name="TestButton" Header="Test" Foreground="#FFB9B9B9" Click="TestButton_Click"/>
+    </Menu>
     <TabControl x:Name="tabControl" Margin="0" DockPanel.Dock="Bottom" Background="#FF8F8F8F" >
         <TabItem Header="Search">
             <Grid Background="#FFB7C3AC" MinHeight="10">
