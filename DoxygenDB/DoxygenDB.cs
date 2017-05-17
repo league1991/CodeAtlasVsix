@@ -332,8 +332,15 @@ namespace DoxygenDB
             {
                 return m_xmlCache[filePath];
             }
+            var rawContent = File.ReadAllText(filePath, Encoding.UTF8);
+            var content = new string(rawContent.Where(c => !char.IsControl(c)).ToArray());
+            var bytes = Encoding.UTF8.GetBytes(content);
+            var xmlDoc = new XPathDocument(new MemoryStream(bytes));
 
-            var xmlDoc = new XPathDocument(filePath);
+            //var xmlSetting = new XmlReaderSettings();
+            //xmlSetting.CheckCharacters = false;
+            //var xmlDoc = new XPathDocument(XmlReader.Create(filePath, xmlSetting));
+            //var xmlDoc1 = new XPathDocument(filePath);
             var xmlDocItem = new XmlDocItem(xmlDoc);
             m_xmlCache[filePath] = xmlDocItem;
             return xmlDocItem;
@@ -883,7 +890,7 @@ namespace DoxygenDB
             m_dbFolder = m_dbFolder.Replace('\\', '/');
 
             _ReadIndex();
-            //_ReadRefs();
+            _ReadRefs();
         }
 
         public string GetDBPath()
