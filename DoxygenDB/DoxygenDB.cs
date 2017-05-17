@@ -883,7 +883,7 @@ namespace DoxygenDB
             m_dbFolder = m_dbFolder.Replace('\\', '/');
 
             _ReadIndex();
-            _ReadRefs();
+            //_ReadRefs();
         }
 
         public string GetDBPath()
@@ -938,7 +938,7 @@ namespace DoxygenDB
                 {
                     continue;
                 }
-                if (item.Value.m_name.Contains(nameLower))
+                if (item.Value.m_name.ToLower().Contains(nameLower))
                 {
                     var xmlElement = _GetXmlElement(item.Key);
                     if (xmlElement == null)

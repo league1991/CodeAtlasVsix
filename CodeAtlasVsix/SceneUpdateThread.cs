@@ -56,7 +56,7 @@ namespace CodeAtlasVSIX
 
                     MoveItems();
                     InvalidateScene();
-                    System.Console.Write("running\n");
+                    // System.Console.Write("running\n");
                 }
                 Thread.Sleep(m_sleepTime);
             }
