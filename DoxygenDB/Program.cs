@@ -11,6 +11,7 @@ namespace DoxygenDB
         static void Main(string[] args)
         {
             DoxygenDB db = new DoxygenDB();
+            db.Open("D:/Code/NewRapidRT/rapidrt/Doxyfile");
         }
     }
 }

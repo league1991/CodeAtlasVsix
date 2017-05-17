@@ -267,8 +267,8 @@ namespace DoxygenDB
 
     class DoxygenDB
     {
-        string m_dbFolder;
-        string m_doxyFileFolder;
+        string m_dbFolder = "";
+        string m_doxyFileFolder = "";
         Dictionary<string, string> m_idToCompoundDict = new Dictionary<string, string>();
         Dictionary<string, List<string>> m_compoundToIdDict = new Dictionary<string, List<string>>();
         Dictionary<string, IndexItem> m_idInfoDict = new Dictionary<string, IndexItem>();
@@ -350,7 +350,7 @@ namespace DoxygenDB
                 return "";
             }
 
-            var locationEle = doc.Select("./compounddef/location");
+            var locationEle = doc.Select("doxygen/compounddef/location");
             if(!locationEle.MoveNext())
             {
                 return "";
@@ -372,7 +372,7 @@ namespace DoxygenDB
                 return refDict;
             }
 
-            var programList = doc.Select("./compounddef/programlisting");
+            var programList = doc.Select("doxygen/compounddef/programlisting/codeline");
             while (programList.MoveNext())
             {
                 var lineEle = programList.Current;
@@ -383,7 +383,7 @@ namespace DoxygenDB
                     continue;
                 }
 
-                var refIter = lineEle.Select("./highlight/ref");
+                var refIter = lineEle.Select("highlight/ref");
                 while (refIter.MoveNext())
                 {
                     var refObj = refIter.Current;
@@ -410,7 +410,7 @@ namespace DoxygenDB
 
             var doc = _GetXmlDocument("index");
 
-            var compoundIter = doc.Select("compound");
+            var compoundIter = doc.Select("doxygenindex/compound");
             while (compoundIter.MoveNext())
             {
                 var compound = compoundIter.Current;
@@ -423,7 +423,7 @@ namespace DoxygenDB
                     var compoundChild = compoundChildIter.Current;
                     if (compoundChild.Name == "name")
                     {
-                        m_idInfoDict[compoundRefId] = new IndexItem(compoundChild.Value, compoundChild.GetAttribute("kind", ""), compoundRefId);
+                        m_idInfoDict[compoundRefId] = new IndexItem(compoundChild.Value, compound.GetAttribute("kind", ""), compoundRefId);
                     }
 
                     // list members
@@ -455,11 +455,18 @@ namespace DoxygenDB
             }
         }
 
-        void _ParseRefLocation(XPathNavigator refElement, out string filePath, out int startLine)
+        bool _ParseRefLocation(XPathNavigator refElement, out string filePath, out int startLine)
         {
             var fileCompoundId = refElement.GetAttribute("compoundref", "");
+            if (fileCompoundId == "")
+            {
+                filePath = "";
+                startLine = 0;
+                return false;
+            }
             filePath = _GetCompoundPath(fileCompoundId);
             startLine = Convert.ToInt32(refElement.GetAttribute("startline", ""));
+            return true;
         }
 
         void _ReadMemberRef(XPathNavigator memberDef)
@@ -601,9 +608,9 @@ namespace DoxygenDB
             }
 
             // build references
-            string filePath;
-            int startLine;
-            var compoundDefIter = doc.Select("compounddef");
+            string filePath = "";
+            int startLine = 0;
+            var compoundDefIter = doc.Select("doxygen/compounddef");
             while (compoundDefIter.MoveNext())
             {
                 var compoundDef = compoundDefIter.Current;
@@ -696,6 +703,7 @@ namespace DoxygenDB
 
             foreach(var compoundItem in m_compoundToIdDict)
             {
+                Console.WriteLine("Parsing:" + compoundItem.Key);
                 _ReadRef(compoundItem.Key);
             }
         }
@@ -726,7 +734,7 @@ namespace DoxygenDB
             {
                 var fileName = m_idToCompoundDict[refid];
                 var doc = _GetXmlDocument(fileName);
-                var memberIter = doc.Select(string.Format("./compounddef/sectiondef/memberdef[@id=\'{0}\']", refid));
+                var memberIter = doc.Select(string.Format("doxygen/compounddef/sectiondef/memberdef[@id=\'{0}\']", refid));
                 while (memberIter.MoveNext())
                 {
                     var member = memberIter.Current;
@@ -754,8 +762,20 @@ namespace DoxygenDB
             var declColumn = Convert.ToInt32(element.GetAttribute("column", ""));
             var declFile = m_doxyFileFolder + "/" + element.GetAttribute("file", "");
 
-            var bodyStart = Convert.ToInt32(element.GetAttribute("bodystart", ""));
-            var bodyEnd = Convert.ToInt32(element.GetAttribute("bodyend", ""));
+            var bodyStartAttr = element.GetAttribute("bodystart", "");
+            if (bodyStartAttr == "")
+            {
+                bodyStartAttr = "0";
+            }
+            var bodyEndAttr = element.GetAttribute("bodyend", "");
+            if (bodyEndAttr == "")
+            {
+                bodyEndAttr = bodyStartAttr;
+            }
+            var bodyFileAttr = element.GetAttribute("bodyfile", "");
+
+            var bodyStart = Convert.ToInt32(bodyStartAttr);
+            var bodyEnd = Convert.ToInt32(bodyEndAttr);
             var bodyFile = m_doxyFileFolder + "/" + element.GetAttribute("bodyfile", "");
 
             if (bodyEnd < 0)
@@ -853,6 +873,7 @@ namespace DoxygenDB
             }
 
             m_doxyFileFolder = System.IO.Path.GetDirectoryName(fullPath);
+            m_doxyFileFolder = m_doxyFileFolder.Replace('\\', '/');
 
             _ReadDoxyfile(fullPath);
             m_dbFolder = m_metaDict["OUTPUT_DIRECTORY"][0];
@@ -860,6 +881,7 @@ namespace DoxygenDB
             m_dbFolder = m_dbFolder.Replace('\\', '/');
 
             _ReadIndex();
+            _ReadRefs();
         }
 
         public string GetDBPath()
