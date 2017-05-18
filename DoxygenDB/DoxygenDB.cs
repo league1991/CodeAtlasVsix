@@ -332,6 +332,7 @@ namespace DoxygenDB
             {
                 return m_xmlCache[filePath];
             }
+            // remove bad characters
             var rawContent = File.ReadAllText(filePath, Encoding.UTF8);
             var content = new string(rawContent.Where(c => !char.IsControl(c)).ToArray());
             var bytes = Encoding.UTF8.GetBytes(content);
@@ -890,7 +891,7 @@ namespace DoxygenDB
             m_dbFolder = m_dbFolder.Replace('\\', '/');
 
             _ReadIndex();
-            _ReadRefs();
+            //_ReadRefs();
         }
 
         public string GetDBPath()

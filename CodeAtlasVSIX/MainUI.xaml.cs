@@ -40,9 +40,13 @@ namespace CodeAtlasVSIX
         {
             // defaultPath = r'C:\Users\me\AppData\Roaming\Sublime Text 3\Packages\CodeAtlas\CodeAtlasSublime.udb'
             // defaultPath = 'I:/Programs/masteringOpenCV/Chapter3_MarkerlessAR/doc/xml/index.xml'
-            var defaultPath = "I:/Programs/mitsuba/Doxyfile";
-            // var defaultPath = "D:/Code/NewRapidRT/rapidrt/Doxyfile";
+            // var defaultPath = "I:/Programs/mitsuba/Doxyfile";
+            var defaultPath = "D:/Code/NewRapidRT/rapidrt/Doxyfile";
+
+            var newDownTime = DateTime.Now;
             DBManager.Instance().OpenDB(defaultPath);
+            double duration = (DateTime.Now - newDownTime).TotalSeconds;
+            Console.WriteLine("open time:" + duration.ToString());
         }
     }
 }

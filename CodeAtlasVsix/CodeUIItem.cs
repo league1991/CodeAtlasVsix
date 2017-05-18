@@ -14,6 +14,16 @@ namespace CodeAtlasVSIX
 {
     public class CodeUIItem : Shape
     {
+        class Variant
+        {
+            public Variant(string str) { m_string = str; }
+            public Variant(int val) { m_int = val; }
+            public Variant(double val) { m_double = val; }
+            public string m_string;
+            public int m_int;
+            public double m_double;
+        }
+
         public float m_radius = 10.0f;
         public int nCallers = 0;
         public int nCallees = 0;
@@ -25,7 +35,10 @@ namespace CodeAtlasVSIX
         Point m_targetPos = new Point();
         DateTime m_mouseDownTime = new DateTime();
         bool m_isSelected = false;
+        bool m_isHover = false;
         Point m_position = new Point();
+        int m_selectCounter = 0;
+        double m_selectTimeStamp = 0;
 
         string m_name = "";
         string m_displayName = "";
@@ -37,15 +50,12 @@ namespace CodeAtlasVSIX
         Size m_commentSize = new Size();
         int m_lineHeight = 0;
         bool m_isConnectedToFocusNode = false;
-        Dictionary<string, object> m_customData = new Dictionary<string, object>();
+        Dictionary<string, Variant> m_customData = new Dictionary<string, Variant>();
+        Color m_color = new Color();
 
         public CodeUIItem(string uniqueName)
         {
             m_uniqueName = uniqueName;
-            SolidColorBrush brush = new SolidColorBrush();
-            brush.Color = Color.FromArgb(255, 255, 255, 0);
-            this.Fill = brush;
-            this.Stroke = Brushes.Transparent;
             this.MouseDown += new MouseButtonEventHandler(MouseDownCallback);
             this.MouseUp += new MouseButtonEventHandler(MouseUpCallback);
             this.MouseMove += new MouseEventHandler(MouseMoveCallback);
@@ -85,10 +95,81 @@ namespace CodeAtlasVSIX
                 var calleeRefList = new List<DoxygenDB.Reference>();
                 dbObj.SearchRefEntity(out callerList, out callerRefList, m_uniqueName, "callby", "function, method", true);
                 dbObj.SearchRefEntity(out calleeList, out calleeRefList, m_uniqueName, "call", "function, method", true);
-                m_customData["nCaller"] = callerList.Count;
-                // TODO: Add more code
+                m_customData.Add("nCaller", new Variant(callerList.Count));
+                m_customData.Add("nCallee", new Variant(calleeList.Count));
+                m_customData.Add("callerR", new Variant(GetCallerRadius(callerList.Count)));
+                m_customData.Add("calleeR", new Variant(GetCallerRadius(calleeList.Count)));
             }
+            else if (kindStr.Contains("attribute") || kindStr.Contains("variable") ||
+                kindStr.Contains("object"))
+            {
+                m_kind = DoxygenDB.EntKind.VARIABLE;
+            }
+            else if (kindStr.Contains("class") || kindStr.Contains("struct"))
+            {
+                m_kind = DoxygenDB.EntKind.CLASS;
+            }
+            else
+            {
+                m_kind = DoxygenDB.EntKind.UNKNOWN;
+            }
+
+            if (m_kind == DoxygenDB.EntKind.FUNCTION || m_kind == DoxygenDB.EntKind.VARIABLE)
+            {
+                if (entity == null)
+                {
+                    m_color = Color.FromRgb(195, 195, 195);
+                }
+                else
+                {
+                    List<DoxygenDB.Entity> defineList;
+                    List<DoxygenDB.Reference> defineRefList;
+                    dbObj.SearchRefEntity(out defineList, out defineRefList, uniqueName, "definein");
+                    var name = "";
+                    var hasDefinition = true;
+                    if (defineList.Count == 0)
+                    {
+                        dbObj.SearchRefEntity(out defineList, out defineRefList, uniqueName, "declarein");
+                        hasDefinition = false;
+                    }
+                    m_customData.Add("hasDef", new Variant(hasDefinition ? 1 : 0));
+                    if (defineList.Count != 0)
+                    {
+                        var declareEnt = defineList[0];
+                        if (declareEnt.KindName().ToLower().Contains("class") ||
+                            declareEnt.KindName().ToLower().Contains("struct"))
+                        {
+                            name = declareEnt.Name();
+                            m_customData.Add("className", new Variant(name));
+                        }
+                    }
+                    m_color = NameToColor(name);
+                }
+            }
+            else if (m_kind == DoxygenDB.EntKind.CLASS)
+            {
+                m_color = NameToColor(m_name);
+            }
+
+            SolidColorBrush brush = new SolidColorBrush();
+            brush.Color = m_color;
+            this.Fill = brush;
+            this.Stroke = Brushes.Transparent;
             BuildGeometry();
+        }
+
+        public Color GetColor()
+        {
+            return m_color;
+        }
+
+        public string GetClassName()
+        {
+            if (m_kind == DoxygenDB.EntKind.CLASS)
+            {
+                return m_name;
+            }
+            return m_customData["className"].m_string;
         }
 
         void BuildDisplayName(string name)
@@ -99,6 +180,11 @@ namespace CodeAtlasVSIX
         void BuildCommentSize(string comment)
         {
 
+        }
+
+        double GetCallerRadius(int num)
+        {
+            return Math.Log((double)num + 1.0) * 5.0;
         }
 
         static public Color HSLToRGB(double H, double S, double L)
