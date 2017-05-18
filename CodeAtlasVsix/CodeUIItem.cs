@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,13 +25,12 @@ namespace CodeAtlasVSIX
             public int m_int;
             public double m_double;
         }
-
-        public float m_radius = 10.0f;
+        
         public int nCallers = 0;
         public int nCallees = 0;
 
         Nullable<Point> dragStart = null;
-        GeometryGroup geometry = null;
+        GeometryGroup m_geometry = null;
         string m_uniqueName = "";
         bool m_isDirty = false;
         Point m_targetPos = new Point();
@@ -48,7 +49,7 @@ namespace CodeAtlasVSIX
         static FontFamily s_titleFont = new FontFamily("tahoma");
         Size m_fontSize = new Size();
         Size m_commentSize = new Size();
-        int m_lineHeight = 0;
+        double m_lineHeight = 0.0;
         bool m_isConnectedToFocusNode = false;
         Dictionary<string, Variant> m_customData = new Dictionary<string, Variant>();
         Color m_color = new Color();
@@ -174,12 +175,59 @@ namespace CodeAtlasVSIX
 
         void BuildDisplayName(string name)
         {
+            string pattern = @"([A-Z]*[a-z0-9]*_*~*)";
+            var nameList = Regex.Matches(
+                name,
+                pattern,
+                RegexOptions.ExplicitCapture
+                );
 
+            var partLength = 0;
+            m_displayName = "";
+
+            foreach (Match nextMatch in nameList)
+            {
+                m_displayName += nextMatch.Value;
+                partLength += nextMatch.Value.Length;
+                if (partLength > 13)
+                {
+                    m_displayName += "\n";
+                    partLength = 0;
+                }
+            }
+            m_displayName = m_displayName.Trim();
+            int nLine = m_displayName.Count(f => f == '\n') + 1;
+
+            var formattedText = new FormattedText(m_displayName,
+                                                    CultureInfo.CurrentUICulture,
+                                                    FlowDirection.LeftToRight,
+                                                    new Typeface("tahoma"),
+                                                    8.0,
+                                                    Brushes.Black);
+            m_fontSize = new Size(formattedText.Width, formattedText.Height);
+            m_lineHeight = formattedText.LineHeight;
         }
 
         void BuildCommentSize(string comment)
         {
+            if (comment == "")
+            {
+                m_commentSize = new Size();
+            }
 
+            var formattedText = new FormattedText(comment,
+                                                    CultureInfo.CurrentUICulture,
+                                                    FlowDirection.LeftToRight,
+                                                    new Typeface("tahoma"),
+                                                    8.0,
+                                                    Brushes.Black);
+            var lines = (int)(formattedText.Width / 100.0);
+            m_commentSize = new Size(100, (formattedText.LineHeight * lines - formattedText.OverhangLeading));
+        }
+
+        public bool isFunction()
+        {
+            return m_kind == DoxygenDB.EntKind.FUNCTION;
         }
 
         double GetCallerRadius(int num)
@@ -255,7 +303,8 @@ namespace CodeAtlasVSIX
 
         static Color NameToColor(string name)
         {
-            uint hashVal = (uint)name.GetHashCode() & 0xffffffff;
+            uint hashVal = (uint)name.GetHashCode();
+            hashVal = (hashVal * hashVal) & 0xffffffff;
             var h = (hashVal & 0xff) / 255.0;
             var s = ((hashVal >> 8) & 0xff) / 255.0;
             var l = ((hashVal >> 16) & 0xff) / 255.0;
@@ -361,12 +410,65 @@ namespace CodeAtlasVSIX
         public double GetRadius()
         {
             // TODO: more code
-            return m_radius;
+            var r = 8.0;
+            if (m_kind != DoxygenDB.EntKind.VARIABLE)
+            {
+                r = Math.Pow((double)(m_lines + 1), 0.3) * 5.0;
+            }
+            if (isFunction())
+            {
+                r = Math.Max(r, m_customData["callerR"].m_double * 0.4);
+                r = Math.Max(r, m_customData["calleeR"].m_double * 0.4);
+            }
+            return r;
+        }
+
+        public double GetBodyRadius()
+        {
+            double r = 8.0;
+            if (m_kind != DoxygenDB.EntKind.VARIABLE)
+            {
+                r = Math.Pow((double)(m_lines + 1), 0.3) * 5.0;
+            }
+            return r;
+        }
+
+        public double GetHeight()
+        {
+            double h = (m_fontSize.Height + m_commentSize.Height) * 1.67;
+            return h;
+        }
+
+        public Point GetLeftSlotPos()
+        {
+            var l = GetBodyRadius();
+            if (isFunction())
+            {
+                l += m_customData["callerR"].m_double;
+            }
+            var pos = Pos;
+            return new Point(pos.X - l, pos.Y);
+        }
+
+        public Point GetRightSlotPos()
+        {
+            var l = GetBodyRadius();
+            if (isFunction())
+            {
+                l += m_customData["calleeR"].m_double;
+            }
+            var pos = Pos;
+            return new Point(pos.X + l, pos.Y);
         }
 
         public void SetTargetPos(Point point)
         {
             m_targetPos = point;
+        }
+
+        public Vector DispToTarget()
+        {
+            return m_targetPos - Pos;
         }
 
         public void MoveToTarget(double ratio)
@@ -376,6 +478,21 @@ namespace CodeAtlasVSIX
             pntX = pntX * (1.0 - ratio) + m_targetPos.X * ratio;
             pntY = pntY * (1.0 - ratio) + m_targetPos.Y * ratio;
             Pos = new Point(pntX, pntY);
+        }
+
+        public DoxygenDB.EntKind GetKind()
+        {
+            return m_kind;
+        }
+
+        public string GetUniqueName()
+        {
+            return m_uniqueName;
+        }
+
+        public DoxygenDB.Entity GetEntity()
+        {
+            return DBManager.Instance().GetDB().SearchFromUniqueName(m_uniqueName);
         }
 
         UIElement GetCanvas()
@@ -458,17 +575,77 @@ namespace CodeAtlasVSIX
 
         void BuildGeometry()
         {
-            EllipseGeometry circle = new EllipseGeometry(new Point(0.0, 0.0), m_radius, m_radius);
+            m_geometry = new GeometryGroup();
+            var r = GetBodyRadius();
 
-            geometry = new GeometryGroup();
-            geometry.Children.Add(circle);
+            if (isFunction())
+            {
+                Geometry circle = new EllipseGeometry(new Point(0.0, 0.0), r, r);
+                if (m_lines == 0 || m_customData["hasDef"].m_int == 0)
+                {
+                    var innerCircle = new EllipseGeometry(new Point(0.0, 0.0), 2.5, 2.5);
+                    circle = Geometry.Combine(circle, innerCircle, GeometryCombineMode.Exclude, null);
+                }
+                m_geometry.Children.Add(circle);
+
+                var cosRadian = Math.Cos(20.0 / 180.0 * Math.PI);
+                var sinRadian = Math.Sin(20.0 / 180.0 * Math.PI);
+
+                var r0 = r + 1.0;
+                if (m_customData["nCaller"].m_int > 0)
+                {
+                    var cr = m_customData["callerR"].m_double;
+                    
+                    var figure = new PathFigure();
+                    figure.StartPoint = new Point(-r0, 0);
+                    figure.Segments.Add(new LineSegment(new Point(-r0 - cr * cosRadian, cr * sinRadian), true));
+                    //figure.Segments.Add(new LineSegment(new Point(-r0 - cr * cosRadian, -sinRadian), true));
+                    figure.Segments.Add(new ArcSegment(new Point(-r0 - cr * cosRadian, cr * -sinRadian), new Size(cr, cr), 0.0, false, SweepDirection.Clockwise, true));
+                    figure.IsClosed = true;
+                    figure.IsFilled = true;
+                    var pathGeo = new PathGeometry();
+                    pathGeo.Figures.Add(figure);
+                    m_geometry.Children.Add(pathGeo);
+                }
+                if (m_customData["nCallee"].m_int > 0)
+                {
+                    var cr = m_customData["calleeR"].m_double;
+
+                    var figure = new PathFigure();
+                    figure.StartPoint = new Point(r0, 0);
+                    figure.Segments.Add(new LineSegment(new Point(r0 + cr * cosRadian, cr * sinRadian), true));
+                    figure.Segments.Add(new ArcSegment(new Point(r0 + cr * cosRadian, cr * -sinRadian), new Size(cr, cr), 0.0, false, SweepDirection.Counterclockwise, true));
+                    figure.IsClosed = true;
+                    figure.IsFilled = true;
+                    var pathGeo = new PathGeometry();
+                    pathGeo.Figures.Add(figure);
+                    m_geometry.Children.Add(pathGeo);
+                }
+            }
+            else if (m_kind == DoxygenDB.EntKind.VARIABLE)
+            {
+                var figure = new PathFigure();
+                figure.StartPoint = new Point(-r, 0.0);
+                figure.Segments.Add(new LineSegment(new Point(r, r), true));
+                figure.Segments.Add(new LineSegment(new Point(r, -r), true));
+                figure.IsClosed = true;
+                figure.IsFilled = true;
+                var pathGeo = new PathGeometry();
+                pathGeo.Figures.Add(figure);
+                m_geometry.Children.Add(pathGeo);
+            }
+            else if(m_kind == DoxygenDB.EntKind.CLASS)
+            {
+                var rect = new RectangleGeometry(new Rect(new Point(-r, -r), new Point(r, r)));
+                m_geometry.Children.Add(rect);
+            }
         }
 
         protected override Geometry DefiningGeometry
         {
             get
             {
-                return geometry;
+                return m_geometry;
             }
         }
     }

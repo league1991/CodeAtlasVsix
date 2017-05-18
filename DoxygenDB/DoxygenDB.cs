@@ -1052,7 +1052,7 @@ namespace DoxygenDB
                 {
                     continue;
                 }
-                if (entKindList.Count > 0 && entKindList.Contains(otherItem.m_kind))
+                if (entKindList.Count > 0 && !entKindList.Contains(otherItem.m_kind))
                 {
                     continue;
                 }
@@ -1094,7 +1094,7 @@ namespace DoxygenDB
                             isAccepted = true;
                         }
                     }
-                    else if (refKind == RefKind.DEFINE && refObj.m_kind == RefKind.MEMBER)
+                    else if (refKind == RefKind.DEFINE || refObj.m_kind == RefKind.MEMBER)
                     {
                         isAccepted = true;
                         file = dstMetric["file"].m_string;
