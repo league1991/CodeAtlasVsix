@@ -136,12 +136,15 @@ namespace CodeAtlasVSIX
                     m_customData.Add("hasDef", new Variant(hasDefinition ? 1 : 0));
                     if (defineList.Count != 0)
                     {
-                        var declareEnt = defineList[0];
-                        if (declareEnt.KindName().ToLower().Contains("class") ||
-                            declareEnt.KindName().ToLower().Contains("struct"))
+                        foreach (var defineEnt in defineList)
                         {
-                            name = declareEnt.Name();
-                            m_customData.Add("className", new Variant(name));
+                            if (defineEnt.KindName().ToLower().Contains("class") ||
+                                defineEnt.KindName().ToLower().Contains("struct"))
+                            {
+                                name = defineEnt.Name();
+                                m_customData.Add("className", new Variant(name));
+                                break;
+                            }
                         }
                     }
                     m_color = NameToColor(name);
@@ -304,7 +307,6 @@ namespace CodeAtlasVSIX
         static Color NameToColor(string name)
         {
             uint hashVal = (uint)name.GetHashCode();
-            hashVal = (hashVal * hashVal) & 0xffffffff;
             var h = (hashVal & 0xff) / 255.0;
             var s = ((hashVal >> 8) & 0xff) / 255.0;
             var l = ((hashVal >> 16) & 0xff) / 255.0;

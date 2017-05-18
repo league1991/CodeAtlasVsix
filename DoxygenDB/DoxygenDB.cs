@@ -125,6 +125,7 @@ namespace DoxygenDB
             {"use"             , new Tuple<RefKind, bool>(RefKind.USE,      false)},
             {"useby"           , new Tuple<RefKind, bool>(RefKind.USE,      true)},
             {"member"          , new Tuple<RefKind, bool>(RefKind.MEMBER,   false)},
+            {"memberin"        , new Tuple<RefKind, bool>(RefKind.MEMBER,   true)},
             {"declare"         , new Tuple<RefKind, bool>(RefKind.DECLARE,  false)},
             {"define"          , new Tuple<RefKind, bool>(RefKind.DEFINE,   false)},
             {"declarein"       , new Tuple<RefKind, bool>(RefKind.DECLARE,  true)},
@@ -341,7 +342,7 @@ namespace DoxygenDB
             //var xmlSetting = new XmlReaderSettings();
             //xmlSetting.CheckCharacters = false;
             //var xmlDoc = new XPathDocument(XmlReader.Create(filePath, xmlSetting));
-            //var xmlDoc1 = new XPathDocument(filePath);
+            //var xmlDoc = new XPathDocument(filePath);
             var xmlDocItem = new XmlDocItem(xmlDoc);
             m_xmlCache[filePath] = xmlDocItem;
             return xmlDocItem;
@@ -891,7 +892,7 @@ namespace DoxygenDB
             m_dbFolder = m_dbFolder.Replace('\\', '/');
 
             _ReadIndex();
-            //_ReadRefs();
+            _ReadRefs();
         }
 
         public string GetDBPath()
@@ -1094,7 +1095,7 @@ namespace DoxygenDB
                             isAccepted = true;
                         }
                     }
-                    else if (refKind == RefKind.DEFINE || refObj.m_kind == RefKind.MEMBER)
+                    else if (refKind == RefKind.DEFINE && refObj.m_kind == RefKind.MEMBER)
                     {
                         isAccepted = true;
                         file = dstMetric["file"].m_string;
