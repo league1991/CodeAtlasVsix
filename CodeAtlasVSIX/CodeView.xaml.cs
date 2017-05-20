@@ -19,8 +19,20 @@ namespace CodeAtlasVSIX
             InitializeComponent();
             var scene = UIManager.Instance().GetScene();
             scene.View = this;
+            this.KeyDown += CodeView_KeyDown;
+            this.PreviewKeyDown += CodeView_PreviewKeyDown;
         }
-        
+
+        private void CodeView_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            System.Console.WriteLine("codeview preview down", e.ToString());
+        }
+
+        private void CodeView_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            System.Console.WriteLine("codeview down", e.ToString());
+        }
+
         private void testButton_Click(object sender, RoutedEventArgs e)
         {
             // this.canvas.Children.Add(new CodeUIItem());
@@ -112,6 +124,17 @@ namespace CodeAtlasVSIX
 
         private void background_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
+
+        }
+
+        private void background_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            System.Console.WriteLine("background down", e.ToString());
+        }
+
+        private void background_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            System.Console.WriteLine("preview background down", e.ToString());
 
         }
     }

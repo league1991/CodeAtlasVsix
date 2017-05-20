@@ -117,6 +117,26 @@ namespace CodeAtlasVSIX
                 item.Value.IsSelected = false;
             }
         }
+        
+        public List<CodeUIItem> SelectedNodes()
+        {
+            var items = new List<CodeUIItem>();
+            foreach (var item in m_itemDict)
+            {
+                items.Add(item.Value);
+            }
+            return items;
+        }
+
+        public List<CodeUIEdgeItem> SelectedEdges()
+        {
+            var items = new List<CodeUIEdgeItem>();
+            foreach (var item in m_edgeDict)
+            {
+                items.Add(item.Value);
+            }
+            return items;
+        }
         #endregion
 
         public void MoveItems()
@@ -293,6 +313,88 @@ namespace CodeAtlasVSIX
             _DoDeleteCodeItem(uniqueName);
             RemoveItemLRU();
             m_isLayoutDirty = true;
+            ReleaseLock();
+        }
+        #endregion
+
+        #region Add references
+        List<string> _AddRefs(string refStr, string entStr, bool inverseEdge = false, int maxCount = -1)
+        {
+            var dbObj = DBManager.Instance().GetDB();
+            var itemList = SelectedNodes();
+
+            var refNameList = new List<string>();
+            foreach (var item in itemList)
+            {
+                var uniqueName = item.GetUniqueName();
+                var entList = new List<DoxygenDB.Entity>();
+                var refList = new List<DoxygenDB.Reference>();
+
+                // Add to candidate
+                var candidateList = new List<Tuple<string, DoxygenDB.Reference, int>>();
+                for (int i = 0; i < entList.Count; i++)
+                {
+                    var entObj = entList[i];
+                    var refObj = refList[i];
+                    var entName = entObj.UniqueName();
+                    // Get lines
+                    var metricRes = entObj.Metric();
+                    DoxygenDB.Variant metricLine;
+                    int line;
+                    if (metricRes.TryGetValue("CountLine", out metricLine))
+                    {
+                        line = metricLine.m_int;
+                    }
+                    else
+                    {
+                        line = 0;
+                    }
+                    candidateList.Add(new Tuple<string, DoxygenDB.Reference, int>(entName, refObj, line));
+                }
+
+                // Sort candidate
+                if (maxCount > 0)
+                {
+                    candidateList.Sort((x, y) => -x.Item3.CompareTo(y.Item3));
+                }
+
+                var addedList = new List<string>();
+                for (int ithCan = 0; ithCan < candidateList.Count; ithCan++)
+                {
+                    var candidate = candidateList[ithCan];
+                    var canEntName = candidate.Item1;
+                    var canRefObj = candidate.Item2;
+
+                    bool res = _DoAddCodeItem(canEntName);
+                    if (res)
+                    {
+                        addedList.Add(canEntName);
+                    }
+                    if (inverseEdge)
+                    {
+                        _DoAddCodeEdgeItem(uniqueName, canEntName, new Dictionary<string, object> { { "dbRef", canRefObj } });
+                    }
+                    else
+                    {
+                        _DoAddCodeEdgeItem(canEntName, uniqueName, new Dictionary<string, object> { { "dbRef", canRefObj } });
+                    }
+
+                    if (maxCount > 0 && addedList.Count >= maxCount)
+                    {
+                        break;
+                    }
+                }
+                refNameList.AddRange(addedList);
+            }
+            return refNameList;
+        }
+
+        public void AddRefs(string refStr, string entStr, bool inverseEdge = false, int maxCount = -1)
+        {
+            AcquireLock();
+            var refNameList = _AddRefs(refStr, entStr, inverseEdge, maxCount);
+            UpdateLRU(refNameList);
+            RemoveItemLRU();
             ReleaseLock();
         }
         #endregion

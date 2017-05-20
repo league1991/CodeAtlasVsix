@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-        x:Name="background" Background="#FF514947" Margin="0" MouseWheel="canvas_MouseWheel" ClipToBounds="True" MouseDown="background_MouseDown" MouseEnter="background_MouseEnter" MouseLeave="background_MouseLeave">
+        x:Name="background" Background="#FF514947" Margin="0" MouseWheel="canvas_MouseWheel" ClipToBounds="True" MouseDown="background_MouseDown" MouseEnter="background_MouseEnter" MouseLeave="background_MouseLeave" KeyDown="background_KeyDown" PreviewKeyDown="background_PreviewKeyDown" Focusable="True">
     <Canvas x:Name="canvas">
         <Canvas.RenderTransform>
             <MatrixTransform/>
