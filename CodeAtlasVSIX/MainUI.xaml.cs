@@ -20,9 +20,39 @@ namespace CodeAtlasVSIX
     /// </summary>
     public partial class MainUI : DockPanel
     {
+        List<KeyBinding> m_keyCommands = new List<KeyBinding>();
+
         public MainUI()
         {
             InitializeComponent();
+
+            AddCommand(OnFindCallers, Key.C);
+            AddCommand(OnFindCallees, Key.V);
+            AddCommand(OnFindMembers, Key.M);
+            AddCommand(OnFindOverrides, Key.O);
+            AddCommand(OnFindBases, Key.B);
+            AddCommand(OnFindUses, Key.U);
+        }
+
+        public void AddCommand(ExecutedRoutedEventHandler callback, Key key, ModifierKeys modifier = ModifierKeys.Alt)
+        {
+            CommandBinding cmd = new CommandBinding();
+            cmd.Command = ApplicationCommands.New;
+
+            cmd.Executed += callback;
+            cmd.CanExecute += new CanExecuteRoutedEventHandler(_AlwaysCanExecute);
+            this.CommandBindings.Add(cmd);
+            KeyBinding CmdKey = new KeyBinding();
+            CmdKey.Key = key;
+            CmdKey.Modifiers = modifier;
+            CmdKey.Command = cmd.Command;
+            this.InputBindings.Add(CmdKey);
+            m_keyCommands.Add(CmdKey);
+        }
+
+        private void _AlwaysCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
         }
 
         private void OpenButton_Click(object sender, RoutedEventArgs e)
@@ -40,8 +70,8 @@ namespace CodeAtlasVSIX
         {
             // defaultPath = r"C:\Users\me\AppData\Roaming\Sublime Text 3\Packages\CodeAtlas\CodeAtlasSublime.udb"
             // defaultPath = "I:/Programs/masteringOpenCV/Chapter3_MarkerlessAR/doc/xml/index.xml"
-            // var defaultPath = "I:/Programs/mitsuba/Doxyfile";
-            var defaultPath = "D:/Code/NewRapidRT/rapidrt/Doxyfile";
+            var defaultPath = "I:/Programs/mitsuba/Doxyfile";
+            //var defaultPath = "D:/Code/NewRapidRT/rapidrt/Doxyfile";
 
             var newDownTime = DateTime.Now;
             DBManager.Instance().OpenDB(defaultPath);
@@ -52,58 +82,40 @@ namespace CodeAtlasVSIX
         #region Find References
         void _FindRefs(string refStr, string entStr, bool inverseEdge = false, int maxCount = -1)
         {
+            System.Console.WriteLine("FindRef: " + refStr + " " + entStr);
             var scene = UIManager.Instance().GetScene();
             scene.AddRefs(refStr, entStr, inverseEdge, maxCount);
         }
 
-        public void OnFindCallers()
+        public void OnFindCallers(object sender, ExecutedRoutedEventArgs e)
         {
             _FindRefs("callby", "function, method");
         }
-        public void OnFindCallees()
+        public void OnFindCallees(object sender, ExecutedRoutedEventArgs e)
         {
             _FindRefs("call", "function, method", true);
         }
-        public void OnFindMembers()
+        public void OnFindMembers(object sender, ExecutedRoutedEventArgs e)
         {
             _FindRefs("declare,define", "variable, object", true, 1);
             _FindRefs("declare,define", "function", true, 1);
             _FindRefs("declarein,definein", "function,class", false);
         }
-
-        public void OnFindOverrides()
+        public void OnFindOverrides(object sender, ExecutedRoutedEventArgs e)
         {
             _FindRefs("overrides", "function, method", false);
             _FindRefs("overriddenby", "function, method", true);
         }
-
-        public void OnFindBases()
+        public void OnFindBases(object sender, ExecutedRoutedEventArgs e)
         {
             _FindRefs("base", "class,struct", false);
             _FindRefs("derive", "class,struct", true);
         }
-
-        public void OnFindUses()
+        public void OnFindUses(object sender, ExecutedRoutedEventArgs e)
         {
             _FindRefs("useby", "function, method, class, struct", false);
             _FindRefs("use", "variable,object", true);
         }
-
         #endregion
-
-        private void DockPanel_KeyDown(object sender, KeyEventArgs e)
-        {
-            System.Console.WriteLine("keyDown" + e.ToString());
-        }
-
-        private void CodeView_KeyDown(object sender, KeyEventArgs e)
-        {
-            System.Console.WriteLine("keyDown view" + e.ToString());
-        }
-
-        private void DockPanel_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            System.Console.WriteLine("preview keyDown view" + e.ToString());
-        }
     }
 }

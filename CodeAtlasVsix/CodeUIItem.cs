@@ -228,7 +228,7 @@ namespace CodeAtlasVSIX
             m_commentSize = new Size(100, (formattedText.LineHeight * lines - formattedText.OverhangLeading));
         }
 
-        public bool isFunction()
+        public bool IsFunction()
         {
             return m_kind == DoxygenDB.EntKind.FUNCTION;
         }
@@ -417,7 +417,7 @@ namespace CodeAtlasVSIX
             {
                 r = Math.Pow((double)(m_lines + 1), 0.3) * 5.0;
             }
-            if (isFunction())
+            if (IsFunction())
             {
                 r = Math.Max(r, m_customData["callerR"].m_double * 0.4);
                 r = Math.Max(r, m_customData["calleeR"].m_double * 0.4);
@@ -444,7 +444,7 @@ namespace CodeAtlasVSIX
         public Point GetLeftSlotPos()
         {
             var l = GetBodyRadius();
-            if (isFunction())
+            if (IsFunction())
             {
                 l += m_customData["callerR"].m_double;
             }
@@ -455,7 +455,7 @@ namespace CodeAtlasVSIX
         public Point GetRightSlotPos()
         {
             var l = GetBodyRadius();
-            if (isFunction())
+            if (IsFunction())
             {
                 l += m_customData["calleeR"].m_double;
             }
@@ -580,7 +580,7 @@ namespace CodeAtlasVSIX
             m_geometry = new GeometryGroup();
             var r = GetBodyRadius();
 
-            if (isFunction())
+            if (IsFunction())
             {
                 Geometry circle = new EllipseGeometry(new Point(0.0, 0.0), r, r);
                 if (m_lines == 0 || m_customData["hasDef"].m_int == 0)

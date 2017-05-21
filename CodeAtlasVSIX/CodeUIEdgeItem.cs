@@ -12,14 +12,27 @@ using System.Windows.Threading;
 
 namespace CodeAtlasVSIX
 {
+    public class OrderData
+    {
+        public int m_order;
+        public Point m_point;
+        public OrderData(int order, Point point)
+        {
+            m_order = order;
+            m_point = point;
+        }
+    }
+
     public class CodeUIEdgeItem: Shape
     {
-        string m_srcUniqueName;
-        string m_tarUniqueName;
+        public string m_srcUniqueName;
+        public string m_tarUniqueName;
         PathGeometry m_geometry = new PathGeometry();
         bool m_isDirty = false;
         bool m_isSelected = false;
         DateTime m_mouseDownTime = new DateTime();
+        public OrderData m_orderData = null;
+        Point m_p0, m_p1, m_p2, m_p3;
 
         public CodeUIEdgeItem(string srcName, string tarName)
         {
@@ -37,6 +50,84 @@ namespace CodeAtlasVSIX
             this.Fill = Brushes.Transparent;
             this.Stroke = brush;
             BuildGeometry();
+        }
+
+        Point CalculateBezierPoint(double t, Point p1, Point p2, Point p3, Point p4)
+        {
+            Point p = new Point();
+            double tPower3 = t * t * t;
+            double tPower2 = t * t;
+            double oneMinusT = 1 - t;
+            double oneMinusTPower3 = oneMinusT * oneMinusT * oneMinusT;
+            double oneMinusTPower2 = oneMinusT * oneMinusT;
+            p.X = oneMinusTPower3 * p1.X + (3 * oneMinusTPower2 * t * p2.X) + (3 * oneMinusT * tPower2 * p3.X) + tPower3 * p4.X;
+            p.Y = oneMinusTPower3 * p1.Y + (3 * oneMinusTPower2 * t * p2.Y) + (3 * oneMinusT * tPower2 * p3.Y) + tPower3 * p4.Y;
+            return p;
+        }
+
+        public Point PointAtPercent(double t)
+        {
+            return CalculateBezierPoint(t, m_p0, m_p1, m_p2, m_p3);
+        }
+
+        public Point GetMiddlePos()
+        {
+            var scene = UIManager.Instance().GetScene();
+            var srcNode = scene.GetNode(m_srcUniqueName);
+            var tarNode = scene.GetNode(m_tarUniqueName);
+            if (srcNode == null || tarNode == null)
+            {
+                return new Point();
+            }
+            var srcPnt = srcNode.Pos;
+            var tarPnt = tarNode.Pos;
+            return srcPnt + (tarPnt - srcPnt) * 0.5;
+        }
+
+        public void GetNodePos(out Point srcPos, out Point tarPos)
+        {
+            var scene = UIManager.Instance().GetScene();
+            var srcNode = scene.GetNode(m_srcUniqueName);
+            var tarNode = scene.GetNode(m_tarUniqueName);
+            if (srcNode == null || tarNode == null)
+            {
+                srcPos = tarPos = new Point();
+            }
+            srcPos = srcNode.Pos;
+            tarPos = tarNode.Pos;
+        }
+
+        public double FindCurveYPos(double x)
+        {
+            var sign = 1.0;
+            if (m_p3.X < m_p0.X)
+            {
+                sign = -1.0;
+            }
+            var minT = 0.0;
+            var maxT = 1.0;
+            var minPnt = PointAtPercent(minT);
+            var maxPnt = PointAtPercent(maxT);
+            for (int i = 0; i < 8; i++)
+            {
+                var midT = (minT + maxT) * 0.5;
+                var midPnt = PointAtPercent(midT);
+                if ((midPnt.X - x) * sign < 0.0)
+                {
+                    minT = midT;
+                    minPnt = midPnt;
+                }
+                else
+                {
+                    maxT = midT;
+                    maxPnt = midPnt;
+                }
+                if (Math.Abs(minPnt.Y - maxPnt.Y) < 0.01)
+                {
+                    break;
+                }
+            }
+            return (minPnt.Y + maxPnt.Y) * 0.5;
         }
 
         public bool IsDirty
@@ -147,6 +238,11 @@ namespace CodeAtlasVSIX
             //this.EndPoint = tarNode.Pos();
         }
 
+        public int GetCallOrder()
+        {
+            return 0;
+        }
+
         public void Invalidate()
         {
             var scene = UIManager.Instance().GetScene();
@@ -182,14 +278,14 @@ namespace CodeAtlasVSIX
                 var scene = UIManager.Instance().GetScene();
                 var srcNode = scene.GetNode(m_srcUniqueName);
                 var tarNode = scene.GetNode(m_tarUniqueName);
-                var srcPosition = srcNode.Pos;
-                var tarPosition = tarNode.Pos;
-                var srcCtrlPnt = new Point(srcPosition.X * 0.4 + tarPosition.X * 0.6, srcPosition.Y);
-                var tarCtrlPnt = new Point(srcPosition.X * 0.6 + tarPosition.X * 0.4, tarPosition.Y);
+                m_p0 = srcNode.Pos;
+                m_p3 = tarNode.Pos;
+                m_p1 = new Point(m_p0.X * 0.4 + m_p3.X * 0.6, m_p0.Y);
+                m_p2 = new Point(m_p0.X * 0.6 + m_p3.X * 0.4, m_p3.Y);
 
-                var segment = new BezierSegment(srcCtrlPnt, tarCtrlPnt, tarPosition, true);
+                var segment = new BezierSegment(m_p1, m_p2, m_p3, true);
                 var figure = new PathFigure();
-                figure.StartPoint = srcPosition;
+                figure.StartPoint = m_p0;
                 figure.Segments.Add(segment);
                 figure.IsClosed = false;
                 m_geometry = new PathGeometry();

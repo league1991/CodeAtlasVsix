@@ -9,19 +9,24 @@ namespace CodeAtlasVSIX
     using EdgeKey = Tuple<string, string>;
     using ItemDict = Dictionary<string, CodeUIItem>;
     using EdgeDict = Dictionary<Tuple<string, string>, CodeUIEdgeItem>;
+    using StopDict = Dictionary<string, string>;
     using System.Threading;
     using System.Windows.Data;
     using System.Windows.Controls;
     using System.Windows;
+    using System.Windows.Shapes;
 
     public class CodeScene
     {
         ItemDict m_itemDict = new ItemDict();
         EdgeDict m_edgeDict = new EdgeDict();
+        StopDict m_stopItem = new StopDict();
         CodeView m_view = null;
         SceneUpdateThread m_updateThread = null;
         object m_lockObj = new object();
         public bool m_isLayoutDirty = false;
+        bool m_isSourceCandidate = true;
+        List<EdgeKey> m_candidateEdge = new List<EdgeKey>();
 
         List<string> m_itemLruQueue = new List<string>();
         int m_lruMaxLength = 20;
@@ -123,7 +128,10 @@ namespace CodeAtlasVSIX
             var items = new List<CodeUIItem>();
             foreach (var item in m_itemDict)
             {
-                items.Add(item.Value);
+                if (item.Value.IsSelected)
+                {
+                    items.Add(item.Value);
+                }
             }
             return items;
         }
@@ -133,9 +141,428 @@ namespace CodeAtlasVSIX
             var items = new List<CodeUIEdgeItem>();
             foreach (var item in m_edgeDict)
             {
-                items.Add(item.Value);
+                if (item.Value.IsSelected)
+                {
+                    items.Add(item.Value);
+                }
             }
             return items;
+        }
+
+        public List<Shape> SelectedItems()
+        {
+            var items = new List<Shape>();
+            foreach (var item in m_itemDict)
+            {
+                if (item.Value.IsSelected)
+                {
+                    items.Add(item.Value);
+                }
+            }
+            foreach (var item in m_edgeDict)
+            {
+                if (item.Value.IsSelected)
+                {
+                    items.Add(item.Value);
+                }
+            }
+            return items;
+        }
+
+        public bool SelectOneItem(Shape item)
+        {
+            var node = item as CodeUIItem;
+            var edge = item as CodeUIEdgeItem;
+            if (node != null)
+            {
+                node.IsSelected = true;
+                return true;
+            }
+            else if (edge != null)
+            {
+                edge.IsSelected = true;
+                return false;
+            }
+            return false;
+        }
+
+        public bool SelectOneEdge(CodeUIEdgeItem edge)
+        {
+            edge.IsSelected = true;
+            return true;
+        }
+
+        public bool SelectNearestItem(Point pos)
+        {
+            double minDist = 1e12;
+            CodeUIItem minItem = null;
+            foreach (var pair in m_itemDict)
+            {
+                var dPos = pair.Value.Pos - pos;
+                double dist = dPos.LengthSquared;
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    minItem = pair.Value;
+                }
+            }
+
+            if (minItem != null)
+            {
+                return SelectOneItem(minItem);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        #endregion
+
+        #region 
+
+        public void FindNeighbour(Vector mainDirection)
+        {
+            var itemList = SelectedItems();
+            if (itemList.Count == 0)
+            {
+                return;
+            }
+            var centerItem = itemList[0];
+            var centerNode = centerItem as CodeUIItem;
+            var centerEdge = centerItem as CodeUIEdgeItem;
+            Shape minItem = null;
+            if (centerNode != null)
+            {
+                minItem = FindNeighbourForNode(centerNode, mainDirection);
+            }
+            else if (centerEdge != null)
+            {
+                minItem = FindNeighbourForEdge(centerEdge, mainDirection);
+            }
+
+            if (minItem == null)
+            {
+                return;
+            }
+
+            SelectOneItem(minItem);
+        }
+
+        public Shape FindNeighbourForEdge(CodeUIEdgeItem centerItem, Vector mainDirection)
+        {
+            if (m_isSourceCandidate && centerItem.m_orderData != null && Math.Abs(mainDirection.Y) > 0.8)
+            {
+                var srcItem = m_itemDict[centerItem.m_srcUniqueName];
+                var tarItem = m_itemDict[centerItem.m_tarUniqueName];
+                if (srcItem != null && tarItem != null && srcItem.IsFunction() && tarItem.IsFunction())
+                {
+                    var tarOrder = centerItem.m_orderData.m_order - 1;
+                    if (mainDirection.Y > 0)
+                    {
+                        tarOrder = centerItem.m_orderData.m_order + 1;
+                    }
+                    foreach (var edgePair in m_candidateEdge)
+                    {
+                        if (m_edgeDict.ContainsKey(edgePair))
+                        {
+                            var edge = m_edgeDict[edgePair];
+                            if (edge.m_srcUniqueName == centerItem.m_srcUniqueName &&
+                                edge.m_orderData != null && edge.m_orderData.m_order == tarOrder)
+                            {
+                                return edge;
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
+
+            var srcNode = GetNode(centerItem.m_srcUniqueName);
+            var tarNode = GetNode(centerItem.m_tarUniqueName);
+            var nCommonIn = 0;
+            var nCommonOut = 0;
+            foreach (var edgeKey in m_candidateEdge)
+            {
+                if (edgeKey.Item1 == centerItem.m_srcUniqueName)
+                {
+                    nCommonIn++;
+                }
+                if (edgeKey.Item2 == centerItem.m_tarUniqueName)
+                {
+                    nCommonOut++;
+                }
+            }
+
+            double percent = 0.5;
+            if (m_isSourceCandidate)
+            {
+                percent = 0.3;
+            }
+            else
+            {
+                percent = 0.7;
+            }
+            var centerPos = centerItem.PointAtPercent(percent);
+
+            Point srcPos, tarPos;
+            centerItem.GetNodePos(out srcPos, out tarPos);
+            var edgeDir = tarPos - srcPos;
+            edgeDir.Normalize();
+            var proj = Vector.Multiply(mainDirection, edgeDir);
+
+            if (Math.Abs(mainDirection.X) > 0.8)
+            {
+                if (proj > 0.0 && tarNode != null)
+                {
+                    return tarNode;
+                }
+                else if (proj < 0.0 && srcNode != null)
+                {
+                    return srcNode;
+                }
+            }
+
+            // Find nearest edge
+            var minEdgeVal = 1e12;
+            CodeUIEdgeItem minEdge = null;
+            var centerKey = new EdgeKey(centerItem.m_srcUniqueName, centerItem.m_tarUniqueName);
+            foreach (var edgeKey in m_candidateEdge)
+            {
+                CodeUIEdgeItem item = null;
+                if (!m_edgeDict.TryGetValue(edgeKey, out item))
+                {
+                    continue;
+                }
+                if (item == centerItem )
+                {
+                    continue;
+                }
+
+                bool isEdgeKey0InCenterKey = edgeKey.Item1 == centerKey.Item1 || edgeKey.Item1 == centerKey.Item2;
+                bool isEdgeKey1InCenterKey = edgeKey.Item2 == centerKey.Item1 || edgeKey.Item2 == centerKey.Item2;
+                if (!(isEdgeKey0InCenterKey || isEdgeKey1InCenterKey))
+                {
+                    continue;
+                }
+                var y = item.FindCurveYPos(centerPos.X);
+                var dPos = new Point(centerPos.X, y) - centerPos;
+                var cosVal = Vector.Multiply(dPos, mainDirection) / (dPos.Length + 1e-5);
+                if (cosVal < 0.0)
+                {
+                    continue;
+                }
+
+                var xProj = dPos.X * mainDirection.X + dPos.Y * mainDirection.Y;
+                var yProj = dPos.X * mainDirection.Y - dPos.Y * mainDirection.X;
+
+                xProj /= 2.0;
+                var dist = xProj * xProj + yProj * yProj;
+                if (dist < minEdgeVal)
+                {
+                    minEdgeVal = dist;
+                    minEdge = item;
+                }
+            }
+
+            if (minEdge != null)
+            {
+                return minEdge;
+            }
+
+            // Find nearest node
+            var minNodeValConnected = 1e12;
+            CodeUIItem minNodeConnected = null;
+            var minNodeVal = 1e12;
+            CodeUIItem minNode = null;
+            minEdgeVal *= 3;
+            minNodeVal *= 2;
+
+            var valList = new List<double> { minEdgeVal, minNodeVal, minNodeValConnected };
+            var itemList = new List<Shape> { minEdge, minNode, minNodeConnected };
+            Shape minItem = null;
+            var minItemVal = 1e12;
+            for (int i = 0; i < valList.Count; i++)
+            {
+                if (valList[i] < minItemVal)
+                {
+                    minItemVal = valList[i];
+                    minItem = itemList[i];
+                }
+            }
+            return minItem;
+        }
+
+        public Shape FindNeighbourForNode(CodeUIItem centerItem, Vector mainDirection)
+        {
+            var centerPos = centerItem.Pos;
+            var centerUniqueName = centerItem.GetUniqueName();
+
+            if (centerItem.IsFunction())
+            {
+                if (mainDirection.X > 0.8)
+                {
+                    foreach (var item in m_edgeDict)
+                    {
+                        if (item.Key.Item1 == centerItem.GetUniqueName())
+                        {
+                            return item.Value;
+                        }
+                    }
+                }
+            }
+
+            // find nearest edge
+            var minEdgeValConnected = 1.0e12;
+            CodeUIEdgeItem minEdgeConnected = null;
+            var minEdgeVal = 1.0e12;
+            CodeUIEdgeItem minEdge = null;
+            foreach (var edgePair in m_edgeDict)
+            {
+                var edgeKey = edgePair.Key;
+                var item = edgePair.Value;
+                var dPos = item.GetMiddlePos() -centerPos;
+                var cosVal = Vector.Multiply(dPos, mainDirection) / dPos.Length;
+                if (cosVal < 0.2)
+                {
+                    continue;
+                }
+
+                var xProj = dPos.X * mainDirection.X + dPos.Y * mainDirection.Y;
+                var yProj = dPos.X * mainDirection.Y - dPos.Y * mainDirection.X;
+                xProj /= 3.0;
+                var dist = xProj * xProj + yProj * yProj;
+                if (centerUniqueName == edgeKey.Item1 ||
+                    centerUniqueName == edgeKey.Item2)
+                {
+                    if (dist < minEdgeValConnected)
+                    {
+                        minEdgeValConnected = dist;
+                        minEdgeConnected = item;
+                    }
+                }
+                else if (dist < minEdgeVal)
+                {
+                    minEdgeVal = dist;
+                    minEdge = item;
+                }
+            }
+
+            // find nearest node
+            var minNodeValConnected = 1e12;
+            CodeUIItem minNodeConnected = null;
+            var minNodeVal = 1e12;
+            CodeUIItem minNode = null;
+            foreach (var itemPair in m_itemDict)
+            {
+                var uname = itemPair.Key;
+                var item = itemPair.Value;
+                if (item == centerItem)
+                {
+                    continue;
+                }
+
+                var dPos = item.Pos - centerPos;
+                var cosVal = Vector.Multiply(dPos, mainDirection) / dPos.Length;
+                if (cosVal < 0.6)
+                {
+                    continue;
+                }
+
+                var xProj = dPos.X * mainDirection.X + dPos.Y * mainDirection.Y;
+                var yProj = dPos.X * mainDirection.Y - dPos.Y * mainDirection.X;
+                xProj /= 3.0;
+                var dist = xProj * xProj + yProj * yProj;
+
+                // Check if connected with current item
+                var isEdged = false;
+                foreach (var edgePair in m_edgeDict)
+                {
+                    if ((centerUniqueName == edgePair.Key.Item1 ||
+                        centerUniqueName == edgePair.Key.Item2) && 
+                        (uname == edgePair.Key.Item1 ||
+                        uname == edgePair.Key.Item2))
+                    {
+                        isEdged = true;
+                    }
+                }
+
+                if (isEdged)
+                {
+                    if (dist < minNodeValConnected)
+                    {
+                        minNodeValConnected = dist;
+                        minNodeConnected = item;
+                    }
+                }
+                else
+                {
+                    if (dist < minNodeVal)
+                    {
+                        minNodeVal = dist;
+                        minNode = item;
+                    }
+                }
+            }
+
+            minEdgeVal *= 3;
+            minNodeVal *= 2;
+
+            // Choose edge first in x direction
+            if (Math.Abs(mainDirection.X) > 0.8)
+            {
+                if (minEdgeConnected != null)
+                {
+                    return minEdgeConnected;
+                }
+                else if (minEdge != null)
+                {
+                    return minEdge;
+                }
+                else if (minNodeConnected != null)
+                {
+                    return minNodeConnected;
+                }
+                else if (minNode != null)
+                {
+                    return minNode;
+                }
+            }
+
+            // Choose item first in y direction
+            if (Math.Abs(mainDirection.Y) > 0.8)
+            {
+                if (minNode != null)
+                {
+                    return minNode;
+                }
+                else if (minNodeConnected != null)
+                {
+                    return minNodeConnected;
+                }
+                else if (minEdgeConnected != null)
+                {
+                    return minEdgeConnected;
+                }
+                else if (minEdge != null)
+                {
+                    return minEdge;
+                }
+            }
+
+            var valList = new List<double> { minEdgeVal, minEdgeValConnected, minNodeVal, minNodeValConnected};
+            var itemList = new List<Shape> { minEdge, minEdgeConnected, minNode, minNodeConnected };
+            Shape minItem = null;
+            var minItemVal = 1e12;
+            for (int i = 0; i < valList.Count; i++)
+            {
+                if (valList[i] < minItemVal)
+                {
+                    minItemVal = valList[i];
+                    minItem = itemList[i];
+                }
+            }
+
+            return minItem;
         }
         #endregion
 
@@ -315,6 +742,102 @@ namespace CodeAtlasVSIX
             m_isLayoutDirty = true;
             ReleaseLock();
         }
+        
+        public void DeleteSelectedItems(bool addToStop = false)
+        {
+            AcquireLock();
+
+            var itemList = new List<string>();
+            Point lastPos = new Point(Double.NaN, Double.NaN);
+            foreach (var item in m_itemDict)
+            {
+                if (item.Value.IsSelected)
+                {
+                    itemList.Add(item.Key);
+                    lastPos = item.Value.Pos;
+                    if (addToStop)
+                    {
+                        m_stopItem.Add(item.Key, item.Value.Name);
+                    }
+                }
+            }
+
+            foreach (var item in m_edgeDict)
+            {
+                var edge = item.Value;
+                if (edge.IsSelected)
+                {
+                    var srcItem = m_itemDict[item.Key.Item1];
+                    lastPos = srcItem.Pos;
+                    break;
+                }
+            }
+
+            CodeUIEdgeItem lastFunction = null;
+            if (itemList.Count == 1 && m_itemDict[itemList[0]].IsFunction())
+            {
+                var funItem = m_itemDict[itemList[0]];
+                Tuple<string, string> callEdgeKey = null;
+                CodeUIEdgeItem callEdge = null;
+                int order = -1;
+                foreach (var item in m_edgeDict)
+                {
+                    if (item.Key.Item1 == funItem.GetUniqueName())
+                    {
+                        callEdgeKey = item.Key;
+                        callEdge = item.Value;
+                        order = callEdge.GetCallOrder();
+                        break;
+                    }
+                }
+
+                if (callEdgeKey != null && callEdge != null && order != -1)
+                {
+                    foreach (var item in m_edgeDict)
+                    {
+                        if (item.Key.Item1 == callEdgeKey.Item1 && item.Value.GetCallOrder() == order+1)
+                        {
+                            lastFunction = item.Value;
+                            break;
+                        }
+                    }
+                }
+
+            }
+            if (itemList != null)
+            {
+                foreach (var item in itemList)
+                {
+                    _DoDeleteCodeItem(item);
+                }
+                DeleteLRU(itemList);
+                RemoveItemLRU();
+            }
+
+            var edgeList = new List<Tuple<string, string>>();
+            foreach (var item in m_edgeDict)
+            {
+                if (item.Value.IsSelected)
+                {
+                    edgeList.Add(item.Key);
+                }
+            }
+            foreach (var edgeKey in edgeList)
+            {
+                _DoDeleteCodeEdgeItem(edgeKey);
+            }
+
+            if (lastFunction != null)
+            {
+                SelectOneEdge(lastFunction);
+            }
+            else if (lastPos.X != Double.NaN)
+            {
+                SelectNearestItem(lastPos);
+            }
+
+            ReleaseLock();
+        }
         #endregion
 
         #region Add references
@@ -329,6 +852,7 @@ namespace CodeAtlasVSIX
                 var uniqueName = item.GetUniqueName();
                 var entList = new List<DoxygenDB.Entity>();
                 var refList = new List<DoxygenDB.Reference>();
+                dbObj.SearchRefEntity(out entList, out refList, uniqueName, refStr, entStr);
 
                 // Add to candidate
                 var candidateList = new List<Tuple<string, DoxygenDB.Reference, int>>();

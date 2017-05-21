@@ -892,7 +892,7 @@ namespace DoxygenDB
             m_dbFolder = m_dbFolder.Replace('\\', '/');
 
             _ReadIndex();
-            _ReadRefs();
+            //_ReadRefs();
         }
 
         public string GetDBPath()
