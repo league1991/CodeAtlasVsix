@@ -88,7 +88,7 @@ namespace CodeAtlasVSIX
                 var sceneNode = itemDict[node.Id];
                 double radius = sceneNode.GetRadius();
                 double width = sceneNode.GetWidth();
-                msaglNode.BoundaryCurve = NodeBoundaryCurves.GetNodeBoundaryCurve(node, width, radius);
+                msaglNode.BoundaryCurve = NodeBoundaryCurves.GetNodeBoundaryCurve(node, width, radius * 2.0);
             }
             Microsoft.Msagl.Miscellaneous.LayoutHelpers.CalculateLayout(graph.GeometryGraph, graph.LayoutAlgorithmSettings, new Microsoft.Msagl.Core.CancelToken());
 

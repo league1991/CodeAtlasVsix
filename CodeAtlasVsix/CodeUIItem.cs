@@ -427,7 +427,7 @@ namespace CodeAtlasVSIX
 
         public double GetWidth()
         {
-            var r = GetRadius();
+            var r = GetRadius() * 2.0;
             if (IsFunction())
             {
                 r += m_customData["callerR"].m_double + m_customData["calleeR"].m_double;
