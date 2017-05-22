@@ -171,6 +171,7 @@ namespace CodeAtlasVSIX
 
         public bool SelectOneItem(Shape item)
         {
+            ClearSelection();
             var node = item as CodeUIItem;
             var edge = item as CodeUIEdgeItem;
             if (node != null)
@@ -218,10 +219,11 @@ namespace CodeAtlasVSIX
         }
         #endregion
 
-        #region 
+        #region Navigation
 
         public void FindNeighbour(Vector mainDirection)
         {
+            Console.WriteLine("find neighbour:" + mainDirection.ToString());
             var itemList = SelectedItems();
             if (itemList.Count == 0)
             {
@@ -650,6 +652,11 @@ namespace CodeAtlasVSIX
             var item = new CodeUIItem(srcUniqueName);
             m_itemDict[srcUniqueName] = item;
             m_view.canvas.Children.Add(item);
+            Point center;
+            GetSelectedCenter(out center);
+            item.Pos = center;
+            item.SetTargetPos(center);
+            m_isLayoutDirty = true;
             return true;
         }
 
@@ -676,6 +683,7 @@ namespace CodeAtlasVSIX
 
             m_view.canvas.Children.Remove(m_itemDict[uniqueName]);
             m_itemDict.Remove(uniqueName);
+            m_isLayoutDirty = true;
         }
 
         void _DoDeleteCodeEdgeItem(EdgeKey edgeKey)
@@ -687,6 +695,7 @@ namespace CodeAtlasVSIX
 
             m_view.canvas.Children.Remove(m_edgeDict[edgeKey]);
             m_edgeDict.Remove(edgeKey);
+            m_isLayoutDirty = true;
         }
 
         bool _DoAddCodeEdgeItem(string srcUniqueName, string tarUniqueName, object data = null)
@@ -716,6 +725,7 @@ namespace CodeAtlasVSIX
                 // TODO: add custom edge data
             }
             m_view.canvas.Children.Add(edgeItem);
+            m_isLayoutDirty = true;
             return true;
         }
 
@@ -725,7 +735,6 @@ namespace CodeAtlasVSIX
             _DoAddCodeItem(srcUniqueName);
             UpdateLRU(new List<string> { srcUniqueName});
             RemoveItemLRU();
-            m_isLayoutDirty = true;
             ReleaseLock();
         }
 

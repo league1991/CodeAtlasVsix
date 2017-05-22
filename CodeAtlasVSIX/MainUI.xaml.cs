@@ -32,12 +32,16 @@ namespace CodeAtlasVSIX
             AddCommand(OnFindOverrides, Key.O);
             AddCommand(OnFindBases, Key.B);
             AddCommand(OnFindUses, Key.U);
+            AddCommand(OnGoUp, Key.Up);
+            AddCommand(OnGoDown, Key.Down);
+            AddCommand(OnGoLeft, Key.Left);
+            AddCommand(OnGoRight, Key.Right);
         }
 
         public void AddCommand(ExecutedRoutedEventHandler callback, Key key, ModifierKeys modifier = ModifierKeys.Alt)
         {
             CommandBinding cmd = new CommandBinding();
-            cmd.Command = ApplicationCommands.New;
+            cmd.Command = new RoutedUICommand();
 
             cmd.Executed += callback;
             cmd.CanExecute += new CanExecuteRoutedEventHandler(_AlwaysCanExecute);
@@ -115,6 +119,29 @@ namespace CodeAtlasVSIX
         {
             _FindRefs("useby", "function, method, class, struct", false);
             _FindRefs("use", "variable,object", true);
+        }
+        #endregion
+
+        #region Navigation
+        public void OnGoUp(object sender, ExecutedRoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.FindNeighbour(new Vector(0.0, -1.0));
+        }
+        public void OnGoDown(object sender, ExecutedRoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.FindNeighbour(new Vector(0.0, 1.0));
+        }
+        public void OnGoLeft(object sender, ExecutedRoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.FindNeighbour(new Vector(-1.0, 0.0));
+        }
+        public void OnGoRight(object sender, ExecutedRoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.FindNeighbour(new Vector(1.0, 0.0));
         }
         #endregion
     }

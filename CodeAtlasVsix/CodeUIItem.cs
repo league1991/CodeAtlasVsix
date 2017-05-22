@@ -425,6 +425,16 @@ namespace CodeAtlasVSIX
             return r;
         }
 
+        public double GetWidth()
+        {
+            var r = GetRadius();
+            if (IsFunction())
+            {
+                r += m_customData["callerR"].m_double + m_customData["calleeR"].m_double;
+            }
+            return r;
+        }
+
         public double GetBodyRadius()
         {
             double r = 8.0;

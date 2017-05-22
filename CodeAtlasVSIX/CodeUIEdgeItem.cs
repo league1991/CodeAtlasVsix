@@ -278,8 +278,8 @@ namespace CodeAtlasVSIX
                 var scene = UIManager.Instance().GetScene();
                 var srcNode = scene.GetNode(m_srcUniqueName);
                 var tarNode = scene.GetNode(m_tarUniqueName);
-                m_p0 = srcNode.Pos;
-                m_p3 = tarNode.Pos;
+                m_p0 = srcNode.GetRightSlotPos();
+                m_p3 = tarNode.GetLeftSlotPos();
                 m_p1 = new Point(m_p0.X * 0.4 + m_p3.X * 0.6, m_p0.Y);
                 m_p2 = new Point(m_p0.X * 0.6 + m_p3.X * 0.4, m_p3.Y);
 

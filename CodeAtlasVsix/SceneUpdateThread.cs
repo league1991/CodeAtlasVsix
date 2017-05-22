@@ -80,13 +80,15 @@ namespace CodeAtlasVSIX
                 graph.AddEdge(key.Item1, key.Item2);
             }
             graph.Attr.LayerDirection = LayerDirection.LR;
+            graph.Attr.LayerSeparation = 200.0;
             graph.CreateGeometryGraph();
             foreach (var msaglNode in graph.GeometryGraph.Nodes)
             {
                 var node = (Microsoft.Msagl.Drawing.Node)msaglNode.UserData;
                 var sceneNode = itemDict[node.Id];
                 double radius = sceneNode.GetRadius();
-                msaglNode.BoundaryCurve = NodeBoundaryCurves.GetNodeBoundaryCurve(node, radius, radius);
+                double width = sceneNode.GetWidth();
+                msaglNode.BoundaryCurve = NodeBoundaryCurves.GetNodeBoundaryCurve(node, width, radius);
             }
             Microsoft.Msagl.Miscellaneous.LayoutHelpers.CalculateLayout(graph.GeometryGraph, graph.LayoutAlgorithmSettings, new Microsoft.Msagl.Core.CancelToken());
 
