@@ -310,7 +310,7 @@ namespace CodeAtlasVSIX
             var h = (hashVal & 0xff) / 255.0;
             var s = ((hashVal >> 8) & 0xff) / 255.0;
             var l = ((hashVal >> 16) & 0xff) / 255.0;
-            return HSLToRGB(h, s, l);
+            return HSLToRGB(h, 0.35 + s * 0.3, 0.4 + l * 0.15);
         }
 
         public bool IsDirty

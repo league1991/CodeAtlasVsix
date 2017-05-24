@@ -76,7 +76,7 @@ namespace DoxygenDB
             {"function", EntKind.FUNCTION},    {"signal", EntKind.SIGNAL},        {"prototype", EntKind.PROTOTYPE},
             {"friend", EntKind.FRIEND},        {"dcop", EntKind.DCOP},            {"slot", EntKind.SLOT},
             // extra keywords
-            {"method", EntKind.FUNCTION}
+            {"method", EntKind.FUNCTION},      {"object", EntKind.VARIABLE},
         };
 
         public string m_id;
@@ -695,6 +695,10 @@ namespace DoxygenDB
                                         }
                                     }
                                 }
+                                else
+                                {
+                                    Console.WriteLine("not find");
+                                }
                             }
                         }
                     }
@@ -756,7 +760,7 @@ namespace DoxygenDB
             else if (m_compoundToIdDict.ContainsKey(refid))
             {
                 var doc = _GetXmlDocument(refid);
-                var compoundIter = doc.Select(string.Format("compounddef[@id=\'{0}\']", refid));
+                var compoundIter = doc.Select(string.Format("doxygen/compounddef[@id=\'{0}\']", refid));
                 while (compoundIter.MoveNext())
                 {
                     var compound = compoundIter.Current;
@@ -769,8 +773,11 @@ namespace DoxygenDB
 
         Dictionary<string, Variant> _ParseLocationDict(XPathNavigator element)
         {
-            var declLine = Convert.ToInt32(element.GetAttribute("line", ""));
-            var declColumn = Convert.ToInt32(element.GetAttribute("column", ""));
+            var declLineAttr = element.GetAttribute("line", "");
+            var declColumnAttr = element.GetAttribute("column", "");
+
+            var declLine = Convert.ToInt32(declLineAttr == "" ? "0" : declLineAttr);
+            var declColumn = Convert.ToInt32(declColumnAttr == "" ? "0" : declColumnAttr);
             var declFile = m_doxyFileFolder + "/" + element.GetAttribute("file", "");
 
             var bodyStartAttr = element.GetAttribute("bodystart", "");

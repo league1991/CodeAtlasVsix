@@ -36,6 +36,7 @@ namespace CodeAtlasVSIX
             AddCommand(OnGoDown, Key.Down);
             AddCommand(OnGoLeft, Key.Left);
             AddCommand(OnGoRight, Key.Right);
+            AddCommand(OnDelectSelectedItems, Key.Delete, ModifierKeys.None);
         }
 
         public void AddCommand(ExecutedRoutedEventHandler callback, Key key, ModifierKeys modifier = ModifierKeys.Alt)
@@ -74,8 +75,8 @@ namespace CodeAtlasVSIX
         {
             // defaultPath = r"C:\Users\me\AppData\Roaming\Sublime Text 3\Packages\CodeAtlas\CodeAtlasSublime.udb"
             // defaultPath = "I:/Programs/masteringOpenCV/Chapter3_MarkerlessAR/doc/xml/index.xml"
-            var defaultPath = "I:/Programs/mitsuba/Doxyfile";
-            //var defaultPath = "D:/Code/NewRapidRT/rapidrt/Doxyfile";
+            //var defaultPath = "I:/Programs/mitsuba/Doxyfile";
+            var defaultPath = "D:/Code/NewRapidRT/rapidrt/Doxyfile";
 
             var newDownTime = DateTime.Now;
             DBManager.Instance().OpenDB(defaultPath);
@@ -142,6 +143,11 @@ namespace CodeAtlasVSIX
         {
             var scene = UIManager.Instance().GetScene();
             scene.FindNeighbour(new Vector(1.0, 0.0));
+        }
+        public void OnDelectSelectedItems(object sender, ExecutedRoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.DeleteSelectedItems(false);
         }
         #endregion
     }
