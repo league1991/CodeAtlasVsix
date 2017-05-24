@@ -30,6 +30,7 @@ namespace CodeAtlasVSIX
 
         List<string> m_itemLruQueue = new List<string>();
         int m_lruMaxLength = 20;
+        int m_selectTimeStamp = 0;
 
         public CodeScene()
         {
@@ -216,6 +217,29 @@ namespace CodeAtlasVSIX
             {
                 return false;
             }
+        }
+        
+        public bool OnSelectItems()
+        {
+            var itemList = SelectedItems();
+            m_selectTimeStamp += 1;
+
+            foreach (var item in itemList)
+            {
+                var uiItem = item as CodeUIItem;
+                if (uiItem == null)
+                {
+                    continue;
+                }
+
+                uiItem.m_selectCounter += 1;
+                uiItem.m_selectTimeStamp = m_selectTimeStamp;
+                UpdateLRU(new List<string> { uiItem.GetUniqueName() });
+            }
+
+            RemoveItemLRU();
+            // TODO: more code
+            return true;
         }
         #endregion
 
@@ -748,7 +772,6 @@ namespace CodeAtlasVSIX
             AcquireLock();
             _DoDeleteCodeItem(uniqueName);
             RemoveItemLRU();
-            m_isLayoutDirty = true;
             ReleaseLock();
         }
         
@@ -925,9 +948,15 @@ namespace CodeAtlasVSIX
         public void AddRefs(string refStr, string entStr, bool inverseEdge = false, int maxCount = -1)
         {
             AcquireLock();
+            Point center;
+            var res = GetSelectedCenter(out center);
             var refNameList = _AddRefs(refStr, entStr, inverseEdge, maxCount);
             UpdateLRU(refNameList);
             RemoveItemLRU();
+            if (res)
+            {
+                SelectNearestItem(center);
+            }
             ReleaseLock();
         }
         #endregion

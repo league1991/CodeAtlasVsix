@@ -38,8 +38,8 @@ namespace CodeAtlasVSIX
         bool m_isSelected = false;
         bool m_isHover = false;
         Point m_position = new Point();
-        int m_selectCounter = 0;
-        double m_selectTimeStamp = 0;
+        public int m_selectCounter = 0;
+        public double m_selectTimeStamp = 0;
 
         string m_name = "";
         string m_displayName = "";
@@ -160,6 +160,8 @@ namespace CodeAtlasVSIX
             this.Fill = brush;
             this.Stroke = Brushes.Transparent;
             BuildGeometry();
+             
+            Canvas.SetZIndex(this, 0);
         }
 
         public Color GetColor()
@@ -367,11 +369,14 @@ namespace CodeAtlasVSIX
                 if(m_isSelected)
                 {
                     this.Stroke = Brushes.Tomato;
+                    this.StrokeThickness = 1.5;
                 }
                 else
                 {
                     this.Stroke = Brushes.Transparent;
+                    this.StrokeThickness = 1.0;
                 }
+                UIManager.Instance().GetScene().OnSelectItems();
             }
         }
 
@@ -592,14 +597,6 @@ namespace CodeAtlasVSIX
 
             if (IsFunction())
             {
-                Geometry circle = new EllipseGeometry(new Point(0.0, 0.0), r, r);
-                if (m_lines == 0 || m_customData["hasDef"].m_int == 0)
-                {
-                    var innerCircle = new EllipseGeometry(new Point(0.0, 0.0), 2.5, 2.5);
-                    circle = Geometry.Combine(circle, innerCircle, GeometryCombineMode.Exclude, null);
-                }
-                m_geometry.Children.Add(circle);
-
                 var cosRadian = Math.Cos(20.0 / 180.0 * Math.PI);
                 var sinRadian = Math.Sin(20.0 / 180.0 * Math.PI);
 
@@ -633,6 +630,14 @@ namespace CodeAtlasVSIX
                     pathGeo.Figures.Add(figure);
                     m_geometry.Children.Add(pathGeo);
                 }
+
+                Geometry circle = new EllipseGeometry(new Point(0.0, 0.0), r, r);
+                if (m_lines == 0 || m_customData["hasDef"].m_int == 0)
+                {
+                    var innerCircle = new EllipseGeometry(new Point(0.0, 0.0), 2.5, 2.5);
+                    circle = Geometry.Combine(circle, innerCircle, GeometryCombineMode.Exclude, null);
+                }
+                m_geometry.Children.Add(circle);
             }
             else if (m_kind == DoxygenDB.EntKind.VARIABLE)
             {
@@ -651,6 +656,7 @@ namespace CodeAtlasVSIX
                 var rect = new RectangleGeometry(new Rect(new Point(-r, -r), new Point(r, r)));
                 m_geometry.Children.Add(rect);
             }
+
         }
 
         protected override Geometry DefiningGeometry

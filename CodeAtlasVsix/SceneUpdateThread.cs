@@ -1,4 +1,5 @@
 ﻿using Microsoft.Msagl.Drawing;
+using Microsoft.Msagl.Layout.Layered;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,8 +81,12 @@ namespace CodeAtlasVSIX
                 graph.AddEdge(key.Item1, key.Item2);
             }
             graph.Attr.LayerDirection = LayerDirection.LR;
-            graph.Attr.LayerSeparation = 200.0;
             graph.CreateGeometryGraph();
+            var layerSetting = graph.LayoutAlgorithmSettings as SugiyamaLayoutSettings;
+            if (layerSetting != null)
+            {
+                layerSetting.LayerSeparation = 80;
+            }
             foreach (var msaglNode in graph.GeometryGraph.Nodes)
             {
                 var node = (Microsoft.Msagl.Drawing.Node)msaglNode.UserData;

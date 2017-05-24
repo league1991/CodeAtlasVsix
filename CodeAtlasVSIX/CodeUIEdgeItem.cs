@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -45,11 +46,12 @@ namespace CodeAtlasVSIX
             this.MouseEnter += new MouseEventHandler(MouseEnterCallback);
             this.MouseLeave += new MouseEventHandler(MouseLeaveCallback);
 
-            SolidColorBrush brush = new SolidColorBrush();
-            brush.Color = Color.FromArgb(255, 255, 255, 0);
+            SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(150, 255, 255, 255));
             this.Fill = Brushes.Transparent;
             this.Stroke = brush;
             BuildGeometry();
+
+            Canvas.SetZIndex(this, -1);
         }
 
         Point CalculateBezierPoint(double t, Point p1, Point p2, Point p3, Point p4)
@@ -151,12 +153,15 @@ namespace CodeAtlasVSIX
                 m_isSelected = value;
                 if (m_isSelected)
                 {
-                    StrokeThickness = 2.0;
+                    StrokeThickness = 1.5;
+                    this.Stroke = Brushes.Tomato;
                 }
                 else
                 {
                     StrokeThickness = 1.0;
+                    this.Stroke = new SolidColorBrush(Color.FromArgb(150, 255, 255, 255));
                 }
+                UIManager.Instance().GetScene().OnSelectItems();
             }
         }
         //public Point StartPoint
@@ -280,8 +285,8 @@ namespace CodeAtlasVSIX
                 var tarNode = scene.GetNode(m_tarUniqueName);
                 m_p0 = srcNode.GetRightSlotPos();
                 m_p3 = tarNode.GetLeftSlotPos();
-                m_p1 = new Point(m_p0.X * 0.4 + m_p3.X * 0.6, m_p0.Y);
-                m_p2 = new Point(m_p0.X * 0.6 + m_p3.X * 0.4, m_p3.Y);
+                m_p1 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p0.Y);
+                m_p2 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p3.Y);
 
                 var segment = new BezierSegment(m_p1, m_p2, m_p3, true);
                 var figure = new PathFigure();
