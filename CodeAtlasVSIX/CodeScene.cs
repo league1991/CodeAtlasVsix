@@ -29,8 +29,9 @@ namespace CodeAtlasVSIX
         List<EdgeKey> m_candidateEdge = new List<EdgeKey>();
 
         List<string> m_itemLruQueue = new List<string>();
-        int m_lruMaxLength = 20;
+        int m_lruMaxLength = 50;
         int m_selectTimeStamp = 0;
+        bool m_selectEventConnected = true;
 
         public CodeScene()
         {
@@ -170,6 +171,16 @@ namespace CodeAtlasVSIX
             return items;
         }
 
+        public bool SelectCodeItem(string uniqueName)
+        {
+            if (!m_itemDict.ContainsKey(uniqueName))
+            {
+                return false;
+            }
+            m_itemDict[uniqueName].IsSelected = true;
+            return true;
+        }
+
         public bool SelectOneItem(Shape item)
         {
             ClearSelection();
@@ -221,6 +232,11 @@ namespace CodeAtlasVSIX
         
         public bool OnSelectItems()
         {
+            if (!m_selectEventConnected)
+            {
+                return false;
+            }
+
             var itemList = SelectedItems();
             m_selectTimeStamp += 1;
 
@@ -655,14 +671,16 @@ namespace CodeAtlasVSIX
 
         void RemoveItemLRU()
         {
+            m_selectEventConnected = false;
             if(m_itemLruQueue.Count > m_lruMaxLength)
             {
-                for(int i = m_lruMaxLength; i < m_itemLruQueue.Count; ++i)
+                while (m_itemLruQueue.Count > m_lruMaxLength)
                 {
                     _DoDeleteCodeItem(m_itemLruQueue[m_lruMaxLength]);
                     m_itemLruQueue.RemoveAt(m_lruMaxLength);
                 }
             }
+            m_selectEventConnected = false;
         }
         #endregion
         

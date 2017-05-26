@@ -173,6 +173,8 @@ namespace CodeAtlasVSIX
 
             scene.AcquireLock();
             scene.AddCodeItem(item.m_uniqueName);
+            scene.ClearSelection();
+            scene.SelectCodeItem(item.m_uniqueName);
             scene.ReleaseLock();
         }
 
