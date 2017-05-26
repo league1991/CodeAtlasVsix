@@ -32,6 +32,8 @@ namespace CodeAtlasVSIX
         int m_lruMaxLength = 50;
         int m_selectTimeStamp = 0;
         bool m_selectEventConnected = true;
+        public bool m_autoFocus = true;
+        bool m_autoFocusToggle = true;
 
         public CodeScene()
         {
@@ -46,6 +48,11 @@ namespace CodeAtlasVSIX
             {
                 return m_view;
             }
+        }
+
+        public bool IsAutoFocus()
+        {
+            return m_autoFocus && m_autoFocusToggle;
         }
 
         public void OnOpenDB()

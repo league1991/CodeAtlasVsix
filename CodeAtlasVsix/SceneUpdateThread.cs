@@ -114,7 +114,7 @@ namespace CodeAtlasVSIX
             {
                 Point centerPnt;
                 bool res = scene.GetSelectedCenter(out centerPnt);
-                if (res)
+                if (res && scene.IsAutoFocus())
                 {
                     scene.View.MoveView(centerPnt);
                 }

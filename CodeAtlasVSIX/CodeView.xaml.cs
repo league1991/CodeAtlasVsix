@@ -107,12 +107,14 @@ namespace CodeAtlasVSIX
 
         private void background_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
-
+            var scene = UIManager.Instance().GetScene();
+            scene.m_autoFocus = false;
         }
 
         private void background_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-
+            var scene = UIManager.Instance().GetScene();
+            scene.m_autoFocus = true;
         }
     }
 }
