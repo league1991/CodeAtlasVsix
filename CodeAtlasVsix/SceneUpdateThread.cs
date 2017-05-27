@@ -53,8 +53,9 @@ namespace CodeAtlasVSIX
                         }
                         scene.m_isLayoutDirty = false;
                     }
-                    scene.ReleaseLock();
 
+                    scene.UpdateCandidateEdge();
+                    scene.ReleaseLock();
                     MoveItems();
                     InvalidateScene();
                     // System.Console.Write("running\n");
@@ -105,7 +106,7 @@ namespace CodeAtlasVSIX
                 sceneNode.SetTargetPos(new Point(pos.X, pos.Y));
             }
         }
-
+        
         void MoveItems()
         {
             var scene = UIManager.Instance().GetScene();

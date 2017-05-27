@@ -34,6 +34,7 @@ namespace CodeAtlasVSIX
         DateTime m_mouseDownTime = new DateTime();
         public OrderData m_orderData = null;
         Point m_p0, m_p1, m_p2, m_p3;
+        bool m_isCandidate = false;
 
         public CodeUIEdgeItem(string srcName, string tarName)
         {
@@ -145,24 +146,46 @@ namespace CodeAtlasVSIX
             }
         }
 
+        public bool IsCandidate
+        {
+            get { return m_isCandidate; }
+            set
+            {
+                m_isCandidate = value;
+                UpdateStroke();
+            }
+        }
         public bool IsSelected
         {
             get { return m_isSelected; }
             set
             {
                 m_isSelected = value;
+                UpdateStroke();
+                UIManager.Instance().GetScene().OnSelectItems();
+            }
+        }
+
+        void UpdateStroke()
+        {
+            this.Dispatcher.Invoke((ThreadStart)delegate
+            {
                 if (m_isSelected)
                 {
                     StrokeThickness = 1.5;
                     this.Stroke = Brushes.Tomato;
                 }
+                else if (m_isCandidate)
+                {
+                    StrokeThickness = 1.5;
+                    this.Stroke = new SolidColorBrush(Color.FromArgb(200, 183, 101, 0));
+                }
                 else
                 {
                     StrokeThickness = 1.0;
-                    this.Stroke = new SolidColorBrush(Color.FromArgb(150, 255, 255, 255));
+                    this.Stroke = new SolidColorBrush(Color.FromArgb(120, 255, 255, 255));
                 }
-                UIManager.Instance().GetScene().OnSelectItems();
-            }
+            });
         }
         //public Point StartPoint
         //{

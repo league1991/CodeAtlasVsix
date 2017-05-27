@@ -267,6 +267,77 @@ namespace CodeAtlasVSIX
         #endregion
 
         #region Navigation
+        public void UpdateCandidateEdge()
+        {
+            CodeUIEdgeItem centerItem = null;
+            foreach (var item in m_edgeDict)
+            {
+                var edgeKey = item.Key;
+                var edge = item.Value;
+                edge.IsCandidate = false;
+                if (edge.IsSelected)
+                {
+                    centerItem = edge;
+                }
+            }
+
+            if (centerItem == null)
+            {
+                return;
+            }
+
+            m_candidateEdge.Clear();
+            var srcEdgeList = new List<EdgeKey>();
+            var tarEdgeList = new List<EdgeKey>();
+            var srcNode = m_itemDict[centerItem.m_srcUniqueName];
+            var tarNode = m_itemDict[centerItem.m_tarUniqueName];
+            foreach (var item in m_edgeDict)
+            {
+                var edgeKey = item.Key;
+                var edge = item.Value;
+                if (edge == centerItem)
+                {
+                    continue;
+                }
+                if (edgeKey.Item1 == centerItem.m_srcUniqueName)
+                {
+                    srcEdgeList.Add(edgeKey);
+                }
+                else if (edgeKey.Item2 == centerItem.m_tarUniqueName && edgeKey.Item1 != centerItem.m_tarUniqueName)
+                {
+                    tarEdgeList.Add(edgeKey);
+                }
+            }
+
+            m_isSourceCandidate = true;
+            if (tarEdgeList.Count == 0 && srcEdgeList.Count > 0)
+            {
+                m_candidateEdge = srcEdgeList;
+            }
+            else if (srcEdgeList.Count == 0 && tarEdgeList.Count > 0)
+            {
+                m_candidateEdge = tarEdgeList;
+                m_isSourceCandidate = false;
+            }
+            else if (tarNode.m_selectTimeStamp > srcNode.m_selectTimeStamp)
+            {
+                m_candidateEdge = tarEdgeList;
+                m_isSourceCandidate = false;
+            }
+            else
+            {
+                m_candidateEdge = srcEdgeList;
+            }
+
+            foreach (var edgeKey in m_candidateEdge)
+            {
+                if (m_edgeDict.ContainsKey(edgeKey))
+                {
+                    var edge = m_edgeDict[edgeKey];
+                    edge.IsCandidate = true;
+                }
+            }
+        }
 
         public void FindNeighbour(Vector mainDirection)
         {
@@ -276,6 +347,7 @@ namespace CodeAtlasVSIX
             {
                 return;
             }
+            // AcquireLock();
             var centerItem = itemList[0];
             var centerNode = centerItem as CodeUIItem;
             var centerEdge = centerItem as CodeUIEdgeItem;
@@ -288,6 +360,7 @@ namespace CodeAtlasVSIX
             {
                 minItem = FindNeighbourForEdge(centerEdge, mainDirection);
             }
+            // ReleaseLock();
 
             if (minItem == null)
             {
