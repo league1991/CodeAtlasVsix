@@ -61,6 +61,9 @@
       <DependentUpon>CodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="DBManager.cs" />
+    <Compile Include="Legend.xaml.cs">
+      <DependentUpon>Legend.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainUI.xaml.cs">
       <DependentUpon>MainUI.xaml</DependentUpon>
     </Compile>
@@ -206,6 +209,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="CodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Legend.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

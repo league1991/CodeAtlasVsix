@@ -30,7 +30,7 @@ namespace CodeAtlasVSIX
 
         List<string> m_itemLruQueue = new List<string>();
         int m_lruMaxLength = 50;
-        int m_selectTimeStamp = 0;
+        public int m_selectTimeStamp = 0;
         bool m_selectEventConnected = true;
         public bool m_autoFocus = true;
         bool m_autoFocusToggle = true;
@@ -336,6 +336,10 @@ namespace CodeAtlasVSIX
                     var edge = m_edgeDict[edgeKey];
                     edge.IsCandidate = true;
                 }
+            }
+            foreach (var item in m_edgeDict)
+            {
+                item.Value.UpdateStroke();
             }
         }
 
@@ -760,7 +764,7 @@ namespace CodeAtlasVSIX
                     m_itemLruQueue.RemoveAt(m_lruMaxLength);
                 }
             }
-            m_selectEventConnected = false;
+            m_selectEventConnected = true;
         }
         #endregion
         

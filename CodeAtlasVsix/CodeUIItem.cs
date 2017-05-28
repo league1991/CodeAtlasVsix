@@ -50,7 +50,8 @@ namespace CodeAtlasVSIX
         Size m_fontSize = new Size();
         Size m_commentSize = new Size();
         double m_lineHeight = 0.0;
-        bool m_isConnectedToFocusNode = false;
+        FormattedText m_displayText = null;
+        public bool m_isConnectedToFocusNode = false;
         Dictionary<string, Variant> m_customData = new Dictionary<string, Variant>();
         Color m_color = new Color();
 
@@ -207,10 +208,11 @@ namespace CodeAtlasVSIX
                                                     CultureInfo.CurrentUICulture,
                                                     FlowDirection.LeftToRight,
                                                     new Typeface("tahoma"),
-                                                    8.0,
-                                                    Brushes.Black);
+                                                    12.0,
+                                                    Brushes.White);
             m_fontSize = new Size(formattedText.Width, formattedText.Height);
             m_lineHeight = formattedText.LineHeight;
+            m_displayText = formattedText;
         }
 
         void BuildCommentSize(string comment)
@@ -665,6 +667,53 @@ namespace CodeAtlasVSIX
             {
                 return m_geometry;
             }
+        }
+
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            base.OnRender(drawingContext);
+            if (m_displayText != null)
+            {
+                m_displayText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(50,50,50)));
+                drawingContext.DrawText(m_displayText, new Point(1,1));
+                m_displayText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(255, 239, 183)));
+                drawingContext.DrawText(m_displayText, new Point(0,0));
+            }
+            //string testString = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor";
+
+            //// Create the initial formatted text string.
+            //FormattedText formattedText = new FormattedText(
+            //    m_displayName,
+            //    CultureInfo.CurrentCulture,
+            //    FlowDirection.LeftToRight,
+            //    new Typeface("Tahoma"),
+            //    32,
+            //    Brushes.White);
+
+            // Set a maximum width and height. If the text overflows these values, an ellipsis "..." appears.
+            //formattedText.MaxTextWidth = 300;
+            //formattedText.MaxTextHeight = 240;
+
+            // Use a larger font size beginning at the first (zero-based) character and continuing for 5 characters.
+            // The font size is calculated in terms of points -- not as device-independent pixels.
+            //formattedText.SetFontSize(36 * (96.0 / 72.0), 0, 5);
+
+            // Use a Bold font weight beginning at the 6th character and continuing for 11 characters.
+            //formattedText.SetFontWeight(FontWeights.Bold, 6, 11);
+
+            // Use a linear gradient brush beginning at the 6th character and continuing for 11 characters.
+            //formattedText.SetForegroundBrush(
+            //                        new LinearGradientBrush(
+            //                        Colors.Orange,
+            //                        Colors.Teal,
+            //                        90.0),
+            //                        6, 11);
+
+            // Use an Italic font style beginning at the 28th character and continuing for 28 characters.
+            //formattedText.SetFontStyle(FontStyles.Italic, 28, 28);
+
+            // Draw the formatted text string to the DrawingContext of the control.
+            //drawingContext.DrawText(formattedText, new Point(0, 0));
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -33,8 +34,11 @@ namespace CodeAtlasVSIX
         bool m_isSelected = false;
         DateTime m_mouseDownTime = new DateTime();
         public OrderData m_orderData = null;
+        public bool m_isConnectedToFocusNode = false;
         Point m_p0, m_p1, m_p2, m_p3;
         bool m_isCandidate = false;
+        public int m_line = 0;
+        public int m_column = 0;
 
         public CodeUIEdgeItem(string srcName, string tarName)
         {
@@ -96,8 +100,31 @@ namespace CodeAtlasVSIX
             {
                 srcPos = tarPos = new Point();
             }
-            srcPos = srcNode.Pos;
-            tarPos = tarNode.Pos;
+            srcPos = srcNode.GetRightSlotPos();
+            tarPos = tarNode.GetLeftSlotPos();
+            //srcPos = srcNode.Pos;
+            //tarPos = tarNode.Pos;
+        }
+
+        public int ComparePos(CodeUIEdgeItem other)
+        {
+            if (m_line < other.m_line)
+            {
+                return -1;
+            }
+            else if (m_line > other.m_line)
+            {
+                return 1;
+            }
+            else if (m_column > other.m_column)
+            {
+                return -1;
+            }
+            else if (m_column < other.m_column)
+            {
+                return 1;
+            }
+            return 0;
         }
 
         public double FindCurveYPos(double x)
@@ -166,7 +193,7 @@ namespace CodeAtlasVSIX
             }
         }
 
-        void UpdateStroke()
+        public void UpdateStroke()
         {
             this.Dispatcher.Invoke((ThreadStart)delegate
             {
@@ -268,7 +295,11 @@ namespace CodeAtlasVSIX
 
         public int GetCallOrder()
         {
-            return 0;
+            if (m_orderData != null)
+            {
+                return m_orderData.m_order;
+            }
+            return -1;
         }
 
         public void Invalidate()
@@ -289,6 +320,22 @@ namespace CodeAtlasVSIX
         {
             InvalidateVisual();
         }
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            base.OnRender(drawingContext);
+
+            if (m_orderData != null)
+            {
+                var formattedText = new FormattedText(m_orderData.m_order.ToString(),
+                                                        CultureInfo.CurrentUICulture,
+                                                        FlowDirection.LeftToRight,
+                                                        new Typeface("tahoma"),
+                                                        8.0,
+                                                        Brushes.White);
+                drawingContext.DrawText(formattedText, (m_orderData.m_point));
+            }
+        }
+
 
         protected override Geometry DefiningGeometry
         {

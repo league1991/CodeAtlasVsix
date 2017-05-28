@@ -116,5 +116,22 @@ namespace CodeAtlasVSIX
             var scene = UIManager.Instance().GetScene();
             scene.m_autoFocus = true;
         }
+
+        public void InvalidateLegend()
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.AcquireLock();
+            legend.BuildLegend();
+            scene.ReleaseLock();
+            //this.Dispatcher.Invoke((ThreadStart)delegate
+            //{
+            //    legend.InvalidateVisual();
+            //});
+        }
+
+        protected override void OnRender(DrawingContext dc)
+        {
+            base.OnRender(dc);
+        }
     }
 }
