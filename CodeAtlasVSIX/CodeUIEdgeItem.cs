@@ -195,7 +195,7 @@ namespace CodeAtlasVSIX
 
         public void UpdateStroke()
         {
-            this.Dispatcher.Invoke((ThreadStart)delegate
+            this.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
                 if (m_isSelected)
                 {
@@ -309,7 +309,7 @@ namespace CodeAtlasVSIX
             var tarNode = scene.GetNode(m_tarUniqueName);
             if (IsDirty || srcNode.IsDirty || tarNode.IsDirty)
             {
-                this.Dispatcher.Invoke((ThreadStart)delegate
+                this.Dispatcher.BeginInvoke((ThreadStart)delegate
                 {
                     this._Invalidate();
                 });
@@ -324,6 +324,8 @@ namespace CodeAtlasVSIX
         {
             base.OnRender(drawingContext);
 
+            var scene = UIManager.Instance().GetScene();
+            scene.AcquireLock();
             if (m_orderData != null)
             {
                 var formattedText = new FormattedText(m_orderData.m_order.ToString(),
@@ -334,6 +336,7 @@ namespace CodeAtlasVSIX
                                                         Brushes.White);
                 drawingContext.DrawText(formattedText, (m_orderData.m_point));
             }
+            scene.ReleaseLock();
         }
 
 

@@ -81,7 +81,7 @@ namespace CodeAtlasVSIX
 
         public void MoveView(Point center)
         {
-            Dispatcher.Invoke((ThreadStart)delegate
+            Dispatcher.BeginInvoke((ThreadStart)delegate
             {
                 var transform = this.canvas.RenderTransform as MatrixTransform;
                 var matrix = transform.Matrix;

@@ -698,7 +698,7 @@ namespace CodeAtlasVSIX
             {
                 return;
             }
-            m_view.Dispatcher.Invoke((ThreadStart)delegate
+            m_view.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
                 AcquireLock();
                 foreach (var node in m_itemDict)

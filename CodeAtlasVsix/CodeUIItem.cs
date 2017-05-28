@@ -176,6 +176,10 @@ namespace CodeAtlasVSIX
             {
                 return m_name;
             }
+            if (!m_customData.ContainsKey("className"))
+            {
+                return "";
+            }
             return m_customData["className"].m_string;
         }
 
@@ -355,7 +359,7 @@ namespace CodeAtlasVSIX
         {
             if (m_isDirty)
             {
-                this.Dispatcher.Invoke((ThreadStart)delegate
+                this.Dispatcher.BeginInvoke((ThreadStart)delegate
                 {
                     this._Invalidate();
                 });
@@ -398,7 +402,7 @@ namespace CodeAtlasVSIX
                 //}
                 //else
                 //{
-                //    this.Dispatcher.Invoke(() => {
+                //    this.Dispatcher.BeginInvoke(() => {
                 //    Canvas.SetLeft(this, value.X);
                 //    Canvas.SetTop(this, value.Y); });
                 //}
