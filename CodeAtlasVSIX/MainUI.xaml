@@ -22,7 +22,9 @@
             </Grid>
         </TabItem>
         <TabItem Header="Scheme">
-            <Grid Background="#FFE5E5E5"/>
+            <Grid Background="#FFE5E5E5" MinHeight="10">
+            <local:SchemeWindow x:Name="schemeWindow"/>
+            </Grid>
         </TabItem>
     </TabControl>
     <local:CodeView x:Name="codeView" />

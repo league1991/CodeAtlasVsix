@@ -133,5 +133,6 @@ namespace CodeAtlasVSIX
         {
             base.OnRender(dc);
         }
+        
     }
 }

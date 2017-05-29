@@ -37,13 +37,33 @@ namespace CodeAtlasVSIX
         public bool m_isConnectedToFocusNode = false;
         Point m_p0, m_p1, m_p2, m_p3;
         bool m_isCandidate = false;
+        public string m_file = "";
         public int m_line = 0;
         public int m_column = 0;
+        public bool m_customEdge = false;
 
-        public CodeUIEdgeItem(string srcName, string tarName)
+        public CodeUIEdgeItem(string srcName, string tarName, DataDict edgeData)
         {
             m_srcUniqueName = srcName;
             m_tarUniqueName = tarName;
+
+            if (edgeData != null)
+            {
+                if (edgeData.ContainsKey("dbRef"))
+                {
+                    var dbRef = edgeData["dbRef"] as DoxygenDB.Reference;
+                    if (dbRef!= null)
+                    {
+                        m_file = dbRef.File().Longname();
+                        m_line = dbRef.Line();
+                        m_column = dbRef.Column();
+                    }
+                }
+                if (edgeData.ContainsKey("customEdge"))
+                {
+                    m_customEdge = (int)edgeData["customEdge"] != 0;
+                }
+            }
 
             this.MouseDown += new MouseButtonEventHandler(MouseDownCallback);
             this.MouseUp += new MouseButtonEventHandler(MouseUpCallback);

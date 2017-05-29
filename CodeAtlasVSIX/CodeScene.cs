@@ -16,17 +16,9 @@ namespace CodeAtlasVSIX
     using System.Windows;
     using System.Windows.Shapes;
 
-    public class Variant
+    public class DataDict: Dictionary<string, object>
     {
-        public Variant(string str) { m_string = str; }
-        public Variant(int val) { m_int = val; }
-        public string m_string;
-        public int m_int;
-    }
-
-    public class DataDict: Dictionary<string, Variant>
-    {
-        public void AddOrReplace(string key, Variant value)
+        public void AddOrReplace(string key, object value)
         {
             if (this.ContainsKey(key))
             {
@@ -39,40 +31,41 @@ namespace CodeAtlasVSIX
         }
     }
 
+    public class SchemeData
+    {
+        public List<string> m_nodeList = new List<string>();
+        public Dictionary<EdgeKey, DataDict> m_edgeDict = new Dictionary<EdgeKey, DataDict>();
+    }
+
     public class CodeScene
     {
-        #region Data
+        // Data
         ItemDict m_itemDict = new ItemDict();
         EdgeDict m_edgeDict = new EdgeDict();
         StopDict m_stopItem = new StopDict();
         Dictionary<string, DataDict> m_itemDataDict = new Dictionary<string, DataDict>();
         Dictionary<EdgeKey, DataDict> m_edgeDataDict = new Dictionary<EdgeKey, DataDict>();
-        #endregion
+        Dictionary<string, SchemeData> m_scheme = new Dictionary<string, SchemeData>();
 
         CodeView m_view = null;
-
-        #region Thread
+        
+        // Thread
         SceneUpdateThread m_updateThread = null;
         object m_lockObj = new object();
-        #endregion
-
+        
+        // Layout/UI Status
         public bool m_isLayoutDirty = false;
-
         bool m_isSourceCandidate = true;
         List<EdgeKey> m_candidateEdge = new List<EdgeKey>();
-
-        #region LRU
-        List<string> m_itemLruQueue = new List<string>();
-        int m_lruMaxLength = 50;
-        #endregion
-
-        #region Status
         public int m_selectTimeStamp = 0;
         bool m_selectEventConnected = true;
         public bool m_autoFocus = true;
         bool m_autoFocusToggle = true;
-        #endregion
 
+        // LRU
+        List<string> m_itemLruQueue = new List<string>();
+        int m_lruMaxLength = 50;
+        
         public CodeScene()
         {
             m_updateThread = new SceneUpdateThread(this);
@@ -95,12 +88,6 @@ namespace CodeAtlasVSIX
 
         public void OnOpenDB()
         {
-        }
-
-        public string GetComment(string id)
-        {
-            // TODO: Add code
-            return "";
         }
 
         #region data
@@ -315,7 +302,7 @@ namespace CodeAtlasVSIX
                         var dataDict = m_itemDataDict[nodeItem.GetUniqueName()];
                         if (dataDict.ContainsKey("comment"))
                         {
-                            itemComment = dataDict["comment"].m_string;
+                            itemComment = (string)dataDict["comment"];
                         }
                     }
                 }
@@ -333,7 +320,7 @@ namespace CodeAtlasVSIX
                             var dataDict = m_edgeDataDict[edgeKey];
                             if (dataDict.ContainsKey("comment"))
                             {
-                                itemComment = dataDict["comment"].m_string;
+                                itemComment = (string)dataDict["comment"];
                             }
                         }
                     }
@@ -911,7 +898,7 @@ namespace CodeAtlasVSIX
             m_isLayoutDirty = true;
         }
 
-        bool _DoAddCodeEdgeItem(string srcUniqueName, string tarUniqueName, object data = null)
+        bool _DoAddCodeEdgeItem(string srcUniqueName, string tarUniqueName, DataDict data = null)
         {
             var key = new EdgeKey(srcUniqueName, tarUniqueName);
             if (m_edgeDict.ContainsKey(key))
@@ -927,15 +914,26 @@ namespace CodeAtlasVSIX
 
             var srcNode = m_itemDict[srcUniqueName];
             var tarNode = m_itemDict[tarUniqueName];
-            var edgeItem = new CodeUIEdgeItem(srcUniqueName, tarUniqueName);
+            var edgeItem = new CodeUIEdgeItem(srcUniqueName, tarUniqueName, data);
             //var srcBinding = new Binding("RightPoint") { Source = srcNode };
             //var tarBinding = new Binding("LeftPoint") { Source = tarNode };
             //BindingOperations.SetBinding(edgeItem, CodeUIEdgeItem.StartPointProperty, srcBinding);
             //BindingOperations.SetBinding(edgeItem, CodeUIEdgeItem.EndPointProperty, tarBinding);
             m_edgeDict.Add(key, edgeItem);
-            if(data != null)
+            if(data != null && data.ContainsKey("customEdge"))
             {
-                // TODO: add custom edge data
+                bool isCustomEdge = (int)data["customEdge"] != 0;
+                if (isCustomEdge)
+                {
+                    if (!m_edgeDataDict.ContainsKey(key))
+                    {
+                        m_edgeDataDict.Add(key, new DataDict { { "customEdge", 1} });
+                    }
+                    else
+                    {
+                        m_edgeDataDict[key].AddOrReplace("customEdge", 1);
+                    }
+                }
             }
             m_view.canvas.Children.Add(edgeItem);
             m_isLayoutDirty = true;
@@ -1089,6 +1087,20 @@ namespace CodeAtlasVSIX
         #endregion
 
         #region Comment
+        public string GetComment(string id)
+        {
+            // TODO: Add code
+            if (m_itemDataDict.ContainsKey(id))
+            {
+                var dataDict = m_itemDataDict[id];
+                if (dataDict.ContainsKey("comment"))
+                {
+                    return (string)dataDict["comment"];
+                }
+            }
+            return "";
+        }
+
         public void UpdateSelectedComment(string comment)
         {
             var itemList = SelectedItems();
@@ -1107,7 +1119,7 @@ namespace CodeAtlasVSIX
                         itemData = new DataDict();
                         m_itemDataDict[nodeItem.GetUniqueName()] = itemData;
                     }
-                    itemData.AddOrReplace("comment",new Variant(comment));
+                    itemData.AddOrReplace("comment",comment);
                     nodeItem.BuildCommentSize(comment);
                 }
                 else if (edgeItem != null)
@@ -1124,7 +1136,7 @@ namespace CodeAtlasVSIX
                             edgeData = new DataDict();
                             m_edgeDataDict[edgeKey] = edgeData;
                         }
-                        edgeData.AddOrReplace("comment", new Variant(comment));
+                        edgeData.AddOrReplace("comment", comment);
                     }
                 }
 
@@ -1190,11 +1202,11 @@ namespace CodeAtlasVSIX
                     }
                     if (inverseEdge)
                     {
-                        _DoAddCodeEdgeItem(uniqueName, canEntName, new Dictionary<string, object> { { "dbRef", canRefObj } });
+                        _DoAddCodeEdgeItem(uniqueName, canEntName, new DataDict { { "dbRef", canRefObj } });
                     }
                     else
                     {
-                        _DoAddCodeEdgeItem(canEntName, uniqueName, new Dictionary<string, object> { { "dbRef", canRefObj } });
+                        _DoAddCodeEdgeItem(canEntName, uniqueName, new DataDict { { "dbRef", canRefObj } });
                     }
 
                     if (maxCount > 0 && addedList.Count >= maxCount)
@@ -1223,6 +1235,170 @@ namespace CodeAtlasVSIX
         }
         #endregion
 
+        #region Scheme
+        public void AddOrReplaceScheme(string name)
+        {
+            var nodes = new List<string>();
+            foreach (var item in m_itemDict)
+            {
+                if (item.Value.IsSelected)
+                {
+                    nodes.Add(item.Value.GetUniqueName());
+                }
+            }
+            if (nodes.Count == 0)
+            {
+                return;
+            }
+
+            var scheme = new SchemeData();
+            scheme.m_nodeList = nodes;
+            foreach (var itemPair in m_edgeDict)
+            {
+                var edgePair = itemPair.Key;
+                var item = itemPair.Value;
+                if (m_itemDict.ContainsKey(item.m_srcUniqueName) && 
+                    m_itemDict.ContainsKey(item.m_tarUniqueName))
+                {
+                    var srcItem = m_itemDict[item.m_srcUniqueName];
+                    var tarItem = m_itemDict[item.m_tarUniqueName];
+                    if (srcItem.IsSelected && tarItem.IsSelected)
+                    {
+                        scheme.m_edgeDict.Add(edgePair, new DataDict());
+                    }
+                }
+            }
+            if (m_scheme.ContainsKey(name))
+            {
+                m_scheme[name] = scheme;
+            }
+            else
+            {
+                m_scheme.Add(name, scheme);
+            }
+        }
+
+        public List<string> GetSchemeNameList()
+        {
+            List<string> nameList = new List<string>();
+            foreach (var item in m_scheme)
+            {
+                nameList.Add(item.Key);
+            }
+            return nameList;
+        }
+
+        public void DeleteScheme(string name)
+        {
+            if (m_scheme.ContainsKey(name))
+            {
+                m_scheme.Remove(name);
+            }
+        }
+
+        public void ShowScheme(string name, bool selectScheme = true)
+        {
+            if (!m_scheme.ContainsKey(name))
+            {
+                return;
+            }
+
+            AcquireLock();
+            var selectedNode = new List<string>(); 
+            var selectedEdge = new List<EdgeKey>();
+            if (selectScheme == false)
+            {
+                foreach (var item in m_itemDict)
+                {
+                    if (item.Value.IsSelected)
+                    {
+                        selectedNode.Add(item.Key);
+                    }
+                }
+                foreach (var item in m_edgeDict)
+                {
+                    if (item.Value.IsSelected)
+                    {
+                        selectedEdge.Add(item.Key);
+                    }
+                }
+            }
+
+            var scheme = m_scheme[name];
+            var codeItemList = scheme.m_nodeList;
+            foreach (var uname in codeItemList)
+            {
+                AddCodeItem(uname);
+            }
+
+            ClearSelection();
+            foreach (var uname in codeItemList)
+            {
+                if (!m_itemDict.ContainsKey(uname))
+                {
+                    continue;
+                }
+                var item = m_itemDict[uname];
+                if (selectScheme)
+                {
+                    item.IsSelected = true;
+                }
+            }
+
+            var edgeItemDict = scheme.m_edgeDict;
+            var dbObj = DBManager.Instance().GetDB();
+            foreach (var edgeItem in edgeItemDict)
+            {
+                var edgePair = edgeItem.Key;
+                var edgeData = new DataDict();
+                if (m_edgeDataDict.ContainsKey(edgePair))
+                {
+                    edgeData = m_edgeDataDict[edgePair];
+                }
+                bool customEdge = false;
+                if (edgeData.ContainsKey("customEdge"))
+                {
+                    customEdge = (int)edgeData["customEdge"] != 0;
+                }
+
+                if (customEdge)
+                {
+                    _DoAddCodeEdgeItem(edgePair.Item1, edgePair.Item2, new DataDict { { "customEdge", 1} });
+                }
+                else
+                {
+                    var refObj = dbObj.SearchRefObj(edgePair.Item1, edgePair.Item2);
+                    if (refObj != null)
+                    {
+                        _DoAddCodeEdgeItem(edgePair.Item1, edgePair.Item2, new DataDict { { "dbRef", refObj } });
+                    }
+                }
+                if (m_edgeDict.ContainsKey(edgePair) && selectScheme)
+                {
+                    m_edgeDict[edgePair].IsSelected = true;
+                }
+            }
+
+            if (!selectScheme)
+            {
+                foreach (var uname in selectedNode)
+                {
+                    if (m_itemDict.ContainsKey(uname))
+                    {
+                        m_itemDict[uname].IsSelected = true;
+                    }
+                }
+                foreach (var uname in selectedEdge)
+                {
+                    if (m_edgeDict.ContainsKey(uname))
+                    {
+                        m_edgeDict[uname].IsSelected = true;
+                    }
+                }
+            }
+            ReleaseLock();
+        }
+        #endregion
         public void Invalidate()
         {
             foreach(var node in m_itemDict)

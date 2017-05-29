@@ -13,4 +13,5 @@
         <Button x:Name="testButton" Content="Test" Canvas.Left="9" Canvas.Top="6" Width="75" Click="testButton_Click"/>
     </Canvas>
     <local:Legend x:Name="legend" HorizontalAlignment="Left" VerticalAlignment="Bottom" MinWidth="100" MinHeight="100" Padding="0"/>
+    <local:Scheme x:Name ="scheme" HorizontalAlignment="Right" VerticalAlignment="Bottom" MinWidth="100" MinHeight="100" Padding="0" Canvas.Left="78" Canvas.Top="27" />
 </Canvas>
