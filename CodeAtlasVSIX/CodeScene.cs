@@ -16,24 +16,62 @@ namespace CodeAtlasVSIX
     using System.Windows;
     using System.Windows.Shapes;
 
+    public class Variant
+    {
+        public Variant(string str) { m_string = str; }
+        public Variant(int val) { m_int = val; }
+        public string m_string;
+        public int m_int;
+    }
+
+    public class DataDict: Dictionary<string, Variant>
+    {
+        public void AddOrReplace(string key, Variant value)
+        {
+            if (this.ContainsKey(key))
+            {
+                this[key] = value;
+            }
+            else
+            {
+                this.Add(key, value);
+            }
+        }
+    }
+
     public class CodeScene
     {
+        #region Data
         ItemDict m_itemDict = new ItemDict();
         EdgeDict m_edgeDict = new EdgeDict();
         StopDict m_stopItem = new StopDict();
+        Dictionary<string, DataDict> m_itemDataDict = new Dictionary<string, DataDict>();
+        Dictionary<EdgeKey, DataDict> m_edgeDataDict = new Dictionary<EdgeKey, DataDict>();
+        #endregion
+
         CodeView m_view = null;
+
+        #region Thread
         SceneUpdateThread m_updateThread = null;
         object m_lockObj = new object();
+        #endregion
+
         public bool m_isLayoutDirty = false;
+
         bool m_isSourceCandidate = true;
         List<EdgeKey> m_candidateEdge = new List<EdgeKey>();
 
+        #region LRU
         List<string> m_itemLruQueue = new List<string>();
         int m_lruMaxLength = 50;
+        #endregion
+
+        #region Status
         public int m_selectTimeStamp = 0;
         bool m_selectEventConnected = true;
         public bool m_autoFocus = true;
         bool m_autoFocusToggle = true;
+        #endregion
 
         public CodeScene()
         {
@@ -261,6 +299,51 @@ namespace CodeAtlasVSIX
             }
 
             RemoveItemLRU();
+
+            // Update Comment
+            var itemName = "";
+            var itemComment = "";
+            if (itemList.Count == 1)
+            {
+                var nodeItem = itemList[0] as CodeUIItem;
+                var edgeItem = itemList[0] as CodeUIEdgeItem;
+                if (nodeItem != null)
+                {
+                    itemName = nodeItem.GetName();
+                    if (m_itemDataDict.ContainsKey(nodeItem.GetUniqueName()))
+                    {
+                        var dataDict = m_itemDataDict[nodeItem.GetUniqueName()];
+                        if (dataDict.ContainsKey("comment"))
+                        {
+                            itemComment = dataDict["comment"].m_string;
+                        }
+                    }
+                }
+                else if (edgeItem != null)
+                {
+                    if (m_itemDict.ContainsKey(edgeItem.m_srcUniqueName) &&
+                        m_itemDict.ContainsKey(edgeItem.m_tarUniqueName))
+                    {
+                        var srcItem = m_itemDict[edgeItem.m_srcUniqueName];
+                        var tarItem = m_itemDict[edgeItem.m_tarUniqueName];
+                        itemName = srcItem.GetName() + " -> " + tarItem.GetName();
+                        var edgeKey = new EdgeKey(edgeItem.m_srcUniqueName, edgeItem.m_tarUniqueName);
+                        if (m_edgeDataDict.ContainsKey(edgeKey))
+                        {
+                            var dataDict = m_edgeDataDict[edgeKey];
+                            if (dataDict.ContainsKey("comment"))
+                            {
+                                itemComment = dataDict["comment"].m_string;
+                            }
+                        }
+                    }
+                }
+            }
+            var symbolWindow = UIManager.Instance().GetMainUI().GetSymbolWindow();
+            if (symbolWindow != null)
+            {
+                symbolWindow.UpdateSymbol(itemName, itemComment);
+            }
             // TODO: more code
             return true;
         }
@@ -775,6 +858,10 @@ namespace CodeAtlasVSIX
             {
                 return false;
             }
+            if (m_stopItem.ContainsKey(srcUniqueName))
+            {
+                return false;
+            }
             var item = new CodeUIItem(srcUniqueName);
             m_itemDict[srcUniqueName] = item;
             m_view.canvas.Children.Add(item);
@@ -970,6 +1057,79 @@ namespace CodeAtlasVSIX
                 SelectNearestItem(lastPos);
             }
 
+            ReleaseLock();
+        }
+        #endregion
+
+        #region Forbidden Symbols
+        public void AddForbiddenSymbol()
+        {
+            foreach (var item in m_itemDict)
+            {
+                var node = item.Value;
+                if (node.IsSelected)
+                {
+                    m_stopItem[node.GetUniqueName()] = node.GetName();
+                }
+            }
+        }
+
+        public Dictionary<string, string> GetForbiddenSymbol()
+        {
+            return m_stopItem;
+        }
+
+        public void DeleteForbiddenSymbol(string uname)
+        {
+            if (m_stopItem.ContainsKey(uname))
+            {
+                m_stopItem.Remove(uname);
+            }
+        }
+        #endregion
+
+        #region Comment
+        public void UpdateSelectedComment(string comment)
+        {
+            var itemList = SelectedItems();
+            AcquireLock();
+            if (itemList.Count == 1)
+            {
+                var item = itemList[0];
+                var nodeItem = item as CodeUIItem;
+                var edgeItem = item as CodeUIEdgeItem;
+                if (nodeItem != null)
+                {
+                    DataDict itemData;
+                    m_itemDataDict.TryGetValue(nodeItem.GetUniqueName(), out itemData);
+                    if (itemData == null)
+                    {
+                        itemData = new DataDict();
+                        m_itemDataDict[nodeItem.GetUniqueName()] = itemData;
+                    }
+                    itemData.AddOrReplace("comment",new Variant(comment));
+                    nodeItem.BuildCommentSize(comment);
+                }
+                else if (edgeItem != null)
+                {
+                    var srcItem = m_itemDict[edgeItem.m_srcUniqueName];
+                    var tarItem = m_itemDict[edgeItem.m_tarUniqueName];
+                    if (srcItem != null && tarItem != null)
+                    {
+                        var edgeKey = new EdgeKey(edgeItem.m_srcUniqueName, edgeItem.m_tarUniqueName);
+                        DataDict edgeData;
+                        m_edgeDataDict.TryGetValue(edgeKey, out edgeData);
+                        if (edgeData == null)
+                        {
+                            edgeData = new DataDict();
+                            m_edgeDataDict[edgeKey] = edgeData;
+                        }
+                        edgeData.AddOrReplace("comment", new Variant(comment));
+                    }
+                }
+
+                m_isLayoutDirty = true;
+            }
             ReleaseLock();
         }
         #endregion

@@ -12,12 +12,14 @@
     </Menu>
     <TabControl x:Name="tabControl" Margin="0" DockPanel.Dock="Bottom" Background="#FF8F8F8F" >
         <TabItem Header="Search">
-            <Grid Background="#FFB7C3AC" MinHeight="10">
+            <Grid Background="#FF666666" MinHeight="10">
                 <local:SearchWindow/>
             </Grid>
         </TabItem>
         <TabItem Header="Symbol">
-            <Grid Background="#FFE5E5E5"/>
+            <Grid Background="#FF666666" MinHeight="10">
+                <local:SymbolWindow x:Name="symbolWindow"/>
+            </Grid>
         </TabItem>
         <TabItem Header="Scheme">
             <Grid Background="#FFE5E5E5"/>

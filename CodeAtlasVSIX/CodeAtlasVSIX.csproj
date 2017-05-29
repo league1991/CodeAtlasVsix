@@ -73,6 +73,9 @@
     <Compile Include="SearchWindow.xaml.cs">
       <DependentUpon>SearchWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SymbolWindow.xaml.cs">
+      <DependentUpon>SymbolWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UIManager.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -221,6 +224,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SearchWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SymbolWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

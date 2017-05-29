@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="CodeAtlasVSIX.SymbolWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CodeAtlasVSIX"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" Background="#FF323131">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="50*"/>
+        </Grid.RowDefinitions>
+        <GroupBox x:Name="groupBox" Header="Symbol Comment" BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}" BorderThickness="0" Foreground="#FFACACAC">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="50*"/>
+                    <RowDefinition Height="20"/>
+                </Grid.RowDefinitions>
+                <Label x:Name="symbolLabel" Content="" Margin="0,0,0,2" Background="{x:Null}" BorderBrush="#FF5B5B5B" BorderThickness="1"/>
+                <TextBox x:Name="commentEdit" TextWrapping="Wrap" Margin="0" BorderThickness="0" Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}" Grid.Row="1"/>
+                <Button x:Name="updateCommentButton" Content="Update Comment" Margin="0" BorderThickness="0" Grid.Row="3" Click="OnUpdateComment"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox x:Name="groupBox1" Header="Ignored Symbol" Height="150" Width="300" Grid.Row="1" Foreground="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" BorderThickness="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="50*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50*"/>
+                    <ColumnDefinition Width="100*"/>
+                    <ColumnDefinition Width="150*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="addSelectedButton" Content="Add Selected" BorderThickness="0" Margin="0" Height="19" Grid.ColumnSpan="2" Click="addSelectedButton_Click"/>
+                <Button x:Name="deleteButton" Content="Delete" Width="146" Grid.Column="2" BorderThickness="0" Height="19" Click="deleteButton_Click"/>
+                <TextBox x:Name="filterEdit" Margin="0" TextWrapping="Wrap" Grid.ColumnSpan="2" Grid.Column="1" BorderThickness="1" TextChanged="textBox_TextChanged" Background="{x:Null}" Grid.Row="1"/>
+                <ListBox x:Name="forbiddenList" Margin="0" BorderThickness="0" Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}" Grid.Row="2" Grid.ColumnSpan="3"/>
+                <Label x:Name="label" Content="Filter" Margin="0" Foreground="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" Grid.Row="1"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>

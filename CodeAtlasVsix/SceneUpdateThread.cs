@@ -100,16 +100,21 @@ namespace CodeAtlasVSIX
                 var sceneNode = itemDict[node.Id];
                 double radius = sceneNode.GetRadius();
                 double width = sceneNode.GetWidth();
-                msaglNode.BoundaryCurve = NodeBoundaryCurves.GetNodeBoundaryCurve(node, width, radius * 2.0);
+                double height = sceneNode.GetHeight();
+                msaglNode.BoundaryCurve = NodeBoundaryCurves.GetNodeBoundaryCurve(node, width, height);
             }
             Microsoft.Msagl.Miscellaneous.LayoutHelpers.CalculateLayout(graph.GeometryGraph, graph.LayoutAlgorithmSettings, new Microsoft.Msagl.Core.CancelToken());
 
             foreach (var msaglNode in graph.GeometryGraph.Nodes)
             {
                 var node = (Microsoft.Msagl.Drawing.Node)msaglNode.UserData;
+                var nodeBegin = node.Pos.Y - node.Height * 0.5;
                 var sceneNode = itemDict[node.Id];
+                double radius = sceneNode.GetRadius();
+                double width = sceneNode.GetWidth();
+                double height = sceneNode.GetHeight();
                 var pos = node.Pos;
-                sceneNode.SetTargetPos(new Point(pos.X, pos.Y));
+                sceneNode.SetTargetPos(new Point(pos.X, nodeBegin + radius));
             }
         }
         

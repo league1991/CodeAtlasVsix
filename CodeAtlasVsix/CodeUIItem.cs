@@ -51,6 +51,7 @@ namespace CodeAtlasVSIX
         Size m_commentSize = new Size();
         double m_lineHeight = 0.0;
         FormattedText m_displayText = null;
+        FormattedText m_commentText = null;
         public bool m_isConnectedToFocusNode = false;
         Dictionary<string, Variant> m_customData = new Dictionary<string, Variant>();
         Color m_color = new Color();
@@ -219,7 +220,7 @@ namespace CodeAtlasVSIX
             m_displayText = formattedText;
         }
 
-        void BuildCommentSize(string comment)
+        public void BuildCommentSize(string comment)
         {
             if (comment == "")
             {
@@ -230,10 +231,12 @@ namespace CodeAtlasVSIX
                                                     CultureInfo.CurrentUICulture,
                                                     FlowDirection.LeftToRight,
                                                     new Typeface("tahoma"),
-                                                    8.0,
+                                                    12.0,
                                                     Brushes.Black);
-            var lines = (int)(formattedText.Width / 100.0);
-            m_commentSize = new Size(100, (formattedText.LineHeight * lines - formattedText.OverhangLeading));
+            formattedText.Trimming = TextTrimming.None;
+            formattedText.MaxTextWidth = 100;
+            m_commentText = formattedText;
+            m_commentSize = new Size(100, (formattedText.Height));
         }
 
         public bool IsFunction()
@@ -458,7 +461,8 @@ namespace CodeAtlasVSIX
 
         public double GetHeight()
         {
-            double h = (m_fontSize.Height + m_commentSize.Height) * 1.67;
+            double h = (m_fontSize.Height + m_commentSize.Height);
+            h += GetRadius();
             return h;
         }
 
@@ -511,6 +515,11 @@ namespace CodeAtlasVSIX
         public string GetUniqueName()
         {
             return m_uniqueName;
+        }
+
+        public string GetName()
+        {
+            return m_name;
         }
 
         public DoxygenDB.Entity GetEntity()
@@ -682,6 +691,14 @@ namespace CodeAtlasVSIX
                 drawingContext.DrawText(m_displayText, new Point(1,1));
                 m_displayText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(255, 239, 183)));
                 drawingContext.DrawText(m_displayText, new Point(0,0));
+            }
+            if (m_commentText != null)
+            {
+                double baseY = m_displayText.Height;
+                //m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(50, 50, 50)));
+                //drawingContext.DrawText(m_commentText, new Point(1, baseY+1));
+                m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(0, 255, 0)));
+                drawingContext.DrawText(m_commentText, new Point(0, baseY));
             }
             //string testString = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor";
 

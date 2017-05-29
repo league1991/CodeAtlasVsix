@@ -4,3 +4,5 @@ Debug
 /.vs/Supercharger/CodeView
 /.vs/Supercharger/Msagl
 /CodeAtlasVSIX/bin/Release
+/CodeAtlasVSIX/obj/Release
+/CodeView/bin/Release

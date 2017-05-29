@@ -150,5 +150,10 @@ namespace CodeAtlasVSIX
             scene.DeleteSelectedItems(false);
         }
         #endregion
+
+        public SymbolWindow GetSymbolWindow()
+        {
+            return this.symbolWindow;
+        }
     }
 }
