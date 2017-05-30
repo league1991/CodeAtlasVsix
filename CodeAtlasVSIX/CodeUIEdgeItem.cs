@@ -41,6 +41,7 @@ namespace CodeAtlasVSIX
         public int m_line = 0;
         public int m_column = 0;
         public bool m_customEdge = false;
+        public List<Color> m_schemeColorList = new List<Color>();
 
         public CodeUIEdgeItem(string srcName, string tarName, DataDict edgeData)
         {

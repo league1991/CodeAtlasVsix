@@ -315,7 +315,7 @@ namespace CodeAtlasVSIX
             return rgb;
         }
 
-        static Color NameToColor(string name)
+        public static Color NameToColor(string name)
         {
             uint hashVal = (uint)name.GetHashCode();
             var h = (hashVal & 0xff) / 255.0;

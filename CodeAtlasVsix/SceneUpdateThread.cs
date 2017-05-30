@@ -59,6 +59,7 @@ namespace CodeAtlasVSIX
                         scene.UpdateCandidateEdge();
                         UpdateLegend();
                         m_selectTimeStamp = scene.m_selectTimeStamp;
+                        scene.UpdateCurrentValidScheme();
                     }
                     UpdateCallOrder();
                     scene.ReleaseLock();

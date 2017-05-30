@@ -15,6 +15,7 @@ namespace CodeAtlasVSIX
     using System.Windows.Controls;
     using System.Windows;
     using System.Windows.Shapes;
+    using System.Windows.Media;
 
     public class DataDict: Dictionary<string, object>
     {
@@ -46,7 +47,8 @@ namespace CodeAtlasVSIX
         Dictionary<string, DataDict> m_itemDataDict = new Dictionary<string, DataDict>();
         Dictionary<EdgeKey, DataDict> m_edgeDataDict = new Dictionary<EdgeKey, DataDict>();
         Dictionary<string, SchemeData> m_scheme = new Dictionary<string, SchemeData>();
-
+        List<string> m_curValidScheme = new List<string>();
+        List<Color> m_curValidSchemeColor = new List<Color>();
         CodeView m_view = null;
         
         // Thread
@@ -1397,6 +1399,109 @@ namespace CodeAtlasVSIX
                 }
             }
             ReleaseLock();
+        }
+
+        void ShowIthScheme(int ithScheme, bool isSelected = false)
+        {
+            if (ithScheme < 0 || ithScheme >= m_curValidScheme.Count)
+            {
+                return;
+            }
+
+            var name = m_curValidScheme[ithScheme];
+            ShowScheme(name, isSelected);
+        }
+
+        List<string> GetCurrentSchemeList()
+        {
+            return m_curValidScheme;
+        }
+
+        List<Color> GetCurrentSchemeColorList()
+        {
+            return m_curValidSchemeColor;
+        }
+
+        public void UpdateCurrentValidScheme()
+        {
+            var schemeNameSet = new HashSet<string>();
+
+            var edgeSet = new HashSet<EdgeKey>();
+            var nodeSet = new HashSet<string>();
+            foreach (var item in m_itemDict)
+            {
+                if (item.Value.IsSelected)
+                {
+                    nodeSet.Add(item.Key);
+                }
+            }
+            foreach (var edgePair in m_edgeDict)
+            {
+                var uname = edgePair.Key;
+                var item = edgePair.Value;
+                item.m_schemeColorList.Clear();
+                if (item.IsSelected)
+                {
+                    edgeSet.Add(uname);
+                    nodeSet.Add(item.m_srcUniqueName);
+                    nodeSet.Add(item.m_tarUniqueName);
+                }
+                else if (m_itemDict[item.m_srcUniqueName].IsSelected)
+                {
+                    edgeSet.Add(uname);
+                    nodeSet.Add(item.m_srcUniqueName);
+                }
+                else if (m_itemDict[item.m_tarUniqueName].IsSelected)
+                {
+                    edgeSet.Add(uname);
+                    nodeSet.Add(item.m_tarUniqueName);
+                }
+            }
+
+            foreach (var uname in nodeSet)
+            {
+                foreach (var item in m_scheme)
+                {
+                    if (item.Value.m_nodeList.Contains(uname))
+                    {
+                        schemeNameSet.Add(item.Key);
+                    }
+                }
+            }
+
+            foreach (var uname in edgeSet)
+            {
+                foreach (var item in m_scheme)
+                {
+                    var schemeName = item.Key;
+                    var schemeData = item.Value;
+                    if (schemeData.m_edgeDict.ContainsKey(uname))
+                    {
+                        schemeNameSet.Add(schemeName);
+                    }
+                }
+            }
+
+            m_curValidScheme = schemeNameSet.ToList();
+            m_curValidScheme.Sort((x, y) => x.CompareTo(y));
+            m_curValidSchemeColor.Clear();
+
+            foreach (var schemeName in m_curValidScheme)
+            {
+                var schemeData = m_scheme[schemeName];
+                var schemeColor = CodeUIItem.NameToColor(schemeName);
+                m_curValidSchemeColor.Add(schemeColor);
+                foreach (var item in schemeData.m_edgeDict)
+                {
+                    var edgePair = item.Key;
+                    var edgeData = item.Value;
+                    if (m_edgeDict.ContainsKey(edgePair))
+                    {
+                        var edge = m_edgeDict[edgePair];
+                        edge.m_schemeColorList.Add(schemeColor);
+                    }
+                }
+            }
         }
         #endregion
         public void Invalidate()
