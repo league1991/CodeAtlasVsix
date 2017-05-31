@@ -63,7 +63,7 @@ namespace CodeAtlasVSIX
             var isAdd = true;
             if (schemeNameList.Contains(schemeName))
             {
-                var result = MessageBox.Show(string.Format("{0} aleardy exists. Replace it?"), "Add Scheme", MessageBoxButton.OKCancel);
+                var result = MessageBox.Show(string.Format("{0} aleardy exists. Replace it?", schemeName), "Add Scheme", MessageBoxButton.OKCancel);
                 if (result == MessageBoxResult.Cancel)
                 {
                     isAdd = false;

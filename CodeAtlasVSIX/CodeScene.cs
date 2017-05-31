@@ -1278,6 +1278,7 @@ namespace CodeAtlasVSIX
             {
                 m_scheme.Add(name, scheme);
             }
+            UpdateCurrentValidScheme();
         }
 
         public List<string> GetSchemeNameList()
@@ -1296,6 +1297,7 @@ namespace CodeAtlasVSIX
             {
                 m_scheme.Remove(name);
             }
+            UpdateCurrentValidScheme();
         }
 
         public void ShowScheme(string name, bool selectScheme = true)
@@ -1412,12 +1414,12 @@ namespace CodeAtlasVSIX
             ShowScheme(name, isSelected);
         }
 
-        List<string> GetCurrentSchemeList()
+        public List<string> GetCurrentSchemeList()
         {
             return m_curValidScheme;
         }
 
-        List<Color> GetCurrentSchemeColorList()
+        public List<Color> GetCurrentSchemeColorList()
         {
             return m_curValidSchemeColor;
         }
@@ -1502,6 +1504,8 @@ namespace CodeAtlasVSIX
                     }
                 }
             }
+
+            m_view.InvalidateScheme();
         }
         #endregion
         public void Invalidate()

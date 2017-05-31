@@ -54,16 +54,17 @@ namespace CodeAtlasVSIX
                         }
                         scene.m_isLayoutDirty = false;
                     }
+
+                    MoveItems();
                     if (m_selectTimeStamp != scene.m_selectTimeStamp)
                     {
+                        UpdateCallOrder();
+                        scene.UpdateCurrentValidScheme();
                         scene.UpdateCandidateEdge();
                         UpdateLegend();
                         m_selectTimeStamp = scene.m_selectTimeStamp;
-                        scene.UpdateCurrentValidScheme();
                     }
-                    UpdateCallOrder();
                     scene.ReleaseLock();
-                    MoveItems();
                     //InvalidateScene();
                     // System.Console.Write("running\n");
                 }
@@ -123,6 +124,7 @@ namespace CodeAtlasVSIX
         {
             var scene = UIManager.Instance().GetScene();
             scene.View.InvalidateLegend();
+            scene.View.InvalidateScheme();
         }
 
         void MoveItems()

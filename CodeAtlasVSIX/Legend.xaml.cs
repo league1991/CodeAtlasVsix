@@ -63,11 +63,11 @@ namespace CodeAtlasVSIX
             }
 
             var nClasses = m_classNameDict.Count;
-            if (nClasses == 0)
-            {
-                //this.Visibility = Visibility.Hidden;
-                return;
-            }
+            //if (nClasses == 0)
+            //{
+            //    //this.Visibility = Visibility.Hidden;
+            //    return;
+            //}
 
             var maxWidth = 0.0;
             foreach (var item in m_classNameDict)

@@ -129,6 +129,14 @@ namespace CodeAtlasVSIX
             //});
         }
 
+        public void InvalidateScheme()
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.AcquireLock();
+            scheme.BuildSchemeLegend();
+            scene.ReleaseLock();
+        }
+
         protected override void OnRender(DrawingContext dc)
         {
             base.OnRender(dc);
