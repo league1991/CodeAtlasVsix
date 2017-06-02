@@ -33,6 +33,7 @@ namespace CodeAtlasVSIX
 
     public class CodeScene
     {
+        #region Data Member
         // Data
         ItemDict m_itemDict = new ItemDict();
         EdgeDict m_edgeDict = new EdgeDict();
@@ -60,7 +61,8 @@ namespace CodeAtlasVSIX
         // LRU
         List<string> m_itemLruQueue = new List<string>();
         int m_lruMaxLength = 50;
-        
+        #endregion
+
         public CodeScene()
         {
             m_updateThread = new SceneUpdateThread(this);
@@ -1404,6 +1406,82 @@ namespace CodeAtlasVSIX
         #endregion
 
         #region Scheme
+        public void AddOrReplaceIthScheme(int ithScheme)
+        {
+            if (ithScheme < 0 || ithScheme >= m_curValidScheme.Count)
+            {
+                return;
+            }
+            var name = m_curValidScheme[ithScheme];
+            AddOrReplaceScheme(name);
+            ShowScheme(name, true);
+        }
+
+        public void ToggleSelectedEdgeToScheme(int ithScheme)
+        {
+            if (ithScheme < 0 || ithScheme >= m_curValidScheme.Count)
+            {
+                return;
+            }
+
+            AcquireLock();
+            var name = m_curValidScheme[ithScheme];
+            var schemeData = m_scheme[name];
+            var schemeNodeSet = new HashSet<string>(schemeData.m_nodeList);
+            var schemeEdgeDict = schemeData.m_edgeDict;
+
+            foreach (var sceneEdgePair in m_edgeDict)
+            {
+                var edgeName = sceneEdgePair.Key;
+                var edge = sceneEdgePair.Value;
+                if (edge.IsSelected)
+                {
+                    bool isAdd = true;
+                    if (schemeEdgeDict.ContainsKey(edgeName))
+                    {
+                        isAdd = false;
+                    }
+
+                    if (isAdd)
+                    {
+                        schemeEdgeDict[edgeName] = new DataDict();
+                        schemeNodeSet.Add(edge.m_srcUniqueName);
+                        schemeNodeSet.Add(edge.m_tarUniqueName);
+                    }
+                    else
+                    {
+                        schemeEdgeDict.Remove(edgeName);
+                        var isSrcNodeDelete = schemeNodeSet.Contains(edge.m_srcUniqueName);
+                        var isTarNodeDelete = schemeNodeSet.Contains(edge.m_tarUniqueName);
+                        foreach (var schemeEdgePair in schemeEdgeDict)
+                        {
+                            var edgePair = schemeEdgePair.Key;
+                            var edgeData = schemeEdgePair.Value;
+                            if (edge.m_srcUniqueName == edgePair.Item1 || edge.m_srcUniqueName == edgePair.Item2)
+                            {
+                                isSrcNodeDelete = false;
+                            }
+                            if (edge.m_tarUniqueName == edgePair.Item1 || edge.m_tarUniqueName == edgePair.Item2)
+                            {
+                                isTarNodeDelete = false;
+                            }
+                        }
+
+                        if (isSrcNodeDelete)
+                        {
+                            schemeNodeSet.Remove(edge.m_srcUniqueName);
+                        }
+                        if (isTarNodeDelete)
+                        {
+                            schemeNodeSet.Remove(edge.m_tarUniqueName);
+                        }
+                    }
+                }
+            }
+            schemeData.m_nodeList = new List<string>(schemeNodeSet);
+            ReleaseLock();
+        }
+
         public void AddOrReplaceScheme(string name)
         {
             var nodes = new List<string>();
