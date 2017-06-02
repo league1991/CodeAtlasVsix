@@ -14,6 +14,8 @@ using System.Windows.Threading;
 
 namespace CodeAtlasVSIX
 {
+    using DataDict = Dictionary<string, object>;
+
     public class OrderData
     {
         public int m_order;

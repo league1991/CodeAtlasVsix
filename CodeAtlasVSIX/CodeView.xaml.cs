@@ -32,7 +32,8 @@ namespace CodeAtlasVSIX
 
             var jarr = js.Deserialize<Dictionary<string, object>>(jsonData);
 
-            UIManager.Instance().GetScene().OnCloseDB();
+            //UIManager.Instance().GetScene().OnCloseDB();
+            UIManager.Instance().GetScene().OnOpenDB();
         }
 
         private void canvas_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)

@@ -10,6 +10,7 @@ namespace CodeAtlasVSIX
     using ItemDict = Dictionary<string, CodeUIItem>;
     using EdgeDict = Dictionary<Tuple<string, string>, CodeUIEdgeItem>;
     using StopDict = Dictionary<string, string>;
+    using DataDict = Dictionary<string, object>;
     using System.Threading;
     using System.Windows.Data;
     using System.Windows.Controls;
@@ -18,21 +19,11 @@ namespace CodeAtlasVSIX
     using System.Windows.Media;
     using System.IO;
     using System.Web.Script.Serialization;
+    using System.Collections;
 
-    public class DataDict: Dictionary<string, object>
-    {
-        public void AddOrReplace(string key, object value)
-        {
-            if (this.ContainsKey(key))
-            {
-                this[key] = value;
-            }
-            else
-            {
-                this.Add(key, value);
-            }
-        }
-    }
+    //public class DataDict: Dictionary<string, object>
+    //{
+    //}
 
     public class SchemeData
     {
@@ -89,10 +80,125 @@ namespace CodeAtlasVSIX
         {
             return m_autoFocus && m_autoFocusToggle;
         }
+        
+        void AddOrReplaceDict(DataDict dict, string key, object value)
+        {
+            if (dict.ContainsKey(key))
+            {
+                dict[key] = value;
+            }
+            else
+            {
+                dict.Add(key, value);
+            }
+        }
 
         #region Read/Write Data
         public void OnOpenDB()
         {
+            var dbObj = DBManager.Instance().GetDB();
+            var dbPath = dbObj.GetDBPath();
+            if (dbPath == null || dbPath == "")
+            {
+                return;
+            }
+
+            var configPath = dbPath + ".config";
+            string jsonStr = "";
+            if (File.Exists(configPath))
+            {
+                jsonStr = File.ReadAllText(configPath);
+            }
+            if (jsonStr == "")
+            {
+                return;
+            }
+
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            var sceneData = js.Deserialize<Dictionary<string, object>>(jsonStr);
+            AcquireLock();
+            // Stop item
+            var stopItemData = sceneData["stopItem"] as Dictionary<string, object>;
+            foreach (var item in stopItemData)
+            {
+                m_stopItem[item.Key] = item.Value as string;
+            }
+            // Item Data
+            var itemDataDict = sceneData["codeData"] as Dictionary<string, object>;
+            foreach (var itemPair in itemDataDict)
+            {
+                var itemData = itemPair.Value as DataDict;
+                m_itemDataDict[itemPair.Key] = itemData;
+            }
+
+            // code item
+            var codeItemList = sceneData["codeItem"] as ArrayList;
+            foreach (var item in codeItemList)
+            {
+                AddCodeItem(item as string);
+            }
+
+            // edge data
+            var edgeData = sceneData["edgeData"] as ArrayList;
+            foreach (var dataItem in edgeData)
+            {
+                var dataList = dataItem as ArrayList;
+                var edgeKey = new EdgeKey(dataList[0] as string, dataList[1] as string);
+                var edgeDataDict = dataList[2] as DataDict;
+                m_edgeDataDict[edgeKey] = edgeDataDict;
+            }
+
+            // edge item
+            var edgeItemList = sceneData["edgeItem"] as ArrayList;
+            foreach (var edgePair in edgeItemList)
+            {
+                var edgePairDict = edgePair as Dictionary<string, object>;
+                var edgeKey = new EdgeKey(edgePairDict["Item1"] as string, edgePairDict["Item2"] as string);
+                if (m_edgeDataDict.ContainsKey(edgeKey))
+                {
+                    var edgeDataDict = m_edgeDataDict[edgeKey] as DataDict;
+                    if (edgeDataDict.ContainsKey("customEdge") && (int)edgeDataDict["customEdge"] != 0)
+                    {
+                        _DoAddCodeEdgeItem(edgeKey.Item1, edgeKey.Item2, new DataDict { { "customEdge", 1 } });
+                    }
+                    else
+                    {
+                        var refObj = dbObj.SearchRefObj(edgeKey.Item1, edgeKey.Item2);
+                        if (refObj != null)
+                        {
+                            _DoAddCodeEdgeItem(edgeKey.Item1, edgeKey.Item2, new DataDict { { "dbRef", refObj} });
+                        }
+                    }
+                }
+            }
+
+            if (m_itemDict.Count > 0)
+            {
+                SelectNearestItem(new Point());
+            }
+
+            // scheme
+            var schemeDict = sceneData["scheme"] as Dictionary<string, object>;
+            foreach (var schemeItem in schemeDict)
+            {
+                var name = schemeItem.Key;
+                var schemeData = schemeItem.Value as Dictionary<string, object>;
+                var nodeList = schemeData["node"] as ArrayList;
+                var edgeList = schemeData["edge"] as ArrayList;
+                var schemeObj = new SchemeData();
+                foreach (var node in nodeList)
+                {
+                    schemeObj.m_nodeList.Add(node as string);
+                }
+                foreach (var item in edgeList)
+                {
+                    var edgeItem = item as ArrayList;
+                    schemeObj.m_edgeDict[new EdgeKey(edgeItem[0] as string, edgeItem[1] as string)] =
+                        edgeItem[2] as DataDict;
+                }
+                m_scheme[name] = schemeObj;
+            }
+            ReleaseLock();
         }
 
         public void OnCloseDB()
@@ -993,7 +1099,7 @@ namespace CodeAtlasVSIX
                     }
                     else
                     {
-                        m_edgeDataDict[key].AddOrReplace("customEdge", 1);
+                        AddOrReplaceDict(m_edgeDataDict[key],"customEdge", 1);
                     }
                 }
             }
@@ -1181,7 +1287,7 @@ namespace CodeAtlasVSIX
                         itemData = new DataDict();
                         m_itemDataDict[nodeItem.GetUniqueName()] = itemData;
                     }
-                    itemData.AddOrReplace("comment",comment);
+                    AddOrReplaceDict(itemData,"comment",comment);
                     nodeItem.BuildCommentSize(comment);
                 }
                 else if (edgeItem != null)
@@ -1198,7 +1304,7 @@ namespace CodeAtlasVSIX
                             edgeData = new DataDict();
                             m_edgeDataDict[edgeKey] = edgeData;
                         }
-                        edgeData.AddOrReplace("comment", comment);
+                        AddOrReplaceDict(edgeData,"comment", comment);
                     }
                 }
 
