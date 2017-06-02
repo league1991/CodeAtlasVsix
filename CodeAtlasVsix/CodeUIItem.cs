@@ -550,6 +550,7 @@ namespace CodeAtlasVSIX
 
         void MouseClickCallback(object sender, MouseEventArgs args)
         {
+            UIManager.Instance().GetScene().ClearSelection();
             IsSelected = true;
             dragStart = args.GetPosition(this);
             CaptureMouse();
