@@ -16,6 +16,8 @@ namespace CodeAtlasVSIX
     using System.Windows;
     using System.Windows.Shapes;
     using System.Windows.Media;
+    using System.IO;
+    using System.Web.Script.Serialization;
 
     public class DataDict: Dictionary<string, object>
     {
@@ -88,9 +90,67 @@ namespace CodeAtlasVSIX
             return m_autoFocus && m_autoFocusToggle;
         }
 
+        #region Read/Write Data
         public void OnOpenDB()
         {
         }
+
+        public void OnCloseDB()
+        {
+            var dbPath = DBManager.Instance().GetDB().GetDBPath();
+            if (dbPath == null || dbPath == "")
+            {
+                return;
+            }
+
+            var codeItemList = new List<string>();
+            foreach (var item in m_itemDict)
+            {
+                codeItemList.Add(item.Key);
+            }
+
+            var edgeItemList = new List<EdgeKey>();
+            foreach (var item in m_edgeDict)
+            {
+                edgeItemList.Add(item.Key);
+            }
+
+            var edgeDataList = new List<List<object>>();
+            foreach (var item in m_edgeDataDict)
+            {
+                edgeDataList.Add(new List<object> { item.Key.Item1, item.Key.Item2, item.Value });
+            }
+
+            var scheme = new Dictionary<string, Dictionary<string, object>>();
+            foreach (var schemeItem in m_scheme)
+            {
+                var schemeValue = schemeItem.Value;
+                var schemeEdgeData = new List<List<object>>();
+                foreach (var edgePair in schemeValue.m_edgeDict)
+                {
+                    schemeEdgeData.Add(new List<object> { edgePair.Key.Item1, edgePair.Key.Item1, edgePair.Value });
+                }
+                var schemeData = new Dictionary<string, object> {
+                    { "node", schemeValue.m_nodeList },
+                    { "edge", schemeEdgeData },
+                };
+                scheme[schemeItem.Key] = schemeData;
+            }
+
+            var jsonDict = new Dictionary<string, object> {
+                {"stopItem", m_stopItem},
+                {"codeItem", codeItemList },
+                {"codeData", m_itemDataDict},
+                {"edgeItem", edgeItemList },
+                {"edgeData", edgeDataList },
+                {"scheme", scheme }
+            };
+            
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            var jsonStr = js.Serialize(jsonDict);
+            File.WriteAllText(dbPath + ".config", jsonStr);
+        }
+        #endregion
 
         #region data
         public ItemDict GetItemDict()
