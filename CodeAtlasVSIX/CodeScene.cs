@@ -20,6 +20,9 @@ namespace CodeAtlasVSIX
     using System.IO;
     using System.Web.Script.Serialization;
     using System.Collections;
+    using Microsoft.VisualStudio.Shell;
+    using EnvDTE;
+    using EnvDTE80;
 
     //public class DataDict: Dictionary<string, object>
     //{
@@ -504,6 +507,75 @@ namespace CodeAtlasVSIX
             // TODO: more code
             return true;
         }
+
+        public void ShowInEditor()
+        {
+            var itemList = SelectedItems();
+            if (itemList.Count == 0)
+            {
+                return;
+            }
+
+            var item = itemList[0];
+            var codeItem = item as CodeUIItem;
+            var edgeItem = item as CodeUIEdgeItem;
+            var fileName = "";
+            int line = 0;
+            int column = 0;
+            if (codeItem != null)
+            {
+                var uname = codeItem.GetUniqueName();
+                var db = DBManager.Instance().GetDB();
+                if (db == null)
+                {
+                    return;
+                }
+
+                var refs = db.SearchRef(uname, "definein");
+                if (refs.Count == 0)
+                {
+                    refs = db.SearchRef(uname, "declarein");
+                }
+                if (refs.Count == 0)
+                {
+                    refs = db.SearchRef(uname, "callby");
+                }
+                if (refs.Count == 0)
+                {
+                    refs = db.SearchRef(uname, "useby");
+                }
+                if (refs.Count == 0)
+                {
+                    return;
+                }
+
+                var refObj = refs[0];
+                var fileEnt = refObj.File();
+                fileName = fileEnt.Longname();
+                line = refObj.Line();
+                column = refObj.Column();
+            }
+            else if (edgeItem != null)
+            {
+                line = edgeItem.m_line;
+                column = edgeItem.m_column;
+                fileName = edgeItem.m_file;
+            }
+
+            if (File.Exists(fileName))
+            {
+                var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+                if (dte != null)
+                {
+                    dte.ItemOperations.OpenFile(fileName);
+                    TextSelection ts = dte.ActiveDocument.Selection as TextSelection;
+                    if (ts != null)
+                    {
+                        ts.GotoLine(line);
+                    }
+                }
+            }
+        }
         #endregion
 
         #region Navigation
@@ -611,7 +683,11 @@ namespace CodeAtlasVSIX
                 return;
             }
 
-            SelectOneItem(minItem);
+            bool res = SelectOneItem(minItem);
+            if (res)
+            {
+                ShowInEditor();
+            }
         }
 
         public Shape FindNeighbourForEdge(CodeUIEdgeItem centerItem, Vector mainDirection)
@@ -1216,15 +1292,20 @@ namespace CodeAtlasVSIX
                 _DoDeleteCodeEdgeItem(edgeKey);
             }
 
+            bool res = false;
             if (lastFunction != null)
             {
-                SelectOneEdge(lastFunction);
+                res = SelectOneEdge(lastFunction);
             }
             else if (lastPos.X != Double.NaN)
             {
-                SelectNearestItem(lastPos);
+                res = SelectNearestItem(lastPos);
             }
 
+            if (res)
+            {
+                ShowInEditor();
+            }
             ReleaseLock();
         }
         #endregion

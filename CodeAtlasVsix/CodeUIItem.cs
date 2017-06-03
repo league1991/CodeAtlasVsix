@@ -559,7 +559,7 @@ namespace CodeAtlasVSIX
         void MouseDoubleClickCallback(object sender, MouseEventArgs args)
         {
             IsSelected = true;
-            System.Console.Out.WriteLine("double click");
+            UIManager.Instance().GetScene().ShowInEditor();
         }
 
         void MouseMoveCallback(object sender, MouseEventArgs args)

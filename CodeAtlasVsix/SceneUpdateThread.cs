@@ -56,9 +56,9 @@ namespace CodeAtlasVSIX
                     }
 
                     MoveItems();
+                    UpdateCallOrder();
                     if (m_selectTimeStamp != scene.m_selectTimeStamp)
                     {
-                        UpdateCallOrder();
                         scene.UpdateCurrentValidScheme();
                         scene.UpdateCandidateEdge();
                         UpdateLegend();

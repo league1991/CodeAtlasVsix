@@ -778,7 +778,11 @@ namespace DoxygenDB
 
             var declLine = Convert.ToInt32(declLineAttr == "" ? "0" : declLineAttr);
             var declColumn = Convert.ToInt32(declColumnAttr == "" ? "0" : declColumnAttr);
-            var declFile = m_doxyFileFolder + "/" + element.GetAttribute("file", "");
+            var declFile = element.GetAttribute("file", "");
+            if (!declFile.Contains(":/"))
+            {
+                declFile = m_doxyFileFolder + "/" + declFile;
+            }
 
             var bodyStartAttr = element.GetAttribute("bodystart", "");
             if (bodyStartAttr == "")
@@ -790,11 +794,14 @@ namespace DoxygenDB
             {
                 bodyEndAttr = bodyStartAttr;
             }
-            var bodyFileAttr = element.GetAttribute("bodyfile", "");
 
             var bodyStart = Convert.ToInt32(bodyStartAttr);
             var bodyEnd = Convert.ToInt32(bodyEndAttr);
-            var bodyFile = m_doxyFileFolder + "/" + element.GetAttribute("bodyfile", "");
+            var bodyFile = element.GetAttribute("bodyfile", "");
+            if (!bodyFile.Contains(":/"))
+            {
+                bodyFile = m_doxyFileFolder + "/" + bodyFile;
+            }
 
             if (bodyEnd < 0)
             {

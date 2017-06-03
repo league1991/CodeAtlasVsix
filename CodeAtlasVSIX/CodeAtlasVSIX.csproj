@@ -60,6 +60,7 @@
     <Compile Include="CodeView.xaml.cs">
       <DependentUpon>CodeView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="VSMenuCommand.cs" />
     <Compile Include="DBManager.cs" />
     <Compile Include="Legend.xaml.cs">
       <DependentUpon>Legend.xaml</DependentUpon>
@@ -94,6 +95,7 @@
     <VSCTCompile Include="CodeAtlasPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
+    <Content Include="Resources\FindCallersCommand.png" />
     <Content Include="Config\index.html" />
     <Content Include="Resources\CodeAtlasCommand.png" />
     <Content Include="Resources\CodeAtlasPackage.ico" />
