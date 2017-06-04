@@ -22,6 +22,7 @@ namespace CodeAtlasVSIX
         int m_selectTimeStamp = 0;
         Dictionary<string, ItemData> m_itemSet = new Dictionary<string, ItemData>();
         int m_edgeNum = 0;
+        bool m_abort = false;
 
         public SceneUpdateThread(CodeScene scene)
         {
@@ -33,11 +34,20 @@ namespace CodeAtlasVSIX
             m_thread.Start();
         }
 
+        public void Terminate()
+        {
+            m_abort = true;
+        }
+
         void Run()
         {
             var scene = UIManager.Instance().GetScene();
             while(true)
             {
+                if (m_abort)
+                {
+                    break;
+                }
                 if(m_isActive)
                 {
                     scene.AcquireLock();

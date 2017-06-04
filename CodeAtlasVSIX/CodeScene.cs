@@ -71,6 +71,14 @@ namespace CodeAtlasVSIX
             m_updateThread = new SceneUpdateThread(this);
             m_updateThread.Start();
         }
+
+        public void OnDestroyScene()
+        {
+            if (m_updateThread != null)
+            {
+                m_updateThread.Terminate();
+            }
+        }
         
         public CodeView View
         {

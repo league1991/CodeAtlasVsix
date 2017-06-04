@@ -29,5 +29,10 @@ namespace CodeView
             //this.Content = codeView;
             this.Content = CodeAtlasVSIX.UIManager.Instance().GetMainUI();
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            CodeAtlasVSIX.UIManager.Instance().GetScene().OnDestroyScene();
+        }
     }
 }
