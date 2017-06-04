@@ -51,7 +51,6 @@ namespace CodeAtlasVSIX
             KeyBinding CmdKey = new KeyBinding();
             CmdKey.Key = key;
             CmdKey.Modifiers = modifier;
-            CmdKey.Modifiers = ModifierKeys.Shift;
             CmdKey.Command = cmd.Command;
             this.InputBindings.Add(CmdKey);
             m_keyCommands.Add(CmdKey);
