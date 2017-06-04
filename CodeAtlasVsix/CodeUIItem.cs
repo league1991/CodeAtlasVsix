@@ -16,7 +16,7 @@ namespace CodeAtlasVSIX
 {
     public class CodeUIItem : Shape
     {
-        class Variant
+        public class Variant
         {
             public Variant(string str) { m_string = str; }
             public Variant(int val) { m_int = val; }
@@ -169,6 +169,15 @@ namespace CodeAtlasVSIX
         public Color GetColor()
         {
             return m_color;
+        }
+
+        public Variant GetCustomData(string key)
+        {
+            if (!m_customData.ContainsKey(key))
+            {
+                return null;
+            }
+            return m_customData[key];
         }
 
         public string GetClassName()
@@ -426,11 +435,7 @@ namespace CodeAtlasVSIX
         public double GetRadius()
         {
             // TODO: more code
-            var r = 8.0;
-            if (m_kind != DoxygenDB.EntKind.VARIABLE)
-            {
-                r = Math.Pow((double)(m_lines + 1), 0.3) * 5.0;
-            }
+            var r = GetBodyRadius();
             if (IsFunction())
             {
                 r = Math.Max(r, m_customData["callerR"].m_double * 0.4);
@@ -454,15 +459,16 @@ namespace CodeAtlasVSIX
             double r = 8.0;
             if (m_kind != DoxygenDB.EntKind.VARIABLE)
             {
-                r = Math.Pow((double)(m_lines + 1), 0.3) * 5.0;
+                r = Math.Pow((double)(m_lines + 1), 0.3) * 2.5;
             }
             return r;
         }
 
         public double GetHeight()
         {
-            double h = (m_fontSize.Height + m_commentSize.Height);
-            h += GetRadius();
+            double r = GetRadius();
+            double h = Math.Max(m_fontSize.Height + m_commentSize.Height, r);
+            h += r;
             return h;
         }
 
@@ -650,7 +656,7 @@ namespace CodeAtlasVSIX
                 Geometry circle = new EllipseGeometry(new Point(0.0, 0.0), r, r);
                 if (m_lines == 0 || m_customData["hasDef"].m_int == 0)
                 {
-                    var innerCircle = new EllipseGeometry(new Point(0.0, 0.0), 2.5, 2.5);
+                    var innerCircle = new EllipseGeometry(new Point(0.0, 0.0), 1.5,1.5);
                     circle = Geometry.Combine(circle, innerCircle, GeometryCombineMode.Exclude, null);
                 }
                 m_geometry.Children.Add(circle);

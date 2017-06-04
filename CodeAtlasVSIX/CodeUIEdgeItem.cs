@@ -74,7 +74,7 @@ namespace CodeAtlasVSIX
             this.MouseEnter += new MouseEventHandler(MouseEnterCallback);
             this.MouseLeave += new MouseEventHandler(MouseLeaveCallback);
 
-            SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(150, 255, 255, 255));
+            SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
             this.Fill = Brushes.Transparent;
             this.Stroke = brush;
             BuildGeometry();
@@ -233,7 +233,7 @@ namespace CodeAtlasVSIX
                 else
                 {
                     StrokeThickness = 1.0;
-                    this.Stroke = new SolidColorBrush(Color.FromArgb(120, 255, 255, 255));
+                    this.Stroke = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
                 }
             });
         }

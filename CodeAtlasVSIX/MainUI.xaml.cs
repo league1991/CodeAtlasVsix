@@ -38,6 +38,7 @@ namespace CodeAtlasVSIX
             AddCommand(OnGoRight, Key.Right);
             AddCommand(OnDelectSelectedItems, Key.Delete, ModifierKeys.None);
             AddCommand(OnDeleteSelectedItemsAndAddToStop, Key.I);
+            AddCommand(OnAddSimilarCodeItem, Key.S);
         }
 
         public void AddCommand(ExecutedRoutedEventHandler callback, Key key, ModifierKeys modifier = ModifierKeys.Alt)
@@ -150,6 +151,8 @@ namespace CodeAtlasVSIX
             var scene = UIManager.Instance().GetScene();
             scene.FindNeighbour(new Vector(1.0, 0.0));
         }
+        #endregion
+        #region Delete
         public void OnDelectSelectedItems(object sender, ExecutedRoutedEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();
@@ -164,6 +167,14 @@ namespace CodeAtlasVSIX
                 var mainUI = UIManager.Instance().GetMainUI();
                 mainUI.symbolWindow.UpdateForbiddenSymbol();
             }
+        }
+        #endregion
+
+        #region Add Symbol
+        public void OnAddSimilarCodeItem(object sender, ExecutedRoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.AddSimilarCodeItem();
         }
         #endregion
 

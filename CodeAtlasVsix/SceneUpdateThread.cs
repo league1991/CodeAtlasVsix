@@ -109,7 +109,8 @@ namespace CodeAtlasVSIX
             var layerSetting = graph.LayoutAlgorithmSettings as SugiyamaLayoutSettings;
             if (layerSetting != null)
             {
-                layerSetting.LayerSeparation = 80;
+                layerSetting.LayerSeparation = 100;
+                layerSetting.NodeSeparation = 1;
             }
             foreach (var msaglNode in graph.GeometryGraph.Nodes)
             {

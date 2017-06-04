@@ -84,6 +84,8 @@ namespace CodeAtlasVSIX
             AddCommand(0x010b, mainUI.OnGoLeft);
             AddCommand(0x010c, mainUI.OnGoRight);
             AddCommand(0x010d, mainUI.OnDelectSelectedItems);
+            AddCommand(0x010e, mainUI.OnDeleteSelectedItemsAndAddToStop);
+            AddCommand(0x010f, mainUI.OnAddSimilarCodeItem);
         }
 
         void AddCommand(int commandID, ExecutedRoutedEventHandler handler)

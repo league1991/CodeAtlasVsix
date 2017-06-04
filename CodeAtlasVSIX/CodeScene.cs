@@ -592,7 +592,7 @@ namespace CodeAtlasVSIX
                 column = edgeItem.m_column;
                 fileName = edgeItem.m_file;
             }
-
+            
             if (File.Exists(fileName))
             {
                 var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
@@ -1226,9 +1226,103 @@ namespace CodeAtlasVSIX
             ReleaseLock();
         }
 
+        public void AddSimilarCodeItem()
+        {
+            var itemList = SelectedItems();
+            if (itemList.Count == 0)
+            {
+                return;
+            }
+
+            var item = itemList[0] as CodeUIItem;
+            if (item == null)
+            {
+                return;
+            }
+
+            var db = DBManager.Instance().GetDB();
+            var name = item.GetName();
+            var uname = item.GetUniqueName();
+            if (db == null || name == null || name == "" || item.GetKind() != DoxygenDB.EntKind.FUNCTION)
+            {
+                return;
+            }
+
+            var ents = db.Search(name, "function");
+            if (ents.Count == 0)
+            {
+                return;
+            }
+            var bestEntList = new List<DoxygenDB.Entity>();
+            foreach (var ent in ents)
+            {
+                if (ent.Name() == name)
+                {
+                    bestEntList.Add(ent);
+                }
+            }
+
+            foreach (var ent in bestEntList)
+            {
+                var entUname = ent.UniqueName();
+                if (uname == entUname)
+                {
+                    continue;
+                }
+                AddCodeItem(entUname);
+                bool hasEdge = false;
+                foreach (var edgePair in m_edgeDict)
+                {
+                    var edgeKey = edgePair.Key;
+                    if (edgeKey.Item1 == uname && edgeKey.Item2 == entUname)
+                    {
+                        hasEdge = true;
+                        break;
+                    }
+                    if (edgeKey.Item2 == uname && edgeKey.Item1 == entUname)
+                    {
+                        hasEdge = true;
+                        break;
+                    }
+                }
+                if (hasEdge || !m_itemDict.ContainsKey(entUname))
+                {
+                    continue;
+                }
+
+                var entItem = m_itemDict[entUname];
+                var customData = entItem.GetCustomData("hasDef");
+                if (customData != null && customData.m_int == 0)
+                {
+                    AddCustomEdge(entUname, uname);
+                }
+                else
+                {
+                    AddCustomEdge(uname, entUname);
+                }
+            }
+        }
+
         public bool AddCodeEdgeItem(string srcUniqueName, string tarUniqueName)
         {
             return _DoAddCodeEdgeItem(srcUniqueName, tarUniqueName);
+        }
+
+        public bool AddCustomEdge(string srcName, string tarName, DataDict edgeData = null)
+        {
+            if (!m_itemDict.ContainsKey(srcName) || !m_itemDict.ContainsKey(tarName))
+            {
+                return false;
+            }
+            if (edgeData == null)
+            {
+                edgeData = new DataDict();
+            }
+
+            AcquireLock();
+            _DoAddCodeEdgeItem(srcName, tarName, edgeData);
+            ReleaseLock();
+            return true;
         }
 
         public void DeleteCodeItem(string uniqueName)
