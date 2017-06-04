@@ -39,6 +39,11 @@ namespace CodeAtlasVSIX
             m_abort = true;
         }
 
+        public void SetActive(bool active)
+        {
+            m_isActive = active;
+        }
+
         void Run()
         {
             var scene = UIManager.Instance().GetScene();
@@ -71,9 +76,9 @@ namespace CodeAtlasVSIX
                     {
                         scene.UpdateCurrentValidScheme();
                         scene.UpdateCandidateEdge();
-                        UpdateLegend();
                         m_selectTimeStamp = scene.m_selectTimeStamp;
                     }
+                    UpdateLegend();
                     scene.ReleaseLock();
                     //InvalidateScene();
                     // System.Console.Write("running\n");
@@ -133,8 +138,11 @@ namespace CodeAtlasVSIX
         void UpdateLegend()
         {
             var scene = UIManager.Instance().GetScene();
-            scene.View.InvalidateLegend();
-            scene.View.InvalidateScheme();
+            if (scene.View != null)
+            {
+                scene.View.InvalidateLegend();
+                scene.View.InvalidateScheme();
+            }
         }
 
         void MoveItems()

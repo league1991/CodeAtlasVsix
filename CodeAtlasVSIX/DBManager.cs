@@ -36,6 +36,13 @@ namespace CodeAtlasVSIX
             _OnOpen();
         }
 
+        public void CloseDB()
+        {
+            _OnClose();
+            m_db = new DoxygenDB.DoxygenDB();
+            m_db.Close();
+        }
+
         public void AnalysisDB()
         {
             m_db.Analyze();
@@ -54,6 +61,12 @@ namespace CodeAtlasVSIX
             scene.OnOpenDB();
 
             var mainUI = UIManager.Instance().GetMainUI();
+        }
+        
+        void _OnClose()
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.OnCloseDB();
         }
     }
 }

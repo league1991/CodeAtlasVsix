@@ -174,13 +174,17 @@ namespace CodeAtlasVSIX
                     {
                         _DoAddCodeEdgeItem(edgeKey.Item1, edgeKey.Item2, new DataDict { { "customEdge", 1 } });
                     }
+                }
+                else
+                {
+                    var refObj = dbObj.SearchRefObj(edgeKey.Item1, edgeKey.Item2);
+                    if (refObj != null)
+                    {
+                        _DoAddCodeEdgeItem(edgeKey.Item1, edgeKey.Item2, new DataDict { { "dbRef", refObj } });
+                    }
                     else
                     {
-                        var refObj = dbObj.SearchRefObj(edgeKey.Item1, edgeKey.Item2);
-                        if (refObj != null)
-                        {
-                            _DoAddCodeEdgeItem(edgeKey.Item1, edgeKey.Item2, new DataDict { { "dbRef", refObj} });
-                        }
+                        Console.WriteLine("ignore edge:" + edgeKey.Item1 + " -> " + edgeKey.Item2);
                     }
                 }
             }
@@ -215,6 +219,25 @@ namespace CodeAtlasVSIX
         }
 
         public void OnCloseDB()
+        {
+            // clear scene
+            AcquireLock();
+            SaveConfig();
+            DeleteAllCodeItems();
+
+            m_itemDict = new ItemDict();
+            m_edgeDict = new EdgeDict();
+            m_stopItem = new StopDict();
+            m_itemDataDict = new Dictionary<string, DataDict>();
+            m_edgeDataDict = new Dictionary<EdgeKey, DataDict>();
+            m_scheme = new Dictionary<string, SchemeData>();
+            m_curValidScheme = new List<string>();
+            m_curValidSchemeColor = new List<Color>();
+
+            ReleaseLock();
+        }
+
+        public void SaveConfig()
         {
             var dbPath = DBManager.Instance().GetDB().GetDBPath();
             if (dbPath == null || dbPath == "")
@@ -1212,7 +1235,20 @@ namespace CodeAtlasVSIX
         {
             AcquireLock();
             _DoDeleteCodeItem(uniqueName);
+            DeleteLRU(new List<string> { uniqueName });
             RemoveItemLRU();
+            ReleaseLock();
+        }
+
+        public void DeleteAllCodeItems()
+        {
+            AcquireLock();
+            var unameList = m_itemDict.Keys.ToList<string>();
+            foreach (var uname in unameList)
+            {
+                _DoDeleteCodeItem(uname);
+            }
+            DeleteLRU(unameList);
             ReleaseLock();
         }
         
@@ -1230,7 +1266,7 @@ namespace CodeAtlasVSIX
                     lastPos = item.Value.Pos;
                     if (addToStop)
                     {
-                        m_stopItem.Add(item.Key, item.Value.Name);
+                        m_stopItem.Add(item.Key, item.Value.GetName());
                     }
                 }
             }

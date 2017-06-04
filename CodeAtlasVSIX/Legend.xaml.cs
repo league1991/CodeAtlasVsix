@@ -94,6 +94,7 @@ namespace CodeAtlasVSIX
             base.OnRender(dc);
 
             var scene = UIManager.Instance().GetScene();
+            scene.AcquireLock();
             var itemDict = scene.GetItemDict();
 
             double x = m_margin, y = m_margin;
@@ -108,7 +109,7 @@ namespace CodeAtlasVSIX
                 dc.DrawText(textObj, new Point(x + m_lineHeight + m_colorTextSpace, y));
                 y += m_lineHeight + m_lineSpace;
             }
-            
+            scene.ReleaseLock();
         }
     }
 }

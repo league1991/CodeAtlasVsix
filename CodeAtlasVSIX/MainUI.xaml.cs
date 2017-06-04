@@ -85,6 +85,11 @@ namespace CodeAtlasVSIX
             Console.WriteLine("open time:" + duration.ToString());
         }
 
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            DBManager.Instance().CloseDB();
+        }
+
         #region Find References
         void _FindRefs(string refStr, string entStr, bool inverseEdge = false, int maxCount = -1)
         {
