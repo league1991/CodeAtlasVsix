@@ -37,6 +37,7 @@ namespace CodeAtlasVSIX
             AddCommand(OnGoLeft, Key.Left);
             AddCommand(OnGoRight, Key.Right);
             AddCommand(OnDelectSelectedItems, Key.Delete, ModifierKeys.None);
+            AddCommand(OnDeleteSelectedItemsAndAddToStop, Key.I);
         }
 
         public void AddCommand(ExecutedRoutedEventHandler callback, Key key, ModifierKeys modifier = ModifierKeys.Alt)
@@ -50,6 +51,7 @@ namespace CodeAtlasVSIX
             KeyBinding CmdKey = new KeyBinding();
             CmdKey.Key = key;
             CmdKey.Modifiers = modifier;
+            CmdKey.Modifiers = ModifierKeys.Shift;
             CmdKey.Command = cmd.Command;
             this.InputBindings.Add(CmdKey);
             m_keyCommands.Add(CmdKey);
@@ -148,6 +150,16 @@ namespace CodeAtlasVSIX
         {
             var scene = UIManager.Instance().GetScene();
             scene.DeleteSelectedItems(false);
+        }
+        public void OnDeleteSelectedItemsAndAddToStop(object sender, ExecutedRoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            if (scene != null)
+            {
+                scene.DeleteSelectedItems(true);
+                var mainUI = UIManager.Instance().GetMainUI();
+                mainUI.symbolWindow.UpdateForbiddenSymbol();
+            }
         }
         #endregion
 

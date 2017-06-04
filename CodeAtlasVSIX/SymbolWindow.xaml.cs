@@ -71,7 +71,7 @@ namespace CodeAtlasVSIX
             UpdateForbiddenSymbol();
         }
 
-        void UpdateForbiddenSymbol()
+        public void UpdateForbiddenSymbol()
         {
             this.Dispatcher.BeginInvoke((ThreadStart)delegate
             {

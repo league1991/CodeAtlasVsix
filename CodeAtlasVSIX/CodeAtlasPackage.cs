@@ -73,20 +73,20 @@ namespace CodeAtlasVSIX
             CodeAtlasCommand.Initialize(this);
             base.Initialize();
             var mainUI = UIManager.Instance().GetMainUI();
-            AddCommand(0x0103, mainUI.OnFindCallers, Key.C);
-            AddCommand(0x0104, mainUI.OnFindCallees, Key.V);
-            AddCommand(0x0105, mainUI.OnFindMembers, Key.M);
-            AddCommand(0x0106, mainUI.OnFindOverrides, Key.O);
-            AddCommand(0x0107, mainUI.OnFindBases, Key.B);
-            AddCommand(0x0108, mainUI.OnFindUses, Key.U);
-            AddCommand(0x0109, mainUI.OnGoUp, Key.Up);
-            AddCommand(0x010a, mainUI.OnGoDown, Key.Down);
-            AddCommand(0x010b, mainUI.OnGoLeft, Key.Left);
-            AddCommand(0x010c, mainUI.OnGoRight, Key.Right);
-            AddCommand(0x010d, mainUI.OnDelectSelectedItems, Key.Delete, ModifierKeys.None);
+            AddCommand(0x0103, mainUI.OnFindCallers);
+            AddCommand(0x0104, mainUI.OnFindCallees);
+            AddCommand(0x0105, mainUI.OnFindMembers);
+            AddCommand(0x0106, mainUI.OnFindOverrides);
+            AddCommand(0x0107, mainUI.OnFindBases);
+            AddCommand(0x0108, mainUI.OnFindUses);
+            AddCommand(0x0109, mainUI.OnGoUp);
+            AddCommand(0x010a, mainUI.OnGoDown);
+            AddCommand(0x010b, mainUI.OnGoLeft);
+            AddCommand(0x010c, mainUI.OnGoRight);
+            AddCommand(0x010d, mainUI.OnDelectSelectedItems);
         }
 
-        void AddCommand(int commandID, ExecutedRoutedEventHandler handler, Key key, ModifierKeys modifier = ModifierKeys.Alt)
+        void AddCommand(int commandID, ExecutedRoutedEventHandler handler)
         {
             CodeAtlasVSIX.Commands.VSMenuCommand.Initialize(this, commandID, handler);
         }

@@ -140,8 +140,14 @@
           <ButtonText>Delete Selected Items</ButtonText>
         </Strings>
       </Button>
-    </Buttons>
 
+      <Button guid="guidCodeAtlasPackageCmdSet" id="IgnoreSelectedItemsCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Strings>
+          <ButtonText>Ignore Selected Items</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
     <Bitmaps>
       <!--  The bitmap id is defined in a way that is a little bit different from the others:
@@ -165,7 +171,8 @@
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoLeftCommand" key1="J" mod1="ALT" editor="guidSourceCodeTextEditor" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoRightCommand" key1="L" mod1="ALT" editor="guidSourceCodeTextEditor" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="DeleteSelectedItemsCommand" key1="VK_DELETE" mod1="ALT" editor="guidVSStd97" />
-  </KeyBindings>  
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="IgnoreSelectedItemsCommand" key1="I" mod1="ALT" editor="guidVSStd97" />
+  </KeyBindings>
   
   <Symbols>
     <!-- This is the package guid. -->
@@ -187,6 +194,7 @@
       <IDSymbol name="GoLeftCommand" value="0x010b" />
       <IDSymbol name="GoRightCommand" value="0x010c" />
       <IDSymbol name="DeleteSelectedItemsCommand" value="0x010d" />
+      <IDSymbol name="IgnoreSelectedItemsCommand" value="0x010e" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{e8b62cf1-f2d4-4924-a788-7d9f6eb6d635}">
