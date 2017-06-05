@@ -6,6 +6,14 @@
              xmlns:local="clr-namespace:CodeAtlasVSIX"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
@@ -20,7 +28,7 @@
             <ColumnDefinition FrameworkElement.FlowDirection="RightToLeft" Width="5*"/>
         </Grid.ColumnDefinitions>
         <Label x:Name="nameLabel" Content="Name" HorizontalAlignment="Right" Margin="-2,0,0,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch" Padding="5,4.7,5,5" FontSize="10"/>
-        <TextBox x:Name="nameEdit" Margin="0" TextWrapping="Wrap" Grid.Column="1" MinWidth="40" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="#FFACACAC" KeyDown="nameEdit_KeyDown"/>
+        <TextBox x:Name="nameEdit" Margin="0" TextWrapping="Wrap" Grid.Column="1" MinWidth="40" Style="{DynamicResource TextBoxStyle}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" KeyDown="nameEdit_KeyDown"/>
         <Label x:Name="label1" Content="Type" Margin="0" Grid.Column="2" HorizontalAlignment="Right" FontSize="10"/>
         <TextBox x:Name="typeEdit" Margin="0" TextWrapping="Wrap" Grid.Column="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="#FFACACAC" KeyDown="typeEdit_KeyDown"/>
         <Label x:Name="label2" Content="File" HorizontalAlignment="Right" Margin="0" Grid.Row="1" FontSize="10"/>

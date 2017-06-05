@@ -6,6 +6,15 @@
              xmlns:local="clr-namespace:CodeAtlasVSIX"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" Background="#FF464646" Height="Auto" >
+
+    <DockPanel.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </DockPanel.Resources>
+
     <Menu x:Name="menu" Height="20" DockPanel.Dock="Top" Background="#FF3C3C3C">
         <MenuItem x:Name="OpenButton" Header="Open" Click="OpenButton_Click" Foreground="#FFB9B9B9"/>
         <MenuItem x:Name="TestButton" Header="Test" Foreground="#FFB9B9B9" Click="TestButton_Click"/>
