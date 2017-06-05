@@ -161,6 +161,77 @@
           <ButtonText>Show In Atlas</ButtonText>
         </Strings>
       </Button>
+        
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme1" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Strings>
+          <ButtonText>Show Scheme 1</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme2" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Strings>
+          <ButtonText>Show Scheme 2</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme3" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Strings>
+          <ButtonText>Show Scheme 3</ButtonText>
+        </Strings>
+      </Button>
+          
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme4" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Strings>
+          <ButtonText>Show Scheme 4</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme5" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Strings>
+          <ButtonText>Show Scheme 5</ButtonText>
+        </Strings>
+      </Button>
+        
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme1" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Strings>
+          <ButtonText>Toggle Scheme 1</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme2" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Strings>
+          <ButtonText>Toggle Scheme 2</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme3" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Strings>
+          <ButtonText>Toggle Scheme 3</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme4" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Strings>
+          <ButtonText>Toggle Scheme 4</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme5" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Strings>
+          <ButtonText>Toggle Scheme 5</ButtonText>
+        </Strings>
+      </Button>
+    
     </Buttons>
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
     <Bitmaps>
@@ -188,6 +259,16 @@
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="IgnoreSelectedItemsCommand" key1="D" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="AddSimilarItem" key1="S" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlas" key1="G" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowScheme1" key1="1" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowScheme2" key1="2" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowScheme3" key1="3" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowScheme4" key1="4" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowScheme5" key1="5" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme1" key1="1" mod1="Control" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme2" key1="2" mod1="Control" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme3" key1="3" mod1="Control" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme4" key1="4" mod1="Control" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme5" key1="5" mod1="Control" editor="guidSourceCodeTextEditor" />
   </KeyBindings>
   
   <Symbols>
@@ -213,6 +294,16 @@
       <IDSymbol name="IgnoreSelectedItemsCommand" value="0x010e" />
       <IDSymbol name="AddSimilarItem" value="0x010f" />
       <IDSymbol name="ShowInAtlas" value="0x0110" />
+      <IDSymbol name="ShowScheme1" value="0x0111" />
+      <IDSymbol name="ShowScheme2" value="0x0112" />
+      <IDSymbol name="ShowScheme3" value="0x0113" />
+      <IDSymbol name="ShowScheme4" value="0x0114" />
+      <IDSymbol name="ShowScheme5" value="0x0115" />
+      <IDSymbol name="ToggleScheme1" value="0x0116" />
+      <IDSymbol name="ToggleScheme2" value="0x0117" />
+      <IDSymbol name="ToggleScheme3" value="0x0118" />
+      <IDSymbol name="ToggleScheme4" value="0x0119" />
+      <IDSymbol name="ToggleScheme5" value="0x011a" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{e8b62cf1-f2d4-4924-a788-7d9f6eb6d635}">

@@ -87,6 +87,17 @@ namespace CodeAtlasVSIX
             AddCommand(0x010e, mainUI.OnDeleteSelectedItemsAndAddToStop);
             AddCommand(0x010f, mainUI.OnAddSimilarCodeItem);
             AddCommand(0x0110, mainUI.OnShowInAtlas);
+
+            AddCommand(0x0111, mainUI.OnShowScheme1);
+            AddCommand(0x0112, mainUI.OnShowScheme2);
+            AddCommand(0x0113, mainUI.OnShowScheme3);
+            AddCommand(0x0114, mainUI.OnShowScheme4);
+            AddCommand(0x0115, mainUI.OnShowScheme5);
+            AddCommand(0x0116, mainUI.OnToggleScheme1);
+            AddCommand(0x0117, mainUI.OnToggleScheme2);
+            AddCommand(0x0118, mainUI.OnToggleScheme3);
+            AddCommand(0x0119, mainUI.OnToggleScheme4);
+            AddCommand(0x011a, mainUI.OnToggleScheme5);
         }
 
         void AddCommand(int commandID, ExecutedRoutedEventHandler handler)

@@ -40,9 +40,19 @@ namespace CodeAtlasVSIX
             AddCommand(OnGoDown, Key.Down);
             AddCommand(OnGoLeft, Key.Left);
             AddCommand(OnGoRight, Key.Right);
-            AddCommand(OnDelectSelectedItems, Key.Delete, ModifierKeys.None);
+            AddCommand(OnDelectSelectedItems, Key.Delete, ModifierKeys.Alt);
             AddCommand(OnDeleteSelectedItemsAndAddToStop, Key.I);
             AddCommand(OnAddSimilarCodeItem, Key.S);
+            AddCommand(OnToggleScheme1, Key.D1, ModifierKeys.Control);
+            AddCommand(OnToggleScheme2, Key.D2, ModifierKeys.Control);
+            AddCommand(OnToggleScheme3, Key.D3, ModifierKeys.Control);
+            AddCommand(OnToggleScheme4, Key.D4, ModifierKeys.Control);
+            AddCommand(OnToggleScheme5, Key.D5, ModifierKeys.Control);
+            AddCommand(OnShowScheme1, Key.D1, ModifierKeys.Alt);
+            AddCommand(OnShowScheme2, Key.D2, ModifierKeys.Alt);
+            AddCommand(OnShowScheme3, Key.D3, ModifierKeys.Alt);
+            AddCommand(OnShowScheme4, Key.D4, ModifierKeys.Alt);
+            AddCommand(OnShowScheme5, Key.D5, ModifierKeys.Alt);
         }
 
         public void AddCommand(ExecutedRoutedEventHandler callback, Key key, ModifierKeys modifier = ModifierKeys.Alt)
@@ -74,6 +84,7 @@ namespace CodeAtlasVSIX
             if (ofd.ShowDialog() == true)
             {
                 DBManager.Instance().OpenDB(ofd.FileName);
+                UpdateUI();
             }
         }
 
@@ -88,11 +99,17 @@ namespace CodeAtlasVSIX
             DBManager.Instance().OpenDB(defaultPath);
             double duration = (DateTime.Now - newDownTime).TotalSeconds;
             Console.WriteLine("open time:" + duration.ToString());
+            UpdateUI();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             DBManager.Instance().CloseDB();
+            UpdateUI();
+        }
+
+        public void UpdateUI()
+        {
             schemeWindow.UpdateScheme();
             symbolWindow.UpdateForbiddenSymbol();
             symbolWindow.UpdateSymbol("", "");
@@ -229,6 +246,69 @@ namespace CodeAtlasVSIX
         }
         #endregion
 
+        #region Scheme
+        void ToggleSelectedEdgeToScheme(int ithScheme)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.ToggleSelectedEdgeToScheme(ithScheme);
+        }
+
+        public void OnToggleScheme1(object sender, ExecutedRoutedEventArgs e)
+        {
+            ToggleSelectedEdgeToScheme(0);
+        }
+
+        public void OnToggleScheme2(object sender, ExecutedRoutedEventArgs e)
+        {
+            ToggleSelectedEdgeToScheme(1);
+        }
+
+        public void OnToggleScheme3(object sender, ExecutedRoutedEventArgs e)
+        {
+            ToggleSelectedEdgeToScheme(2);
+        }
+
+        public void OnToggleScheme4(object sender, ExecutedRoutedEventArgs e)
+        {
+            ToggleSelectedEdgeToScheme(3);
+        }
+
+        public void OnToggleScheme5(object sender, ExecutedRoutedEventArgs e)
+        {
+            ToggleSelectedEdgeToScheme(4);
+        }
+
+        public void ShowScheme(int ithScheme, bool isSelected = false)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.ShowIthScheme(ithScheme, isSelected);
+        }
+
+        public void OnShowScheme1(object sender, ExecutedRoutedEventArgs e)
+        {
+            ShowScheme(0);
+        }
+
+        public void OnShowScheme2(object sender, ExecutedRoutedEventArgs e)
+        {
+            ShowScheme(1);
+        }
+
+        public void OnShowScheme3(object sender, ExecutedRoutedEventArgs e)
+        {
+            ShowScheme(2);
+        }
+
+        public void OnShowScheme4(object sender, ExecutedRoutedEventArgs e)
+        {
+            ShowScheme(3);
+        }
+
+        public void OnShowScheme5(object sender, ExecutedRoutedEventArgs e)
+        {
+            ShowScheme(4);
+        }
+        #endregion
         public SymbolWindow GetSymbolWindow()
         {
             return this.symbolWindow;

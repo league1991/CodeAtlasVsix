@@ -1867,7 +1867,7 @@ namespace CodeAtlasVSIX
             ReleaseLock();
         }
 
-        void ShowIthScheme(int ithScheme, bool isSelected = false)
+        public void ShowIthScheme(int ithScheme, bool isSelected = false)
         {
             if (ithScheme < 0 || ithScheme >= m_curValidScheme.Count)
             {
