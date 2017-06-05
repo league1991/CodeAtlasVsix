@@ -112,7 +112,7 @@ namespace CodeAtlasVSIX
             UpdateScheme();
         }
 
-        void UpdateScheme()
+        public void UpdateScheme()
         {
             var scene = UIManager.Instance().GetScene();
             var nameList = scene.GetSchemeNameList();

@@ -42,7 +42,7 @@ namespace CodeAtlasVSIX
             OnSearch();
         }
 
-        private void OnSearch()
+        public void OnSearch()
         {
             var searchWord = nameEdit.Text;
             var searchKind = typeEdit.Text;

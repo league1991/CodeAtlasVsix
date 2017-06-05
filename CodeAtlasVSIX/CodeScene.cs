@@ -235,6 +235,7 @@ namespace CodeAtlasVSIX
             m_curValidSchemeColor = new List<Color>();
 
             ReleaseLock();
+            
         }
 
         public void SaveConfig()

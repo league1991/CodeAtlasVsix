@@ -902,6 +902,10 @@ namespace DoxygenDB
 
             _ReadDoxyfile(fullPath);
             m_dbFolder = m_metaDict["OUTPUT_DIRECTORY"][0];
+            if (m_dbFolder == "")
+            {
+                m_dbFolder = m_doxyFileFolder;
+            }
             m_dbFolder += "/" + m_metaDict["XML_OUTPUT"][0];
             m_dbFolder = m_dbFolder.Replace('\\', '/');
 

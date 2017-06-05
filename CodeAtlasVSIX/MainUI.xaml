@@ -14,7 +14,7 @@
     <TabControl x:Name="tabControl" Margin="0" DockPanel.Dock="Bottom" Background="#FF8F8F8F" >
         <TabItem Header="Search">
             <Grid Background="#FF666666" MinHeight="10">
-                <local:SearchWindow/>
+                <local:SearchWindow x:Name="searchWindow"/>
             </Grid>
         </TabItem>
         <TabItem Header="Symbol">
