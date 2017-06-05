@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CodeAtlasVSIX"
+             xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -27,15 +28,15 @@
             <ColumnDefinition Width="Auto" MaxWidth="40" MinWidth="40"/>
             <ColumnDefinition FrameworkElement.FlowDirection="RightToLeft" Width="5*"/>
         </Grid.ColumnDefinitions>
-        <Label x:Name="nameLabel" Content="Name" HorizontalAlignment="Right" Margin="-2,0,0,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch" Padding="5,4.7,5,5" FontSize="10"/>
+        <Label x:Name="nameLabel" Content="Name" HorizontalAlignment="Right" Margin="-2,0,0,0" Style="{DynamicResource LabelStyle}" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch" Padding="5,4.7,5,5" FontSize="10"/>
         <TextBox x:Name="nameEdit" Margin="0" TextWrapping="Wrap" Grid.Column="1" MinWidth="40" Style="{DynamicResource TextBoxStyle}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" KeyDown="nameEdit_KeyDown"/>
         <Label x:Name="label1" Content="Type" Margin="0" Grid.Column="2" HorizontalAlignment="Right" FontSize="10"/>
-        <TextBox x:Name="typeEdit" Margin="0" TextWrapping="Wrap" Grid.Column="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="#FFACACAC" KeyDown="typeEdit_KeyDown"/>
+        <TextBox x:Name="typeEdit" Margin="0" TextWrapping="Wrap" Grid.Column="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Style="{DynamicResource TextBoxStyle}" KeyDown="typeEdit_KeyDown"/>
         <Label x:Name="label2" Content="File" HorizontalAlignment="Right" Margin="0" Grid.Row="1" FontSize="10"/>
         <TextBox x:Name="fileEdit" Margin="0" TextWrapping="Wrap" Grid.Column="1" Grid.Row="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="#FFACACAC" KeyDown="fileEdit_KeyDown"/>
         <Label x:Name="label3" Content="Line" HorizontalAlignment="Right" Margin="0" Grid.Column="2" Grid.Row="1" FontSize="10"/>
         <TextBox x:Name="lineEdit" TextWrapping="Wrap" Grid.Column="3" Grid.Row="1" Background="#FFACACAC" KeyDown="lineEdit_KeyDown" PreviewKeyDown="lineEdit_PreviewKeyDown" PreviewTextInput="lineEdit_PreviewTextInput" />
-        <Button x:Name="searchButton" Content="Search" Grid.Row="2" Grid.ColumnSpan="2" Click="searchButton_Click" BorderBrush="{x:Null}" BorderThickness="0"/>
+        <Button x:Name="searchButton" Content="Search" Grid.Row="2" Grid.ColumnSpan="2" Click="searchButton_Click" Style="{DynamicResource ButtonStyle}" BorderBrush="{x:Null}" BorderThickness="0"/>
         <Button x:Name="addToSceneButton" Content="Add To Scene" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" Click="addToSceneButton_Click" HorizontalContentAlignment="Center" BorderBrush="{x:Null}" BorderThickness="0"/>
         <ListBox x:Name="resultList" Margin="0" Grid.Row="3" Grid.ColumnSpan="4" Background="#FF4D4D4D" MinHeight="100" MaxHeight="250"/>
 
