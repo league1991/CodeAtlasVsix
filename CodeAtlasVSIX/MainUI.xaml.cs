@@ -1,7 +1,11 @@
-﻿using System;
+﻿using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -77,8 +81,8 @@ namespace CodeAtlasVSIX
         {
             // defaultPath = r"C:\Users\me\AppData\Roaming\Sublime Text 3\Packages\CodeAtlas\CodeAtlasSublime.udb"
             // defaultPath = "I:/Programs/masteringOpenCV/Chapter3_MarkerlessAR/doc/xml/index.xml"
-            //var defaultPath = "I:/Programs/mitsuba/Doxyfile";
-            var defaultPath = "D:/Code/NewRapidRT/rapidrt/Doxyfile";
+            var defaultPath = "I:/Programs/mitsuba/Doxyfile";
+            //var defaultPath = "D:/Code/NewRapidRT/rapidrt/Doxyfile";
 
             var newDownTime = DateTime.Now;
             DBManager.Instance().OpenDB(defaultPath);
@@ -93,6 +97,48 @@ namespace CodeAtlasVSIX
             symbolWindow.UpdateForbiddenSymbol();
             symbolWindow.UpdateSymbol("", "");
             searchWindow.OnSearch();
+        }
+
+        public void OnShowInAtlas(object sender, ExecutedRoutedEventArgs e)
+        {
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            Document doc = dte.ActiveDocument;
+            EnvDTE.TextSelection ts = doc.Selection as EnvDTE.TextSelection;
+            int lineOffset = ts.AnchorPoint.LineCharOffset;
+            int lineNum = ts.AnchorPoint.Line;
+
+            ts.SelectLine();
+            string lineText = ts.Text;
+            ts.MoveToLineAndOffset(lineNum, lineOffset);
+
+            Regex rx = new Regex(@"\b(?<word>\w+)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            MatchCollection matches = rx.Matches(lineText);
+
+            // Report on each match.
+            string token = null;
+            foreach (Match match in matches)
+            {
+                string word = match.Groups["word"].Value;
+                int startIndex = match.Index;
+                int endIndex = startIndex + word.Length - 1;
+                int lineIndex = lineOffset - 1;
+                if (startIndex <= lineIndex && endIndex + 1 >= lineIndex)
+                {
+                    token = word;
+                    break;
+                }
+            }
+
+            if (token != null)
+            {
+                string docPath = doc.FullName;
+                searchWindow.nameEdit.Text = token;
+                searchWindow.typeEdit.Text = "";
+                searchWindow.fileEdit.Text = docPath;
+                searchWindow.lineEdit.Text = lineNum.ToString();
+                searchWindow.OnSearch();
+                searchWindow.OnAddToScene();
+            }
         }
 
         #region Find References
@@ -156,6 +202,7 @@ namespace CodeAtlasVSIX
             scene.FindNeighbour(new Vector(1.0, 0.0));
         }
         #endregion
+
         #region Delete
         public void OnDelectSelectedItems(object sender, ExecutedRoutedEventArgs e)
         {

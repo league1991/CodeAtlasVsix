@@ -156,7 +156,7 @@ namespace CodeAtlasVSIX
             }
         }
 
-        private void OnAddToScene()
+        public void OnAddToScene()
         {
             var item = resultList.SelectedItem as ResultItem;
             if (item == null)
