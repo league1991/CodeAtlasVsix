@@ -3,15 +3,22 @@
                     xmlns:local="clr-namespace:CodeAtlasVSIX"
                     xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
                     >
-    <Style TargetType="Label" x:Key="LabelStyle">
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"/>
+    <Style TargetType="Menu" x:Key="MenuStyle">
+        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuKey}}"/>
     </Style>
-    <Style TargetType="TextBox" x:Key="TextBoxStyle">
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"/>
-        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"/>
+    <Style TargetType="MenuItem" x:Key="MenuItemStyle">
+        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
     </Style>
-    <Style TargetType="Button" x:Key="ButtonStyle">
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"/>
-        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
+
+    <Style TargetType="Label" x:Key="LabelStyle" BasedOn="{StaticResource ResourceKey={x:Static vsfx:VsResourceKeys.ThemedDialogLabelStyleKey}}">
+    </Style>
+
+    <Style TargetType="TextBox" x:Key="TextBoxStyle" BasedOn="{StaticResource ResourceKey={x:Static vsfx:VsResourceKeys.TextBoxStyleKey}}">
+    </Style>
+
+    <Style TargetType="Button" x:Key="ButtonStyle" BasedOn="{StaticResource ResourceKey={x:Static vsfx:VsResourceKeys.ButtonStyleKey}}">
+    </Style>
+
+    <Style TargetType="ListBox" x:Key="ListBoxStyle" BasedOn="{StaticResource ResourceKey={x:Static vsfx:VsResourceKeys.ThemedDialogListBoxStyleKey}}">
     </Style>
 </ResourceDictionary>

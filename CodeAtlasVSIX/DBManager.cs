@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace CodeAtlasVSIX
 {
@@ -30,6 +32,12 @@ namespace CodeAtlasVSIX
 
         public void OpenDB(string path)
         {
+            if (!File.Exists(path))
+            {
+                MessageBox.Show("Database file doesn't exist.", "Open Database");
+                return;
+            }
+
             m_db = new DoxygenDB.DoxygenDB();
             m_db.Open(path);
 
