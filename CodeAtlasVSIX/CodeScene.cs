@@ -1970,8 +1970,10 @@ namespace CodeAtlasVSIX
                     }
                 }
             }
-
-            m_view.InvalidateScheme();
+            if (m_view != null)
+            {
+                m_view.InvalidateScheme();
+            }
         }
         #endregion
         public void Invalidate()
