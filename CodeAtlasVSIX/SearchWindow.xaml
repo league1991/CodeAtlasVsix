@@ -31,6 +31,6 @@
         <TextBox x:Name="lineEdit" TextWrapping="Wrap" Grid.Column="3" Grid.Row="1" KeyDown="lineEdit_KeyDown" PreviewKeyDown="lineEdit_PreviewKeyDown" PreviewTextInput="lineEdit_PreviewTextInput" />
         <Button x:Name="searchButton" Content="Search" Grid.Row="2" Grid.ColumnSpan="2" Click="searchButton_Click" />
         <Button x:Name="addToSceneButton" Content="Add To Scene" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" Click="addToSceneButton_Click" HorizontalContentAlignment="Center" />
-        <ListBox x:Name="resultList" Margin="0" Grid.Row="3" Grid.ColumnSpan="4" MinHeight="100" MaxHeight="250"/>
+        <ListBox x:Name="resultList" Margin="0" Grid.Row="3" Grid.ColumnSpan="4" MinHeight="100"/>
     </Grid>
 </UserControl>

@@ -45,7 +45,7 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
+        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Style="{DynamicResource GridSplitterStyle}"/>
         <local:CodeView Grid.Row="0" x:Name="codeView" />
     </Grid>
 </DockPanel>

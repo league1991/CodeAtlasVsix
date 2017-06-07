@@ -17,6 +17,10 @@
         <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.FileTabBorderKey}}"/>
     </Style>
 
+    <Style TargetType="GridSplitter" x:Key="GridSplitterStyle">
+        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
+    </Style>
+    
     <Style TargetType="{x:Type TabItem}" x:Key="TabItemStyle">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
         <Setter Property="Template">
