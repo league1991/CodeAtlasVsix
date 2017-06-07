@@ -41,24 +41,7 @@ namespace CodeAtlasVSIX
             res |= SetElementStyle(depObj as ListView, VsResourceKeys.ThemedDialogListViewStyleKey);
             res |= SetElementStyle(depObj as ListViewItem, VsResourceKeys.ThemedDialogListViewItemStyleKey);
             //res |= SetElementStyle(depObj as TabControl, VsResourceKeys.ThemedDialogDefaultStylesKey);
-            //res |= SetElementStyle(depObj as TabItem, VsResourceKeys.ThemedDialogDefaultStylesKey);
-
-
-            //var backgroundBrush = m_rootControl.TryFindResource(VsBrushes.BackgroundKey) as Brush;
-            //if (res == false && backgroundBrush != null)
-            //{
-            //    var panel = depObj as Panel;
-            //    if (panel != null)
-            //    {
-            //        panel.Background = backgroundBrush;
-            //    }
-            //    var control = depObj as Control;
-            //    if (control != null)
-            //    {
-            //        control.Background = backgroundBrush;
-            //    }
-            //}
-
+            //res |= SetElementStyle(depObj as TabItem, VsResourceKeys.ButtonStyleKey);
 
             foreach (object logicalChild in LogicalTreeHelper.GetChildren(depObj))
                 WalkDownLogicalTree(logicalChild);

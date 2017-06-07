@@ -16,23 +16,23 @@
         </ResourceDictionary>
     </DockPanel.Resources>
 
-    <Menu x:Name="menu" Height="20" DockPanel.Dock="Top">
-        <MenuItem x:Name="OpenButton" Header="Open" Click="OpenButton_Click" />
-        <MenuItem x:Name="TestButton" Header="Test" Click="TestButton_Click" />
-        <MenuItem x:Name="CloseButton" Header="Close" Click="CloseButton_Click"/>
+    <Menu x:Name="menu" Height="20" DockPanel.Dock="Top" Style="{DynamicResource MenuStyle}">
+        <MenuItem x:Name="OpenButton" Header="Open" Click="OpenButton_Click" Style="{DynamicResource MenuItemStyle}"/>
+        <MenuItem x:Name="TestButton" Header="Test" Click="TestButton_Click" Style="{DynamicResource MenuItemStyle}"/>
+        <MenuItem x:Name="CloseButton" Header="Close" Click="CloseButton_Click" Style="{DynamicResource MenuItemStyle}"/>
     </Menu>
-    <TabControl x:Name="tabControl" Margin="0" DockPanel.Dock="Bottom" >
-        <TabItem Header="Search">
+    <TabControl x:Name="tabControl" Margin="0" DockPanel.Dock="Bottom"  Style="{DynamicResource TabStyle}">
+        <TabItem Header="Search" Style="{DynamicResource TabItemStyle}">
             <Grid MinHeight="10">
                 <local:SearchWindow x:Name="searchWindow"/>
             </Grid>
         </TabItem>
-        <TabItem Header="Symbol">
+        <TabItem Header="Symbol" Style="{DynamicResource TabItemStyle}">
             <Grid MinHeight="10">
                 <local:SymbolWindow x:Name="symbolWindow"/>
             </Grid>
         </TabItem>
-        <TabItem Header="Scheme">
+        <TabItem Header="Scheme" Style="{DynamicResource TabItemStyle}">
             <Grid MinHeight="10">
             <local:SchemeWindow x:Name="schemeWindow"/>
             </Grid>

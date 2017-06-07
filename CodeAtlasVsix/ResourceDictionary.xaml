@@ -3,12 +3,51 @@
                     xmlns:local="clr-namespace:CodeAtlasVSIX"
                     xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
                     >
-    
+
     <Style TargetType="Menu" x:Key="MenuStyle">
-        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuKey}}"/>
+        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
     </Style>
     <Style TargetType="MenuItem" x:Key="MenuItemStyle">
-        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
+        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
+    </Style>
+
+    <Style TargetType="TabControl" x:Key="TabStyle">
+        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.FileTabBorderKey}}"/>
+    </Style>
+
+    <Style TargetType="{x:Type TabItem}" x:Key="TabItemStyle">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabItem}">
+                    <Grid>
+                        <Border
+                            Name="TabItemBorder"
+                            Margin="0,0,-4,0"
+                            Background="{DynamicResource {x:Static vsfx:VsBrushes.FileTabInactiveDocumentBorderBackgroundKey}}"
+                            BorderThickness="1,1,1,1"
+                            >
+                            <ContentPresenter
+                                x:Name="TabItemContentSite"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                ContentSource="Header"
+                                Margin="5,2,5,2"
+                                RecognizesAccessKey="True"
+                                />
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Panel.ZIndex" Value="100" />
+                            <Setter TargetName="TabItemBorder" Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.FileTabSelectedBackgroundKey}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
     <!--
     <Style TargetType="Label" x:Key="LabelStyle" BasedOn="{StaticResource ResourceKey={x:Static vsfx:VsResourceKeys.ThemedDialogLabelStyleKey}}">
