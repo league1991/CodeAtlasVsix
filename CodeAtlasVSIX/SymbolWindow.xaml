@@ -11,7 +11,7 @@
             <RowDefinition Height="50*"/>
             <RowDefinition Height="50*"/>
         </Grid.RowDefinitions>
-        <GroupBox x:Name="groupBox" Header="Symbol Comment" Style="{DynamicResource GroupBoxStyle}" Padding="0">
+        <GroupBox x:Name="groupBox" Header="Symbol Comment" Style="{DynamicResource GroupBoxStyle}" Padding="0" BorderThickness="0">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="25"/>
@@ -23,7 +23,7 @@
                 <Button x:Name="updateCommentButton" Content="Update Comment" Margin="0,4,0,0" Grid.Row="3" Click="OnUpdateComment"/>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="groupBox1" Header="Ignored Symbol" Grid.Row="1" Margin="0,10,0,0" Padding="0,5,0,0" Style="{DynamicResource GroupBoxStyle}" >
+        <GroupBox x:Name="groupBox1" Header="Ignored Symbol" Grid.Row="1" Margin="0,10,0,0" Padding="0,5,0,0" Style="{DynamicResource GroupBoxStyle}" BorderThickness="0" >
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="27"/>
