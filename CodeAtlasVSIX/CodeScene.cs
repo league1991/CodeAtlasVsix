@@ -432,7 +432,7 @@ namespace CodeAtlasVSIX
             else if (edge != null)
             {
                 edge.IsSelected = true;
-                return false;
+                return true;
             }
             return false;
         }
@@ -878,7 +878,8 @@ namespace CodeAtlasVSIX
                 {
                     foreach (var item in m_edgeDict)
                     {
-                        if (item.Key.Item1 == centerItem.GetUniqueName())
+                        if (item.Key.Item1 == centerItem.GetUniqueName() &&
+                            item.Value.m_orderData != null && item.Value.m_orderData.m_order == 1)
                         {
                             return item.Value;
                         }
