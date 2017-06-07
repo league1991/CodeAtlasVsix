@@ -40,6 +40,7 @@ namespace CodeAtlasVSIX
             //res |= SetElementStyle(depObj as MenuItem, VsResourceKeys.ThemedDialogDefaultStylesKey);
             res |= SetElementStyle(depObj as ListView, VsResourceKeys.ThemedDialogListViewStyleKey);
             res |= SetElementStyle(depObj as ListViewItem, VsResourceKeys.ThemedDialogListViewItemStyleKey);
+            res |= SetElementStyle(depObj as ListBox, VsResourceKeys.ThemedDialogListBoxStyleKey);
             //res |= SetElementStyle(depObj as TabControl, VsResourceKeys.ThemedDialogDefaultStylesKey);
             //res |= SetElementStyle(depObj as TabItem, VsResourceKeys.ButtonStyleKey);
 
