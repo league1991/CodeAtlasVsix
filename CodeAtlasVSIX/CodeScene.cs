@@ -1706,6 +1706,7 @@ namespace CodeAtlasVSIX
 
         public void AddOrReplaceScheme(string name)
         {
+            AcquireLock();
             var nodes = new List<string>();
             foreach (var item in m_itemDict)
             {
@@ -1745,6 +1746,7 @@ namespace CodeAtlasVSIX
                 m_scheme.Add(name, scheme);
             }
             UpdateCurrentValidScheme();
+            ReleaseLock();
         }
 
         public List<string> GetSchemeNameList()
