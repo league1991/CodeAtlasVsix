@@ -1907,7 +1907,7 @@ namespace CodeAtlasVSIX
             {
                 var uname = edgePair.Key;
                 var item = edgePair.Value;
-                item.m_schemeColorList.Clear();
+                item.ClearSchemeColorList();
                 if (item.IsSelected)
                 {
                     edgeSet.Add(uname);
@@ -1966,7 +1966,7 @@ namespace CodeAtlasVSIX
                     if (m_edgeDict.ContainsKey(edgePair))
                     {
                         var edge = m_edgeDict[edgePair];
-                        edge.m_schemeColorList.Add(schemeColor);
+                        edge.AddSchemeColor(schemeColor);
                     }
                 }
             }

@@ -72,12 +72,12 @@ namespace CodeAtlasVSIX
 
                     MoveItems();
                     UpdateCallOrder();
-                    if (m_selectTimeStamp != scene.m_selectTimeStamp)
-                    {
-                        scene.UpdateCurrentValidScheme();
-                        scene.UpdateCandidateEdge();
-                        m_selectTimeStamp = scene.m_selectTimeStamp;
-                    }
+                    //if (true || m_selectTimeStamp != scene.m_selectTimeStamp)
+                    //{
+                    //    m_selectTimeStamp = scene.m_selectTimeStamp;
+                    //}
+                    scene.UpdateCurrentValidScheme();
+                    scene.UpdateCandidateEdge();
                     UpdateLegend();
                     scene.ReleaseLock();
                     //InvalidateScene();

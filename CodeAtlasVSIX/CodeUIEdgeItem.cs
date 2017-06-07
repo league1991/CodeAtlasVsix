@@ -43,7 +43,7 @@ namespace CodeAtlasVSIX
         public int m_line = 0;
         public int m_column = 0;
         public bool m_customEdge = false;
-        public List<Color> m_schemeColorList = new List<Color>();
+        List<Color> m_schemeColorList = new List<Color>();
 
         public CodeUIEdgeItem(string srcName, string tarName, DataDict edgeData)
         {
@@ -80,6 +80,18 @@ namespace CodeAtlasVSIX
             BuildGeometry();
 
             Canvas.SetZIndex(this, -1);
+        }
+        
+        public void ClearSchemeColorList()
+        {
+            m_schemeColorList.Clear();
+            UpdateStroke();
+        }
+
+        public void AddSchemeColor(Color color)
+        {
+            m_schemeColorList.Add(color);
+            UpdateStroke();
         }
 
         Point CalculateBezierPoint(double t, Point p1, Point p2, Point p3, Point p4)
@@ -222,12 +234,12 @@ namespace CodeAtlasVSIX
             {
                 if (m_isSelected)
                 {
-                    StrokeThickness = 1.5;
+                    StrokeThickness = 4.0;
                     this.Stroke = Brushes.Tomato;
                 }
                 else if (m_isCandidate)
                 {
-                    StrokeThickness = 1.5;
+                    StrokeThickness = 4.0;
                     this.Stroke = new SolidColorBrush(Color.FromArgb(200, 183, 101, 0));
                 }
                 else
@@ -346,6 +358,38 @@ namespace CodeAtlasVSIX
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
+            Brush brush = null;
+            int nColor = m_schemeColorList.Count;
+            if (nColor > 0)
+            {
+                var dashPattern = new List<double> { 5.0, 5.0 * (nColor - 1) };
+                for (int i = 0; i < nColor; i++)
+                {
+                    var pen = new Pen(brush, 1.5);
+                    pen.DashStyle = new DashStyle(dashPattern, 0.0);
+                    pen.Brush = new SolidColorBrush(m_schemeColorList[i]);
+                    pen.DashStyle.Offset = 5.0 * i;
+                    drawingContext.DrawGeometry(Brushes.Transparent, pen, m_geometry);
+                }
+            }
+            /*
+            double thickness = 1.0;
+            if (m_isSelected)
+            {
+                thickness = 1.5;
+                brush = Brushes.Tomato;
+            }
+            else if (m_isCandidate)
+            {
+                thickness = 1.5;
+                brush = new SolidColorBrush(Color.FromArgb(200, 183, 101, 0));
+            }
+            else
+            {
+                thickness = 1.0;
+                brush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
+            }*/
+            
 
             var scene = UIManager.Instance().GetScene();
             scene.AcquireLock();
@@ -384,11 +428,12 @@ namespace CodeAtlasVSIX
                 m_p1 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p0.Y);
                 m_p2 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p3.Y);
 
-                var segment = new BezierSegment(m_p1, m_p2, m_p3, true);
+                var segment = new BezierSegment(m_p1, m_p2, m_p3, true);                
                 var figure = new PathFigure();
                 figure.StartPoint = m_p0;
                 figure.Segments.Add(segment);
                 figure.IsClosed = false;
+
                 m_geometry = new PathGeometry();
                 m_geometry.Figures.Add(figure);
 
