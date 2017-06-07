@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.VisualStudio.Shell;
 
 namespace CodeAtlasVSIX
 {
@@ -35,7 +36,11 @@ namespace CodeAtlasVSIX
         public SearchWindow()
         {
             InitializeComponent();
+
+            ResourceSetter resMgr = new ResourceSetter(this);
+            resMgr.SetStyle();
         }
+
 
         private void searchButton_Click(object sender, RoutedEventArgs e)
         {

@@ -33,6 +33,9 @@ namespace CodeAtlasVSIX
         public Scheme()
         {
             InitializeComponent();
+
+            ResourceSetter resMgr = new ResourceSetter(this);
+            resMgr.SetStyle();
         }
 
         public void BuildSchemeLegend()

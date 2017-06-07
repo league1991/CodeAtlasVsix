@@ -35,6 +35,9 @@ namespace CodeAtlasVSIX
         public SchemeWindow()
         {
             InitializeComponent();
+
+            ResourceSetter resMgr = new ResourceSetter(this);
+            resMgr.SetStyle();
         }
 
         void OnTextEdited()

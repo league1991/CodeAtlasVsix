@@ -37,6 +37,9 @@ namespace CodeAtlasVSIX
         public SymbolWindow()
         {
             InitializeComponent();
+
+            ResourceSetter resMgr = new ResourceSetter(this);
+            resMgr.SetStyle();
         }
 
         private void textBox_TextChanged(object sender, TextChangedEventArgs e)

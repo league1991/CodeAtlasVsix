@@ -30,6 +30,9 @@ namespace CodeAtlasVSIX
         {
             InitializeComponent();
 
+            ResourceSetter resMgr = new ResourceSetter(this);
+            resMgr.SetStyle();
+
             AddCommand(OnFindCallers, Key.C);
             AddCommand(OnFindCallees, Key.V);
             AddCommand(OnFindMembers, Key.M);
