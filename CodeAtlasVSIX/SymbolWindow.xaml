@@ -16,18 +16,18 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="25"/>
                     <RowDefinition Height="50*"/>
-                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="27"/>
                 </Grid.RowDefinitions>
                 <Label x:Name="symbolLabel" Content="" Margin="0,0,0,2"/>
                 <TextBox x:Name="commentEdit" TextWrapping="Wrap" Margin="0" Grid.Row="1" MinHeight="50"/>
-                <Button x:Name="updateCommentButton" Content="Update Comment" Margin="0" Grid.Row="3" Click="OnUpdateComment"/>
+                <Button x:Name="updateCommentButton" Content="Update Comment" Margin="0,4,0,0" Grid.Row="3" Click="OnUpdateComment"/>
             </Grid>
         </GroupBox>
         <GroupBox x:Name="groupBox1" Header="Ignored Symbol" Grid.Row="1"  BorderThickness="0" Margin="0,10,0,0" Padding="0,5,0,0">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="27"/>
+                    <RowDefinition Height="27"/>
                     <RowDefinition Height="50*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -35,10 +35,10 @@
                     <ColumnDefinition Width="100*"/>
                     <ColumnDefinition Width="150*"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="addSelectedButton" Content="Add Selected"  Margin="0" Grid.ColumnSpan="2" Click="addSelectedButton_Click"/>
-                <Button x:Name="deleteButton" Content="Delete" Grid.Column="2"  Click="deleteButton_Click"/>
-                <TextBox x:Name="filterEdit" Margin="0" TextWrapping="Wrap" Grid.ColumnSpan="2" Grid.Column="1" TextChanged="textBox_TextChanged" Grid.Row="1"/>
-                <ListBox x:Name="forbiddenList" Margin="0" Grid.Row="2" Grid.ColumnSpan="3" MinHeight="50"/>
+                <Button x:Name="addSelectedButton" Content="Add Selected"  Margin="0,4,0,0" Grid.ColumnSpan="2" Click="addSelectedButton_Click"/>
+                <Button x:Name="deleteButton" Content="Delete" Grid.Column="2"  Click="deleteButton_Click" Margin="0,4,0,0"/>
+                <TextBox x:Name="filterEdit" Margin="0,4,0,0" TextWrapping="Wrap" Grid.ColumnSpan="2" Grid.Column="1" TextChanged="textBox_TextChanged" Grid.Row="1"/>
+                <ListBox x:Name="forbiddenList" Margin="0,4,0,0" Grid.Row="2" Grid.ColumnSpan="3" MinHeight="50"/>
                 <Label x:Name="label" Content="Filter" Margin="0" Grid.Row="1"/>
             </Grid>
         </GroupBox>
