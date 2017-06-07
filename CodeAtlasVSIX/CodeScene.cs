@@ -166,7 +166,8 @@ namespace CodeAtlasVSIX
             foreach (var edgePair in edgeItemList)
             {
                 var edgePairDict = edgePair as Dictionary<string, object>;
-                var edgeKey = new EdgeKey(edgePairDict["Item1"] as string, edgePairDict["Item2"] as string);
+                var edgePairList = edgePair as ArrayList;
+                var edgeKey = new EdgeKey(edgePairList[0] as string, edgePairList[1] as string);
                 if (m_edgeDataDict.ContainsKey(edgeKey))
                 {
                     var edgeDataDict = m_edgeDataDict[edgeKey] as DataDict;
@@ -252,10 +253,10 @@ namespace CodeAtlasVSIX
                 codeItemList.Add(item.Key);
             }
 
-            var edgeItemList = new List<EdgeKey>();
+            var edgeItemList = new List<List<string>>();
             foreach (var item in m_edgeDict)
             {
-                edgeItemList.Add(item.Key);
+                edgeItemList.Add(new List<string> { item.Key.Item1, item.Key.Item2 });
             }
 
             var edgeDataList = new List<List<object>>();
