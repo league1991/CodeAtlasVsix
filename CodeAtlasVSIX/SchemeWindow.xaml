@@ -8,15 +8,15 @@
              d:DesignHeight="300" d:DesignWidth="300" >
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="40*"/>
+            <ColumnDefinition Width="50*"/>
             <ColumnDefinition Width="110*"/>
             <ColumnDefinition Width="150*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25*"/>
-            <RowDefinition Height="25*"/>
-            <RowDefinition Height="25*"/>
-            <RowDefinition Height="223*"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Label x:Name="label" Content="Name" Margin="0"/>
         <Label x:Name="label1" Content="Label" Margin="0" Grid.Row="2"/>
