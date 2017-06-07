@@ -358,41 +358,23 @@ namespace CodeAtlasVSIX
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
-            Brush brush = null;
+
+            var scene = UIManager.Instance().GetScene();
+            scene.AcquireLock();
+
             int nColor = m_schemeColorList.Count;
             if (nColor > 0)
             {
                 var dashPattern = new List<double> { 5.0, 5.0 * (nColor - 1) };
                 for (int i = 0; i < nColor; i++)
                 {
-                    var pen = new Pen(brush, 1.5);
+                    var pen = new Pen(new SolidColorBrush(m_schemeColorList[i]), 1.5);
                     pen.DashStyle = new DashStyle(dashPattern, 0.0);
-                    pen.Brush = new SolidColorBrush(m_schemeColorList[i]);
                     pen.DashStyle.Offset = 5.0 * i;
                     drawingContext.DrawGeometry(Brushes.Transparent, pen, m_geometry);
                 }
             }
-            /*
-            double thickness = 1.0;
-            if (m_isSelected)
-            {
-                thickness = 1.5;
-                brush = Brushes.Tomato;
-            }
-            else if (m_isCandidate)
-            {
-                thickness = 1.5;
-                brush = new SolidColorBrush(Color.FromArgb(200, 183, 101, 0));
-            }
-            else
-            {
-                thickness = 1.0;
-                brush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
-            }*/
-            
 
-            var scene = UIManager.Instance().GetScene();
-            scene.AcquireLock();
             if (m_orderData != null)
             {
                 var formattedText = new FormattedText(m_orderData.m_order.ToString(),
