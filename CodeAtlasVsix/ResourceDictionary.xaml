@@ -3,14 +3,14 @@
                     xmlns:local="clr-namespace:CodeAtlasVSIX"
                     xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
                     >
-    <!--
+    
     <Style TargetType="Menu" x:Key="MenuStyle">
         <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuKey}}"/>
     </Style>
     <Style TargetType="MenuItem" x:Key="MenuItemStyle">
         <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
     </Style>
-
+    <!--
     <Style TargetType="Label" x:Key="LabelStyle" BasedOn="{StaticResource ResourceKey={x:Static vsfx:VsResourceKeys.ThemedDialogLabelStyleKey}}">
     </Style>
 
