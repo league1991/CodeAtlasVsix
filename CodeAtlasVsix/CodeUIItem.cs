@@ -327,10 +327,11 @@ namespace CodeAtlasVSIX
         public static Color NameToColor(string name)
         {
             uint hashVal = (uint)name.GetHashCode();
+            hashVal = hashVal ^ (hashVal * 0x87654321);
             var h = (hashVal & 0xff) / 255.0;
             var s = ((hashVal >> 8) & 0xff) / 255.0;
             var l = ((hashVal >> 16) & 0xff) / 255.0;
-            return HSLToRGB(h, 0.3+s*0.3, 0.4+l*0.15);
+            return HSLToRGB(h, 0.35+s*0.3, 0.4+l*0.15);
         }
 
         public bool IsDirty
