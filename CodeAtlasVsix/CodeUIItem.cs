@@ -389,7 +389,7 @@ namespace CodeAtlasVSIX
                 if(m_isSelected)
                 {
                     this.Stroke = Brushes.Tomato;
-                    this.StrokeThickness = 1.5;
+                    this.StrokeThickness = 2.0;
                 }
                 else
                 {

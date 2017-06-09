@@ -244,8 +244,8 @@ namespace CodeAtlasVSIX
                 }
                 else
                 {
-                    StrokeThickness = 1.0;
-                    this.Stroke = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
+                    StrokeThickness = 1.5;
+                    this.Stroke = new SolidColorBrush(Color.FromArgb(100, 200,200,200));
                 }
             });
         }
