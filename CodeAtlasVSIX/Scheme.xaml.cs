@@ -24,11 +24,15 @@ namespace CodeAtlasVSIX
     {
         Dictionary<string, Tuple<Color, FormattedText>> m_schemeNameDict =
             new Dictionary<string, Tuple<Color, FormattedText>>();
-        double m_margin = 5.0;
+        double m_margin = 6.0;
         double m_lineHeight = 10.0;
         double m_lineSpace = 2.0;
         double m_colorTextSpace = 5.0;
         double m_maxTextWidth = 0.0;
+        double m_fontSize = 11.0;
+
+        List<FormattedText> m_keyText = new List<FormattedText>();
+        double m_formatWidth = 0.0;
 
         public Scheme()
         {
@@ -36,6 +40,19 @@ namespace CodeAtlasVSIX
 
             ResourceSetter resMgr = new ResourceSetter(this);
             resMgr.SetStyle();
+
+            for (int i = 0; i < 10; i++)
+            {
+                var formattedText = new FormattedText( string.Format("[{0}]", i+1),
+                                                        CultureInfo.CurrentUICulture,
+                                                        FlowDirection.LeftToRight,
+                                                        new Typeface("tahoma"),
+                                                        m_fontSize,
+                                                        Brushes.PapayaWhip);
+                m_keyText.Add(formattedText);
+
+                m_formatWidth = Math.Max(m_formatWidth, formattedText.Width);
+            }
         }
 
         public void BuildSchemeLegend()
@@ -54,8 +71,8 @@ namespace CodeAtlasVSIX
                                                         CultureInfo.CurrentUICulture,
                                                         FlowDirection.LeftToRight,
                                                         new Typeface("tahoma"),
-                                                        10.0,
-                                                        Brushes.White);
+                                                        m_fontSize,
+                                                        Brushes.PeachPuff);
                 m_schemeNameDict[schemeName] = new Tuple<Color, FormattedText>(schemeColor, formattedText);
             }
 
@@ -94,22 +111,41 @@ namespace CodeAtlasVSIX
             scene.AcquireLock();
             var itemDict = scene.GetItemDict();
 
-            double x = m_margin, y = m_margin;
+            double x = m_margin;
+            double y = m_margin;
+            double contentHeight = 0;
             var parent = this.Parent as Canvas;
             if (parent != null)
             {
-                y = parent.ActualHeight - (m_lineHeight + m_lineSpace) * m_schemeNameDict.Count + m_lineSpace - m_margin;
+                contentHeight = (m_lineHeight + m_lineSpace) * m_schemeNameDict.Count + m_lineSpace;
+                y = parent.ActualHeight - contentHeight - m_margin;
             }
-            var colorSize = new Size(m_lineHeight*2, 2);
-            double s = 10;
+            var colorSize = new Size(m_lineHeight * 2, 2);
+            double contentWidth = m_formatWidth + colorSize.Width + m_maxTextWidth + m_lineSpace;
+
+            if (m_schemeNameDict.Count > 0)
+            {
+                dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(150, 0, 0, 0)), new Pen(), new Rect(new Point(x-3, y-2), new Size(contentWidth+6, contentHeight+4)));
+            }
+
+            int i = 0;
             foreach (var item in m_schemeNameDict)
             {
                 var className = item.Key;
                 var color = item.Value.Item1;
                 var textObj = item.Value.Item2;
+
+                x = m_margin;
+
                 dc.DrawRectangle(new SolidColorBrush(color), new Pen(), new Rect(new Point(x, y+6), colorSize));
-                dc.DrawText(textObj, new Point(x + m_lineHeight*2 + m_colorTextSpace, y));
+                x += colorSize.Width + m_lineSpace;
+
+                dc.DrawText(m_keyText[i], new Point(x, y));
+                x += m_formatWidth;
+
+                dc.DrawText(textObj,      new Point(x, y));
                 y += m_lineHeight + m_lineSpace;
+                ++i;
             }
             scene.ReleaseLock();
         }

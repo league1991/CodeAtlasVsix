@@ -158,7 +158,7 @@ namespace DoxygenDB
         public enum CacheStatus
         {
             NONE = 0,
-            REF  = 1
+            REF = 1
         }
 
         public XPathDocument m_doc;
@@ -329,7 +329,7 @@ namespace DoxygenDB
         XmlDocItem _GetXmlDocumentItem(string fileName)
         {
             var filePath = string.Format("{0}/{1}.xml", m_dbFolder, fileName);
-            if(m_xmlCache.ContainsKey(filePath))
+            if (m_xmlCache.ContainsKey(filePath))
             {
                 return m_xmlCache[filePath];
             }
@@ -356,17 +356,22 @@ namespace DoxygenDB
             }
 
             var doc = _GetXmlDocument(compoundId);
-            if(doc == null)
+            if (doc == null)
             {
                 return "";
             }
 
             var locationEle = doc.Select("doxygen/compounddef/location");
-            if(!locationEle.MoveNext())
+            if (!locationEle.MoveNext())
             {
                 return "";
             }
-            return locationEle.Current.GetAttribute("file", "");
+            string compoundPath = locationEle.Current.GetAttribute("file", "");
+            if (!compoundPath.Contains(":"))
+            {
+                compoundPath = m_doxyFileFolder + "/" + compoundPath;
+            }
+            return compoundPath;
         }
 
         Dictionary<string, List<int>> _GetCodeRefs(string fileId, int startLine, int endLine)
@@ -387,7 +392,7 @@ namespace DoxygenDB
             while (programList.MoveNext())
             {
                 var lineEle = programList.Current;
-                var lineNumberAttr = lineEle.GetAttribute("lineno","");
+                var lineNumberAttr = lineEle.GetAttribute("lineno", "");
                 int lineNumber = Convert.ToInt32(lineNumberAttr);
                 if (lineNumber < startLine || lineNumber > endLine)
                 {
@@ -425,7 +430,7 @@ namespace DoxygenDB
             while (compoundIter.MoveNext())
             {
                 var compound = compoundIter.Current;
-                var compoundRefId = compound.GetAttribute("refid","");
+                var compoundRefId = compound.GetAttribute("refid", "");
 
                 // Record name attr
                 var compoundChildIter = compound.SelectChildren(XPathNodeType.Element);
@@ -444,7 +449,7 @@ namespace DoxygenDB
                     {
                         var member = memberIter.Current;
                         // build member -> compound dict
-                        var memberRefId = member.GetAttribute("refid","");
+                        var memberRefId = member.GetAttribute("refid", "");
                         m_idToCompoundDict[memberRefId] = compoundRefId;
                         refIdList.Add(memberRefId);
 
@@ -504,7 +509,7 @@ namespace DoxygenDB
                 var memberChild = memberChildIter.Current;
                 if (memberChild.Name == "references")
                 {
-                    var referenceId = memberChild.GetAttribute("refid","");
+                    var referenceId = memberChild.GetAttribute("refid", "");
 
                     // build the reference dict first
                     if (memberRefDict.Count == 0)
@@ -518,7 +523,7 @@ namespace DoxygenDB
                         }
                         if (refElementIter != null && refElementIter.MoveNext())
                         {
-                            var fileCompoundId = refElement.GetAttribute("compoundref","");
+                            var fileCompoundId = refElement.GetAttribute("compoundref", "");
                             memberFilePath = _GetCompoundPath(fileCompoundId);
                             var startLine = Convert.ToInt32(refElement.GetAttribute("startline", ""));
                             var endLine = Convert.ToInt32(refElement.GetAttribute("endline", ""));
@@ -586,7 +591,7 @@ namespace DoxygenDB
                         memberItem.AddRefItem(refItem);
                     }
                 }
-                
+
                 if (memberChild.Name == "reimplements")
                 {
                     var interfaceId = memberChild.GetAttribute("refid", "");
@@ -640,7 +645,7 @@ namespace DoxygenDB
                     // find base classes
                     if (compoundChild.Name == "basecompoundref")
                     {
-                        var baseCompoundId = compoundChild.GetAttribute("refid","");
+                        var baseCompoundId = compoundChild.GetAttribute("refid", "");
                         if (m_idInfoDict.ContainsKey(baseCompoundId))
                         {
                             var baseCompoundItem = m_idInfoDict[baseCompoundId];
@@ -716,7 +721,7 @@ namespace DoxygenDB
                 return;
             }
 
-            foreach(var compoundItem in m_compoundToIdDict)
+            foreach (var compoundItem in m_compoundToIdDict)
             {
                 Console.WriteLine("Parsing:" + compoundItem.Key);
                 _ReadRef(compoundItem.Key);
@@ -779,7 +784,7 @@ namespace DoxygenDB
             var declLine = Convert.ToInt32(declLineAttr == "" ? "0" : declLineAttr);
             var declColumn = Convert.ToInt32(declColumnAttr == "" ? "0" : declColumnAttr);
             var declFile = element.GetAttribute("file", "");
-            if (!declFile.Contains(":/"))
+            if (!declFile.Contains(":"))
             {
                 declFile = m_doxyFileFolder + "/" + declFile;
             }
@@ -798,7 +803,7 @@ namespace DoxygenDB
             var bodyStart = Convert.ToInt32(bodyStartAttr);
             var bodyEnd = Convert.ToInt32(bodyEndAttr);
             var bodyFile = element.GetAttribute("bodyfile", "");
-            if (!bodyFile.Contains(":/"))
+            if (!bodyFile.Contains(":"))
             {
                 bodyFile = m_doxyFileFolder + "/" + bodyFile;
             }
@@ -853,11 +858,11 @@ namespace DoxygenDB
             {
                 var name = "";
                 var longName = "";
-                var kind = element.GetAttribute("kind","");
-                var virt = element.GetAttribute("virt","");
+                var kind = element.GetAttribute("kind", "");
+                var virt = element.GetAttribute("virt", "");
                 if (virt == "virtual")
                 {
-                    kind = "virtual " + kind; 
+                    kind = "virtual " + kind;
                 }
                 else if (virt == "pure-virtual")
                 {
@@ -916,6 +921,11 @@ namespace DoxygenDB
         public string GetDBPath()
         {
             return m_dbFolder + "/index.xml";
+        }
+
+        public bool IsOpen()
+        {
+            return m_dbFolder != "";
         }
 
         public void Close()
@@ -1025,7 +1035,7 @@ namespace DoxygenDB
             }
             else
             {
-                refKindList = new List<Tuple<RefKind, bool>>( IndexRefItem.s_kindDict.Values);
+                refKindList = new List<Tuple<RefKind, bool>>(IndexRefItem.s_kindDict.Values);
             }
 
             // parse entKindStr
@@ -1136,7 +1146,7 @@ namespace DoxygenDB
                     }
                     else if (refKind == RefKind.DERIVE && refObj.m_kind == RefKind.DERIVE)
                     {
-                        if ((srcItem.m_kind == EntKind.CLASS || srcItem.m_kind == EntKind.STRUCT) && 
+                        if ((srcItem.m_kind == EntKind.CLASS || srcItem.m_kind == EntKind.STRUCT) &&
                             (dstItem.m_kind == EntKind.CLASS || dstItem.m_kind == EntKind.STRUCT))
                         {
                             isAccepted = true;

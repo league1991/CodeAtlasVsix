@@ -86,6 +86,10 @@ namespace CodeAtlasVSIX
             //ofd.Filter = "xml file|*.xml";
             if (ofd.ShowDialog() == true)
             {
+                if (DBManager.Instance().GetDB().IsOpen())
+                {
+                    DBManager.Instance().CloseDB();
+                }
                 DBManager.Instance().OpenDB(ofd.FileName);
                 UpdateUI();
             }
@@ -237,6 +241,14 @@ namespace CodeAtlasVSIX
                 scene.DeleteSelectedItems(true);
                 var mainUI = UIManager.Instance().GetMainUI();
                 mainUI.symbolWindow.UpdateForbiddenSymbol();
+            }
+        }
+        public void OnDeleteNearbyItems(object sender, ExecutedRoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            if (scene != null)
+            {
+                scene.DeleteNearbyItems();
             }
         }
         #endregion

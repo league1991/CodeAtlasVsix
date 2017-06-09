@@ -51,7 +51,7 @@ namespace CodeAtlasVSIX
         {
             var searchWord = nameEdit.Text;
             var searchKind = typeEdit.Text;
-            var searchFile = fileEdit.Text;
+            var searchFile = fileEdit.Text.Replace("\\","/");
             int searchLine = Convert.ToInt32(lineEdit.Text == "" ? "-1" : lineEdit.Text);
             Console.Write("------------------- Search -----------------------");
             var db = DBManager.Instance().GetDB();

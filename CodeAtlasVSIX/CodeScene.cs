@@ -272,7 +272,7 @@ namespace CodeAtlasVSIX
                 var schemeEdgeData = new List<List<object>>();
                 foreach (var edgePair in schemeValue.m_edgeDict)
                 {
-                    schemeEdgeData.Add(new List<object> { edgePair.Key.Item1, edgePair.Key.Item1, edgePair.Value });
+                    schemeEdgeData.Add(new List<object> { edgePair.Key.Item1, edgePair.Key.Item2, edgePair.Value });
                 }
                 var schemeData = new Dictionary<string, object> {
                     { "node", schemeValue.m_nodeList },
@@ -1348,6 +1348,52 @@ namespace CodeAtlasVSIX
             DeleteLRU(unameList);
             ReleaseLock();
         }
+
+        public void DeleteNearbyItems()
+        {
+            var minScoreList = new List<Tuple<int, string>>();
+            AcquireLock();
+            foreach (var item in m_edgeDict)
+            {
+                var srcItem = m_itemDict[item.Key.Item1];
+                var tarItem = m_itemDict[item.Key.Item2];
+                if (srcItem.IsSelected == tarItem.IsSelected)
+                {
+                    continue;
+                }
+                if (srcItem.IsSelected)
+                {
+                    minScoreList.Add(new Tuple<int, string>(tarItem.m_selectCounter, tarItem.GetUniqueName()));
+                }
+                else if(tarItem.IsSelected)
+                {
+                    minScoreList.Add(new Tuple<int, string>(srcItem.m_selectCounter, srcItem.GetUniqueName()));
+                }
+            }
+
+            if (minScoreList.Count > 0)
+            {
+                minScoreList.Sort((x, y) => x.Item1.CompareTo(y.Item1));
+                var deleteScore = minScoreList[0].Item1;
+                var deleteList = new List<string>();
+                foreach (var item in minScoreList)
+                {
+                    if (item.Item1 == deleteScore)
+                    {
+                        deleteList.Add(item.Item2);
+                    }
+                }
+
+                foreach (var item in deleteList)
+                {
+                    _DoDeleteCodeItem(item);
+                }
+
+                DeleteLRU(deleteList);
+            }
+
+            ReleaseLock();
+        }
         
         public void DeleteSelectedItems(bool addToStop = false)
         {
@@ -1619,10 +1665,10 @@ namespace CodeAtlasVSIX
             var refNameList = _AddRefs(refStr, entStr, inverseEdge, maxCount);
             UpdateLRU(refNameList);
             RemoveItemLRU();
-            if (res)
-            {
-                SelectNearestItem(center);
-            }
+            //if (res)
+            //{
+            //    SelectNearestItem(center);
+            //}
             ReleaseLock();
         }
         #endregion

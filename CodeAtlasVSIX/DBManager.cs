@@ -47,7 +47,6 @@ namespace CodeAtlasVSIX
         public void CloseDB()
         {
             _OnClose();
-            m_db = new DoxygenDB.DoxygenDB();
             m_db.Close();
         }
 

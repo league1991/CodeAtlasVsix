@@ -24,11 +24,12 @@ namespace CodeAtlasVSIX
     {
         Dictionary<string, Tuple<Color, FormattedText>> m_classNameDict = 
             new Dictionary<string, Tuple<Color, FormattedText>>();
-        double m_margin = 5.0;
+        double m_margin = 6.0;
         double m_lineHeight = 10.0;
         double m_lineSpace = 2.0;
         double m_colorTextSpace = 5.0;
         double m_maxTextWidth = 0.0;
+        double m_fontSize = 11.0;
 
         public Legend()
         {
@@ -56,8 +57,8 @@ namespace CodeAtlasVSIX
                                                             CultureInfo.CurrentUICulture,
                                                             FlowDirection.LeftToRight,
                                                             new Typeface("tahoma"),
-                                                            10.0,
-                                                            Brushes.White);
+                                                            m_fontSize,
+                                                            Brushes.PapayaWhip);
                     m_classNameDict[cname] = new Tuple<Color, FormattedText>(color, formattedText);
                 }
             }
@@ -99,14 +100,21 @@ namespace CodeAtlasVSIX
 
             double x = m_margin, y = m_margin;
             var colorSize = new Size(m_lineHeight, m_lineHeight);
-            double s = 10;
+
+            if (m_classNameDict.Count > 0)
+            {
+                double contentWidth = m_maxTextWidth + colorSize.Width + m_lineHeight;
+                double contentHeight = (m_lineHeight + m_lineSpace) * m_classNameDict.Count - m_lineSpace;
+                dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(150, 0, 0, 0)), new Pen(), new Rect(new Point(x - 3, y - 3), new Size(contentWidth + 6, contentHeight + 6)));
+            }
+
             foreach (var item in m_classNameDict)
             {
                 var className = item.Key;
                 var color = item.Value.Item1;
                 var textObj = item.Value.Item2;
                 dc.DrawRectangle(new SolidColorBrush(color), new Pen(), new Rect(new Point(x, y), colorSize));
-                dc.DrawText(textObj, new Point(x + m_lineHeight + m_colorTextSpace, y));
+                dc.DrawText(textObj, new Point(x + m_lineHeight + m_colorTextSpace, y-2));
                 y += m_lineHeight + m_lineSpace;
             }
             scene.ReleaseLock();
