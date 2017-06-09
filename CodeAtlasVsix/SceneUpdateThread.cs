@@ -20,9 +20,11 @@ namespace CodeAtlasVSIX
         Thread m_thread = null;
         bool m_isActive = true;
         int m_selectTimeStamp = 0;
+        int m_schemeTimeStamp = 0;
         Dictionary<string, ItemData> m_itemSet = new Dictionary<string, ItemData>();
         int m_edgeNum = 0;
         bool m_abort = false;
+        DateTime m_timeStamp = DateTime.Now;
 
         public SceneUpdateThread(CodeScene scene)
         {
@@ -44,6 +46,13 @@ namespace CodeAtlasVSIX
             m_isActive = active;
         }
 
+        void UpdateTimeStamp(string info)
+        {
+            //var now = DateTime.Now;
+            //Console.WriteLine(info + ":" + (now - m_timeStamp).TotalMilliseconds.ToString());
+            //m_timeStamp = now;
+        }
+
         void Run()
         {
             var scene = UIManager.Instance().GetScene();
@@ -56,6 +65,9 @@ namespace CodeAtlasVSIX
                 if(m_isActive)
                 {
                     scene.AcquireLock();
+
+                    //m_timeStamp = DateTime.Now;
+                    //Console.WriteLine("-------------------------------------");
                     var itemDict = scene.GetItemDict();
                     if(scene.m_isLayoutDirty)
                     {
@@ -69,20 +81,44 @@ namespace CodeAtlasVSIX
                         }
                         scene.m_isLayoutDirty = false;
                     }
+                    UpdateTimeStamp("Layout");
 
                     MoveItems();
+                    UpdateTimeStamp("Move Items");
+
                     UpdateCallOrder();
-                    //if (true || m_selectTimeStamp != scene.m_selectTimeStamp)
-                    //{
-                    //    m_selectTimeStamp = scene.m_selectTimeStamp;
-                    //}
-                    scene.UpdateCurrentValidScheme();
+                    UpdateTimeStamp("Call Order");
+                    
+                    if (m_selectTimeStamp != scene.m_selectTimeStamp || m_schemeTimeStamp != scene.m_schemeTimeStamp)
+                    {
+                        scene.UpdateCurrentValidScheme();
+                        UpdateTimeStamp("Scheme");
+                        m_schemeTimeStamp = scene.m_schemeTimeStamp;
+                    }
+
                     scene.UpdateCandidateEdge();
-                    UpdateLegend();
+                    UpdateTimeStamp("Candidate Edge");
+
+                    if (m_selectTimeStamp != scene.m_selectTimeStamp)
+                    {
+                        UpdateLegend();
+                        UpdateTimeStamp("Legend");
+                    }
+
+                    m_selectTimeStamp = scene.m_selectTimeStamp;
+                    m_schemeTimeStamp = scene.m_schemeTimeStamp;
                     scene.ReleaseLock();
                     //InvalidateScene();
-                    // System.Console.Write("running\n");
                 }
+
+                var moveDistance = scene.m_itemMoveDistance;
+                if (scene.View != null)
+                {
+                    moveDistance += scene.View.m_lastMoveOffset;
+                }
+                //Console.WriteLine("Move dist: " + moveDistance.ToString());
+
+                m_sleepTime = (moveDistance > 0.1) ? 30 : 300;
                 Thread.Sleep(m_sleepTime);
             }
         }

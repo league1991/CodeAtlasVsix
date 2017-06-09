@@ -56,10 +56,13 @@ namespace CodeAtlasVSIX
         public bool m_isLayoutDirty = false;
         bool m_isSourceCandidate = true;
         List<EdgeKey> m_candidateEdge = new List<EdgeKey>();
-        public int m_selectTimeStamp = 0;
         bool m_selectEventConnected = true;
         public bool m_autoFocus = true;
         bool m_autoFocusToggle = true;
+        public double m_itemMoveDistance = 0.0;
+        public int m_selectTimeStamp = 0;
+        public int m_schemeTimeStamp = 0;
+
 
         // LRU
         List<string> m_itemLruQueue = new List<string>();
@@ -1051,10 +1054,11 @@ namespace CodeAtlasVSIX
             m_view.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
                 AcquireLock();
+                m_itemMoveDistance = 0;
                 foreach (var node in m_itemDict)
                 {
                     var item = node.Value;
-                    item.MoveToTarget(0.05);
+                    m_itemMoveDistance += item.MoveToTarget(0.05);
                 }
                 ReleaseLock();
             });
@@ -1683,6 +1687,7 @@ namespace CodeAtlasVSIX
             var name = m_curValidScheme[ithScheme];
             AddOrReplaceScheme(name);
             ShowScheme(name, true);
+            m_schemeTimeStamp++;
         }
 
         public void ToggleSelectedEdgeToScheme(int ithScheme)
@@ -1747,6 +1752,7 @@ namespace CodeAtlasVSIX
                 }
             }
             schemeData.m_nodeList = new List<string>(schemeNodeSet);
+            m_schemeTimeStamp++;
             ReleaseLock();
         }
 
@@ -1761,37 +1767,36 @@ namespace CodeAtlasVSIX
                     nodes.Add(item.Value.GetUniqueName());
                 }
             }
-            if (nodes.Count == 0)
+            if (nodes.Count > 0)
             {
-                return;
-            }
-
-            var scheme = new SchemeData();
-            scheme.m_nodeList = nodes;
-            foreach (var itemPair in m_edgeDict)
-            {
-                var edgePair = itemPair.Key;
-                var item = itemPair.Value;
-                if (m_itemDict.ContainsKey(item.m_srcUniqueName) && 
-                    m_itemDict.ContainsKey(item.m_tarUniqueName))
+                var scheme = new SchemeData();
+                scheme.m_nodeList = nodes;
+                foreach (var itemPair in m_edgeDict)
                 {
-                    var srcItem = m_itemDict[item.m_srcUniqueName];
-                    var tarItem = m_itemDict[item.m_tarUniqueName];
-                    if (srcItem.IsSelected && tarItem.IsSelected)
+                    var edgePair = itemPair.Key;
+                    var item = itemPair.Value;
+                    if (m_itemDict.ContainsKey(item.m_srcUniqueName) &&
+                        m_itemDict.ContainsKey(item.m_tarUniqueName))
                     {
-                        scheme.m_edgeDict.Add(edgePair, new DataDict());
+                        var srcItem = m_itemDict[item.m_srcUniqueName];
+                        var tarItem = m_itemDict[item.m_tarUniqueName];
+                        if (srcItem.IsSelected && tarItem.IsSelected)
+                        {
+                            scheme.m_edgeDict.Add(edgePair, new DataDict());
+                        }
                     }
                 }
+                if (m_scheme.ContainsKey(name))
+                {
+                    m_scheme[name] = scheme;
+                }
+                else
+                {
+                    m_scheme.Add(name, scheme);
+                }
+                UpdateCurrentValidScheme();
+                m_schemeTimeStamp++;
             }
-            if (m_scheme.ContainsKey(name))
-            {
-                m_scheme[name] = scheme;
-            }
-            else
-            {
-                m_scheme.Add(name, scheme);
-            }
-            UpdateCurrentValidScheme();
             ReleaseLock();
         }
 
@@ -1812,6 +1817,7 @@ namespace CodeAtlasVSIX
                 m_scheme.Remove(name);
             }
             UpdateCurrentValidScheme();
+            m_schemeTimeStamp++;
         }
 
         public void ShowScheme(string name, bool selectScheme = true)
@@ -1914,6 +1920,7 @@ namespace CodeAtlasVSIX
                     }
                 }
             }
+            m_schemeTimeStamp++;
             ReleaseLock();
         }
 
@@ -2022,6 +2029,7 @@ namespace CodeAtlasVSIX
             {
                 m_view.InvalidateScheme();
             }
+            
         }
         #endregion
         public void Invalidate()

@@ -512,13 +512,16 @@ namespace CodeAtlasVSIX
             return m_targetPos - Pos;
         }
 
-        public void MoveToTarget(double ratio)
+        public double MoveToTarget(double ratio)
         {
             double pntX = Pos.X;
             double pntY = Pos.Y;
             pntX = pntX * (1.0 - ratio) + m_targetPos.X * ratio;
             pntY = pntY * (1.0 - ratio) + m_targetPos.Y * ratio;
-            Pos = new Point(pntX, pntY);
+            var tar = new Point(pntX, pntY);
+            var offset = tar - Pos;
+            Pos = tar;
+            return Math.Abs(offset.X) + Math.Abs(offset.Y) ;
         }
 
         public DoxygenDB.EntKind GetKind()

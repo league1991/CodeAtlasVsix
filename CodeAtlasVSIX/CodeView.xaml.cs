@@ -16,6 +16,7 @@ namespace CodeAtlasVSIX
     public partial class CodeView : Canvas
     {
         public double scaleValue = 1.0;
+        public double m_lastMoveOffset = 0.0;
 
         public CodeView()
         {
@@ -66,6 +67,7 @@ namespace CodeAtlasVSIX
                 var currentPnt = matrix.Transform(center);
 
                 var offset = (centerPnt - currentPnt) * 0.05;
+                m_lastMoveOffset = offset.Length;
 
                 matrix.TranslatePrepend(offset.X, offset.Y);
                 transform.Matrix = matrix;
