@@ -1313,13 +1313,13 @@ namespace CodeAtlasVSIX
 
         public bool AddCustomEdge(string srcName, string tarName, DataDict edgeData = null)
         {
-            if (!m_itemDict.ContainsKey(srcName) || !m_itemDict.ContainsKey(tarName))
+            if (!m_itemDict.ContainsKey(srcName) || !m_itemDict.ContainsKey(tarName) || m_edgeDict.ContainsKey(new EdgeKey(srcName, tarName)))
             {
                 return false;
             }
             if (edgeData == null)
             {
-                edgeData = new DataDict();
+                edgeData = new DataDict { { "customEdge", 1 } };
             }
 
             AcquireLock();

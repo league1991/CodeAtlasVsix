@@ -55,6 +55,7 @@ namespace CodeAtlasVSIX
         public bool m_isConnectedToFocusNode = false;
         Dictionary<string, Variant> m_customData = new Dictionary<string, Variant>();
         Color m_color = new Color();
+        bool m_customEdgeMode = false;
 
         public CodeUIItem(string uniqueName)
         {
@@ -486,13 +487,19 @@ namespace CodeAtlasVSIX
 
         public Point GetRightSlotPos()
         {
+            var pos = Pos;
+            return new Point(pos.X + GetRightSlotOffset(), pos.Y);
+        }
+
+
+        public double GetRightSlotOffset()
+        {
             var l = GetBodyRadius();
             if (IsFunction())
             {
                 l += m_customData["calleeR"].m_double;
             }
-            var pos = Pos;
-            return new Point(pos.X + l, pos.Y);
+            return l;
         }
 
         public void SetTargetPos(Point point)
@@ -561,6 +568,10 @@ namespace CodeAtlasVSIX
             IsSelected = true;
             dragStart = args.GetPosition(this);
             CaptureMouse();
+            if (args.RightButton == MouseButtonState.Pressed)
+            {
+                m_customEdgeMode = true;
+            }
         }
 
         void MouseDoubleClickCallback(object sender, MouseEventArgs args)
@@ -580,12 +591,28 @@ namespace CodeAtlasVSIX
                 //Canvas.SetLeft(this, p2.X - dragStart.Value.X);
                 //Canvas.SetTop(this, p2.Y - dragStart.Value.Y);
             }
+            if (m_customEdgeMode)
+            {
+                //this.InvalidateVisual();
+            }
         }
 
         void MouseUpCallback(object sender, MouseEventArgs e)
         {
             dragStart = null;
             ReleaseMouseCapture();
+
+            var scene = UIManager.Instance().GetScene();
+            if (m_customEdgeMode)
+            {
+                // create custom edge
+                var uiItem = Mouse.DirectlyOver as CodeUIItem;
+                if (uiItem != null && uiItem != this)
+                {
+                    scene.AddCustomEdge(this.m_uniqueName, uiItem.GetUniqueName());
+                }
+                m_customEdgeMode = false;
+            }
         }
 
         void MouseEnterCallback(object sender, MouseEventArgs e)
@@ -707,6 +734,25 @@ namespace CodeAtlasVSIX
                 //drawingContext.DrawText(m_commentText, new Point(1, baseY+1));
                 m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(0, 255, 0)));
                 drawingContext.DrawText(m_commentText, new Point(0, baseY));
+            }
+            if (m_customEdgeMode)
+            {
+                var p0 = new Point(GetRightSlotOffset(), 0);
+                var p3 = Mouse.GetPosition(this);
+                var p1 = new Point(p0.X * 0.5 + p3.X * 0.5, p0.Y);
+                var p2 = new Point(p0.X * 0.5 + p3.X * 0.5, p3.Y);
+
+                var segment = new BezierSegment(p1, p2, p3, true);
+                var figure = new PathFigure();
+                figure.StartPoint = p0;
+                figure.Segments.Add(segment);
+                figure.IsClosed = false;
+
+                var pathGeo = new PathGeometry();
+                pathGeo.Figures.Add(figure);
+
+                var pen = new Pen(new SolidColorBrush(Color.FromArgb(100, 255, 255, 255)), 2);
+                drawingContext.DrawGeometry(Brushes.Transparent, pen, pathGeo);
             }
             //string testString = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor";
 
