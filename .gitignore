@@ -7,3 +7,17 @@ Debug
 /doxyData/
 /DoxygenDB/obj/
 /DoxygenDB/bin/
+/GraphLayout/GraphLayout/CommonDrawingUtilsForSamples/
+/GraphLayout/GraphLayout/GraphControlSilverlight/
+/GraphLayout/GraphLayout/graphs/
+/GraphLayout/GraphLayout/libs/
+/GraphLayout/GraphLayout/MsaglSharpkit/
+/GraphLayout/GraphLayout/MsaglSilverlight/
+/GraphLayout/GraphLayout/MsaglDrawingSilverlight/
+/GraphLayout/GraphLayout/NuGet/
+/GraphLayout/GraphLayout/packages/
+/GraphLayout/GraphLayout/Samples/
+/GraphLayout/GraphLayout/Test/
+/GraphLayout/GraphLayout/TinyClickDemo/
+/GraphLayout/GraphLayout/tools/
+
