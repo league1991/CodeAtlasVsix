@@ -82,6 +82,17 @@ namespace CodeAtlasVSIX
         private void OpenButton_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
+
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            if (dte != null)
+            {
+                Solution solution = dte.Solution;
+                var solutionFile = solution.FileName;
+                if (solutionFile != "")
+                {
+                    ofd.InitialDirectory = System.IO.Path.GetDirectoryName(solutionFile);
+                }
+            }
             //ofd.DefaultExt = ".xml";
             //ofd.Filter = "xml file|*.xml";
             if (ofd.ShowDialog() == true)
