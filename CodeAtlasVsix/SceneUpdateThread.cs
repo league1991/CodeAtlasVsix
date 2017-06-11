@@ -22,7 +22,7 @@ namespace CodeAtlasVSIX
         int m_selectTimeStamp = 0;
         int m_schemeTimeStamp = 0;
         Dictionary<string, ItemData> m_itemSet = new Dictionary<string, ItemData>();
-        int m_edgeNum = 0;
+        //int m_edgeNum = 0;
         bool m_abort = false;
         DateTime m_timeStamp = DateTime.Now;
 

@@ -11,8 +11,8 @@ namespace CodeAtlasVSIX
     class DBManager
     {
         static DBManager s_dbMgr = null;
-        static int s_atlasPort = 12346;
-        static int s_sublimePort = 12345;
+        //static int s_atlasPort = 12346;
+        //static int s_sublimePort = 12345;
 
         DoxygenDB.DoxygenDB m_db;
         

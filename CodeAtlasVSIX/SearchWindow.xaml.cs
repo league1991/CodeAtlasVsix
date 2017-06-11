@@ -53,7 +53,7 @@ namespace CodeAtlasVSIX
             var searchKind = typeEdit.Text;
             var searchFile = fileEdit.Text.Replace("\\","/");
             int searchLine = Convert.ToInt32(lineEdit.Text == "" ? "-1" : lineEdit.Text);
-            Console.Write("------------------- Search -----------------------");
+            Logger.WriteLine("------------------- Search -----------------------");
             var db = DBManager.Instance().GetDB();
             if (db == null)
             {
@@ -115,12 +115,12 @@ namespace CodeAtlasVSIX
 
                     foreach (var fileName in fileNameSet)
                     {
-                        Console.WriteLine("file: " + fileName);
+                        Logger.WriteLine("file: " + fileName);
                     }
 
                     if (hasSearchFile && searchWordLower.Contains(ent.Name().ToLower()))
                     {
-                        Console.WriteLine("In filename: " + ent.Longname() + " " + ent.Name() + " " + lineDist.ToString());
+                        Logger.WriteLine("In filename: " + ent.Longname() + " " + ent.Name() + " " + lineDist.ToString());
                         bestEntList.Add(ent);
                         bestEntDist.Add(lineDist);
                     }

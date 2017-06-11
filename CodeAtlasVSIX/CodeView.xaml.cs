@@ -30,7 +30,7 @@ namespace CodeAtlasVSIX
             Dictionary<string, object> data = new Dictionary<string, object>() { { "1", "a" }, { "2", 1 }, { "3", new Dictionary<string, object> { { "1",2} } } };
             JavaScriptSerializer js = new JavaScriptSerializer();
             string jsonData = js.Serialize(data);
-            System.Console.WriteLine(jsonData);
+            Logger.WriteLine(jsonData);
 
             var jarr = js.Deserialize<Dictionary<string, object>>(jsonData);
 

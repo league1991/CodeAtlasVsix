@@ -188,7 +188,7 @@ namespace CodeAtlasVSIX
                     }
                     else
                     {
-                        Console.WriteLine("ignore edge:" + edgeKey.Item1 + " -> " + edgeKey.Item2);
+                        Logger.WriteLine("ignore edge:" + edgeKey.Item1 + " -> " + edgeKey.Item2);
                     }
                 }
             }
@@ -693,7 +693,7 @@ namespace CodeAtlasVSIX
 
         public void FindNeighbour(Vector mainDirection)
         {
-            Console.WriteLine("find neighbour:" + mainDirection.ToString());
+            Logger.WriteLine("find neighbour:" + mainDirection.ToString());
             var itemList = SelectedItems();
             if (itemList.Count == 0)
             {

@@ -105,7 +105,7 @@ namespace CodeAtlasVSIX
             var newDownTime = DateTime.Now;
             DBManager.Instance().OpenDB(defaultPath);
             double duration = (DateTime.Now - newDownTime).TotalSeconds;
-            Console.WriteLine("open time:" + duration.ToString());
+            Logger.WriteLine("open time:" + duration.ToString());
             UpdateUI();
         }
 
@@ -113,6 +113,7 @@ namespace CodeAtlasVSIX
         {
             DBManager.Instance().CloseDB();
             UpdateUI();
+            UIManager.Instance().GetScene().m_selectTimeStamp += 1;
         }
 
         public void UpdateUI()
@@ -168,7 +169,7 @@ namespace CodeAtlasVSIX
         #region Find References
         void _FindRefs(string refStr, string entStr, bool inverseEdge = false, int maxCount = -1)
         {
-            System.Console.WriteLine("FindRef: " + refStr + " " + entStr);
+            Logger.WriteLine("FindRef: " + refStr + " " + entStr);
             var scene = UIManager.Instance().GetScene();
             scene.AddRefs(refStr, entStr, inverseEdge, maxCount);
         }
@@ -327,6 +328,29 @@ namespace CodeAtlasVSIX
         public SymbolWindow GetSymbolWindow()
         {
             return this.symbolWindow;
+        }
+
+        void AnalyseSolutionButton_Click(object sender, RoutedEventArgs e)
+        {
+            var traverser = new ProjectFileCollector();
+            traverser.Traverse();
+            var dirList = traverser.GetDirectoryList();
+            var solutionFolder = traverser.GetSolutionFolder();
+
+            if (dirList.Count == 0 || solutionFolder == "")
+            {
+                return;
+            }
+
+            DBManager.Instance().CloseDB();
+            DoxygenDB.DoxygenDBConfig config = new DoxygenDB.DoxygenDBConfig();
+            config.m_configPath = solutionFolder + "/doxyfile";
+            config.m_inputFolders = dirList;
+            config.m_outputDirectory = solutionFolder + "/doxyData";
+            config.m_projectName = traverser.GetSolutionName();
+
+            DoxygenDB.DoxygenDB.GenerateDB(config);
+            DBManager.Instance().OpenDB(config.m_configPath);
         }
     }
 }

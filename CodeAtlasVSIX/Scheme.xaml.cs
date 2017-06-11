@@ -27,7 +27,7 @@ namespace CodeAtlasVSIX
         double m_margin = 6.0;
         double m_lineHeight = 10.0;
         double m_lineSpace = 2.0;
-        double m_colorTextSpace = 5.0;
+        //double m_colorTextSpace = 5.0;
         double m_maxTextWidth = 0.0;
         double m_fontSize = 11.0;
 

@@ -36,7 +36,7 @@ namespace CodeAtlasVSIX
         Point m_targetPos = new Point();
         DateTime m_mouseDownTime = new DateTime();
         bool m_isSelected = false;
-        bool m_isHover = false;
+        //bool m_isHover = false;
         Point m_position = new Point();
         public int m_selectCounter = 0;
         public double m_selectTimeStamp = 0;

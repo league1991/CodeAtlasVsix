@@ -60,7 +60,9 @@
     <Compile Include="CodeView.xaml.cs">
       <DependentUpon>CodeView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Logger.cs" />
     <Compile Include="ResourceSetter.cs" />
+    <Compile Include="SolutionTraverser.cs" />
     <Compile Include="VSMenuCommand.cs" />
     <Compile Include="DBManager.cs" />
     <Compile Include="Legend.xaml.cs">

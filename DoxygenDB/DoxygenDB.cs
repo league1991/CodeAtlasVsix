@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -266,10 +267,20 @@ namespace DoxygenDB
         }
     }
 
+    public class DoxygenDBConfig
+    {
+        public string m_configPath = "";
+        public string m_projectName = "";
+        public List<string> m_inputFolders = new List<string>();
+        public string m_outputDirectory = "";
+    }
+
     public class DoxygenDB
     {
         string m_dbFolder = "";
         string m_doxyFileFolder = "";
+        static string s_doxygenExePath = Path.Combine(Path.GetTempPath(), "doxygen.exe");
+
         Dictionary<string, string> m_idToCompoundDict = new Dictionary<string, string>();
         Dictionary<string, List<string>> m_compoundToIdDict = new Dictionary<string, List<string>>();
         Dictionary<string, IndexItem> m_idInfoDict = new Dictionary<string, IndexItem>();
@@ -279,22 +290,68 @@ namespace DoxygenDB
 
         public DoxygenDB() { }
 
-        void _ReadDoxyfile(string filePath)
+        static bool _CheckAndExtractDoxygenExe()
         {
+            if (s_doxygenExePath == "")
+            {
+                return false;
+            }
+            if (File.Exists(s_doxygenExePath))
+            {
+                return true;
+            }
+            var currentAssembly = Assembly.GetExecutingAssembly();
+            var arrResources = currentAssembly.GetManifestResourceNames();
+            foreach (var resourceName in arrResources)
+            {
+                if (resourceName.ToLower().EndsWith("doxygen.exe"))
+                {
+                    using (var resourceToSave = currentAssembly.GetManifestResourceStream(resourceName))
+                    {
+                        using (var output = File.OpenWrite(s_doxygenExePath))
+                            resourceToSave.CopyTo(output);
+                        resourceToSave.Close();
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public static bool _GenerateConfigureFile(string configPath)
+        {
+            if (!_CheckAndExtractDoxygenExe())
+            {
+                return false;
+            }
+            System.Diagnostics.Process exep = new System.Diagnostics.Process();
+            exep.StartInfo.FileName = s_doxygenExePath;
+            exep.StartInfo.Arguments = string.Format("-g \"{0}\"", configPath);
+            //exep.StartInfo.CreateNoWindow = true;
+            exep.StartInfo.UseShellExecute = false;
+            exep.Start();
+            exep.WaitForExit();
+            return true;
+        }
+
+        public static void _ReadDoxyfile(string filePath, Dictionary<string, List<string>> metaDict)
+        {
+            metaDict.Clear();
             StreamReader sr = new StreamReader(filePath, Encoding.Default);
             string line;
             string currentKey = "";
             List<string> currentValue = new List<string>();
-            while ((line = sr.ReadLine()) != null)
+            while (true)
             {
                 //Console.WriteLine(line.ToString());
-                line = line.Trim();
-                if (line == "")
+                line = sr.ReadLine();
+                if (line == null)
                 {
-                    continue;
+                    metaDict[currentKey] = currentValue;
+                    break;
                 }
-
-                if (line.StartsWith("#"))
+                line = line.Trim();
+                if (line == "" || line.StartsWith("#"))
                 {
                     continue;
                 }
@@ -304,7 +361,7 @@ namespace DoxygenDB
                 {
                     if (currentKey != "")
                     {
-                        m_metaDict[currentKey] = currentValue;
+                        metaDict[currentKey] = currentValue;
                     }
                     currentKey = lineList[0].Trim();
                     var value = lineList[1].Trim('\\');
@@ -319,6 +376,77 @@ namespace DoxygenDB
                     currentValue.Add(value);
                 }
             }
+        }
+
+        public static void _WriteDoxyfile(string path, Dictionary<string, List<string>> metaDict)
+        {
+            string content = "";
+            foreach (var itemPair in metaDict)
+            {
+                content += itemPair.Key + " = ";
+                var value = itemPair.Value;
+                for (int i = 0; i < value.Count; i++)
+                {
+                    if (i != 0)
+                    {
+                        content += " \\\n";
+                        content += "     ";
+                    }
+                    content += value[i];
+                }
+                content += "\n";
+            }
+            File.WriteAllText(path, content);
+        }
+
+        public static bool _AnalyseDoxyfile(string configPath)
+        {
+            if (!_CheckAndExtractDoxygenExe())
+            {
+                return false;
+            }
+            System.Diagnostics.Process exep = new System.Diagnostics.Process();
+            exep.StartInfo.FileName = s_doxygenExePath;
+            exep.StartInfo.Arguments = string.Format(" \"{0}\"", configPath);
+            //exep.StartInfo.CreateNoWindow = true;
+            exep.StartInfo.UseShellExecute = false;
+            exep.Start();
+            exep.WaitForExit();
+            return true;
+        }
+
+        public static void GenerateDB(DoxygenDBConfig config)
+        {
+            string configPath = config.m_configPath;
+            string projectName = config.m_projectName;
+            List<string> inputFolders = config.m_inputFolders;
+            string outputDirectory = config.m_outputDirectory;
+
+            _GenerateConfigureFile(configPath);
+            var metaDict = new Dictionary<string, List<string>>();
+            _ReadDoxyfile(configPath, metaDict);
+
+            metaDict["OUTPUT_DIRECTORY"] = new List<string> { outputDirectory };
+            metaDict["PROJECT_NAME"] = new List<string> { projectName };
+            metaDict["EXTRACT_ALL"] = new List<string> { "YES" };
+            metaDict["EXTRACT_PRIVATE"] = new List<string> { "YES" };
+            metaDict["EXTRACT_PACKAGE"] = new List<string> { "YES" };
+            metaDict["EXTRACT_STATIC"] = new List<string> { "YES" };
+            metaDict["EXTRACT_LOCAL_CLASSES"] = new List<string> { "YES" };
+            metaDict["EXTRACT_LOCAL_METHODS"] = new List<string> { "YES" };
+            metaDict["EXTRACT_ANON_NSPACES"] = new List<string> { "YES" };
+            metaDict["INPUT"] = inputFolders;
+            metaDict["RECURSIVE"] = new List<string> { "NO" };
+            metaDict["SOURCE_BROWSER"] = new List<string> { "YES" };
+            metaDict["REFERENCED_BY_RELATION"] = new List<string> { "YES" };
+            metaDict["REFERENCES_RELATION"] = new List<string> { "YES" };
+            metaDict["GENERATE_HTML"] = new List<string> { "NO" };
+            metaDict["GENERATE_LATEX"] = new List<string> { "NO" };
+            metaDict["GENERATE_XML"] = new List<string> { "YES" };
+            metaDict["CLASS_DIAGRAMS"] = new List<string> { "NO" };
+            
+            _WriteDoxyfile(configPath, metaDict);
+            _AnalyseDoxyfile(configPath);
         }
 
         XPathNavigator _GetXmlDocument(string fileName)
@@ -905,7 +1033,7 @@ namespace DoxygenDB
             m_doxyFileFolder = System.IO.Path.GetDirectoryName(fullPath);
             m_doxyFileFolder = m_doxyFileFolder.Replace('\\', '/');
 
-            _ReadDoxyfile(fullPath);
+            _ReadDoxyfile(fullPath, m_metaDict);
             m_dbFolder = m_metaDict["OUTPUT_DIRECTORY"][0];
             if (m_dbFolder == "")
             {
