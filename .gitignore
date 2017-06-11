@@ -1,10 +1,9 @@
 Debug
 /packages/
-/.vs/Supercharger/CodeAtlasVSIX
-/.vs/Supercharger/CodeView
-/.vs/Supercharger/Msagl
-/CodeAtlasVSIX/bin/Release
-/CodeAtlasVSIX/obj/Release
-/CodeView/bin/Release
-/CodeView/obj/Release
-/doxyData/xml
+/CodeAtlasVSIX/bin
+/CodeAtlasVSIX/obj
+/CodeView/bin/
+/CodeView/obj/
+/doxyData/
+/DoxygenDB/obj/
+/DoxygenDB/bin/
