@@ -7,9 +7,18 @@
     <Style TargetType="Menu" x:Key="MenuStyle">
         <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
     </Style>
+    
     <Style TargetType="MenuItem" x:Key="MenuItemStyle">
         <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
         <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter Property="Background" Value="#0a99f3" />
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="TabControl" x:Key="TabStyle">

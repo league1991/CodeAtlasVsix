@@ -235,7 +235,7 @@ namespace CodeAtlasVSIX
                 if (m_isSelected)
                 {
                     StrokeThickness = 4.0;
-                    this.Stroke = Brushes.Tomato;
+                    this.Stroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
                 }
                 else if (m_isCandidate)
                 {

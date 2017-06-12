@@ -36,7 +36,7 @@ namespace CodeAtlasVSIX
         Point m_targetPos = new Point();
         DateTime m_mouseDownTime = new DateTime();
         bool m_isSelected = false;
-        //bool m_isHover = false;
+        bool m_isHover = false;
         Point m_position = new Point();
         public int m_selectCounter = 0;
         public double m_selectTimeStamp = 0;
@@ -56,6 +56,7 @@ namespace CodeAtlasVSIX
         Dictionary<string, Variant> m_customData = new Dictionary<string, Variant>();
         Color m_color = new Color();
         bool m_customEdgeMode = false;
+        Geometry m_circle = new EllipseGeometry();
 
         public CodeUIItem(string uniqueName)
         {
@@ -165,6 +166,7 @@ namespace CodeAtlasVSIX
             BuildGeometry();
              
             Canvas.SetZIndex(this, 0);
+            this.StrokeThickness = 0.0;
         }
 
         public Color GetColor()
@@ -388,13 +390,11 @@ namespace CodeAtlasVSIX
                 m_isSelected = value;
                 if(m_isSelected)
                 {
-                    this.Stroke = Brushes.Tomato;
-                    this.StrokeThickness = 2.0;
+                    this.Stroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
                 }
                 else
                 {
                     this.Stroke = Brushes.Transparent;
-                    this.StrokeThickness = 1.0;
                 }
                 UIManager.Instance().GetScene().OnSelectItems();
             }
@@ -626,8 +626,10 @@ namespace CodeAtlasVSIX
             }
             else
             {
-                this.Stroke = Brushes.Tomato;
+                this.Stroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
+                //InvalidateVisual();
             }
+            m_isHover = true;
         }
 
         void MouseLeaveCallback(object sender, MouseEventArgs e)
@@ -640,6 +642,7 @@ namespace CodeAtlasVSIX
             {
                 Stroke = Brushes.Transparent;
             }
+            m_isHover = false;
         }
         #endregion
 
@@ -684,13 +687,13 @@ namespace CodeAtlasVSIX
                     m_geometry.Children.Add(pathGeo);
                 }
 
-                Geometry circle = new EllipseGeometry(new Point(0.0, 0.0), r, r);
+                m_circle = new EllipseGeometry(new Point(0.0, 0.0), r, r);
                 if (m_lines == 0 || m_customData["hasDef"].m_int == 0)
                 {
                     var innerCircle = new EllipseGeometry(new Point(0.0, 0.0), 1.5,1.5);
-                    circle = Geometry.Combine(circle, innerCircle, GeometryCombineMode.Exclude, null);
+                    m_circle = Geometry.Combine(m_circle, innerCircle, GeometryCombineMode.Exclude, null);
                 }
-                m_geometry.Children.Add(circle);
+                m_geometry.Children.Add(m_circle);
             }
             else if (m_kind == DoxygenDB.EntKind.VARIABLE)
             {
@@ -722,6 +725,12 @@ namespace CodeAtlasVSIX
 
         protected override void OnRender(DrawingContext drawingContext)
         {
+            if (m_circle != null && (m_isSelected || m_isHover))
+            {
+                var edgeStroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
+                drawingContext.DrawGeometry(edgeStroke, new Pen(edgeStroke, 10.0), m_circle);
+            }
+
             base.OnRender(drawingContext);
             if (m_displayText != null)
             {
