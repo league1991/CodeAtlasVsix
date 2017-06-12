@@ -41,9 +41,14 @@ namespace CodeAtlasVSIX
             DoTraverseSolution(solution);
             string solutionFile = solution.FileName;
             Projects projectList = solution.Projects;
-            foreach (Project project in projectList)
+            int projectCount = projectList.Count;
+            foreach (var proj in projectList)
             {
-                TraverseProject(project);
+                var project = proj as Project;
+                if (project != null)
+                {
+                    TraverseProject(project);
+                }
             }
         }
 
@@ -79,11 +84,15 @@ namespace CodeAtlasVSIX
             {
                 TraverseProject(item.SubProject);
             }
-            var items = item.ProjectItems.GetEnumerator();
-            while (items.MoveNext())
+            var projectItems = item.ProjectItems;
+            if (projectItems != null)
             {
-                var currentItem = items.Current as ProjectItem;
-                TraverseProjectItem(currentItem);
+                var items = projectItems.GetEnumerator();
+                while (items.MoveNext())
+                {
+                    var currentItem = items.Current as ProjectItem;
+                    TraverseProjectItem(currentItem);
+                }
             }
 
             DoTraverseProjectItem(item);
@@ -155,7 +164,10 @@ namespace CodeAtlasVSIX
                 m_solutionName = System.IO.Path.GetFileNameWithoutExtension(m_solutionPath);
             }
         }
-        protected override void DoTraverseProject(Project project) { }
+        protected override void DoTraverseProject(Project project)
+        {
+            Logger.WriteLine("projectname: " + project.Name);
+        }
         protected override void DoTraverseProjectItem(ProjectItem item)
         {
             string itemName = item.Name;

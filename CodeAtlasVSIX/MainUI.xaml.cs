@@ -343,25 +343,32 @@ namespace CodeAtlasVSIX
 
         void AnalyseSolutionButton_Click(object sender, RoutedEventArgs e)
         {
-            var traverser = new ProjectFileCollector();
-            traverser.Traverse();
-            var dirList = traverser.GetDirectoryList();
-            var solutionFolder = traverser.GetSolutionFolder();
-
-            if (dirList.Count == 0 || solutionFolder == "")
+            try
             {
-                return;
+                var traverser = new ProjectFileCollector();
+                traverser.Traverse();
+                var dirList = traverser.GetDirectoryList();
+                var solutionFolder = traverser.GetSolutionFolder();
+
+                if (dirList.Count == 0 || solutionFolder == "")
+                {
+                    return;
+                }
+
+                DBManager.Instance().CloseDB();
+                DoxygenDB.DoxygenDBConfig config = new DoxygenDB.DoxygenDBConfig();
+                config.m_configPath = solutionFolder + "/doxyfile";
+                config.m_inputFolders = dirList;
+                config.m_outputDirectory = solutionFolder + "/doxyData";
+                config.m_projectName = traverser.GetSolutionName();
+
+                DoxygenDB.DoxygenDB.GenerateDB(config);
+                DBManager.Instance().OpenDB(config.m_configPath);
             }
-
-            DBManager.Instance().CloseDB();
-            DoxygenDB.DoxygenDBConfig config = new DoxygenDB.DoxygenDBConfig();
-            config.m_configPath = solutionFolder + "/doxyfile";
-            config.m_inputFolders = dirList;
-            config.m_outputDirectory = solutionFolder + "/doxyData";
-            config.m_projectName = traverser.GetSolutionName();
-
-            DoxygenDB.DoxygenDB.GenerateDB(config);
-            DBManager.Instance().OpenDB(config.m_configPath);
+            catch (Exception)
+            {
+                Logger.WriteLine("Analyse failed.");
+            }
         }
     }
 }
