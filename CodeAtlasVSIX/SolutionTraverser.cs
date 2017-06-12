@@ -19,16 +19,9 @@ namespace CodeAtlasVSIX
             {
                 return;
             }
-
-            try
-            {
-                Solution solution = dte.Solution;
-                TraverseSolution(solution);
-            }
-            catch
-            {
-                Console.WriteLine("wrong project");
-            }
+            
+            Solution solution = dte.Solution;
+            TraverseSolution(solution);
         }
 
         void TraverseSolution(Solution solution)
@@ -182,7 +175,7 @@ namespace CodeAtlasVSIX
                 {
                     string fileName = item.FileNames[i];
                     m_fileList.Add(fileName);
-                    Logger.WriteLine(fileName);
+                    //Logger.WriteLine(fileName);
 
                     //var pathComponents = fileName.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
                     //PathNode node = m_rootNode;
