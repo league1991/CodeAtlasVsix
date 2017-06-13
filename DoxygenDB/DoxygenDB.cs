@@ -416,6 +416,16 @@ namespace DoxygenDB
             return true;
         }
 
+        static List<string> toPathList(List<string> list)
+        {
+            var pathList = new List<string>();
+            foreach (var item in list)
+            {
+                pathList.Add("\"" + item + "\"");
+            }
+            return pathList;
+        }
+
         public static void GenerateDB(DoxygenDBConfig config)
         {
             string configPath = config.m_configPath;
@@ -436,7 +446,7 @@ namespace DoxygenDB
             metaDict["EXTRACT_LOCAL_CLASSES"] = new List<string> { "YES" };
             metaDict["EXTRACT_LOCAL_METHODS"] = new List<string> { "YES" };
             metaDict["EXTRACT_ANON_NSPACES"] = new List<string> { "YES" };
-            metaDict["INPUT"] = inputFolders;
+            metaDict["INPUT"] = toPathList(inputFolders);
             metaDict["RECURSIVE"] = new List<string> { "NO" };
             metaDict["SOURCE_BROWSER"] = new List<string> { "YES" };
             metaDict["REFERENCED_BY_RELATION"] = new List<string> { "YES" };
@@ -445,8 +455,10 @@ namespace DoxygenDB
             metaDict["GENERATE_LATEX"] = new List<string> { "NO" };
             metaDict["GENERATE_XML"] = new List<string> { "YES" };
             metaDict["CLASS_DIAGRAMS"] = new List<string> { "NO" };
-            metaDict["CLANG_ASSISTED_PARSING"] = new List<string> { "NO" };
-            metaDict["INCLUDE_PATH"] = config.m_includePaths;
+            metaDict["CLANG_ASSISTED_PARSING"] = new List<string> { "YES" };
+            metaDict["INCLUDE_PATH"] = toPathList(config.m_includePaths); 
+            metaDict["BUILTIN_STL_SUPPORT"] = new List<string> { "YES" };
+            metaDict["CPP_CLI_SUPPORT"] = new List<string> { "YES" };
 
             _WriteDoxyfile(configPath, metaDict);
             _AnalyseDoxyfile(configPath);
