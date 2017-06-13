@@ -444,7 +444,8 @@ namespace DoxygenDB
             metaDict["GENERATE_LATEX"] = new List<string> { "NO" };
             metaDict["GENERATE_XML"] = new List<string> { "YES" };
             metaDict["CLASS_DIAGRAMS"] = new List<string> { "NO" };
-            
+            metaDict["CLANG_ASSISTED_PARSING"] = new List<string> { "NO" };
+
             _WriteDoxyfile(configPath, metaDict);
             _AnalyseDoxyfile(configPath);
         }

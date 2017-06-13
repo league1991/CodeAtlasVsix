@@ -368,6 +368,7 @@ namespace CodeAtlasVSIX
             catch (Exception)
             {
                 Logger.WriteLine("Analyse failed.");
+                DBManager.Instance().CloseDB();
             }
         }
     }

@@ -17,6 +17,7 @@
                 <Setter Property="Background" Value="#0a99f3" />
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
             </Trigger>
         </Style.Triggers>
     </Style>

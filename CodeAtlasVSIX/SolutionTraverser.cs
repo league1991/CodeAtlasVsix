@@ -1,6 +1,7 @@
 ﻿using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.VCProjectEngine;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,17 +32,20 @@ namespace CodeAtlasVSIX
                 return;
             }
 
-            DoTraverseSolution(solution);
-            string solutionFile = solution.FileName;
-            Projects projectList = solution.Projects;
-            int projectCount = projectList.Count;
-            foreach (var proj in projectList)
+            if(BeforeTraverseSolution(solution))
             {
-                var project = proj as Project;
-                if (project != null)
+                string solutionFile = solution.FileName;
+                Projects projectList = solution.Projects;
+                int projectCount = projectList.Count;
+                foreach (var proj in projectList)
                 {
-                    TraverseProject(project);
+                    var project = proj as Project;
+                    if (project != null)
+                    {
+                        TraverseProject(project);
+                    }
                 }
+                AfterTraverseSolution(solution);
             }
         }
 
@@ -52,18 +56,21 @@ namespace CodeAtlasVSIX
                 return;
             }
 
-            DoTraverseProject(project);
-
-            ProjectItems projectItems = project.ProjectItems;
-            //var codeModel = project.CodeModel;
-            //var codeLanguage = codeModel.Language;
-
-            var items = projectItems.GetEnumerator();
-            while (items.MoveNext())
+            if(BeforeTraverseProject(project))
             {
-                var item = items.Current as ProjectItem;
-                TraverseProjectItem(item);
+                ProjectItems projectItems = project.ProjectItems;
+                //var codeModel = project.CodeModel;
+                //var codeLanguage = codeModel.Language;
+
+                var items = projectItems.GetEnumerator();
+                while (items.MoveNext())
+                {
+                    var item = items.Current as ProjectItem;
+                    TraverseProjectItem(item);
+                }
+                AfterTraverseProject(project);
             }
+
         }
 
         void TraverseProjectItem(ProjectItem item)
@@ -73,27 +80,33 @@ namespace CodeAtlasVSIX
                 return;
             }
 
-            if (item.SubProject != null)
+            if (BeforeTraverseProjectItem(item))
             {
-                TraverseProject(item.SubProject);
-            }
-            var projectItems = item.ProjectItems;
-            if (projectItems != null)
-            {
-                var items = projectItems.GetEnumerator();
-                while (items.MoveNext())
+                if (item.SubProject != null)
                 {
-                    var currentItem = items.Current as ProjectItem;
-                    TraverseProjectItem(currentItem);
+                    TraverseProject(item.SubProject);
                 }
+                var projectItems = item.ProjectItems;
+                if (projectItems != null)
+                {
+                    var items = projectItems.GetEnumerator();
+                    while (items.MoveNext())
+                    {
+                        var currentItem = items.Current as ProjectItem;
+                        TraverseProjectItem(currentItem);
+                    }
+                }
+                AfterTraverseProjectItem(item);
             }
-
-            DoTraverseProjectItem(item);
         }
 
-        protected virtual void DoTraverseSolution(Solution solution) { }
-        protected virtual void DoTraverseProject(Project project) { }
-        protected virtual void DoTraverseProjectItem(ProjectItem item) { }
+        protected virtual bool BeforeTraverseSolution(Solution solution) { return true; }
+        protected virtual bool BeforeTraverseProject(Project project) { return true; }
+        protected virtual bool BeforeTraverseProjectItem(ProjectItem item) { return true; }
+
+        protected virtual void AfterTraverseSolution(Solution solution) { }
+        protected virtual void AfterTraverseProject(Project project) { }
+        protected virtual void AfterTraverseProjectItem(ProjectItem item) { }
     }
 
     public class ProjectFileCollector : SolutionTraverser
@@ -149,19 +162,89 @@ namespace CodeAtlasVSIX
             return m_solutionName;
         }
 
-        protected override void DoTraverseSolution(Solution solution)
+        protected override bool BeforeTraverseSolution(Solution solution)
         {
             m_solutionPath = solution.FileName;
             if (m_solutionPath != "")
             {
                 m_solutionName = System.IO.Path.GetFileNameWithoutExtension(m_solutionPath);
             }
+            return true;
         }
-        protected override void DoTraverseProject(Project project)
+
+        protected override bool BeforeTraverseProject(Project project)
         {
             Logger.WriteLine("projectname: " + project.Name);
+            var propertyIter = project.Properties.GetEnumerator();
+            while (propertyIter.MoveNext() && false)
+            {
+                var item = propertyIter.Current as Property;
+                if (item == null)
+                {
+                    continue;
+                }
+
+                string propName = item.Name;
+                string propValue = "";
+                try
+                {
+                    propValue = item.Value.ToString();
+                }
+                catch
+                {
+
+                }
+                Logger.WriteLine("   " + propName + ":" + propValue);
+            }
+            try
+            {
+                var configMgr = project.ConfigurationManager;
+                var configIter = configMgr.GetEnumerator();
+                //while (configIter.MoveNext())
+                //{
+
+                //}
+                var config = configMgr.ActiveConfiguration as Configuration;
+
+                //var vcProject = project.Object as VCProject;
+                //var config = vcProject.ActiveConfiguration;
+                if (config != null)
+                {
+                    var configProps = config.Properties;
+                    var configPropIter = configProps.GetEnumerator();
+                    while (configPropIter.MoveNext())
+                    {
+                        var configProp = configPropIter.Current as Property;
+                        var configName = configProp.Name;
+                        var configVal = "";
+                        try
+                        {
+                            configVal = configProp.Value.ToString();
+                        }
+                        catch
+                        {
+                        }
+                        Logger.WriteLine("  " + configName + ":" + configVal);
+                    }
+
+                    //Logger.WriteLine("group----------------------------");
+                    //var groups = config.OutputGroups;
+                    //var groupIter = groups.GetEnumerator();
+                    //while (groupIter.MoveNext())
+                    //{
+                    //    var group = groupIter.Current as OutputGroup;
+                    //    group.
+                    //}
+                }
+            }
+            catch
+            {
+                Logger.WriteLine("project error-------------");
+            }
+            return true;
         }
-        protected override void DoTraverseProjectItem(ProjectItem item)
+
+        protected override bool BeforeTraverseProjectItem(ProjectItem item)
         {
             string itemName = item.Name;
             string itemKind = item.Kind;
@@ -201,6 +284,7 @@ namespace CodeAtlasVSIX
                     }
                 }
             }
+            return true;
         }
     }
 }
