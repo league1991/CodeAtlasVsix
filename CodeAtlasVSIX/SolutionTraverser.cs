@@ -206,7 +206,40 @@ namespace CodeAtlasVSIX
                 //}
                 var config = configMgr.ActiveConfiguration as Configuration;
 
-                //var vcProject = project.Object as VCProject;
+                var vcProject = project.Object as VCProject;
+                var vcConfig = vcProject.ActiveConfiguration;
+                foreach (VCConfiguration vccon in vcProject.Configurations)
+                {
+                    string ruleStr = "ConfigurationDirectories";
+                    IVCRulePropertyStorage generalRule = vccon.Rules.Item(ruleStr);
+
+                    string outputPath = vccon.OutputDirectory;
+
+                    //vccon.OutputDirectory = "$(test)";
+                    //string test1 = generalRule.GetEvaluatedPropertyValue(2);
+                    //string incPath = generalRule.GetEvaluatedPropertyValue("IncludePath");
+                    string incPath = generalRule.GetUnevaluatedPropertyValue("IncludePath");
+                    //string name = generalRule.GetEvaluatedPropertyValue("TargetName");
+                    Logger.WriteLine("include path:" + incPath);
+                }
+
+                //dynamic propertySheet = vcConfig.PropertySheets;
+                //IVCCollection propertySheetCollection = propertySheet as IVCCollection;
+                //foreach (var item in propertySheetCollection)
+                //{
+                //    var vcPropertySheet = item as VCPropertySheet;
+                //    if (vcPropertySheet != null)
+                //    {
+                //        foreach(var rule in vcPropertySheet.Rules)
+                //        {
+                //            var vcRule = rule as IVCRulePropertyStorage;
+                //            if (vcRule != null)
+                //            {
+                //                vcRule.GetEvaluatedPropertyValue()
+                //            }
+                //        }
+                //    }
+                //}
                 //var config = vcProject.ActiveConfiguration;
                 if (config != null)
                 {

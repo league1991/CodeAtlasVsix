@@ -330,7 +330,7 @@ namespace CodeAtlasVSIX
         public static Color NameToColor(string name)
         {
             uint hashVal = (uint)name.GetHashCode();
-            hashVal = hashVal ^ (hashVal * 0x87654321);
+            hashVal = hashVal ^ (hashVal * 87654321);
             var h = (hashVal & 0xff) / 255.0;
             var s = ((hashVal >> 8) & 0xff) / 255.0;
             var l = ((hashVal >> 16) & 0xff) / 255.0;
