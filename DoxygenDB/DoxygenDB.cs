@@ -273,6 +273,7 @@ namespace DoxygenDB
         public string m_projectName = "";
         public List<string> m_inputFolders = new List<string>();
         public string m_outputDirectory = "";
+        public List<string> m_includePaths = new List<string>();
     }
 
     public class DoxygenDB
@@ -445,6 +446,7 @@ namespace DoxygenDB
             metaDict["GENERATE_XML"] = new List<string> { "YES" };
             metaDict["CLASS_DIAGRAMS"] = new List<string> { "NO" };
             metaDict["CLANG_ASSISTED_PARSING"] = new List<string> { "NO" };
+            metaDict["INCLUDE_PATH"] = config.m_includePaths;
 
             _WriteDoxyfile(configPath, metaDict);
             _AnalyseDoxyfile(configPath);

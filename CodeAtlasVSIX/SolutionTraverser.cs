@@ -123,6 +123,7 @@ namespace CodeAtlasVSIX
         List<string> m_fileList = new List<string>();
         HashSet<string> m_directoryList = new HashSet<string>();
         PathNode m_rootNode = new PathNode("root");
+        Dictionary<string, HashSet<string>> m_projectIncludePath = new Dictionary<string, HashSet<string>>();
         List<string> m_extensionList = new List<string> {
             ".c", ".cc", ".cxx", ".cpp", ".c++", ".inl",".h", ".hh", ".hxx", ".hpp", ".h++",".inc", 
             ".java", ".ii", ".ixx", ".ipp", ".i++", ".idl", ".ddl", ".odl",
@@ -141,6 +142,17 @@ namespace CodeAtlasVSIX
         public List<string> GetDirectoryList()
         {
             return m_directoryList.ToList();
+        }
+
+        public List<string> GetAllIncludePath()
+        {
+            var res = new List<string>();
+            foreach (var itemPair in m_projectIncludePath)
+            {
+                var includeList = itemPair.Value.ToList();
+                res.AddRange(includeList);
+            }
+            return res;
         }
 
         public string GetSolutionPath()
@@ -175,53 +187,72 @@ namespace CodeAtlasVSIX
         protected override bool BeforeTraverseProject(Project project)
         {
             Logger.WriteLine("projectname: " + project.Name);
-            var propertyIter = project.Properties.GetEnumerator();
-            while (propertyIter.MoveNext() && false)
-            {
-                var item = propertyIter.Current as Property;
-                if (item == null)
-                {
-                    continue;
-                }
+            //var propertyIter = project.Properties.GetEnumerator();
+            //while (propertyIter.MoveNext() && false)
+            //{
+            //    var item = propertyIter.Current as Property;
+            //    if (item == null)
+            //    {
+            //        continue;
+            //    }
 
-                string propName = item.Name;
-                string propValue = "";
-                try
-                {
-                    propValue = item.Value.ToString();
-                }
-                catch
-                {
+            //    string propName = item.Name;
+            //    string propValue = "";
+            //    try
+            //    {
+            //        propValue = item.Value.ToString();
+            //    }
+            //    catch
+            //    {
 
-                }
-                Logger.WriteLine("   " + propName + ":" + propValue);
-            }
+            //    }
+            //    Logger.WriteLine("   " + propName + ":" + propValue);
+            //}
             try
             {
                 var configMgr = project.ConfigurationManager;
-                var configIter = configMgr.GetEnumerator();
-                //while (configIter.MoveNext())
-                //{
-
-                //}
                 var config = configMgr.ActiveConfiguration as Configuration;
 
                 var vcProject = project.Object as VCProject;
-                var vcConfig = vcProject.ActiveConfiguration;
-                foreach (VCConfiguration vccon in vcProject.Configurations)
+                var vccon = vcProject.ActiveConfiguration as VCConfiguration;
+                IVCRulePropertyStorage generalRule = vccon.Rules.Item("ConfigurationDirectories");
+                IVCRulePropertyStorage cppRule = vccon.Rules.Item("CL");
+
+                string addIncPath = cppRule.GetEvaluatedPropertyValue("AdditionalIncludeDirectories");
+                string incPath = generalRule.GetEvaluatedPropertyValue("IncludePath");
+
+                string allIncPath = incPath + ";" + addIncPath;
+                string[] pathList = allIncPath.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                var projectInc = new HashSet<string>();
+                foreach (var item in pathList)
                 {
-                    string ruleStr = "ConfigurationDirectories";
-                    IVCRulePropertyStorage generalRule = vccon.Rules.Item(ruleStr);
-
-                    string outputPath = vccon.OutputDirectory;
-
-                    //vccon.OutputDirectory = "$(test)";
-                    //string test1 = generalRule.GetEvaluatedPropertyValue(2);
-                    //string incPath = generalRule.GetEvaluatedPropertyValue("IncludePath");
-                    string incPath = generalRule.GetUnevaluatedPropertyValue("IncludePath");
-                    //string name = generalRule.GetEvaluatedPropertyValue("TargetName");
-                    Logger.WriteLine("include path:" + incPath);
+                    string path = item.Replace('\\', '/').Trim();
+                    // Path must be absolute path
+                    if (path.Contains(":"))
+                    {
+                        projectInc.Add(path);
+                    }
+                    Logger.WriteLine("include path:" + item);
                 }
+                m_projectIncludePath[project.Name] = projectInc;
+
+                //foreach (VCConfiguration vccon in vcProject.Configurations)
+                //{
+                //    string ruleStr = "ConfigurationDirectories";
+                //    IVCRulePropertyStorage generalRule = vccon.Rules.Item(ruleStr);
+                //    IVCRulePropertyStorage cppRule = vccon.Rules.Item("CL");
+
+                //    string addIncPath = cppRule.GetEvaluatedPropertyValue("AdditionalIncludeDirectories");
+
+                //    string incPath = generalRule.GetEvaluatedPropertyValue("IncludePath");
+                //    string outputPath = vccon.OutputDirectory;
+
+                //    //vccon.OutputDirectory = "$(test)";
+                //    //string test1 = generalRule.GetEvaluatedPropertyValue(2);
+                //    //string incPath = generalRule.GetEvaluatedPropertyValue("IncludePath");
+                //    //string name = generalRule.GetEvaluatedPropertyValue("TargetName");
+                //    Logger.WriteLine("include path:" + incPath);
+                //}
 
                 //dynamic propertySheet = vcConfig.PropertySheets;
                 //IVCCollection propertySheetCollection = propertySheet as IVCCollection;
@@ -241,34 +272,34 @@ namespace CodeAtlasVSIX
                 //    }
                 //}
                 //var config = vcProject.ActiveConfiguration;
-                if (config != null)
-                {
-                    var configProps = config.Properties;
-                    var configPropIter = configProps.GetEnumerator();
-                    while (configPropIter.MoveNext())
-                    {
-                        var configProp = configPropIter.Current as Property;
-                        var configName = configProp.Name;
-                        var configVal = "";
-                        try
-                        {
-                            configVal = configProp.Value.ToString();
-                        }
-                        catch
-                        {
-                        }
-                        Logger.WriteLine("  " + configName + ":" + configVal);
-                    }
+                //if (config != null)
+                //{
+                //    var configProps = config.Properties;
+                //    var configPropIter = configProps.GetEnumerator();
+                //    while (configPropIter.MoveNext())
+                //    {
+                //        var configProp = configPropIter.Current as Property;
+                //        var configName = configProp.Name;
+                //        var configVal = "";
+                //        try
+                //        {
+                //            configVal = configProp.Value.ToString();
+                //        }
+                //        catch
+                //        {
+                //        }
+                //        Logger.WriteLine("  " + configName + ":" + configVal);
+                //    }
 
-                    //Logger.WriteLine("group----------------------------");
-                    //var groups = config.OutputGroups;
-                    //var groupIter = groups.GetEnumerator();
-                    //while (groupIter.MoveNext())
-                    //{
-                    //    var group = groupIter.Current as OutputGroup;
-                    //    group.
-                    //}
-                }
+                //    //Logger.WriteLine("group----------------------------");
+                //    //var groups = config.OutputGroups;
+                //    //var groupIter = groups.GetEnumerator();
+                //    //while (groupIter.MoveNext())
+                //    //{
+                //    //    var group = groupIter.Current as OutputGroup;
+                //    //    group.
+                //    //}
+                //}
             }
             catch
             {

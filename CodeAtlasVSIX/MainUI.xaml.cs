@@ -361,6 +361,7 @@ namespace CodeAtlasVSIX
                 config.m_inputFolders = dirList;
                 config.m_outputDirectory = solutionFolder + "/doxyData";
                 config.m_projectName = traverser.GetSolutionName();
+                config.m_includePaths = traverser.GetAllIncludePath();
 
                 DoxygenDB.DoxygenDB.GenerateDB(config);
                 DBManager.Instance().OpenDB(config.m_configPath);
