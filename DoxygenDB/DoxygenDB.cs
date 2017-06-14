@@ -716,7 +716,12 @@ namespace DoxygenDB
             var memberRefDict = new Dictionary<string, List<int>>();
             if (filePath != "")
             {
-                var fileCompoundId = _GetCompoundIDFromPath(filePath);
+                var fileCompoundId = compoundItem.m_id;
+                if (m_idToCompoundDict.ContainsKey(fileCompoundId))
+                {
+                    fileCompoundId = m_idToCompoundDict[fileCompoundId];
+                }
+                //var fileCompoundId = _GetCompoundIDFromPath(filePath);
                 if (fileCompoundId != "")
                 {
                     memberRefDict = _GetCodeRefs(fileCompoundId, startLine, endLine);
