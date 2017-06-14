@@ -74,7 +74,7 @@ namespace CodeAtlasVSIX
             this.MouseEnter += new MouseEventHandler(MouseEnterCallback);
             this.MouseLeave += new MouseEventHandler(MouseLeaveCallback);
 
-            SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
+            SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(100, 150,150,150));
             this.Fill = Brushes.Transparent;
             this.Stroke = brush;
             BuildGeometry();
@@ -245,7 +245,7 @@ namespace CodeAtlasVSIX
                 else
                 {
                     StrokeThickness = 1.5;
-                    this.Stroke = new SolidColorBrush(Color.FromArgb(100, 200,200,200));
+                    this.Stroke = new SolidColorBrush(Color.FromArgb(100, 150,150,150));
                 }
             });
         }
@@ -286,11 +286,13 @@ namespace CodeAtlasVSIX
 
         void MouseClickCallback(object sender, MouseEventArgs args)
         {
+            UIManager.Instance().GetScene().ClearSelection();
             IsSelected = true;
         }
 
         void MouseDoubleClickCallback(object sender, MouseEventArgs args)
         {
+            UIManager.Instance().GetScene().ClearSelection();
             IsSelected = true;
             UIManager.Instance().GetScene().ShowInEditor();
         }

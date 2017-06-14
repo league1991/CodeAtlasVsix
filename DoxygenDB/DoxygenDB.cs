@@ -83,7 +83,7 @@ namespace DoxygenDB
         public string m_id;
         public string m_name;
         public EntKind m_kind;
-        public List<IndexRefItem> m_refs = new List<IndexRefItem>();
+        public HashSet<IndexRefItem> m_refs = new HashSet<IndexRefItem>();
 
         public IndexItem(string name, string kindStr, string id)
         {
@@ -109,7 +109,7 @@ namespace DoxygenDB
 
         public List<IndexRefItem> GetRefItemList()
         {
-            return m_refs;
+            return m_refs.ToList();
         }
     }
 
@@ -151,6 +151,22 @@ namespace DoxygenDB
             m_file = file;
             m_line = line;
             m_column = column;
+        }
+        public override bool Equals(object obj)
+        {
+            IndexRefItem e = obj as IndexRefItem;
+            if (e == null)
+            {
+                return false;
+            }
+            return e.m_srcId == m_srcId && e.m_dstId == m_dstId &&
+                e.m_kind == m_kind && e.m_file == m_file &&
+                e.m_line == m_line && e.m_column == m_column;
+        }
+
+        public override int GetHashCode()
+        {
+            return m_srcId.GetHashCode() ^ m_dstId.GetHashCode() ^ m_kind.GetHashCode() ^ m_file.GetHashCode() ^ m_line ^ m_column;
         }
     }
 
@@ -837,6 +853,11 @@ namespace DoxygenDB
                                             var locationDict = _ParseLocationDict(memberLocationIter.Current);
                                             filePath = locationDict["file"].m_string;
                                             startLine = locationDict["line"].m_int;
+                                            if (filePath == "")
+                                            {
+                                                filePath = locationDict["declFile"].m_string;
+                                                startLine = locationDict["declLine"].m_int;
+                                            }
                                             var refItem = new IndexRefItem(compoundId, memberId, "member", filePath, startLine);
                                             memberItem.AddRefItem(refItem);
                                             compoundItem.AddRefItem(refItem);
@@ -927,7 +948,7 @@ namespace DoxygenDB
             var declLine = Convert.ToInt32(declLineAttr == "" ? "0" : declLineAttr);
             var declColumn = Convert.ToInt32(declColumnAttr == "" ? "0" : declColumnAttr);
             var declFile = element.GetAttribute("file", "");
-            if (!declFile.Contains(":"))
+            if (declFile != "" && !declFile.Contains(":"))
             {
                 declFile = m_doxyFileFolder + "/" + declFile;
             }
@@ -946,7 +967,8 @@ namespace DoxygenDB
             var bodyStart = Convert.ToInt32(bodyStartAttr);
             var bodyEnd = Convert.ToInt32(bodyEndAttr);
             var bodyFile = element.GetAttribute("bodyfile", "");
-            if (!bodyFile.Contains(":"))
+
+            if (bodyFile != "" && !bodyFile.Contains(":"))
             {
                 bodyFile = m_doxyFileFolder + "/" + bodyFile;
             }

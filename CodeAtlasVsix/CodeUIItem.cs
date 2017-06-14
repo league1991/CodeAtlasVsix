@@ -56,7 +56,7 @@ namespace CodeAtlasVSIX
         Dictionary<string, Variant> m_customData = new Dictionary<string, Variant>();
         Color m_color = new Color();
         bool m_customEdgeMode = false;
-        Geometry m_circle = new EllipseGeometry();
+        Geometry m_highLightGeometry = new EllipseGeometry();
 
         public CodeUIItem(string uniqueName)
         {
@@ -198,7 +198,7 @@ namespace CodeAtlasVSIX
 
         void BuildDisplayName(string name)
         {
-            string pattern = @"([A-Z]*[a-z0-9]*_*~*)";
+            string pattern = @"([A-Z]*[a-z0-9]*_*~*[::]*)";
             var nameList = Regex.Matches(
                 name,
                 pattern,
@@ -687,30 +687,32 @@ namespace CodeAtlasVSIX
                     m_geometry.Children.Add(pathGeo);
                 }
 
-                m_circle = new EllipseGeometry(new Point(0.0, 0.0), r, r);
+                m_highLightGeometry = new EllipseGeometry(new Point(0.0, 0.0), r, r);
                 if (m_lines == 0 || m_customData["hasDef"].m_int == 0)
                 {
                     var innerCircle = new EllipseGeometry(new Point(0.0, 0.0), 1.5,1.5);
-                    m_circle = Geometry.Combine(m_circle, innerCircle, GeometryCombineMode.Exclude, null);
+                    m_highLightGeometry = Geometry.Combine(m_highLightGeometry, innerCircle, GeometryCombineMode.Exclude, null);
                 }
-                m_geometry.Children.Add(m_circle);
+                m_geometry.Children.Add(m_highLightGeometry);
             }
             else if (m_kind == DoxygenDB.EntKind.VARIABLE)
             {
                 var figure = new PathFigure();
                 figure.StartPoint = new Point(-r, 0.0);
-                figure.Segments.Add(new LineSegment(new Point(r, r), true));
-                figure.Segments.Add(new LineSegment(new Point(r, -r), true));
+                figure.Segments.Add(new LineSegment(new Point(0, r * 0.5), true));
+                figure.Segments.Add(new LineSegment(new Point(0, -r * 0.5), true));
                 figure.IsClosed = true;
                 figure.IsFilled = true;
                 var pathGeo = new PathGeometry();
                 pathGeo.Figures.Add(figure);
                 m_geometry.Children.Add(pathGeo);
+                m_highLightGeometry = pathGeo;
             }
             else if(m_kind == DoxygenDB.EntKind.CLASS)
             {
                 var rect = new RectangleGeometry(new Rect(new Point(-r, -r), new Point(r, r)));
                 m_geometry.Children.Add(rect);
+                m_highLightGeometry = rect;
             }
 
         }
@@ -725,27 +727,33 @@ namespace CodeAtlasVSIX
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            if (m_circle != null && (m_isSelected || m_isHover))
+            if (m_highLightGeometry != null && (m_isSelected || m_isHover))
             {
                 var edgeStroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
-                drawingContext.DrawGeometry(edgeStroke, new Pen(edgeStroke, 10.0), m_circle);
+                drawingContext.DrawGeometry(edgeStroke, new Pen(edgeStroke, 10.0), m_highLightGeometry);
             }
 
             base.OnRender(drawingContext);
+            double baseX = 4;
+            double baseY = 0;
+            if (this.m_kind == DoxygenDB.EntKind.VARIABLE)
+            {
+                baseY -= 8;
+            }
             if (m_displayText != null)
             {
                 m_displayText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(50,50,50)));
-                drawingContext.DrawText(m_displayText, new Point(1,1));
+                drawingContext.DrawText(m_displayText, new Point(baseX+0.8, baseY+0.8));
                 m_displayText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(255, 239, 183)));
-                drawingContext.DrawText(m_displayText, new Point(0,0));
+                drawingContext.DrawText(m_displayText, new Point(baseX, baseY));
             }
             if (m_commentText != null)
             {
-                double baseY = m_displayText.Height;
+                baseY += m_displayText.Height;
                 //m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(50, 50, 50)));
                 //drawingContext.DrawText(m_commentText, new Point(1, baseY+1));
                 m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(0, 255, 0)));
-                drawingContext.DrawText(m_commentText, new Point(0, baseY));
+                drawingContext.DrawText(m_commentText, new Point(baseX, baseY));
             }
             if (m_customEdgeMode)
             {

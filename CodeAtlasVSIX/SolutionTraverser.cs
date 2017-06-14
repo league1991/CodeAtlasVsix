@@ -146,13 +146,16 @@ namespace CodeAtlasVSIX
 
         public List<string> GetAllIncludePath()
         {
-            var res = new List<string>();
+            var res = new HashSet<string>();
             foreach (var itemPair in m_projectIncludePath)
             {
                 var includeList = itemPair.Value.ToList();
-                res.AddRange(includeList);
+                foreach (var include in includeList)
+                {
+                    res.Add(include);
+                }
             }
-            return res;
+            return res.ToList();
         }
 
         public string GetSolutionPath()
@@ -214,27 +217,35 @@ namespace CodeAtlasVSIX
                 var config = configMgr.ActiveConfiguration as Configuration;
 
                 var vcProject = project.Object as VCProject;
-                var vccon = vcProject.ActiveConfiguration as VCConfiguration;
-                IVCRulePropertyStorage generalRule = vccon.Rules.Item("ConfigurationDirectories");
-                IVCRulePropertyStorage cppRule = vccon.Rules.Item("CL");
-
-                string addIncPath = cppRule.GetEvaluatedPropertyValue("AdditionalIncludeDirectories");
-                string incPath = generalRule.GetEvaluatedPropertyValue("IncludePath");
-
-                string allIncPath = incPath + ";" + addIncPath;
-                string[] pathList = allIncPath.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-                var projectInc = new HashSet<string>();
-                foreach (var item in pathList)
+                if (vcProject != null)
                 {
-                    string path = item.Replace('\\', '/').Trim();
-                    // Path must be absolute path
-                    if (path.Contains(":"))
+                    var vccon = vcProject.ActiveConfiguration as VCConfiguration;
+                    IVCRulePropertyStorage generalRule = vccon.Rules.Item("ConfigurationDirectories");
+                    IVCRulePropertyStorage cppRule = vccon.Rules.Item("CL");
+
+                    string addIncPath = cppRule.GetEvaluatedPropertyValue("AdditionalIncludeDirectories");
+                    string incPath = generalRule.GetEvaluatedPropertyValue("IncludePath");
+
+                    string allIncPath = incPath + ";" + addIncPath;
+                    string[] pathList = allIncPath.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    var projectInc = new HashSet<string>();
+                    var projectPath = Path.GetDirectoryName(project.FileName);
+                    foreach (var item in pathList)
                     {
+                        string path = item.Trim();
+                        if (!path.Contains(":"))
+                        {
+                            // relative path
+                            path = Path.Combine(projectPath, path);
+                            path = Path.GetFullPath((new Uri(path)).LocalPath);
+                        }
+                        path = path.Replace('\\', '/').Trim();
                         projectInc.Add(path);
+                        Logger.WriteLine("include path:" + path);
                     }
-                    Logger.WriteLine("include path:" + item);
+                    m_projectIncludePath[project.Name] = projectInc;
+
                 }
-                m_projectIncludePath[project.Name] = projectInc;
 
                 //foreach (VCConfiguration vccon in vcProject.Configurations)
                 //{
