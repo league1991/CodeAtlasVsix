@@ -198,7 +198,7 @@ namespace CodeAtlasVSIX
 
         void BuildDisplayName(string name)
         {
-            string pattern = @"([A-Z]*[a-z0-9]*_*~*[::]*)";
+            string pattern = @"[A-Z]*[a-z0-9]*_*";
             var nameList = Regex.Matches(
                 name,
                 pattern,
@@ -208,15 +208,27 @@ namespace CodeAtlasVSIX
             var partLength = 0;
             m_displayName = "";
 
+            int index = 0;
+            int length = 0;
             foreach (Match nextMatch in nameList)
             {
-                m_displayName += nextMatch.Value;
-                partLength += nextMatch.Value.Length;
+                string newPart = "";
+                int beg = index + length;
+                if (beg < nextMatch.Index)
+                {
+                    newPart = name.Substring(beg, nextMatch.Index - beg);
+                }
+                newPart += nextMatch.Value;
+
+                m_displayName += newPart;
+                partLength += newPart.Length;
                 if (partLength > 13)
                 {
                     m_displayName += "\n";
                     partLength = 0;
                 }
+                index = nextMatch.Index;
+                length = nextMatch.Length;
             }
             m_displayName = m_displayName.Trim();
             int nLine = m_displayName.Count(f => f == '\n') + 1;
