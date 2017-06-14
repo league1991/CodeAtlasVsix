@@ -429,6 +429,7 @@ namespace CodeAtlasVSIX
             var edge = item as CodeUIEdgeItem;
             if (node != null)
             {
+                Logger.WriteLine("Select Node:" + node.GetUniqueName());
                 node.IsSelected = true;
                 return true;
             }
@@ -442,6 +443,7 @@ namespace CodeAtlasVSIX
 
         public bool SelectOneEdge(CodeUIEdgeItem edge)
         {
+            ClearSelection();
             edge.IsSelected = true;
             return true;
         }
@@ -567,29 +569,48 @@ namespace CodeAtlasVSIX
                     return;
                 }
 
-                var refs = db.SearchRef(uname, "definein");
-                if (refs.Count == 0)
+                var entity = db.SearchFromUniqueName(uname);
+                if (entity != null)
                 {
-                    refs = db.SearchRef(uname, "declarein");
+                    var metric = entity.Metric();
+                    if (metric.ContainsKey("file"))
+                    {
+                        fileName = metric["file"].m_string;
+                        line = metric["line"].m_int;
+                        column = metric["column"].m_int;
+                    }
+                    if (fileName == "" && metric.ContainsKey("declFile"))
+                    {
+                        fileName = metric["declFile"].m_string;
+                        line = metric["declLine"].m_int;
+                        column = metric["declColumn"].m_int;
+                    }
                 }
-                if (refs.Count == 0)
+                if(fileName == "")
                 {
-                    refs = db.SearchRef(uname, "callby");
+                    var refs = db.SearchRef(uname, "definein");
+                    if (refs.Count == 0)
+                    {
+                        refs = db.SearchRef(uname, "declarein");
+                    }
+                    if (refs.Count == 0)
+                    {
+                        refs = db.SearchRef(uname, "callby");
+                    }
+                    if (refs.Count == 0)
+                    {
+                        refs = db.SearchRef(uname, "useby");
+                    }
+                    if (refs.Count == 0)
+                    {
+                        return;
+                    }
+                    var refObj = refs[0];
+                    var fileEnt = refObj.File();
+                    fileName = fileEnt.Longname();
+                    line = refObj.Line();
+                    column = refObj.Column();
                 }
-                if (refs.Count == 0)
-                {
-                    refs = db.SearchRef(uname, "useby");
-                }
-                if (refs.Count == 0)
-                {
-                    return;
-                }
-
-                var refObj = refs[0];
-                var fileEnt = refObj.File();
-                fileName = fileEnt.Longname();
-                line = refObj.Line();
-                column = refObj.Column();
             }
             else if (edgeItem != null)
             {
@@ -693,7 +714,7 @@ namespace CodeAtlasVSIX
 
         public void FindNeighbour(Vector mainDirection)
         {
-            Logger.WriteLine("find neighbour:" + mainDirection.ToString());
+            // Logger.WriteLine("find neighbour:" + mainDirection.ToString());
             var itemList = SelectedItems();
             if (itemList.Count == 0)
             {
@@ -1125,6 +1146,7 @@ namespace CodeAtlasVSIX
         #region Add/Delete Item and Edge
         bool _DoAddCodeItem(string srcUniqueName)
         {
+            // Logger.WriteLine("Add Code Item:" + srcUniqueName);
             if (m_itemDict.ContainsKey(srcUniqueName))
             {
                 return false;
@@ -1182,7 +1204,7 @@ namespace CodeAtlasVSIX
             m_isLayoutDirty = true;
         }
 
-        bool _DoAddCodeEdgeItem(string srcUniqueName, string tarUniqueName, DataDict data = null)
+        bool _DoAddCodeEdgeItem(string srcUniqueName, string tarUniqueName, DataDict data)
         {
             var key = new EdgeKey(srcUniqueName, tarUniqueName);
             if (m_edgeDict.ContainsKey(key))
@@ -1308,11 +1330,6 @@ namespace CodeAtlasVSIX
                     AddCustomEdge(uname, entUname);
                 }
             }
-        }
-
-        public bool AddCodeEdgeItem(string srcUniqueName, string tarUniqueName)
-        {
-            return _DoAddCodeEdgeItem(srcUniqueName, tarUniqueName);
         }
 
         public bool AddCustomEdge(string srcName, string tarName, DataDict edgeData = null)

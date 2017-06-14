@@ -180,7 +180,7 @@ namespace CodeAtlasVSIX
         #region Find References
         void _FindRefs(string refStr, string entStr, bool inverseEdge = false, int maxCount = -1)
         {
-            Logger.WriteLine("FindRef: " + refStr + " " + entStr);
+            // Logger.WriteLine("FindRef: " + refStr + " " + entStr);
             var scene = UIManager.Instance().GetScene();
             scene.AddRefs(refStr, entStr, inverseEdge, maxCount);
         }

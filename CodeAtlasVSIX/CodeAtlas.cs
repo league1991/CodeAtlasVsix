@@ -38,5 +38,11 @@ namespace CodeAtlasVSIX
             //this.Content = new CodeView();
             this.Content = UIManager.Instance().GetMainUI();
         }
+
+        protected override void OnClose()
+        {
+            UIManager.Instance().GetScene().SaveConfig();
+            base.OnClose();
+        }
     }
 }
