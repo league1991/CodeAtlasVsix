@@ -637,6 +637,10 @@ namespace DoxygenDB
                                     foreach (Match nextMatch in nameList)
                                     {
                                         var tokenValue = nextMatch.Value;
+                                        if (tokenValue == "RPCgetInstance")
+                                        {
+                                            Console.Write("aaa");
+                                        }
                                         AddToDict(nameToRowDict, tokenValue, lineNumber);
                                     }
                                 }
@@ -895,9 +899,9 @@ namespace DoxygenDB
                             {
                                 startLineRef = memberRefByDict[memberId][0];
                             }
-                            else if (memberNameRefDict.ContainsKey(memberItem.m_name))
+                            else if (memberNameRefByDict.ContainsKey(memberItem.m_name))
                             {
-                                startLineRef = memberNameRefDict[memberItem.m_name][0];
+                                startLineRef = memberNameRefByDict[memberItem.m_name][0];
                             }
                         }
                         var refItem = new IndexRefItem(referenceId, memberId, "unknown", filePathRef, startLineRef);
