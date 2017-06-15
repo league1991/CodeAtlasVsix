@@ -562,55 +562,7 @@ namespace CodeAtlasVSIX
             int column = 0;
             if (codeItem != null)
             {
-                var uname = codeItem.GetUniqueName();
-                var db = DBManager.Instance().GetDB();
-                if (db == null)
-                {
-                    return;
-                }
-
-                var entity = db.SearchFromUniqueName(uname);
-                if (entity != null)
-                {
-                    var metric = entity.Metric();
-                    if (metric.ContainsKey("file"))
-                    {
-                        fileName = metric["file"].m_string;
-                        line = metric["line"].m_int;
-                        column = metric["column"].m_int;
-                    }
-                    if (fileName == "" && metric.ContainsKey("declFile"))
-                    {
-                        fileName = metric["declFile"].m_string;
-                        line = metric["declLine"].m_int;
-                        column = metric["declColumn"].m_int;
-                    }
-                }
-                if(fileName == "")
-                {
-                    var refs = db.SearchRef(uname, "definein");
-                    if (refs.Count == 0)
-                    {
-                        refs = db.SearchRef(uname, "declarein");
-                    }
-                    if (refs.Count == 0)
-                    {
-                        refs = db.SearchRef(uname, "callby");
-                    }
-                    if (refs.Count == 0)
-                    {
-                        refs = db.SearchRef(uname, "useby");
-                    }
-                    if (refs.Count == 0)
-                    {
-                        return;
-                    }
-                    var refObj = refs[0];
-                    var fileEnt = refObj.File();
-                    fileName = fileEnt.Longname();
-                    line = refObj.Line();
-                    column = refObj.Column();
-                }
+                codeItem.GetDefinitionPosition(out fileName, out line, out column);
             }
             else if (edgeItem != null)
             {

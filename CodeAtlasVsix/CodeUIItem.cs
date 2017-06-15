@@ -26,26 +26,28 @@ namespace CodeAtlasVSIX
             public double m_double;
         }
         
-        public int nCallers = 0;
-        public int nCallees = 0;
 
-        Nullable<Point> dragStart = null;
-        GeometryGroup m_geometry = null;
         string m_uniqueName = "";
         bool m_isDirty = false;
+        string m_name = "";
+        string m_displayName = "";
+        string m_kindName = "";
+        DoxygenDB.EntKind m_kind = DoxygenDB.EntKind.UNKNOWN;
+        int m_lines = 0;
+        public int nCallers = 0;
+        public int nCallees = 0;
+        Dictionary<string, DoxygenDB.Variant> m_metric = new Dictionary<string, DoxygenDB.Variant>();
+
+        // UI appearance
+        Nullable<Point> dragStart = null;
+        GeometryGroup m_geometry = null;
         Point m_targetPos = new Point();
         DateTime m_mouseDownTime = new DateTime();
         bool m_isSelected = false;
         bool m_isHover = false;
-        Point m_position = new Point();
         public int m_selectCounter = 0;
         public double m_selectTimeStamp = 0;
-
-        string m_name = "";
-        string m_displayName = "";
-        int m_lines = 0;
-        string m_kindName = "";
-        DoxygenDB.EntKind m_kind = DoxygenDB.EntKind.UNKNOWN;
+        Point m_position = new Point();
         static FontFamily s_titleFont = new FontFamily("tahoma");
         Size m_fontSize = new Size();
         Size m_commentSize = new Size();
@@ -80,6 +82,7 @@ namespace CodeAtlasVSIX
                 BuildCommentSize(comment);
                 m_kindName = entity.KindName();
                 var metricRes = entity.Metric();
+                m_metric = metricRes;
                 if (metricRes.ContainsKey("CountLine"))
                 {
                     var metricLine = metricRes["CountLine"].m_int;
@@ -172,6 +175,61 @@ namespace CodeAtlasVSIX
         public Color GetColor()
         {
             return m_color;
+        }
+
+        public void GetDefinitionPosition(out string fileName, out int line, out int column)
+        {
+            fileName = "";
+            line = 0;
+            column = 0;
+
+            if (m_metric != null)
+            {
+                var metric = m_metric;
+                if (metric.ContainsKey("file"))
+                {
+                    fileName = metric["file"].m_string;
+                    line = metric["line"].m_int;
+                    column = metric["column"].m_int;
+                }
+                if (fileName == "" && metric.ContainsKey("declFile"))
+                {
+                    fileName = metric["declFile"].m_string;
+                    line = metric["declLine"].m_int;
+                    column = metric["declColumn"].m_int;
+                }
+            }
+            if (fileName == "")
+            {
+                var db = DBManager.Instance().GetDB();
+                if (db == null)
+                {
+                    return;
+                }
+                var entity = db.SearchFromUniqueName(m_uniqueName);
+                var refs = db.SearchRef(m_uniqueName, "definein");
+                if (refs.Count == 0)
+                {
+                    refs = db.SearchRef(m_uniqueName, "declarein");
+                }
+                if (refs.Count == 0)
+                {
+                    refs = db.SearchRef(m_uniqueName, "callby");
+                }
+                if (refs.Count == 0)
+                {
+                    refs = db.SearchRef(m_uniqueName, "useby");
+                }
+                if (refs.Count == 0)
+                {
+                    return;
+                }
+                var refObj = refs[0];
+                var fileEnt = refObj.File();
+                fileName = fileEnt.Longname();
+                line = refObj.Line();
+                column = refObj.Column();
+            }
         }
 
         public Variant GetCustomData(string key)

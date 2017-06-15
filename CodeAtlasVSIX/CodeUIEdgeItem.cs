@@ -68,6 +68,18 @@ namespace CodeAtlasVSIX
                 }
             }
 
+            var scene = UIManager.Instance().GetScene();
+            var srcItem = scene.GetItemDict()[srcName];
+            string srcItemFile;
+            int srcItemLine, srcItemColumn;
+            srcItem.GetDefinitionPosition(out srcItemFile, out srcItemLine, out srcItemColumn);
+            if (srcItemFile != "" &&  m_file != srcItemFile)
+            {
+                m_file = srcItemFile;
+                m_line = srcItemLine;
+                m_column = srcItemColumn;
+            }
+
             this.MouseDown += new MouseButtonEventHandler(MouseDownCallback);
             this.MouseUp += new MouseButtonEventHandler(MouseUpCallback);
             this.MouseMove += new MouseEventHandler(MouseMoveCallback);
