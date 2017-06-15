@@ -160,12 +160,6 @@ namespace DoxygenDB
             {
                 m_line = m_column = -1;
             }
-
-            if (m_dstId == "class_r_p_c_loader_1_1raas_rpc_instance_1add7d4292e31eb0154275d728c9adfa83" ||
-                m_srcId == "class_r_p_c_loader_1_1raas_rpc_instance_1add7d4292e31eb0154275d728c9adfa83")
-            {
-                Console.Write("aaa");
-            }
         }
         public override bool Equals(object obj)
         {
@@ -589,10 +583,6 @@ namespace DoxygenDB
                 var lineEle = programList.Current;
                 var lineNumberAttr = lineEle.GetAttribute("lineno", "");
                 int lineNumber = Convert.ToInt32(lineNumberAttr);
-                if (lineNumber == 220)
-                {
-                    Console.Write("aaa");
-                }
                 if (startLine != -1 && lineNumber < startLine)
                 {
                     continue;
@@ -637,10 +627,6 @@ namespace DoxygenDB
                                     foreach (Match nextMatch in nameList)
                                     {
                                         var tokenValue = nextMatch.Value;
-                                        if (tokenValue == "RPCgetInstance")
-                                        {
-                                            Console.Write("aaa");
-                                        }
                                         AddToDict(nameToRowDict, tokenValue, lineNumber);
                                     }
                                 }
@@ -770,10 +756,6 @@ namespace DoxygenDB
             }
 
             var memberId = memberDef.GetAttribute("id", "");
-            if (memberId == "class_r_p_c_loader_1_1_r_p_c_translator_1a524613fc6805364c4b33a19bb3d1aa7a")
-            {
-                Console.WriteLine("aaa");
-            }
             if (!m_idInfoDict.ContainsKey(memberId))
             {
                 return;
@@ -848,14 +830,6 @@ namespace DoxygenDB
                     if (m_idInfoDict.ContainsKey(referenceId))
                     {
                         var referenceItem = m_idInfoDict[referenceId];
-                        if (referenceId == "class_r_p_c_loader_1_1raas_rpc_instance_1add7d4292e31eb0154275d728c9adfa83")
-                        {
-                            Console.Write("aa");
-                        }
-                        if (memberChild.Value == "RPCLoader::raasRpcInstance::RPCgetInstance")
-                        {
-                            Console.Write("aa");
-                        }
                         string filePathRef;
                         int s;
                         _ParseRefLocation(memberChild, out filePathRef, out s);
@@ -952,7 +926,7 @@ namespace DoxygenDB
             }
 
             var xmlDocItem = _GetXmlDocumentItem(compoundFileId);
-            if (xmlDocItem.GetCacheStatus(XmlDocItem.CacheStatus.REF) && false)
+            if (xmlDocItem.GetCacheStatus(XmlDocItem.CacheStatus.REF))
             {
                 return;
             }
