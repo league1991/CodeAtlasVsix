@@ -88,6 +88,11 @@ namespace DoxygenDB
         public IndexItem(string name, string kindStr, string id)
         {
             m_name = name;
+            int idx = m_name.LastIndexOf(':');
+            if (idx != -1 && idx < m_name.Length - 1)
+            {
+                m_name = m_name.Substring(idx + 1);
+            }
             m_id = id;
             m_kind = s_kindDict[kindStr];
         }
@@ -143,7 +148,7 @@ namespace DoxygenDB
         public int m_line;
         public int m_column;
 
-        public IndexRefItem(string srcId, string dstId, string refKindStr, string file = "", int line = 0, int column = 0)
+        public IndexRefItem(string srcId, string dstId, string refKindStr, string file = "", int line = -1, int column = -1)
         {
             m_srcId = srcId;
             m_dstId = dstId;
@@ -151,6 +156,16 @@ namespace DoxygenDB
             m_file = file;
             m_line = line;
             m_column = column;
+            if (file == "")
+            {
+                m_line = m_column = -1;
+            }
+
+            if (m_dstId == "class_r_p_c_loader_1_1raas_rpc_instance_1add7d4292e31eb0154275d728c9adfa83" ||
+                m_srcId == "class_r_p_c_loader_1_1raas_rpc_instance_1add7d4292e31eb0154275d728c9adfa83")
+            {
+                Console.Write("aaa");
+            }
         }
         public override bool Equals(object obj)
         {
@@ -217,6 +232,11 @@ namespace DoxygenDB
         {
             m_id = id;
             m_shortName = name;
+            int idx = m_shortName.LastIndexOf(':');
+            if (idx != -1 && idx < m_shortName.Length - 1)
+            {
+                m_shortName = m_shortName.Substring(idx + 1);
+            }
             m_longName = longName;
             m_kindName = kindName;
             m_metric = metric;
@@ -534,19 +554,34 @@ namespace DoxygenDB
             return compoundPath;
         }
 
-        Dictionary<string, List<int>> _GetCodeRefs(string fileId, int startLine, int endLine)
+        void _GetCodeRefs(string fileId, int startLine, int endLine, 
+            out Dictionary<string, List<int>> idToRowDict,
+            out Dictionary<string, List<int>> nameToRowDict)
         {
-            Dictionary<string, List<int>> refDict = new Dictionary<string, List<int>>();
-            if (fileId == "" || endLine < startLine || startLine < 0)
+            idToRowDict = new Dictionary<string, List<int>>();
+            nameToRowDict = new Dictionary<string, List<int>>();
+            if (fileId == "")
             {
-                return refDict;
+                return;
             }
 
             var doc = _GetXmlDocument(fileId);
             if (doc == null)
             {
-                return refDict;
+                return;
             }
+
+            Action<Dictionary<string, List<int>>, string, int> AddToDict = (dict, key, line) =>
+            {
+                if (dict.ContainsKey(key))
+                {
+                    dict[key].Add(line);
+                }
+                else
+                {
+                    dict[key] = new List<int> { line };
+                }
+            };
 
             var programList = doc.Select("doxygen/compounddef/programlisting/codeline");
             while (programList.MoveNext())
@@ -554,27 +589,78 @@ namespace DoxygenDB
                 var lineEle = programList.Current;
                 var lineNumberAttr = lineEle.GetAttribute("lineno", "");
                 int lineNumber = Convert.ToInt32(lineNumberAttr);
-                if (lineNumber < startLine || lineNumber > endLine)
+                if (lineNumber == 220)
+                {
+                    Console.Write("aaa");
+                }
+                if (startLine != -1 && lineNumber < startLine)
+                {
+                    continue;
+                }
+                if (endLine != -1 && lineNumber > endLine)
                 {
                     continue;
                 }
 
-                var refIter = lineEle.Select("highlight/ref");
-                while (refIter.MoveNext())
+                //var lineRefAttr = lineEle.GetAttribute("refid", "");
+                //if (lineRefAttr != "")
+                //{
+                //    AddToDict(idToRowDict, lineRefAttr, lineNumber);
+                //}
+
+                var highLightIter = lineEle.Select("highlight");
+                while (highLightIter.MoveNext())
                 {
-                    var refObj = refIter.Current;
-                    var refId = refObj.GetAttribute("refid", "");
-                    if (refDict.ContainsKey(refId))
+                    var highLight = highLightIter.Current;
+                    var highLightType = highLight.GetAttribute("class","");
+                    if (highLightType == "normal" || highLightType == "preprocessor")
                     {
-                        refDict[refId].Add(lineNumber);
-                    }
-                    else
-                    {
-                        refDict[refId] = new List<int> { lineNumber };
+                        var highLightChildIter = highLight.SelectChildren(XPathNodeType.All);
+                        while (highLightChildIter.MoveNext())
+                        {
+                            var highLightChild = highLightChildIter.Current;
+                            if (highLightChild.Name == "ref")
+                            {
+                                var refObj = highLightChild;
+                                var refId = refObj.GetAttribute("refid", "");
+                                AddToDict(idToRowDict, refId, lineNumber);
+                            }
+
+                            var highLightValue = highLightChild.Value;
+                            if (highLightValue != "")
+                            {
+                                if (highLightChild.Name == "ref" || highLightChild.Name == "")
+                                {
+                                    string pattern = @"[a-zA-Z_][a-zA-Z0-9_]*";
+                                    var nameList = Regex.Matches(highLightValue, pattern, RegexOptions.ExplicitCapture);
+
+                                    foreach (Match nextMatch in nameList)
+                                    {
+                                        var tokenValue = nextMatch.Value;
+                                        AddToDict(nameToRowDict, tokenValue, lineNumber);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+
+                //var refIter = lineEle.Select("highlight/ref");
+                //while (refIter.MoveNext())
+                //{
+                //    var refObj = refIter.Current;
+                //    var refId = refObj.GetAttribute("refid", "");
+                //    if (idToRowDict.ContainsKey(refId))
+                //    {
+                //        idToRowDict[refId].Add(lineNumber);
+                //    }
+                //    else
+                //    {
+                //        idToRowDict[refId] = new List<int> { lineNumber };
+                //    }
+                //}
             }
-            return refDict;
+            return;
         }
 
         void _AddToNameIDDict(string name, string id)
@@ -664,7 +750,7 @@ namespace DoxygenDB
             if (fileCompoundId == "")
             {
                 filePath = "";
-                startLine = 0;
+                startLine = -1;
                 return false;
             }
             filePath = _GetCompoundPath(fileCompoundId);
@@ -680,6 +766,10 @@ namespace DoxygenDB
             }
 
             var memberId = memberDef.GetAttribute("id", "");
+            if (memberId == "class_r_p_c_loader_1_1_r_p_c_translator_1a524613fc6805364c4b33a19bb3d1aa7a")
+            {
+                Console.WriteLine("aaa");
+            }
             if (!m_idInfoDict.ContainsKey(memberId))
             {
                 return;
@@ -687,26 +777,25 @@ namespace DoxygenDB
             var memberItem = m_idInfoDict[memberId];
 
             // Add member reference
-            string filePath = "";
-            int startLine = 0, endLine = 0;
+            string memberFilePath = "";
+            int memberStartLine = -1, memberEndLine = -1;
             if (compoundItem != null)
             {
                 var compoundId = compoundItem.m_id;
-
                 var memberLocationIter = memberDef.Select("./location");
                 if (memberLocationIter.MoveNext())
                 {
                     var locationDict = _ParseLocationDict(memberLocationIter.Current);
-                    filePath = locationDict["file"].m_string;
-                    startLine = locationDict["line"].m_int;
-                    endLine = locationDict["lineEnd"].m_int;
-                    if (filePath == "")
+                    memberFilePath = locationDict["file"].m_string;
+                    memberStartLine = locationDict["line"].m_int;
+                    memberEndLine = locationDict["lineEnd"].m_int;
+                    if (memberFilePath == "")
                     {
-                        filePath = locationDict["declFile"].m_string;
-                        startLine = locationDict["declLine"].m_int;
-                        endLine = startLine;
+                        memberFilePath = locationDict["declFile"].m_string;
+                        memberStartLine = locationDict["declLine"].m_int;
+                        memberEndLine = memberStartLine;
                     }
-                    var refItem = new IndexRefItem(compoundId, memberId, "member", filePath, startLine);
+                    var refItem = new IndexRefItem(compoundId, memberId, "member", memberFilePath, memberStartLine);
                     memberItem.AddRefItem(refItem);
                     compoundItem.AddRefItem(refItem);
                 }
@@ -714,21 +803,16 @@ namespace DoxygenDB
 
             // ref location dict for functions
             var memberRefDict = new Dictionary<string, List<int>>();
-            if (filePath != "")
+            var memberNameRefDict = new Dictionary<string, List<int>>();
+            if (memberFilePath != "")
             {
-                var fileCompoundId = compoundItem.m_id;
-                if (m_idToCompoundDict.ContainsKey(fileCompoundId))
-                {
-                    fileCompoundId = m_idToCompoundDict[fileCompoundId];
-                }
-                //var fileCompoundId = _GetCompoundIDFromPath(filePath);
+                var fileCompoundId = _GetCompoundIDFromPath(memberFilePath);
                 if (fileCompoundId != "")
                 {
-                    memberRefDict = _GetCodeRefs(fileCompoundId, startLine, endLine);
+                    _GetCodeRefs(fileCompoundId, memberStartLine, memberEndLine, out memberRefDict, out memberNameRefDict);
                 }
             }
-
-            string memberFilePath = "";
+            
             var memberChildIter = memberDef.SelectChildren(XPathNodeType.Element);
             while (memberChildIter.MoveNext())
             {
@@ -738,37 +822,49 @@ namespace DoxygenDB
                     var referenceId = memberChild.GetAttribute("refid", "");
 
                     // build the reference dict first
-                    if (memberRefDict.Count == 0)
-                    {
-                        var refElement = _GetXmlElement(referenceId);
-                        XPathNodeIterator refElementIter = null;
-                        if (refElement != null)
-                        {
-                            refElementIter = refElement.Select(string.Format("./referencedby[@refid=\'{0}\']", memberId));
-                        }
-                        if (refElementIter != null && refElementIter.MoveNext())
-                        {
-                            refElement = refElementIter.Current;
-                            var fileCompoundId = refElement.GetAttribute("compoundref", "");
-                            memberFilePath = _GetCompoundPath(fileCompoundId);
-                            startLine = Convert.ToInt32(refElement.GetAttribute("startline", ""));
-                            endLine = Convert.ToInt32(refElement.GetAttribute("endline", ""));
-                            memberRefDict = _GetCodeRefs(fileCompoundId, startLine, endLine);
-                        }
-                    }
+                    //if (memberRefDict.Count == 0)
+                    //{
+                    //    var refElement = _GetXmlElement(referenceId);
+                    //    XPathNodeIterator refElementIter = null;
+                    //    if (refElement != null)
+                    //    {
+                    //        refElementIter = refElement.Select(string.Format("./referencedby[@refid=\'{0}\']", memberId));
+                    //    }
+                    //    if (refElementIter != null && refElementIter.MoveNext())
+                    //    {
+                    //        refElement = refElementIter.Current;
+                    //        var fileCompoundId = refElement.GetAttribute("compoundref", "");
+                    //        memberFilePath = _GetCompoundPath(fileCompoundId);
+                    //        startLine = Convert.ToInt32(refElement.GetAttribute("startline", ""));
+                    //        endLine = Convert.ToInt32(refElement.GetAttribute("endline", ""));
+                    //        _GetCodeRefs(fileCompoundId, startLine, endLine, out memberRefDict, out memberNameRefDict);
+                    //    }
+                    //}
 
                     if (m_idInfoDict.ContainsKey(referenceId))
                     {
                         var referenceItem = m_idInfoDict[referenceId];
+                        if (referenceId == "class_r_p_c_loader_1_1raas_rpc_instance_1add7d4292e31eb0154275d728c9adfa83")
+                        {
+                            Console.Write("aa");
+                        }
+                        if (memberChild.Value == "RPCLoader::raasRpcInstance::RPCgetInstance")
+                        {
+                            Console.Write("aa");
+                        }
                         string filePathRef;
-                        int startLineRef;
-                        _ParseRefLocation(memberChild, out filePathRef, out startLineRef);
+                        int s;
+                        _ParseRefLocation(memberChild, out filePathRef, out s);
+                        int startLineRef = memberStartLine;
                         if (memberRefDict.ContainsKey(referenceId))
                         {
                             startLineRef = memberRefDict[referenceId][0];
-                            filePathRef = memberFilePath;
                         }
-                        var refItem = new IndexRefItem(memberId, referenceId, "unknown", filePathRef, startLineRef);
+                        else if (memberNameRefDict.ContainsKey(referenceItem.m_name))
+                        {
+                            startLineRef = memberNameRefDict[referenceItem.m_name][0];
+                        }
+                        var refItem = new IndexRefItem(memberId, referenceId, "unknown", memberFilePath, startLineRef);
                         memberItem.AddRefItem(refItem);
                         referenceItem.AddRefItem(refItem);
                     }
@@ -789,11 +885,19 @@ namespace DoxygenDB
                             referenceItem.m_kind == EntKind.SLOT)
                         {
                             var fileCompoundId = memberChild.GetAttribute("compoundref", "");
-                            var endLineRef = Convert.ToInt32(memberChild.GetAttribute("endline", ""));
-                            var memberRefByDict = _GetCodeRefs(fileCompoundId, startLineRef, endLineRef);
+                            var endLineAttr = memberChild.GetAttribute("endline", "");
+                            int endLineRef = endLineAttr == "" ? -1 : Convert.ToInt32(endLineAttr);
+
+                            var memberRefByDict = new Dictionary<string, List<int>>();
+                            var memberNameRefByDict = new Dictionary<string, List<int>>();
+                            _GetCodeRefs(fileCompoundId, startLineRef, endLineRef, out memberRefByDict, out memberNameRefByDict);
                             if (memberRefByDict.ContainsKey(memberId))
                             {
                                 startLineRef = memberRefByDict[memberId][0];
+                            }
+                            else if (memberNameRefDict.ContainsKey(memberItem.m_name))
+                            {
+                                startLineRef = memberNameRefDict[memberItem.m_name][0];
                             }
                         }
                         var refItem = new IndexRefItem(referenceId, memberId, "unknown", filePathRef, startLineRef);
@@ -844,7 +948,7 @@ namespace DoxygenDB
             }
 
             var xmlDocItem = _GetXmlDocumentItem(compoundFileId);
-            if (xmlDocItem.GetCacheStatus(XmlDocItem.CacheStatus.REF))
+            if (xmlDocItem.GetCacheStatus(XmlDocItem.CacheStatus.REF) && false)
             {
                 return;
             }

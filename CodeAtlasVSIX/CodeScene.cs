@@ -570,6 +570,8 @@ namespace CodeAtlasVSIX
                 column = edgeItem.m_column;
                 fileName = edgeItem.m_file;
             }
+
+            Logger.WriteLine(string.Format("show in editor:{0} {1}", fileName, line));
             
             if (File.Exists(fileName))
             {
@@ -578,9 +580,16 @@ namespace CodeAtlasVSIX
                 {
                     dte.ItemOperations.OpenFile(fileName);
                     TextSelection ts = dte.ActiveDocument.Selection as TextSelection;
-                    if (ts != null)
+                    if (ts != null && line > 0)
                     {
-                        ts.GotoLine(line);
+                        try
+                        {
+                            ts.GotoLine(line);
+                        }
+                        catch (Exception)
+                        {
+                            Logger.WriteLine("Go to page fail.");
+                        }
                     }
                 }
             }
@@ -672,7 +681,7 @@ namespace CodeAtlasVSIX
             {
                 return;
             }
-            // AcquireLock();
+            AcquireLock();
             var centerItem = itemList[0];
             var centerNode = centerItem as CodeUIItem;
             var centerEdge = centerItem as CodeUIEdgeItem;
@@ -685,7 +694,7 @@ namespace CodeAtlasVSIX
             {
                 minItem = FindNeighbourForEdge(centerEdge, mainDirection);
             }
-            // ReleaseLock();
+            ReleaseLock();
 
             if (minItem == null)
             {
