@@ -304,6 +304,8 @@ namespace DoxygenDB
         public List<string> m_inputFolders = new List<string>();
         public string m_outputDirectory = "";
         public List<string> m_includePaths = new List<string>();
+        public List<string> m_defines = new List<string>();
+        public bool m_useClang = false;
     }
 
     public class DoxygenDB
@@ -486,10 +488,11 @@ namespace DoxygenDB
             metaDict["GENERATE_LATEX"] = new List<string> { "NO" };
             metaDict["GENERATE_XML"] = new List<string> { "YES" };
             metaDict["CLASS_DIAGRAMS"] = new List<string> { "NO" };
-            metaDict["CLANG_ASSISTED_PARSING"] = new List<string> { "YES" };
+            metaDict["CLANG_ASSISTED_PARSING"] = new List<string> { config.m_useClang ? "YES" : "NO"};
             metaDict["INCLUDE_PATH"] = toPathList(config.m_includePaths); 
             metaDict["BUILTIN_STL_SUPPORT"] = new List<string> { "YES" };
             metaDict["CPP_CLI_SUPPORT"] = new List<string> { "YES" };
+            metaDict["PREDEFINED"] = config.m_defines;
 
             _WriteDoxyfile(configPath, metaDict);
             _AnalyseDoxyfile(configPath);

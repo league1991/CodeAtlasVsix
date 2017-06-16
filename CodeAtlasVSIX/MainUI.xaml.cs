@@ -341,7 +341,7 @@ namespace CodeAtlasVSIX
             return this.symbolWindow;
         }
 
-        void AnalyseSolutionButton_Click(object sender, RoutedEventArgs e)
+        void AnalyseSolution(bool useClang)
         {
             try
             {
@@ -362,6 +362,8 @@ namespace CodeAtlasVSIX
                 config.m_outputDirectory = solutionFolder + "/doxyData";
                 config.m_projectName = traverser.GetSolutionName();
                 config.m_includePaths = traverser.GetAllIncludePath();
+                config.m_defines = traverser.GetAllDefines();
+                config.m_useClang = useClang;
 
                 DoxygenDB.DoxygenDB.GenerateDB(config);
                 DBManager.Instance().OpenDB(config.m_configPath);
@@ -371,6 +373,16 @@ namespace CodeAtlasVSIX
                 Logger.WriteLine("Analyse failed.");
                 DBManager.Instance().CloseDB();
             }
+        }
+
+        void AnalyseSolutionButton_Click(object sender, RoutedEventArgs e)
+        {
+            AnalyseSolution(true);
+        }
+
+        void FastAnalyseSolutionButton_Click(object sender, RoutedEventArgs e)
+        {
+            AnalyseSolution(false);
         }
     }
 }

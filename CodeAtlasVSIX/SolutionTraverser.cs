@@ -118,12 +118,19 @@ namespace CodeAtlasVSIX
             public Dictionary<string, PathNode> m_children = new Dictionary<string, PathNode>();
         }
 
+        class ProjectInfo
+        {
+            public HashSet<string> m_includePath;
+            public HashSet<string> m_defines;
+        }
+
         string m_solutionName = "";
         string m_solutionPath = "";
         List<string> m_fileList = new List<string>();
         HashSet<string> m_directoryList = new HashSet<string>();
         PathNode m_rootNode = new PathNode("root");
-        Dictionary<string, HashSet<string>> m_projectIncludePath = new Dictionary<string, HashSet<string>>();
+        // Dictionary<string, HashSet<string>> m_projectIncludePath = new Dictionary<string, HashSet<string>>();
+        Dictionary<string, ProjectInfo> m_projectInfo = new Dictionary<string, ProjectInfo>();
         List<string> m_extensionList = new List<string> {
             ".c", ".cc", ".cxx", ".cpp", ".c++", ".inl",".h", ".hh", ".hxx", ".hpp", ".h++",".inc", 
             ".java", ".ii", ".ixx", ".ipp", ".i++", ".idl", ".ddl", ".odl",
@@ -147,12 +154,26 @@ namespace CodeAtlasVSIX
         public List<string> GetAllIncludePath()
         {
             var res = new HashSet<string>();
-            foreach (var itemPair in m_projectIncludePath)
+            foreach (var projectPair in m_projectInfo)
             {
-                var includeList = itemPair.Value.ToList();
+                var includeList = projectPair.Value.m_includePath.ToList();
                 foreach (var include in includeList)
                 {
                     res.Add(include);
+                }
+            }
+            return res.ToList();
+        }
+
+        public List<string> GetAllDefines()
+        {
+            var res = new HashSet<string>();
+            foreach (var projectPair in m_projectInfo)
+            {
+                var defineList = projectPair.Value.m_defines.ToList();
+                foreach (var define in defineList)
+                {
+                    res.Add(define);
                 }
             }
             return res.ToList();
@@ -223,9 +244,9 @@ namespace CodeAtlasVSIX
                     IVCRulePropertyStorage generalRule = vccon.Rules.Item("ConfigurationDirectories");
                     IVCRulePropertyStorage cppRule = vccon.Rules.Item("CL");
 
+                    // Parsing include path
                     string addIncPath = cppRule.GetEvaluatedPropertyValue("AdditionalIncludeDirectories");
                     string incPath = generalRule.GetEvaluatedPropertyValue("IncludePath");
-
                     string allIncPath = incPath + ";" + addIncPath;
                     string[] pathList = allIncPath.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
                     var projectInc = new HashSet<string>();
@@ -239,12 +260,26 @@ namespace CodeAtlasVSIX
                             path = Path.Combine(projectPath, path);
                             path = Path.GetFullPath((new Uri(path)).LocalPath);
                         }
+                        if (!Directory.Exists(path))
+                        {
+                            continue;
+                        }
                         path = path.Replace('\\', '/').Trim();
                         projectInc.Add(path);
                         Logger.WriteLine("include path:" + path);
                     }
-                    m_projectIncludePath[project.Name] = projectInc;
+                    var projInfo = FindProjectInfo(project.Name);
+                    projInfo.m_includePath = projectInc;
 
+                    // Parsing define
+                    string defines = cppRule.GetEvaluatedPropertyValue("PreprocessorDefinitions");
+                    string[] defineList = defines.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    var defineSet = new HashSet<string>();
+                    foreach (var item in defineList)
+                    {
+                        defineSet.Add(item);
+                    }
+                    projInfo.m_defines = defineSet;
                 }
 
                 //foreach (VCConfiguration vccon in vcProject.Configurations)
@@ -317,6 +352,15 @@ namespace CodeAtlasVSIX
                 Logger.WriteLine("project error-------------");
             }
             return true;
+        }
+
+        ProjectInfo FindProjectInfo(string name)
+        {
+            if (!m_projectInfo.ContainsKey(name))
+            {
+                m_projectInfo[name] = new ProjectInfo();
+            }
+            return m_projectInfo[name];
         }
 
         protected override bool BeforeTraverseProjectItem(ProjectItem item)

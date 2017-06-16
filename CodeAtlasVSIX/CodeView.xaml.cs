@@ -24,7 +24,7 @@ namespace CodeAtlasVSIX
             var scene = UIManager.Instance().GetScene();
             scene.View = this;
 
-            ScaleCanvas(0.9, new Point());
+            ScaleCanvas(0.92, new Point());
         }
 
         private void testButton_Click(object sender, RoutedEventArgs e)
