@@ -555,44 +555,8 @@ namespace CodeAtlasVSIX
             }
 
             var item = itemList[0];
-            var codeItem = item as CodeUIItem;
-            var edgeItem = item as CodeUIEdgeItem;
-            var fileName = "";
-            int line = 0;
-            int column = 0;
-            if (codeItem != null)
-            {
-                codeItem.GetDefinitionPosition(out fileName, out line, out column);
-            }
-            else if (edgeItem != null)
-            {
-                line = edgeItem.m_line;
-                column = edgeItem.m_column;
-                fileName = edgeItem.m_file;
-            }
-
-            Logger.WriteLine(string.Format("show in editor:{0} {1}", fileName, line));
-            
-            if (File.Exists(fileName))
-            {
-                var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
-                if (dte != null)
-                {
-                    dte.ItemOperations.OpenFile(fileName);
-                    TextSelection ts = dte.ActiveDocument.Selection as TextSelection;
-                    if (ts != null && line > 0)
-                    {
-                        try
-                        {
-                            ts.GotoLine(line);
-                        }
-                        catch (Exception)
-                        {
-                            Logger.WriteLine("Go to page fail.");
-                        }
-                    }
-                }
-            }
+            var navigator = new CursorNavigator();
+            navigator.Navigate(item);
         }
         #endregion
 
