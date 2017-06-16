@@ -493,6 +493,7 @@ namespace DoxygenDB
             metaDict["BUILTIN_STL_SUPPORT"] = new List<string> { "YES" };
             metaDict["CPP_CLI_SUPPORT"] = new List<string> { "YES" };
             metaDict["PREDEFINED"] = config.m_defines;
+            // metaDict["INPUT_ENCODING"] = new List<string> { "iso-8859-1" };
 
             _WriteDoxyfile(configPath, metaDict);
             _AnalyseDoxyfile(configPath);

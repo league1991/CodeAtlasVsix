@@ -246,17 +246,17 @@ namespace CodeAtlasVSIX
             {
                 if (m_isSelected)
                 {
-                    StrokeThickness = 4.0;
+                    StrokeThickness = 5.5;
                     this.Stroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
                 }
                 else if (m_isCandidate)
                 {
-                    StrokeThickness = 4.0;
+                    StrokeThickness = 5.5;
                     this.Stroke = new SolidColorBrush(Color.FromArgb(200, 183, 101, 0));
                 }
                 else
                 {
-                    StrokeThickness = 1.5;
+                    StrokeThickness = 2.0;
                     this.Stroke = new SolidColorBrush(Color.FromArgb(100, 150,150,150));
                 }
             });
