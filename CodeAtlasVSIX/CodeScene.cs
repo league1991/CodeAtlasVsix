@@ -54,6 +54,7 @@ namespace CodeAtlasVSIX
         
         // Layout/UI Status
         public bool m_isLayoutDirty = false;
+        public bool m_isInvalidate = false;
         bool m_isSourceCandidate = true;
         List<EdgeKey> m_candidateEdge = new List<EdgeKey>();
         bool m_selectEventConnected = true;
@@ -1976,26 +1977,39 @@ namespace CodeAtlasVSIX
         #endregion
         public void Invalidate()
         {
-            foreach(var node in m_itemDict)
+            AcquireLock();
+            m_isInvalidate = true;
+            ReleaseLock();
+        }
+
+        public void ClearInvalidate()
+        {
+            AcquireLock();
+            if (m_isInvalidate)
             {
-                node.Value.Invalidate();
-            }
-            
-            foreach(var edge in m_edgeDict)
-            {
-                edge.Value.Invalidate();
-            }
+                foreach (var node in m_itemDict)
+                {
+                    node.Value.Invalidate();
+                }
+
+                foreach (var edge in m_edgeDict)
+                {
+                    edge.Value.Invalidate();
+                }
 
 
-            foreach (var node in m_itemDict)
-            {
-                node.Value.IsDirty = false;
-            }
+                foreach (var node in m_itemDict)
+                {
+                    node.Value.IsDirty = false;
+                }
 
-            foreach (var edge in m_edgeDict)
-            {
-                edge.Value.IsDirty = false;
+                foreach (var edge in m_edgeDict)
+                {
+                    edge.Value.IsDirty = false;
+                }
+                m_isInvalidate = false;
             }
+            ReleaseLock();
         }
     }
 }

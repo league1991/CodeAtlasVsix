@@ -103,12 +103,11 @@ namespace CodeAtlasVSIX
                     {
                         UpdateLegend();
                         UpdateTimeStamp("Legend");
+                        m_selectTimeStamp = scene.m_selectTimeStamp;
                     }
 
-                    m_selectTimeStamp = scene.m_selectTimeStamp;
-                    m_schemeTimeStamp = scene.m_schemeTimeStamp;
+                    scene.ClearInvalidate();
                     scene.ReleaseLock();
-                    //InvalidateScene();
                 }
 
                 var moveDistance = scene.m_itemMoveDistance;
@@ -344,11 +343,5 @@ namespace CodeAtlasVSIX
                 edge.m_orderData = new OrderData(i + 1, new Point(x,y));
             }
         }
-
-        void InvalidateScene()
-        {
-            UIManager.Instance().GetScene().Invalidate();
-        }
-
     }
 }

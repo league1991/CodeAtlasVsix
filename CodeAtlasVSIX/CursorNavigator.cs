@@ -136,7 +136,7 @@ namespace CodeAtlasVSIX
                 line = edgeItem.m_line;
                 column = edgeItem.m_column;
                 fileName = edgeItem.m_file;
-
+                
                 var scene = UIManager.Instance().GetScene();
                 var itemDict = scene.GetItemDict();
                 var srcItem = itemDict[edgeItem.m_srcUniqueName];

@@ -590,14 +590,20 @@ namespace CodeAtlasVSIX
 
         public double MoveToTarget(double ratio)
         {
+            var offset = m_targetPos - Pos;
+            var offsetLength = Math.Abs(offset.X) + Math.Abs(offset.Y);
+            if (offsetLength < 0.1)
+            {
+                return 0.0;
+            }
+
             double pntX = Pos.X;
             double pntY = Pos.Y;
             pntX = pntX * (1.0 - ratio) + m_targetPos.X * ratio;
             pntY = pntY * (1.0 - ratio) + m_targetPos.Y * ratio;
             var tar = new Point(pntX, pntY);
-            var offset = tar - Pos;
             Pos = tar;
-            return Math.Abs(offset.X) + Math.Abs(offset.Y) ;
+            return offsetLength * ratio;
         }
 
         public DoxygenDB.EntKind GetKind()

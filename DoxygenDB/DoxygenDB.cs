@@ -308,6 +308,45 @@ namespace DoxygenDB
         public bool m_useClang = false;
     }
 
+    public class CodeBlock
+    {
+        public string m_file;
+        public int m_start, m_end;
+
+        public CodeBlock(string file, int start, int end)
+        {
+            m_file = file;
+            m_start = start;
+            m_end = end;
+        }
+
+        public override bool Equals(object obj)
+        {
+            CodeBlock e = obj as CodeBlock;
+            if (e == null)
+            {
+                return false;
+            }
+            return e.m_end == m_end && e.m_start == m_start && e.m_file == m_file;
+        }
+
+        public override int GetHashCode()
+        {
+            return m_end.GetHashCode() ^ m_start.GetHashCode() ^ m_file.GetHashCode();
+        }
+    }
+    
+    class BlockRefData
+    {
+        public Dictionary<string, List<int>> m_idToRowDict;
+        public Dictionary<string, List<int>> m_nameToRowDict;
+        public BlockRefData(Dictionary<string, List<int>> idToRow, Dictionary<string, List<int>> nameToRow)
+        {
+            m_idToRowDict = idToRow;
+            m_nameToRowDict = nameToRow;
+        }
+    }
+
     public class DoxygenDB
     {
         string m_dbFolder = "";
@@ -321,6 +360,9 @@ namespace DoxygenDB
         Dictionary<string, XmlDocItem> m_xmlCache = new Dictionary<string, XmlDocItem>();
         Dictionary<string, XPathNavigator> m_xmlElementCache = new Dictionary<string, XPathNavigator>();
         Dictionary<string, List<string>> m_metaDict = new Dictionary<string, List<string>>();
+        Dictionary<CodeBlock, BlockRefData> m_blockRefDict = new Dictionary<CodeBlock, BlockRefData>();
+        static Regex s_identifierReg = new Regex(@"[a-zA-Z_][a-zA-Z0-9_]*", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
 
         public DoxygenDB() { }
 
@@ -569,6 +611,16 @@ namespace DoxygenDB
                 return;
             }
 
+            // Try to find in cache
+            CodeBlock block = new CodeBlock(fileId, startLine, endLine);
+            BlockRefData refData;
+            if (m_blockRefDict.TryGetValue(block, out refData))
+            {
+                idToRowDict = refData.m_idToRowDict;
+                nameToRowDict = refData.m_nameToRowDict;
+                return;
+            }
+
             Action<Dictionary<string, List<int>>, string, int> AddToDict = (dict, key, line) =>
             {
                 if (dict.ContainsKey(key))
@@ -581,7 +633,9 @@ namespace DoxygenDB
                 }
             };
 
-            var programList = doc.Select("doxygen/compounddef/programlisting/codeline");
+            string codeLineFormat = "doxygen/compounddef/programlisting/codeline";
+            
+            var programList = doc.Select(codeLineFormat);
             while (programList.MoveNext())
             {
                 var lineEle = programList.Current;
@@ -593,14 +647,8 @@ namespace DoxygenDB
                 }
                 if (endLine != -1 && lineNumber > endLine)
                 {
-                    continue;
+                    break;
                 }
-
-                //var lineRefAttr = lineEle.GetAttribute("refid", "");
-                //if (lineRefAttr != "")
-                //{
-                //    AddToDict(idToRowDict, lineRefAttr, lineNumber);
-                //}
 
                 var highLightIter = lineEle.Select("highlight");
                 while (highLightIter.MoveNext())
@@ -625,9 +673,9 @@ namespace DoxygenDB
                             {
                                 if (highLightChild.Name == "ref" || highLightChild.Name == "")
                                 {
-                                    string pattern = @"[a-zA-Z_][a-zA-Z0-9_]*";
-                                    var nameList = Regex.Matches(highLightValue, pattern, RegexOptions.ExplicitCapture);
-
+                                    //string pattern = @"[a-zA-Z_][a-zA-Z0-9_]*";
+                                    //var nameList = Regex.Matches(highLightValue, pattern, RegexOptions.ExplicitCapture);
+                                    var nameList = s_identifierReg.Matches(highLightValue);
                                     foreach (Match nextMatch in nameList)
                                     {
                                         var tokenValue = nextMatch.Value;
@@ -654,6 +702,9 @@ namespace DoxygenDB
                 //    }
                 //}
             }
+
+            
+            m_blockRefDict[block] = new BlockRefData(idToRowDict, nameToRowDict);
             return;
         }
 
