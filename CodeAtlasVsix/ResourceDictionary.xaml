@@ -7,17 +7,19 @@
     <Style TargetType="Menu" x:Key="MenuStyle">
         <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
     </Style>
-    
+
     <Style TargetType="MenuItem" x:Key="MenuItemStyle">
+        <Setter Property="Panel.Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
         <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
         <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="true">
-                <Setter Property="Background" Value="#0a99f3" />
-                <Setter Property="Foreground" Value="White"/>
-                <Setter Property="BorderBrush" Value="Transparent"/>
-                <Setter Property="BorderThickness" Value="0"/>
+            <Trigger Property="IsHighlighted" Value="false">
+                <Setter Property="Background" Value="Black" />
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="true">
+                <Setter Property="Background" Value="Blue" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -67,6 +69,193 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <!-- Separator -->
+    <Style TargetType="{x:Type Separator}" x:Key="SeparatorStyle">
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Background" Value="#0f3c5a" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Separator}">
+                    <Rectangle Height="{TemplateBinding Height}" Fill="White" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--Outer menu items-->
+    <Style TargetType="{x:Type MenuItem}">
+        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
+        <Style.Triggers>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter Property="Background" Value="Black"></Setter>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="LightGray"></Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Outer menu -->
+    <Style TargetType="{x:Type ContextMenu}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="Black"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ContextMenu}">
+                    <!--Here is where you change the border thickness to zero on the menu-->
+                    <Border BorderThickness="0" x:Name="Border" Background="Black">
+                        <StackPanel ClipToBounds="True" Orientation="Vertical" IsItemsHost="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter TargetName="Border" Property="Background" Value="#0f3c5a" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- SubmenuItem -->
+    <ControlTemplate x:Key="{x:Static MenuItem.SubmenuItemTemplateKey}" TargetType="{x:Type MenuItem}">
+        <Border Name="Border">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"
+                                      SharedSizeGroup="Icon" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto"
+                                      SharedSizeGroup="Shortcut" />
+                    <ColumnDefinition Width="13" />
+                </Grid.ColumnDefinitions>
+                <ContentPresenter Name="Icon"
+                                  Margin="6,0,6,0"
+                                  VerticalAlignment="Center"
+                                  ContentSource="Icon" />
+                <Border Name="Check" Width="13" Height="13" Visibility="Collapsed"
+                        Margin="6,0,6,0"
+                        Background="#0f3c5a"
+                        BorderThickness="1"
+                        BorderBrush="#5082a4">
+                    <Path Name="CheckMark"
+                          Width="7"
+                          Height="7"
+                          Visibility="Hidden"
+                          SnapsToDevicePixels="False"
+                          Stroke="#5082a4"
+                          StrokeThickness="2"
+                          Data="M 0 0 L 7 7 M 0 7 L 7 0" />
+                </Border>
+                <ContentPresenter Name="HeaderHost"
+                                  Grid.Column="1"
+                                  ContentSource="Header"
+                                  RecognizesAccessKey="True" />
+                <TextBlock x:Name="InputGestureText"
+                           Grid.Column="2"
+                           Text="{TemplateBinding InputGestureText}"
+                           Margin="5,2,0,2"
+                           DockPanel.Dock="Right" />
+            </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="Icon" Value="{x:Null}">
+                <Setter TargetName="Icon" Property="Visibility" Value="Hidden" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="true">
+                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsCheckable" Value="true">
+                <Setter TargetName="Check" Property="Visibility" Value="Visible" />
+                <Setter TargetName="Icon" Property="Visibility" Value="Hidden" />
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="false">
+                <Setter TargetName="Border" Property="Background"
+                        Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
+            </Trigger>
+            <Trigger Property="IsHighlighted"
+                     Value="true">
+                <Setter TargetName="Border"
+                        Property="Background"
+                        Value="{DynamicResource {x:Static vsfx:VsBrushes.FileTabSelectedBackgroundKey}}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled"
+                     Value="false">
+                <Setter Property="Foreground" Value="#0f3c5a" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!-- SubmenuHeader -->
+    <ControlTemplate x:Key="{x:Static MenuItem.SubmenuHeaderTemplateKey}"
+                     TargetType="{x:Type MenuItem}">
+        <Border Name="Border">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"
+                                      SharedSizeGroup="Icon" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto"
+                                      SharedSizeGroup="Shortcut" />
+                    <ColumnDefinition Width="13" />
+                </Grid.ColumnDefinitions>
+                <ContentPresenter Name="Icon"
+                                  Margin="6,0,6,0"
+                                  VerticalAlignment="Center"
+                                  ContentSource="Icon" />
+                <ContentPresenter Name="HeaderHost"
+                                  Grid.Column="1"
+                                  ContentSource="Header"
+                                  RecognizesAccessKey="True" />
+                <TextBlock x:Name="InputGestureText"
+                           Grid.Column="2"
+                           Text="{TemplateBinding InputGestureText}"
+                           Margin="5,2,2,2"
+                           DockPanel.Dock="Right" />
+                <Path Grid.Column="3"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Data="M 0 0 L 0 7 L 4 3.5 Z"
+                      Fill="#0f3c5a" />
+                <Popup Name="Popup"
+                       Placement="Right"
+                       HorizontalOffset="-4"
+                       IsOpen="{TemplateBinding IsSubmenuOpen}"
+                       AllowsTransparency="True"
+                       Focusable="False"
+                       PopupAnimation="Fade">
+                    <Border Name="SubmenuBorder"
+                            SnapsToDevicePixels="True"
+                            Background="#0f3c5a"
+                            BorderBrush="#0f3c5a"
+                            BorderThickness="1">
+                        <StackPanel IsItemsHost="True"
+                                    KeyboardNavigation.DirectionalNavigation="Cycle" />
+                    </Border>
+                </Popup>
+            </Grid>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="Icon"
+                     Value="{x:Null}">
+                <Setter TargetName="Icon" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="true">
+                <Setter TargetName="Border" Property="Background" Value="#5082a4" />
+            </Trigger>
+            <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="True">
+                <Setter TargetName="SubmenuBorder" Property="CornerRadius" Value="4" />
+                <Setter TargetName="SubmenuBorder" Property="Padding" Value="0,3,0,3" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="false">
+                <Setter Property="Foreground" Value="#0f3c5a" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
     <!--
     <Style TargetType="Label" x:Key="LabelStyle" BasedOn="{StaticResource ResourceKey={x:Static vsfx:VsResourceKeys.ThemedDialogLabelStyleKey}}">
     </Style>

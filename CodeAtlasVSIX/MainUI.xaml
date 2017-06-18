@@ -20,9 +20,9 @@
         <MenuItem x:Name="OpenButton" Header="Open" Click="OpenButton_Click" Style="{DynamicResource MenuItemStyle}"/>
         <MenuItem x:Name="TestButton" Header="Test" Click="TestButton_Click" Style="{DynamicResource MenuItemStyle}"/>
         <MenuItem x:Name="CloseButton" Header="Close" Click="CloseButton_Click" Style="{DynamicResource MenuItemStyle}"/>
-        <MenuItem x:Name="AnalyseButton" Header="Analyse" Style="{DynamicResource MenuItemStyle}">
-            <MenuItem x:Name="AnalyseSolutionButton" Header="Analyse Solution" Style="{DynamicResource MenuItemStyle}" Click="AnalyseSolutionButton_Click"/>
-            <MenuItem x:Name="FastAnalyseSolutionButton" Header="Fast Analyse Solution" Style="{DynamicResource MenuItemStyle}"  Click="FastAnalyseSolutionButton_Click"/>
+        <MenuItem x:Name="AnalyseButton" Header="Analyse">
+            <MenuItem x:Name="AnalyseSolutionButton" Header="Analyse Solution" Click="AnalyseSolutionButton_Click"/>
+            <MenuItem x:Name="FastAnalyseSolutionButton" Header="Fast Analyse Solution" Click="FastAnalyseSolutionButton_Click"/>
         </MenuItem>
     </Menu>
     <Grid>

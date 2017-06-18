@@ -2,7 +2,6 @@ body {
   margin: 0;
   padding: 0;
   border: 0;
-  color: #1E1E1E;
   font-size: 13px;
   font-family: "Segoe UI", Helvetica, Arial, sans-serif;
   line-height: 1.45;
@@ -33,8 +32,6 @@ h1, h2, h3, h4, h5, h6 {
 */
 
 #header {
-  color: #FFF;
-  background: #68217a;
   position:relative;
 }
 #hangcloud {
@@ -95,7 +92,6 @@ p, ul {
 }
 
 #main_content a {
-    color: #06C;
     text-decoration: none;
 }
 ul {
@@ -119,7 +115,6 @@ ul {
         line-height: 1.8em;
     }
 #rpanel {
-    background: #e7e7e7;
     width: 360px;
         float: right;
 }
