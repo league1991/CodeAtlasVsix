@@ -17,17 +17,12 @@
     </DockPanel.Resources>
 
     <Menu x:Name="menu" Height="20" DockPanel.Dock="Top" Style="{DynamicResource MenuStyle}">
-        <MenuItem x:Name="OpenButton" Header="Open" Click="OpenButton_Click" Style="{DynamicResource MenuItemStyle}"/>
-        <MenuItem x:Name="TestButton" Header="Test" Click="TestButton_Click" Style="{DynamicResource MenuItemStyle}"/>
-        <MenuItem x:Name="CloseButton" Header="Close" Click="CloseButton_Click" Style="{DynamicResource MenuItemStyle}"/>
-        <MenuItem x:Name="AnalyseButton" Header="Analyse" Style="{DynamicResource MenuItemStyle3}">
-            <MenuItem x:Name="AnalyseSolutionButton" Header="Analyse Solution" Click="AnalyseSolutionButton_Click" Style="{DynamicResource MenuItemStyle3}"/>
-            <MenuItem x:Name="FastAnalyseSolutionButton" Header="Fast Analyse Solution" Click="FastAnalyseSolutionButton_Click" Style="{DynamicResource MenuItemStyle3}"/>
-        </MenuItem>
-        <MenuItem Header="Analyse" Style="{DynamicResource MenuItemStyle2}">
-            <MenuItem Header="Analyse Solution"  Style="{DynamicResource MenuItemStyle2}"/>
-            <MenuItem Header="解决方案" Style="{DynamicResource MenuItemStyle2}"/>
-            <MenuItem Header="d"/>
+        <MenuItem x:Name="OpenButton" Header="Open" Click="OpenButton_Click" />
+        <MenuItem x:Name="TestButton" Header="Test" Click="TestButton_Click" />
+        <MenuItem x:Name="CloseButton" Header="Close" Click="CloseButton_Click" />
+        <MenuItem x:Name="AnalyseButton" Header="Analyse" >
+            <MenuItem x:Name="AnalyseSolutionButton" Header="Analyse Solution" Click="AnalyseSolutionButton_Click" />
+            <MenuItem x:Name="FastAnalyseSolutionButton" Header="Fast Analyse Solution" Click="FastAnalyseSolutionButton_Click" />
         </MenuItem>
     </Menu>
     <Grid>
