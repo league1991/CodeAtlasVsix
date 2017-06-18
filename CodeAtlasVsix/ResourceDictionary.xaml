@@ -83,10 +83,68 @@
         </Setter>
     </Style>
 
+    <Style TargetType="{x:Type MenuItem}"  x:Key="MenuItemStyle2">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type MenuItem}">
+                    <Border Margin="0" x:Name="bd" 
+                            Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"
+                            CornerRadius="0" BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}" BorderThickness="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <ContentPresenter Margin="6,2,6,2" ContentSource="Header" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            <Popup x:Name="pop" Margin="0" IsOpen="{TemplateBinding IsSubmenuOpen}" AllowsTransparency="True" Placement="Bottom">
+                                <Border Margin="0" CornerRadius="0" BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.ActiveBorderKey}}" BorderThickness="1">
+                                    <StackPanel IsItemsHost="True">
+                                    </StackPanel>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter TargetName="bd" Property="Background" 
+                                    Value="{DynamicResource {x:Static vsfx:VsBrushes.ButtonHighlightKey}}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
     <!--Outer menu items-->
-    <Style TargetType="{x:Type MenuItem}">
+    <Style TargetType="{x:Type MenuItem}" x:Key="MenuItemStyle3">
         <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
         <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type MenuItem}">
+                    <Border Margin="0" x:Name="bd" Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}" CornerRadius="0" BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}" BorderThickness="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <ContentPresenter Margin="6,3,6,3" ContentSource="Header" Grid.Column="1" HorizontalAlignment="Left"/>
+                            <Popup x:Name="pop" Margin="0" IsOpen="{TemplateBinding IsSubmenuOpen}" AllowsTransparency="True" Placement="Bottom">
+                                <Border Margin="0" CornerRadius="0">
+                                    <StackPanel IsItemsHost="True">
+                                    </StackPanel>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter TargetName="bd" Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.FileTabSelectedBackgroundKey}}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
         <Style.Triggers>
             <Trigger Property="IsHighlighted" Value="True">
                 <Setter Property="Background" Value="Black"></Setter>
@@ -100,9 +158,9 @@
     <!-- Outer menu -->
     <Style TargetType="{x:Type ContextMenu}">
         <Setter Property="OverridesDefaultStyle" Value="True" />
-        <Setter Property="BorderBrush" Value="Black"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Background" Value="Black"/>
+        <Setter Property="BorderBrush" Value="Yellow"/>
+        <Setter Property="BorderThickness" Value="3"/>
+        <Setter Property="Background" Value="Green"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContextMenu}">
@@ -122,7 +180,7 @@
 
     <!-- SubmenuItem -->
     <ControlTemplate x:Key="{x:Static MenuItem.SubmenuItemTemplateKey}" TargetType="{x:Type MenuItem}">
-        <Border Name="Border">
+        <Border Name="Border" Margin="0" Background="Yellow" CornerRadius="0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"
@@ -133,11 +191,11 @@
                     <ColumnDefinition Width="13" />
                 </Grid.ColumnDefinitions>
                 <ContentPresenter Name="Icon"
-                                  Margin="6,0,6,0"
+                                  Margin="0"
                                   VerticalAlignment="Center"
                                   ContentSource="Icon" />
                 <Border Name="Check" Width="13" Height="13" Visibility="Collapsed"
-                        Margin="6,0,6,0"
+                        Margin="0"
                         Background="#0f3c5a"
                         BorderThickness="1"
                         BorderBrush="#5082a4">
@@ -157,7 +215,7 @@
                 <TextBlock x:Name="InputGestureText"
                            Grid.Column="2"
                            Text="{TemplateBinding InputGestureText}"
-                           Margin="5,2,0,2"
+                           Margin="0"
                            DockPanel.Dock="Right" />
             </Grid>
         </Border>
@@ -173,17 +231,12 @@
                 <Setter TargetName="Icon" Property="Visibility" Value="Hidden" />
             </Trigger>
             <Trigger Property="IsHighlighted" Value="false">
-                <Setter TargetName="Border" Property="Background"
-                        Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
             </Trigger>
-            <Trigger Property="IsHighlighted"
-                     Value="true">
-                <Setter TargetName="Border"
-                        Property="Background"
-                        Value="{DynamicResource {x:Static vsfx:VsBrushes.FileTabSelectedBackgroundKey}}"/>
+            <Trigger Property="IsHighlighted" Value="true">
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.FileTabSelectedBackgroundKey}}"/>
             </Trigger>
-            <Trigger Property="IsEnabled"
-                     Value="false">
+            <Trigger Property="IsEnabled" Value="false">
                 <Setter Property="Foreground" Value="#0f3c5a" />
             </Trigger>
         </ControlTemplate.Triggers>
@@ -203,7 +256,7 @@
                     <ColumnDefinition Width="13" />
                 </Grid.ColumnDefinitions>
                 <ContentPresenter Name="Icon"
-                                  Margin="6,0,6,0"
+                                  Margin="0"
                                   VerticalAlignment="Center"
                                   ContentSource="Icon" />
                 <ContentPresenter Name="HeaderHost"
@@ -213,7 +266,7 @@
                 <TextBlock x:Name="InputGestureText"
                            Grid.Column="2"
                            Text="{TemplateBinding InputGestureText}"
-                           Margin="5,2,2,2"
+                           Margin="0"
                            DockPanel.Dock="Right" />
                 <Path Grid.Column="3"
                       HorizontalAlignment="Center"
@@ -226,7 +279,8 @@
                        IsOpen="{TemplateBinding IsSubmenuOpen}"
                        AllowsTransparency="True"
                        Focusable="False"
-                       PopupAnimation="Fade">
+                       PopupAnimation="Fade"
+                       >
                     <Border Name="SubmenuBorder"
                             SnapsToDevicePixels="True"
                             Background="#0f3c5a"
@@ -238,7 +292,6 @@
                 </Popup>
             </Grid>
         </Border>
-
         <ControlTemplate.Triggers>
             <Trigger Property="Icon"
                      Value="{x:Null}">
@@ -247,9 +300,11 @@
             <Trigger Property="IsHighlighted" Value="true">
                 <Setter TargetName="Border" Property="Background" Value="#5082a4" />
             </Trigger>
-            <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="True">
-                <Setter TargetName="SubmenuBorder" Property="CornerRadius" Value="4" />
-                <Setter TargetName="SubmenuBorder" Property="Padding" Value="0,3,0,3" />
+            <Trigger SourceName="Popup"
+                     Property="Popup.AllowsTransparency"
+                     Value="True">
+                <Setter TargetName="SubmenuBorder" Property="CornerRadius" Value="0" />
+                <Setter TargetName="SubmenuBorder" Property="Padding" Value="0" />
             </Trigger>
             <Trigger Property="IsEnabled" Value="false">
                 <Setter Property="Foreground" Value="#0f3c5a" />
