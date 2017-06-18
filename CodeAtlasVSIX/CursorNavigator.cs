@@ -149,24 +149,34 @@ namespace CodeAtlasVSIX
                         m_dte.ItemOperations.OpenFile(fileName);
                         var document = m_dte.ActiveDocument;
                         var codeElement = GetCodeElement(srcItem, document);
-                        var funcStart = codeElement.GetStartPoint(vsCMPart.vsCMPartBody);
-                        var funcEnd = codeElement.GetEndPoint(vsCMPart.vsCMPartBody);
-                        var funcEditPnt = funcStart.CreateEditPoint();
-                        string funcText = funcEditPnt.GetText(funcEnd);
-
-                        string indentifierPattern = string.Format(@"\b{0}\b", tarItem.GetName());
-                        var nameList = Regex.Matches(funcText, indentifierPattern, RegexOptions.ExplicitCapture);
-
-                        foreach (Match nextMatch in nameList)
+                        if (codeElement != null)
                         {
-                            var tokenValue = nextMatch.Value;
-                            var tokenIndex = nextMatch.Index;
-                            var absOffset = funcStart.AbsoluteCharOffset + nextMatch.Index;
+                            var funcStart = codeElement.GetStartPoint(vsCMPart.vsCMPartBody);
+                            var funcEnd = codeElement.GetEndPoint(vsCMPart.vsCMPartBody);
+                            var funcEditPnt = funcStart.CreateEditPoint();
+                            string funcText = funcEditPnt.GetText(funcEnd);
+                            
+                            string indentifierPattern = string.Format(@"\b{0}\b", tarItem.GetName());
 
-                            TextSelection ts = document.Selection as TextSelection;
-                            ts.MoveToAbsoluteOffset(absOffset);
-                            res = true;
-                            break;
+                            try
+                            {
+                                var nameList = Regex.Matches(funcText, indentifierPattern, RegexOptions.ExplicitCapture);
+
+                                foreach (Match nextMatch in nameList)
+                                {
+                                    var tokenValue = nextMatch.Value;
+                                    var tokenIndex = nextMatch.Index;
+                                    var absOffset = funcStart.AbsoluteCharOffset + nextMatch.Index;
+
+                                    TextSelection ts = document.Selection as TextSelection;
+                                    ts.MoveToAbsoluteOffset(absOffset);
+                                    res = true;
+                                    break;
+                                }
+                            }
+                            catch (Exception)
+                            {
+                            }
                         }
                     }
                 }
@@ -178,28 +188,35 @@ namespace CodeAtlasVSIX
 
             //Logger.WriteLine(string.Format("show in editor:{0} {1}", fileName, line));
 
-            //if (File.Exists(fileName))
-            //{
-            //    m_dte.ItemOperations.OpenFile(fileName);
-            //    TextSelection ts = m_dte.ActiveDocument.Selection as TextSelection;
-            //    if (ts != null && line > 0)
-            //    {
-            //        try
-            //        {
-            //            ts.GotoLine(line);
-            //        }
-            //        catch (Exception)
-            //        {
-            //            Logger.WriteLine("Go to page fail.");
-            //        }
-            //    }
-            //}
+            if (res == false)
+            {
+                if (File.Exists(fileName))
+                {
+                    m_dte.ItemOperations.OpenFile(fileName);
+                    TextSelection ts = m_dte.ActiveDocument.Selection as TextSelection;
+                    if (ts != null && line > 0)
+                    {
+                        try
+                        {
+                            ts.GotoLine(line);
+                        }
+                        catch (Exception)
+                        {
+                            Logger.WriteLine("Go to page fail.");
+                        }
+                    }
+                }
+            }
         }
 
         CodeElement GetCodeElement(CodeUIItem uiItem, Document document)
         {
             var docItem = document.ProjectItem;
             var docModel = docItem.FileCodeModel;
+            if (docModel == null)
+            {
+                return null;
+            }
             var elements = docModel.CodeElements;
             var elementsList = new List<CodeElements> { docModel.CodeElements };
 
