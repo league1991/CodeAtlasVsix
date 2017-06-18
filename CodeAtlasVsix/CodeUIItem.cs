@@ -326,6 +326,12 @@ namespace CodeAtlasVSIX
             return m_kind == DoxygenDB.EntKind.FUNCTION;
         }
 
+        public bool IsClassOrStruct()
+        {
+            return m_kind == DoxygenDB.EntKind.CLASS ||
+                m_kind == DoxygenDB.EntKind.STRUCT;
+        }
+
         double GetCallerRadius(int num)
         {
             return Math.Log((double)num + 1.0) * 5.0;
