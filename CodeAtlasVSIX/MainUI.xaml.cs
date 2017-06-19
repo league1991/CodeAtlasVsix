@@ -1,6 +1,9 @@
 ﻿using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +28,7 @@ namespace CodeAtlasVSIX
     public partial class MainUI : DockPanel
     {
         List<KeyBinding> m_keyCommands = new List<KeyBinding>();
+        Package m_package;
 
         public MainUI()
         {
@@ -56,6 +60,11 @@ namespace CodeAtlasVSIX
             AddCommand(OnShowScheme3, Key.D3, ModifierKeys.Alt);
             AddCommand(OnShowScheme4, Key.D4, ModifierKeys.Alt);
             AddCommand(OnShowScheme5, Key.D5, ModifierKeys.Alt);
+        }
+
+        public void SetPackage(Package package)
+        {
+            m_package = package;
         }
 
         public void AddCommand(ExecutedRoutedEventHandler callback, Key key, ModifierKeys modifier = ModifierKeys.Alt)
@@ -175,6 +184,17 @@ namespace CodeAtlasVSIX
                 searchWindow.OnSearch();
                 searchWindow.OnAddToScene();
             }
+        }
+
+        public void OnShowDefinitionInAtlas(object sender, ExecutedRoutedEventArgs e)
+        {
+            Guid cmdGroup = VSConstants.GUID_VSStandardCommandSet97;
+            var commandTarget = ((System.IServiceProvider)m_package).GetService(typeof(SUIHostCommandDispatcher)) as IOleCommandTarget;
+            int hr = commandTarget.Exec(ref cmdGroup,
+                                         (uint)VSConstants.VSStd97CmdID.GotoDefn,
+                                         (uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT,
+                                         System.IntPtr.Zero,
+                                         System.IntPtr.Zero);
         }
 
         #region Find References
@@ -336,6 +356,7 @@ namespace CodeAtlasVSIX
             ShowScheme(4);
         }
         #endregion
+
         public SymbolWindow GetSymbolWindow()
         {
             return this.symbolWindow;

@@ -73,6 +73,7 @@ namespace CodeAtlasVSIX
             CodeAtlasCommand.Initialize(this);
             base.Initialize();
             var mainUI = UIManager.Instance().GetMainUI();
+            mainUI.SetPackage(this);
             AddCommand(0x0103, mainUI.OnFindCallers);
             AddCommand(0x0104, mainUI.OnFindCallees);
             AddCommand(0x0105, mainUI.OnFindMembers);
@@ -88,6 +89,7 @@ namespace CodeAtlasVSIX
             AddCommand(0x010e, mainUI.OnDeleteSelectedItemsAndAddToStop);
             AddCommand(0x010f, mainUI.OnAddSimilarCodeItem);
             AddCommand(0x0110, mainUI.OnShowInAtlas);
+            AddCommand(0x011c, mainUI.OnShowDefinitionInAtlas);
 
             AddCommand(0x0111, mainUI.OnShowScheme1);
             AddCommand(0x0112, mainUI.OnShowScheme2);

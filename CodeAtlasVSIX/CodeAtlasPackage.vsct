@@ -155,6 +155,13 @@
         </Strings>
       </Button>
       
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowDefinitionInAtlas" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Strings>
+          <ButtonText>Show Definition In Atlas</ButtonText>
+        </Strings>
+      </Button>
+      
       <Button guid="guidCodeAtlasPackageCmdSet" id="AddSimilarItem" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
         <Strings>
@@ -265,6 +272,7 @@
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="DeleteSelectedItemsCommand" key1="VK_DELETE" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="IgnoreSelectedItemsCommand" key1="N" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="DeleteNearbyItemsCommand" key1="D" mod1="ALT" editor="guidVSStd97" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowDefinitionInAtlas" key1="H" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="AddSimilarItem" key1="S" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlas" key1="G" mod1="ALT" editor="guidSourceCodeTextEditor" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowScheme1" key1="1" mod1="ALT" editor="guidSourceCodeTextEditor" />
@@ -313,6 +321,7 @@
       <IDSymbol name="ToggleScheme4" value="0x0119" />
       <IDSymbol name="ToggleScheme5" value="0x011a" />
       <IDSymbol name="DeleteNearbyItemsCommand" value="0x011b" />
+      <IDSymbol name="ShowDefinitionInAtlas" value="0x011c" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{e8b62cf1-f2d4-4924-a788-7d9f6eb6d635}">
