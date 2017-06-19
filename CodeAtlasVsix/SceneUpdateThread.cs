@@ -145,7 +145,7 @@ namespace CodeAtlasVSIX
             if (layerSetting != null)
             {
                 layerSetting.LayerSeparation = 120;
-                layerSetting.NodeSeparation = 1;
+                layerSetting.NodeSeparation = 5;
             }
             foreach (var msaglNode in graph.GeometryGraph.Nodes)
             {

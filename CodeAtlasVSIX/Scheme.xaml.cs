@@ -24,13 +24,13 @@ namespace CodeAtlasVSIX
     {
         Dictionary<string, Tuple<Color, FormattedText>> m_schemeNameDict =
             new Dictionary<string, Tuple<Color, FormattedText>>();
-        double m_margin = 6.0;
+        double m_margin = 10.0;
         double m_lineHeight = 10.0;
         double m_lineSpace = 2.0;
         //double m_colorTextSpace = 5.0;
         double m_maxTextWidth = 0.0;
         double m_fontSize = 11.0;
-
+        double m_rectThickness = 5.0;
         List<FormattedText> m_keyText = new List<FormattedText>();
         double m_formatWidth = 0.0;
 
@@ -48,7 +48,7 @@ namespace CodeAtlasVSIX
                                                         FlowDirection.LeftToRight,
                                                         new Typeface("tahoma"),
                                                         m_fontSize,
-                                                        Brushes.PapayaWhip);
+                                                        Brushes.LightSalmon);
                 m_keyText.Add(formattedText);
 
                 m_formatWidth = Math.Max(m_formatWidth, formattedText.Width);
@@ -72,7 +72,7 @@ namespace CodeAtlasVSIX
                                                         FlowDirection.LeftToRight,
                                                         new Typeface("tahoma"),
                                                         m_fontSize,
-                                                        Brushes.PeachPuff);
+                                                        Brushes.PowderBlue);
                 m_schemeNameDict[schemeName] = new Tuple<Color, FormattedText>(schemeColor, formattedText);
             }
 
@@ -125,7 +125,7 @@ namespace CodeAtlasVSIX
 
             if (m_schemeNameDict.Count > 0)
             {
-                dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(150, 0, 0, 0)), new Pen(), new Rect(new Point(x-3, y-2), new Size(contentWidth+6, contentHeight+4)));
+                dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(150, 0, 0, 0)), new Pen(), new Rect(new Point(x- m_rectThickness, y- m_rectThickness), new Size(contentWidth+ m_rectThickness*2, contentHeight+ m_rectThickness*2)));
             }
 
             int i = 0;

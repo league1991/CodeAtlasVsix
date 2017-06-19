@@ -406,10 +406,9 @@ namespace CodeAtlasVSIX
         public static Color NameToColor(string name)
         {
             uint hashVal = (uint)name.GetHashCode();
-            hashVal = hashVal ^ (hashVal * 87654321);
-            var h = (hashVal & 0xff) / 255.0;
-            var s = ((hashVal >> 8) & 0xff) / 255.0;
-            var l = ((hashVal >> 16) & 0xff) / 255.0;
+            var h = ((hashVal) & 0xffff) / 65535.0;
+            var s = ((hashVal >> 16) & 0xff) / 255.0;
+            var l = ((hashVal >> 24) & 0xff) / 255.0;
             return HSLToRGB(h, 0.35+s*0.3, 0.4+l*0.15);
         }
 
@@ -679,6 +678,7 @@ namespace CodeAtlasVSIX
             if (m_customEdgeMode)
             {
                 //this.InvalidateVisual();
+                IsDirty = true;
             }
         }
 
@@ -697,6 +697,7 @@ namespace CodeAtlasVSIX
                     scene.AddCustomEdge(this.m_uniqueName, uiItem.GetUniqueName());
                 }
                 m_customEdgeMode = false;
+                IsDirty = true;
             }
         }
 
@@ -809,6 +810,7 @@ namespace CodeAtlasVSIX
 
         protected override void OnRender(DrawingContext drawingContext)
         {
+            // Draw highlight first
             if (m_highLightGeometry != null && (m_isSelected || m_isHover))
             {
                 var edgeStroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
@@ -834,7 +836,7 @@ namespace CodeAtlasVSIX
                 baseY += m_displayText.Height;
                 //m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(50, 50, 50)));
                 //drawingContext.DrawText(m_commentText, new Point(1, baseY+1));
-                m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(0, 255, 0)));
+                m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(197,236,79)));
                 drawingContext.DrawText(m_commentText, new Point(baseX, baseY));
             }
             if (m_customEdgeMode)

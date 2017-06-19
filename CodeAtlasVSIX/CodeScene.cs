@@ -152,6 +152,12 @@ namespace CodeAtlasVSIX
             var codeItemList = sceneData["codeItem"] as ArrayList;
             foreach (var item in codeItemList)
             {
+                var uname = item as string;
+                var entity = dbObj.SearchFromUniqueName(uname);
+                if (entity == null)
+                {
+                    continue;
+                }
                 AddCodeItem(item as string);
             }
 
@@ -161,6 +167,10 @@ namespace CodeAtlasVSIX
             {
                 var dataList = dataItem as ArrayList;
                 var edgeKey = new EdgeKey(dataList[0] as string, dataList[1] as string);
+                if (!m_itemDict.ContainsKey(edgeKey.Item1) || !m_itemDict.ContainsKey(edgeKey.Item2))
+                {
+                    continue;
+                }
                 var edgeDataDict = dataList[2] as DataDict;
                 m_edgeDataDict[edgeKey] = edgeDataDict;
             }
@@ -172,6 +182,11 @@ namespace CodeAtlasVSIX
                 var edgePairDict = edgePair as Dictionary<string, object>;
                 var edgePairList = edgePair as ArrayList;
                 var edgeKey = new EdgeKey(edgePairList[0] as string, edgePairList[1] as string);
+                if (!m_itemDict.ContainsKey(edgeKey.Item1) || !m_itemDict.ContainsKey(edgeKey.Item2))
+                {
+                    continue;
+                }
+
                 if (m_edgeDataDict.ContainsKey(edgeKey))
                 {
                     var edgeDataDict = m_edgeDataDict[edgeKey] as DataDict;

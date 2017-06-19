@@ -24,12 +24,13 @@ namespace CodeAtlasVSIX
     {
         Dictionary<string, Tuple<Color, FormattedText>> m_classNameDict = 
             new Dictionary<string, Tuple<Color, FormattedText>>();
-        double m_margin = 6.0;
+        double m_margin = 10.0;
         double m_lineHeight = 10.0;
         double m_lineSpace = 2.0;
         double m_colorTextSpace = 5.0;
         double m_maxTextWidth = 0.0;
         double m_fontSize = 11.0;
+        double m_rectThickness = 5.0;
 
         public Legend()
         {
@@ -58,7 +59,7 @@ namespace CodeAtlasVSIX
                                                             FlowDirection.LeftToRight,
                                                             new Typeface("tahoma"),
                                                             m_fontSize,
-                                                            Brushes.PapayaWhip);
+                                                            Brushes.PowderBlue);
                     m_classNameDict[cname] = new Tuple<Color, FormattedText>(color, formattedText);
                 }
             }
@@ -105,7 +106,7 @@ namespace CodeAtlasVSIX
             {
                 double contentWidth = m_maxTextWidth + colorSize.Width + m_lineHeight;
                 double contentHeight = (m_lineHeight + m_lineSpace) * m_classNameDict.Count - m_lineSpace;
-                dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(150, 0, 0, 0)), new Pen(), new Rect(new Point(x - 3, y - 3), new Size(contentWidth + 6, contentHeight + 6)));
+                dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(150, 0, 0, 0)), new Pen(), new Rect(new Point(x - m_rectThickness, y - m_rectThickness), new Size(contentWidth + m_rectThickness*2, contentHeight + m_rectThickness*2)));
             }
 
             foreach (var item in m_classNameDict)
