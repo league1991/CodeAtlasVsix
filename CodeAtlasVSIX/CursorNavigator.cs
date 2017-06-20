@@ -218,52 +218,27 @@ namespace CodeAtlasVSIX
             {
                 return null;
             }
-            var elements = docModel.CodeElements;
-            var elementsList = new List<CodeElements> { docModel.CodeElements };
 
             var vcDocModel = docModel as VCFileCodeModel;
             if (vcDocModel != null)
             {
-                var eles = vcDocModel.CodeElementFromFullName(uiItem.GetLongName());
-                var parentList = new List<CodeElements> { eles };
-                while (parentList.Count > 0)
+                var candidates = vcDocModel.CodeElementFromFullName(uiItem.GetLongName());
+                if (candidates != null)
                 {
-                    var parents = parentList[0];
-                    parentList.RemoveAt(0);
-                    foreach (var parent in parents)
+                    foreach (var item in candidates)
                     {
-                        var parentEle = parent as CodeElement;
-                        string parentName = parentEle.FullName;
-                        var projItm = parentEle.ProjectItem;
-                        var fns = projItm.Name;
-                        if (projItm == document.ProjectItem)
+                        var candidate = item as CodeElement;
+                        if (candidate != null)
                         {
-
+                            return candidate;
                         }
-                        //parentList.Add(parentEle.Collection);
                     }
                 }
-                //elementsList.Add(vcDocModel.Attributes);
-                //elementsList.Add(vcDocModel.Classes);
-                //elementsList.Add(vcDocModel.CodeElements);
-                //elementsList.Add(vcDocModel.Delegates);
-                //elementsList.Add(vcDocModel.Functions);
-                //elementsList.Add(vcDocModel.IDLImports);
-                //elementsList.Add(vcDocModel.IDLLibraries);
-                //elementsList.Add(vcDocModel.Imports);
-                //elementsList.Add(vcDocModel.Includes);
-                //elementsList.Add(vcDocModel.Interfaces);
-                //elementsList.Add(vcDocModel.Macros);
-                //elementsList.Add(vcDocModel.Maps);
-                //elementsList.Add(vcDocModel.Namespaces);
-                //elementsList.Add(vcDocModel.Structs);
-                //elementsList.Add(vcDocModel.Typedefs);
-                //elementsList.Add(vcDocModel.Unions);
-                //elementsList.Add(vcDocModel.UsingAliases);
-                //elementsList.Add(vcDocModel.Usings);
-                //elementsList.Add(vcDocModel.Variables);
             }
 
+            var elements = docModel.CodeElements;
+            // TraverseCodeElement(elements, 1);
+            var elementsList = new List<CodeElements> { docModel.CodeElements };
             while (elementsList.Count > 0)
             {
                 var curElements = elementsList[0];
@@ -289,27 +264,8 @@ namespace CodeAtlasVSIX
                     //var itemPath = itemDoc.Name;
                     //var docPath = document.Name;
                     //Logger.WriteLine(indentStr + string.Format("element:{0} {1} {2}", eleName, itemPath, startLine));
-                    Logger.WriteLine("-----" + eleName);
-                    if (eleName == "import")
-                    {
-                        Logger.WriteLine("import");
-                        var eleKind = element.Kind;
-                        if (eleKind == vsCMElement.vsCMElementNamespace)
-                        {
-                            //var vcCodeElement = element as VCCodeElement;
-                            //var namespaceEle = element as CodeNamespace;
-                            var namespaceEle = element as VCCodeNamespace;
-                            var collection = namespaceEle.Members;
-                            var colIter = collection.GetEnumerator();
-                            while (colIter.MoveNext())
-                            {
-                                var col = colIter.Current as CodeElement;
-                                var colName = element.Name;
-                            }
-
-                        }
-
-                    }
+                    //Logger.WriteLine("-----" + eleName);
+                    
                     if (eleName  == uiItem.GetName())
                     {
                         return element;
@@ -325,30 +281,43 @@ namespace CodeAtlasVSIX
             return null;
         }
 
-        //void TraverseCodeElement(CodeElements elements, int indent)
-        //{
-        //    var elementIter = elements.GetEnumerator();
-        //    while (elementIter.MoveNext())
-        //    {
-        //        var element = elementIter.Current as CodeElement;
-        //        var eleName = element.Name;
-        //        var start = element.StartPoint;
-        //        var end = element.EndPoint;
-        //        var startLine = start.Line;
-        //        var endLine = end.Line;
-        //        string indentStr = "";
-        //        for (int i = 0; i < indent; i++)
-        //        {
-        //            indentStr += "\t";
-        //        }
-        //        Logger.WriteLine(indentStr + string.Format("element:{0} {1} {2}", eleName, startLine, endLine));
+        void TraverseCodeElement(CodeElements elements, int indent)
+        {
+            var elementIter = elements.GetEnumerator();
+            while (elementIter.MoveNext())
+            {
+                var element = elementIter.Current as CodeElement;
+                if (element == null)
+                {
+                    continue;
+                }
+                var eleName = element.Name;
+                var start = element.StartPoint;
+                var end = element.EndPoint;
+                var startLine = start.Line;
+                var endLine = end.Line;
+                string indentStr = "";
+                for (int i = 0; i < indent; i++)
+                {
+                    indentStr += "\t";
+                }
+                Logger.WriteLine(indentStr + string.Format("element:{0} {1} {2}", eleName, startLine, endLine));
+                
 
-        //        var children = element.Children;
-        //        if (children != null)
-        //        {
-        //            TraverseCodeElement(children, indent+1);
-        //        }
-        //    }
-        //}
+                var children = element.Children;
+                if (children != null)
+                {
+                    TraverseCodeElement(children, indent + 1);
+                }
+
+                //var kind = element.Kind;
+                //var name = element.Name;
+                //if (element.Kind == vsCMElement.vsCMElementNamespace)
+                //{
+                //    var ns = element as CodeNamespace;
+                //    TraverseCodeElement(ns.Members, indent + 1);
+                //}
+            }
+        }
     }
 }

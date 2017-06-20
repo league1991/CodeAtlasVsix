@@ -1212,6 +1212,7 @@ namespace DoxygenDB
                 Dictionary<string, Variant> metric = null;
                 var id = element.GetAttribute("id", "");
                 var elementChildIter = element.SelectChildren(XPathNodeType.Element);
+                var type = "";
                 while (elementChildIter.MoveNext())
                 {
                     var elementChild = elementChildIter.Current;
@@ -1227,6 +1228,15 @@ namespace DoxygenDB
                     {
                         metric = _ParseLocationDict(elementChild);
                     }
+                    else if (elementChild.Name == "type")
+                    {
+                        type = elementChild.Value;
+                    }
+                }
+
+                if (longName.IndexOf(type) == 0)
+                {
+                    longName = longName.Substring(type.Length).Trim();
                 }
                 return new Entity(id, name, longName, kind, metric);
             }
