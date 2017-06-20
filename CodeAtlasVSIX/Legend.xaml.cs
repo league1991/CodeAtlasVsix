@@ -59,7 +59,7 @@ namespace CodeAtlasVSIX
                                                             FlowDirection.LeftToRight,
                                                             new Typeface("tahoma"),
                                                             m_fontSize,
-                                                            Brushes.PowderBlue);
+                                                            Brushes.Moccasin);
                     m_classNameDict[cname] = new Tuple<Color, FormattedText>(color, formattedText);
                 }
             }

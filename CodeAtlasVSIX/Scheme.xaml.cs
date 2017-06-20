@@ -72,7 +72,7 @@ namespace CodeAtlasVSIX
                                                         FlowDirection.LeftToRight,
                                                         new Typeface("tahoma"),
                                                         m_fontSize,
-                                                        Brushes.PowderBlue);
+                                                        Brushes.Moccasin);
                 m_schemeNameDict[schemeName] = new Tuple<Color, FormattedText>(schemeColor, formattedText);
             }
 

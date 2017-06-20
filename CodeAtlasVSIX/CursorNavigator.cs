@@ -211,6 +211,7 @@ namespace CodeAtlasVSIX
 
         CodeElement GetCodeElement(CodeUIItem uiItem, Document document)
         {
+            Logger.WriteLine("get code element --------------------" + uiItem.GetName());
             var docItem = document.ProjectItem;
             var docModel = docItem.FileCodeModel;
             if (docModel == null)
@@ -219,6 +220,49 @@ namespace CodeAtlasVSIX
             }
             var elements = docModel.CodeElements;
             var elementsList = new List<CodeElements> { docModel.CodeElements };
+
+            var vcDocModel = docModel as VCFileCodeModel;
+            if (vcDocModel != null)
+            {
+                var eles = vcDocModel.CodeElementFromFullName(uiItem.GetLongName());
+                var parentList = new List<CodeElements> { eles };
+                while (parentList.Count > 0)
+                {
+                    var parents = parentList[0];
+                    parentList.RemoveAt(0);
+                    foreach (var parent in parents)
+                    {
+                        var parentEle = parent as CodeElement;
+                        string parentName = parentEle.FullName;
+                        var projItm = parentEle.ProjectItem;
+                        var fns = projItm.Name;
+                        if (projItm == document.ProjectItem)
+                        {
+
+                        }
+                        //parentList.Add(parentEle.Collection);
+                    }
+                }
+                //elementsList.Add(vcDocModel.Attributes);
+                //elementsList.Add(vcDocModel.Classes);
+                //elementsList.Add(vcDocModel.CodeElements);
+                //elementsList.Add(vcDocModel.Delegates);
+                //elementsList.Add(vcDocModel.Functions);
+                //elementsList.Add(vcDocModel.IDLImports);
+                //elementsList.Add(vcDocModel.IDLLibraries);
+                //elementsList.Add(vcDocModel.Imports);
+                //elementsList.Add(vcDocModel.Includes);
+                //elementsList.Add(vcDocModel.Interfaces);
+                //elementsList.Add(vcDocModel.Macros);
+                //elementsList.Add(vcDocModel.Maps);
+                //elementsList.Add(vcDocModel.Namespaces);
+                //elementsList.Add(vcDocModel.Structs);
+                //elementsList.Add(vcDocModel.Typedefs);
+                //elementsList.Add(vcDocModel.Unions);
+                //elementsList.Add(vcDocModel.UsingAliases);
+                //elementsList.Add(vcDocModel.Usings);
+                //elementsList.Add(vcDocModel.Variables);
+            }
 
             while (elementsList.Count > 0)
             {
@@ -245,7 +289,28 @@ namespace CodeAtlasVSIX
                     //var itemPath = itemDoc.Name;
                     //var docPath = document.Name;
                     //Logger.WriteLine(indentStr + string.Format("element:{0} {1} {2}", eleName, itemPath, startLine));
-                    if (eleName  == uiItem.GetName() && IsMatchPair(uiItem.GetKind(), element.Kind))
+                    Logger.WriteLine("-----" + eleName);
+                    if (eleName == "import")
+                    {
+                        Logger.WriteLine("import");
+                        var eleKind = element.Kind;
+                        if (eleKind == vsCMElement.vsCMElementNamespace)
+                        {
+                            //var vcCodeElement = element as VCCodeElement;
+                            //var namespaceEle = element as CodeNamespace;
+                            var namespaceEle = element as VCCodeNamespace;
+                            var collection = namespaceEle.Members;
+                            var colIter = collection.GetEnumerator();
+                            while (colIter.MoveNext())
+                            {
+                                var col = colIter.Current as CodeElement;
+                                var colName = element.Name;
+                            }
+
+                        }
+
+                    }
+                    if (eleName  == uiItem.GetName())
                     {
                         return element;
                     }

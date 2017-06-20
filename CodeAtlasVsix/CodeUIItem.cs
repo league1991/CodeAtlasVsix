@@ -30,6 +30,7 @@ namespace CodeAtlasVSIX
         string m_uniqueName = "";
         bool m_isDirty = false;
         string m_name = "";
+        string m_longName = "";
         string m_displayName = "";
         string m_kindName = "";
         DoxygenDB.EntKind m_kind = DoxygenDB.EntKind.UNKNOWN;
@@ -75,8 +76,9 @@ namespace CodeAtlasVSIX
 
             if (entity != null)
             {
-                this.ToolTip = entity.Longname();
                 m_name = entity.Name();
+                m_longName = entity.Longname();
+                this.ToolTip = entity.Longname();
                 BuildDisplayName(m_name);
                 var comment = scene.GetComment(m_uniqueName);
                 BuildCommentSize(comment);
@@ -618,6 +620,11 @@ namespace CodeAtlasVSIX
         public string GetName()
         {
             return m_name;
+        }
+
+        public string GetLongName()
+        {
+            return m_longName;
         }
 
         public DoxygenDB.Entity GetEntity()
