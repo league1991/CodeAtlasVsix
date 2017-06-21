@@ -56,7 +56,7 @@ namespace CodeAtlasVSIX
 
         public bool CheckAndMoveTo(TextPoint pnt, Document doc)
         {
-            if (pnt.Parent.Parent == doc)
+            if (pnt.Parent != null && pnt.Parent.Parent == doc)
             {
                 TextSelection ts = doc.Selection as TextSelection;
                 ts.MoveToPoint(pnt);
@@ -280,6 +280,33 @@ namespace CodeAtlasVSIX
                 }
             }
             return null;
+        }
+
+        public static void GetCursorElement(out Document document, out CodeElement element, out int line)
+        {
+            document = null;
+            element = null;
+            line = -1;
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            if (dte != null)
+            {
+                document = dte.ActiveDocument;
+                var docItem = document.ProjectItem;
+                if (docItem == null)
+                {
+                    return;
+                }
+                var docModel = docItem.FileCodeModel;
+                if (docModel == null)
+                {
+                    return;
+                }
+                EnvDTE.TextSelection ts = document.Selection as EnvDTE.TextSelection;
+                line = ts.CurrentLine;
+                element = docModel.CodeElementFromPoint(ts.ActivePoint, vsCMElement.vsCMElementFunction);
+                return;
+            }
+            return;
         }
 
         void TraverseCodeElement(CodeElements elements, int indent)

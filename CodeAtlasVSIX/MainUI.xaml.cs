@@ -188,13 +188,151 @@ namespace CodeAtlasVSIX
 
         public void OnShowDefinitionInAtlas(object sender, ExecutedRoutedEventArgs e)
         {
+            CodeElement srcElement, tarElement;
+            Document srcDocument, tarDocument;
+            int srcLine, tarLine;
+            CursorNavigator.GetCursorElement(out srcDocument, out srcElement, out srcLine);
+
             Guid cmdGroup = VSConstants.GUID_VSStandardCommandSet97;
             var commandTarget = ((System.IServiceProvider)m_package).GetService(typeof(SUIHostCommandDispatcher)) as IOleCommandTarget;
-            int hr = commandTarget.Exec(ref cmdGroup,
-                                         (uint)VSConstants.VSStd97CmdID.GotoDefn,
-                                         (uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT,
-                                         System.IntPtr.Zero,
-                                         System.IntPtr.Zero);
+            if (commandTarget != null)
+            {
+                int hr = commandTarget.Exec(ref cmdGroup,
+                                             (uint)VSConstants.VSStd97CmdID.GotoDefn,
+                                             (uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT,
+                                             System.IntPtr.Zero, System.IntPtr.Zero);
+
+            }
+
+            CursorNavigator.GetCursorElement(out tarDocument, out tarElement, out tarLine);
+            if (srcElement == null || tarElement == null || srcElement == tarElement)
+            {
+                return;
+            }
+
+            var srcName = srcElement.Name;
+            var srcType = VSElementTypeToString(srcElement);
+            var srcFile = srcDocument.FullName;
+
+            var tarName = tarElement.Name;
+            var tarType = VSElementTypeToString(tarElement);
+            var tarFile = srcDocument.FullName;
+
+            var db = DBManager.Instance().GetDB();
+            var scene = UIManager.Instance().GetScene();
+            List<DoxygenDB.Entity> srcEntities, tarEntities;
+            DoxygenDB.Entity srcBestEntity, tarBestEntity;
+            db.SearchAndFilter(srcName, srcType, srcFile, srcLine, out srcEntities, out srcBestEntity);
+            db.SearchAndFilter(tarName, tarType, tarFile, tarLine, out tarEntities, out tarBestEntity);
+
+            if (srcBestEntity != null && tarBestEntity != null)
+            {
+                scene.AcquireLock();
+                scene.AddCodeItem(srcBestEntity.m_id);
+                scene.AddCodeItem(tarBestEntity.m_id);
+                scene.AddCustomEdge(srcBestEntity.m_id, tarBestEntity.m_id);
+                scene.ClearSelection();
+                scene.SelectCodeItem(tarBestEntity.m_id);
+                scene.ReleaseLock();
+            }
+        }
+
+        string VSElementTypeToString(CodeElement element)
+        {
+            string typeStr = "";
+            var type = element.Kind;
+            switch (type)
+            {
+                case vsCMElement.vsCMElementOther:
+                    break;
+                case vsCMElement.vsCMElementClass:
+                    typeStr = "class";
+                    break;
+                case vsCMElement.vsCMElementFunction:
+                    typeStr = "function";
+                    break;
+                case vsCMElement.vsCMElementVariable:
+                    typeStr = "variable";
+                    break;
+                case vsCMElement.vsCMElementProperty:
+                    break;
+                case vsCMElement.vsCMElementNamespace:
+                    typeStr = "namespace";
+                    break;
+                case vsCMElement.vsCMElementParameter:
+                    break;
+                case vsCMElement.vsCMElementAttribute:
+                    break;
+                case vsCMElement.vsCMElementInterface:
+                    typeStr = "function";
+                    break;
+                case vsCMElement.vsCMElementDelegate:
+                    break;
+                case vsCMElement.vsCMElementEnum:
+                    break;
+                case vsCMElement.vsCMElementStruct:
+                    typeStr = "struct";
+                    break;
+                case vsCMElement.vsCMElementUnion:
+                    break;
+                case vsCMElement.vsCMElementLocalDeclStmt:
+                    break;
+                case vsCMElement.vsCMElementFunctionInvokeStmt:
+                    break;
+                case vsCMElement.vsCMElementPropertySetStmt:
+                    break;
+                case vsCMElement.vsCMElementAssignmentStmt:
+                    break;
+                case vsCMElement.vsCMElementInheritsStmt:
+                    break;
+                case vsCMElement.vsCMElementImplementsStmt:
+                    break;
+                case vsCMElement.vsCMElementOptionStmt:
+                    break;
+                case vsCMElement.vsCMElementVBAttributeStmt:
+                    break;
+                case vsCMElement.vsCMElementVBAttributeGroup:
+                    break;
+                case vsCMElement.vsCMElementEventsDeclaration:
+                    break;
+                case vsCMElement.vsCMElementUDTDecl:
+                    break;
+                case vsCMElement.vsCMElementDeclareDecl:
+                    break;
+                case vsCMElement.vsCMElementDefineStmt:
+                    break;
+                case vsCMElement.vsCMElementTypeDef:
+                    break;
+                case vsCMElement.vsCMElementIncludeStmt:
+                    break;
+                case vsCMElement.vsCMElementUsingStmt:
+                    break;
+                case vsCMElement.vsCMElementMacro:
+                    break;
+                case vsCMElement.vsCMElementMap:
+                    break;
+                case vsCMElement.vsCMElementIDLImport:
+                    break;
+                case vsCMElement.vsCMElementIDLImportLib:
+                    break;
+                case vsCMElement.vsCMElementIDLCoClass:
+                    break;
+                case vsCMElement.vsCMElementIDLLibrary:
+                    break;
+                case vsCMElement.vsCMElementImportStmt:
+                    break;
+                case vsCMElement.vsCMElementMapEntry:
+                    break;
+                case vsCMElement.vsCMElementVCBase:
+                    break;
+                case vsCMElement.vsCMElementEvent:
+                    break;
+                case vsCMElement.vsCMElementModule:
+                    break;
+                default:
+                    break;
+            }
+            return typeStr;
         }
 
         #region Find References

@@ -53,6 +53,7 @@ namespace CodeAtlasVSIX
             var searchKind = typeEdit.Text;
             var searchFile = fileEdit.Text.Replace("\\","/");
             int searchLine = Convert.ToInt32(lineEdit.Text == "" ? "-1" : lineEdit.Text);
+            resultList.Items.Clear();
             Logger.WriteLine("------------------- Search -----------------------");
             var db = DBManager.Instance().GetDB();
             if (db == null)
@@ -60,93 +61,14 @@ namespace CodeAtlasVSIX
                 return;
             }
 
-            var ents = db.Search(searchWord, searchKind);
-            resultList.Items.Clear();
-
-            if (ents.Count == 0)
-            {
-                return;
-            }
-            var bestEntList = new List<DoxygenDB.Entity> { ents[0] };
-
-            foreach (var entity in ents)
-            {
-                if (entity.Longname().Contains(searchWord))
-                {
-                    bestEntList.Add(entity);
-                }
-            }
-
-            if (searchFile != "")
-            {
-                var entList = bestEntList;
-                bestEntList = new List<DoxygenDB.Entity>();
-                var bestEntDist = new List<int>();
-                var searchWordLower = searchWord.ToLower();
-
-                foreach (var ent in entList)
-                {
-                    var refs = db.SearchRef(ent.UniqueName());
-                    if (refs.Count == 0)
-                    {
-                        continue;
-                    }
-
-                    var fileNameSet = new HashSet<string>();
-                    var lineDist = int.MaxValue;
-                    var hasSearchFile = false;
-                    foreach (var refObj in refs)
-                    {
-                        if (refObj == null)
-                        {
-                            continue;
-                        }
-
-                        var fileEnt = refObj.File();
-                        var line = refObj.Line();
-                        var column = refObj.Column();
-                        fileNameSet.Add(fileEnt.Longname());
-                        if (fileEnt.Longname().Contains(searchFile))
-                        {
-                            lineDist = Math.Min(lineDist, Math.Abs(line - searchLine));
-                            hasSearchFile = true;
-                        }
-                    }
-
-                    foreach (var fileName in fileNameSet)
-                    {
-                        Logger.WriteLine("file: " + fileName);
-                    }
-
-                    if (hasSearchFile && searchWordLower.Contains(ent.Name().ToLower()))
-                    {
-                        Logger.WriteLine("In filename: " + ent.Longname() + " " + ent.Name() + " " + lineDist.ToString());
-                        bestEntList.Add(ent);
-                        bestEntDist.Add(lineDist);
-                    }
-                }
-
-                if (searchLine > -1)
-                {
-                    var minDist = int.MaxValue;
-                    DoxygenDB.Entity bestEnt = null;
-                    for (int i = 0; i < bestEntList.Count; i++)
-                    {
-                        if (bestEntDist[i] < minDist)
-                        {
-                            minDist = bestEntDist[i];
-                            bestEnt = bestEntList[i];
-                        }
-                    }
-
-                    bestEntList = new List<DoxygenDB.Entity> { bestEnt };
-                }
-            }
+            List<DoxygenDB.Entity> bestEntList;
+            DoxygenDB.Entity bestEnt;
+            db.SearchAndFilter(searchWord, searchKind, searchFile, searchLine, out bestEntList, out bestEnt);
 
             ResultItem bestItem = null;
-            for (int i = 0; i < ents.Count; i++)
+            for (int i = 0; i < bestEntList.Count; i++)
             {
-                var ent = ents[i];
+                var ent = bestEntList[i];
                 var resItem = new ResultItem(ent.Name(), ent.UniqueName());
                 if (bestEntList.Count > 0 && ent == bestEntList[0])
                 {

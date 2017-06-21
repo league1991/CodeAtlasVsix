@@ -1340,6 +1340,96 @@ namespace DoxygenDB
             return res;
         }
 
+        public void SearchAndFilter(string searchWord, string searchKind, string searchFile, int searchLine, 
+            out List<Entity> ents, out Entity bestEntity)
+        {
+            bestEntity = null;
+
+            ents = Search(searchWord, searchKind);
+            if (ents.Count == 0)
+            {
+                return;
+            }
+            else if (ents.Count == 1)
+            {
+                bestEntity = ents[0];
+                return;
+            }
+
+            var bestEntList = new List<Entity>();
+            foreach (var entity in ents)
+            {
+                if (entity.Longname().Contains(searchWord))
+                {
+                    bestEntList.Add(entity);
+                }
+            }
+
+            if (searchFile != "")
+            {
+                searchFile = searchFile.Replace("\\","/");
+                var entList = bestEntList;
+                bestEntList = new List<Entity>();
+                var bestEntDist = new List<int>();
+                var searchWordLower = searchWord.ToLower();
+
+                foreach (var ent in entList)
+                {
+                    var refs = SearchRef(ent.UniqueName());
+                    if (refs.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    var fileNameSet = new HashSet<string>();
+                    var lineDist = int.MaxValue;
+                    var hasSearchFile = false;
+                    foreach (var refObj in refs)
+                    {
+                        if (refObj == null)
+                        {
+                            continue;
+                        }
+
+                        var fileEnt = refObj.File();
+                        var line = refObj.Line();
+                        var column = refObj.Column();
+                        fileNameSet.Add(fileEnt.Longname());
+                        if (fileEnt.Longname().Contains(searchFile))
+                        {
+                            lineDist = Math.Min(lineDist, Math.Abs(line - searchLine));
+                            hasSearchFile = true;
+                        }
+                    }
+
+                    if (hasSearchFile && searchWordLower.Contains(ent.Name().ToLower()))
+                    {
+                        bestEntList.Add(ent);
+                        bestEntDist.Add(lineDist);
+                    }
+                }
+
+                if (searchLine > -1)
+                {
+                    var minDist = int.MaxValue;
+                    Entity bestEnt = null;
+                    for (int i = 0; i < bestEntList.Count; i++)
+                    {
+                        if (bestEntDist[i] < minDist)
+                        {
+                            minDist = bestEntDist[i];
+                            bestEnt = bestEntList[i];
+                        }
+                    }
+                    if (bestEnt != null)
+                    {
+                        bestEntity = bestEnt;
+                    }
+                }
+            }
+
+        }
+
         public Entity SearchFromUniqueName(string uniqueName)
         {
             if (m_dbFolder == null || m_dbFolder == "")
