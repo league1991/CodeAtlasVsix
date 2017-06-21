@@ -166,7 +166,9 @@ namespace CodeAtlasVSIX
                                 {
                                     var tokenValue = nextMatch.Value;
                                     var tokenIndex = nextMatch.Index;
-                                    var absOffset = funcStart.AbsoluteCharOffset + nextMatch.Index;
+                                    var prevText = funcText.Substring(0, nextMatch.Index);
+                                    var nReturnChar = prevText.Length - prevText.Replace("\r\n", "\n").Length;
+                                    var absOffset = funcStart.AbsoluteCharOffset + tokenIndex - nReturnChar;
 
                                     TextSelection ts = document.Selection as TextSelection;
                                     ts.MoveToAbsoluteOffset(absOffset);
@@ -211,7 +213,6 @@ namespace CodeAtlasVSIX
 
         CodeElement GetCodeElement(CodeUIItem uiItem, Document document)
         {
-            Logger.WriteLine("get code element --------------------" + uiItem.GetName());
             var docItem = document.ProjectItem;
             var docModel = docItem.FileCodeModel;
             if (docModel == null)

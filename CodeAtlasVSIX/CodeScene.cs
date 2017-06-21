@@ -1446,7 +1446,7 @@ namespace CodeAtlasVSIX
             {
                 res = SelectOneEdge(lastFunction);
             }
-            else if (lastPos.X != Double.NaN)
+            if (res == false && lastPos.X != Double.NaN)
             {
                 res = SelectNearestItem(lastPos);
             }
