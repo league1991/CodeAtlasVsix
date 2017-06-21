@@ -252,7 +252,7 @@ namespace CodeAtlasVSIX
                 else if (m_isCandidate)
                 {
                     StrokeThickness = 5.5;
-                    this.Stroke = new SolidColorBrush(Color.FromArgb(200, 183, 101, 0));
+                    this.Stroke = new SolidColorBrush(Color.FromArgb(70, 255, 157, 38));
                 }
                 else
                 {
