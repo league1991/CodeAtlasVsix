@@ -201,9 +201,9 @@ namespace DoxygenDB
 
         XPathDocument m_doc;
         XPathNavigator m_navigator;
-        public HashSet<string> m_elementCache = new HashSet<string>();
+        HashSet<string> m_elementCache = new HashSet<string>();
         public int m_cacheStatus;
-        public string m_filePath;
+        string m_filePath;
 
         public XmlDocItem(string filePath)
         {
@@ -250,6 +250,7 @@ namespace DoxygenDB
         {
             m_doc = null;
             m_navigator = null;
+            m_elementCache.Clear();
         }
 
         public XPathNavigator GetNavigator()
