@@ -77,7 +77,7 @@ namespace CodeAtlasVSIX
                 var centerPnt = new Point(ActualWidth * 0.5, ActualHeight * 0.5);
                 var currentPnt = matrix.Transform(center);
 
-                var offset = (centerPnt - currentPnt) * 0.05;
+                var offset = (centerPnt - currentPnt) * 0.1;
                 m_lastMoveOffset = offset.Length;
 
                 matrix.TranslatePrepend(offset.X, offset.Y);
