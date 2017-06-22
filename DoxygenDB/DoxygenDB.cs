@@ -112,6 +112,11 @@ namespace DoxygenDB
             m_refs.Add(refItem);
         }
 
+        public void ClearRefItem()
+        {
+            m_refs.Clear();
+        }
+
         public List<IndexRefItem> GetRefItemList()
         {
             return m_refs.ToList();
@@ -161,6 +166,7 @@ namespace DoxygenDB
                 m_line = m_column = -1;
             }
         }
+
         public override bool Equals(object obj)
         {
             IndexRefItem e = obj as IndexRefItem;
@@ -181,21 +187,107 @@ namespace DoxygenDB
 
     class XmlDocItem
     {
+        static int m_maxXmlCount = 300;
+        // filePath -> xml doc
+        static LinkedList<XmlDocItem> s_xmlLRUList = new LinkedList<XmlDocItem>();
+        static Dictionary<string, LinkedListNode<XmlDocItem>> s_lruDict = new Dictionary<string, LinkedListNode<XmlDocItem>>();
+        static Dictionary<string, XPathNavigator> s_xmlElementCache = new Dictionary<string, XPathNavigator>();
+
         public enum CacheStatus
         {
             NONE = 0,
             REF = 1
         }
 
-        public XPathDocument m_doc;
-        public XPathNavigator m_navigator;
+        XPathDocument m_doc;
+        XPathNavigator m_navigator;
+        public HashSet<string> m_elementCache = new HashSet<string>();
         public int m_cacheStatus;
+        public string m_filePath;
 
-        public XmlDocItem(XPathDocument doc)
+        public XmlDocItem(string filePath)
         {
+            m_filePath = filePath;
+            _LoadXml();
+            m_cacheStatus = (int)CacheStatus.NONE;
+        }
+
+        void _LoadXml()
+        {
+            while (s_xmlLRUList.Count >= m_maxXmlCount)
+            {
+                var lastXmlDoc = s_xmlLRUList.Last.Value;
+                // remove element reference
+                foreach (var docElement in lastXmlDoc.m_elementCache)
+                {
+                    s_xmlElementCache.Remove(docElement);
+                }
+                lastXmlDoc.ClearDocument();
+
+                // remove lru
+                s_lruDict.Remove(s_xmlLRUList.Last.Value.m_filePath);
+                s_xmlLRUList.RemoveLast();
+            }
+
+            var rawContent = File.ReadAllText(m_filePath, Encoding.UTF8);
+            var content = new string(rawContent.Where(c => !char.IsControl(c)).ToArray());
+            var bytes = Encoding.UTF8.GetBytes(content);
+            var doc = new XPathDocument(new MemoryStream(bytes));
             m_doc = doc;
             m_navigator = doc.CreateNavigator();
-            m_cacheStatus = (int)CacheStatus.NONE;
+            
+            // update lru
+            if (s_lruDict.ContainsKey(m_filePath))
+            {
+                s_xmlLRUList.Remove(s_lruDict[m_filePath]);
+                s_lruDict.Remove(m_filePath);
+            }
+            var node = s_xmlLRUList.AddFirst(this);
+            s_lruDict[m_filePath] = node;
+        }
+
+        public void ClearDocument()
+        {
+            m_doc = null;
+            m_navigator = null;
+        }
+
+        public XPathNavigator GetNavigator()
+        {
+            if (m_doc == null || m_navigator == null)
+            {
+                _LoadXml();
+            }
+            return m_navigator;
+        }
+
+        public XPathDocument GetDocument()
+        {
+            if (m_doc == null || m_navigator == null)
+            {
+                _LoadXml();
+            }
+            return m_doc;
+        }
+
+        public void AddElementRef(string refId, XPathNavigator nav)
+        {
+            s_xmlElementCache[refId] = nav;
+            m_elementCache.Add(refId);
+        }
+
+        public static XPathNavigator GetElementRef(string refID)
+        {
+            if (s_xmlElementCache.ContainsKey(refID))
+            {
+                return s_xmlElementCache[refID];
+            }
+            return null;
+        }
+
+        public static void ClearElementCache()
+        {
+            s_xmlElementCache.Clear();
         }
 
         public XPathDocument GetDoc()
@@ -357,12 +449,11 @@ namespace DoxygenDB
         Dictionary<string, List<string>> m_compoundToIdDict = new Dictionary<string, List<string>>();
         Dictionary<string, IndexItem> m_idInfoDict = new Dictionary<string, IndexItem>();
         Dictionary<string, List<string>> m_nameIDDict = new Dictionary<string, List<string>>();
-        Dictionary<string, XmlDocItem> m_xmlCache = new Dictionary<string, XmlDocItem>();
-        Dictionary<string, XPathNavigator> m_xmlElementCache = new Dictionary<string, XPathNavigator>();
         Dictionary<string, List<string>> m_metaDict = new Dictionary<string, List<string>>();
         Dictionary<CodeBlock, BlockRefData> m_blockRefDict = new Dictionary<CodeBlock, BlockRefData>();
         static Regex s_identifierReg = new Regex(@"[a-zA-Z_][a-zA-Z0-9_]*", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
+        // xml management
+        Dictionary<string, XmlDocItem> m_xmlCache = new Dictionary<string, XmlDocItem>();
 
         public DoxygenDB() { }
 
@@ -541,9 +632,11 @@ namespace DoxygenDB
             _AnalyseDoxyfile(configPath);
         }
 
+
         XPathNavigator _GetXmlDocument(string fileName)
         {
-            return _GetXmlDocumentItem(fileName).m_navigator;
+            var item = _GetXmlDocumentItem(fileName);
+            return item.GetNavigator();
         }
 
         XmlDocItem _GetXmlDocumentItem(string fileName)
@@ -553,17 +646,19 @@ namespace DoxygenDB
             {
                 return m_xmlCache[filePath];
             }
+
             // remove bad characters
-            var rawContent = File.ReadAllText(filePath, Encoding.UTF8);
-            var content = new string(rawContent.Where(c => !char.IsControl(c)).ToArray());
-            var bytes = Encoding.UTF8.GetBytes(content);
-            var xmlDoc = new XPathDocument(new MemoryStream(bytes));
+            //var rawContent = File.ReadAllText(filePath, Encoding.UTF8);
+            //var content = new string(rawContent.Where(c => !char.IsControl(c)).ToArray());
+            //var bytes = Encoding.UTF8.GetBytes(content);
+            //var xmlDoc = new XPathDocument(new MemoryStream(bytes));
 
             //var xmlSetting = new XmlReaderSettings();
             //xmlSetting.CheckCharacters = false;
             //var xmlDoc = new XPathDocument(XmlReader.Create(filePath, xmlSetting));
             //var xmlDoc = new XPathDocument(filePath);
-            var xmlDocItem = new XmlDocItem(xmlDoc);
+
+            var xmlDocItem = new XmlDocItem(filePath);
             m_xmlCache[filePath] = xmlDocItem;
             return xmlDocItem;
         }
@@ -574,7 +669,7 @@ namespace DoxygenDB
             {
                 return "";
             }
-
+            
             var doc = _GetXmlDocument(compoundId);
             if (doc == null)
             {
@@ -600,6 +695,10 @@ namespace DoxygenDB
         {
             idToRowDict = new Dictionary<string, List<int>>();
             nameToRowDict = new Dictionary<string, List<int>>();
+
+            // temporary disable following code
+            return;
+            /*
             if (fileId == "")
             {
                 return;
@@ -610,7 +709,7 @@ namespace DoxygenDB
             {
                 return;
             }
-
+            
             // Try to find in cache
             CodeBlock block = new CodeBlock(fileId, startLine, endLine);
             BlockRefData refData;
@@ -705,7 +804,7 @@ namespace DoxygenDB
 
             
             m_blockRefDict[block] = new BlockRefData(idToRowDict, nameToRowDict);
-            return;
+            return;*/
         }
 
         void _AddToNameIDDict(string name, string id)
@@ -1084,31 +1183,34 @@ namespace DoxygenDB
                 return null;
             }
 
-            if (m_xmlElementCache.ContainsKey(refid))
+            var cachedElement = XmlDocItem.GetElementRef(refid);
+            if (cachedElement != null)
             {
-                return m_xmlElementCache[refid];
+                return cachedElement;
             }
 
             if (m_idToCompoundDict.ContainsKey(refid))
             {
                 var fileName = m_idToCompoundDict[refid];
-                var doc = _GetXmlDocument(fileName);
+                XmlDocItem docItem = _GetXmlDocumentItem(fileName);
+                var doc = docItem.GetNavigator();
                 var memberIter = doc.Select(string.Format("doxygen/compounddef/sectiondef/memberdef[@id=\'{0}\']", refid));
                 while (memberIter.MoveNext())
                 {
                     var member = memberIter.Current;
-                    m_xmlElementCache[refid] = member;
+                    docItem.AddElementRef(refid, member);
                     return member;
                 }
             }
             else if (m_compoundToIdDict.ContainsKey(refid))
             {
-                var doc = _GetXmlDocument(refid);
+                XmlDocItem docItem = _GetXmlDocumentItem(refid);
+                var doc = docItem.GetNavigator();
                 var compoundIter = doc.Select(string.Format("doxygen/compounddef[@id=\'{0}\']", refid));
                 while (compoundIter.MoveNext())
                 {
                     var compound = compoundIter.Current;
-                    m_xmlElementCache[refid] = compound;
+                    docItem.AddElementRef(refid, compound);
                     return compound;
                 }
             }
@@ -1285,9 +1387,15 @@ namespace DoxygenDB
             m_dbFolder = "";
             m_idToCompoundDict.Clear();
             m_compoundToIdDict.Clear();
+            foreach (var itemPair in m_idInfoDict)
+            {
+                itemPair.Value.ClearRefItem();
+            }
             m_idInfoDict.Clear();
+            XmlDocItem.ClearElementCache();
             m_xmlCache.Clear();
-            m_xmlElementCache.Clear();
+            m_metaDict.Clear();
+            m_blockRefDict.Clear();
         }
 
         public void Reopen()

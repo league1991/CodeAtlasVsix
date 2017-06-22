@@ -1283,8 +1283,9 @@ namespace CodeAtlasVSIX
             }
             if (edgeData == null)
             {
-                edgeData = new DataDict { { "customEdge", 1 } };
+                edgeData = new DataDict();
             }
+            edgeData["customEdge"] = 1;
 
             AcquireLock();
             _DoAddCodeEdgeItem(srcName, tarName, edgeData);
