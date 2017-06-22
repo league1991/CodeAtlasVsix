@@ -63,7 +63,7 @@ namespace CodeAtlasVSIX
 
             List<DoxygenDB.Entity> bestEntList;
             DoxygenDB.Entity bestEnt;
-            db.SearchAndFilter(searchWord, searchKind, searchFile, searchLine, out bestEntList, out bestEnt);
+            db.SearchAndFilter(searchWord, searchKind, searchFile, searchLine, out bestEntList, out bestEnt, false);
 
             ResultItem bestItem = null;
             for (int i = 0; i < bestEntList.Count; i++)

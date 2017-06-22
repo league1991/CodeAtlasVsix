@@ -60,6 +60,7 @@ namespace CodeAtlasVSIX
         Color m_color = new Color();
         bool m_customEdgeMode = false;
         Geometry m_highLightGeometry = new EllipseGeometry();
+        public string m_bodyCode = "";
 
         public CodeUIItem(string uniqueName)
         {
@@ -234,6 +235,11 @@ namespace CodeAtlasVSIX
             }
         }
 
+        public void AddCustomData(string key, Variant value)
+        {
+            m_customData[key] = value;
+        }
+
         public Variant GetCustomData(string key)
         {
             if (!m_customData.ContainsKey(key))
@@ -326,6 +332,11 @@ namespace CodeAtlasVSIX
         public bool IsFunction()
         {
             return m_kind == DoxygenDB.EntKind.FUNCTION;
+        }
+
+        public bool IsVariable()
+        {
+            return m_kind == DoxygenDB.EntKind.VARIABLE;
         }
 
         public bool IsClassOrStruct()

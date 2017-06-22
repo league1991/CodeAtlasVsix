@@ -694,7 +694,9 @@ namespace CodeAtlasVSIX
             {
                 var srcItem = m_itemDict[centerItem.m_srcUniqueName];
                 var tarItem = m_itemDict[centerItem.m_tarUniqueName];
-                if (srcItem != null && tarItem != null && srcItem.IsFunction() && tarItem.IsFunction())
+                if (srcItem != null && tarItem != null)// && 
+                    //(srcItem.IsFunction()) &&
+                    //(tarItem.IsFunction() || tarItem.IsVariable()))
                 {
                     var tarOrder = centerItem.m_orderData.m_order - 1;
                     if (mainDirection.Y > 0)
@@ -837,7 +839,7 @@ namespace CodeAtlasVSIX
             var centerPos = centerItem.Pos;
             var centerUniqueName = centerItem.GetUniqueName();
 
-            if (centerItem.IsFunction())
+            //if (centerItem.IsFunction())
             {
                 if (mainDirection.X > 0.8)
                 {

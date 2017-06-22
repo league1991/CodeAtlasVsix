@@ -1341,35 +1341,41 @@ namespace DoxygenDB
         }
 
         public void SearchAndFilter(string searchWord, string searchKind, string searchFile, int searchLine, 
-            out List<Entity> ents, out Entity bestEntity)
+            out List<Entity> candidateList, out Entity bestEntity, bool exactMatch)
         {
             bestEntity = null;
+            candidateList = new List<Entity>();
 
-            ents = Search(searchWord, searchKind);
+            var ents = Search(searchWord, searchKind);
             if (ents.Count == 0)
             {
                 return;
             }
-            else if (ents.Count == 1)
-            {
-                bestEntity = ents[0];
-                return;
-            }
 
-            var bestEntList = new List<Entity>();
+            // Filter name
             foreach (var entity in ents)
             {
-                if (entity.Longname().Contains(searchWord))
+                if (exactMatch)
                 {
-                    bestEntList.Add(entity);
+                    if (entity.Name() == searchWord)
+                    {
+                        candidateList.Add(entity);
+                    }
+                }
+                else
+                {
+                    if (entity.Longname().Contains(searchWord))
+                    {
+                        candidateList.Add(entity);
+                    }
                 }
             }
 
             if (searchFile != "")
             {
                 searchFile = searchFile.Replace("\\","/");
-                var entList = bestEntList;
-                bestEntList = new List<Entity>();
+                var entList = candidateList;
+                candidateList = new List<Entity>();
                 var bestEntDist = new List<int>();
                 var searchWordLower = searchWord.ToLower();
 
@@ -1404,7 +1410,7 @@ namespace DoxygenDB
 
                     if (hasSearchFile && searchWordLower.Contains(ent.Name().ToLower()))
                     {
-                        bestEntList.Add(ent);
+                        candidateList.Add(ent);
                         bestEntDist.Add(lineDist);
                     }
                 }
@@ -1413,12 +1419,12 @@ namespace DoxygenDB
                 {
                     var minDist = int.MaxValue;
                     Entity bestEnt = null;
-                    for (int i = 0; i < bestEntList.Count; i++)
+                    for (int i = 0; i < candidateList.Count; i++)
                     {
                         if (bestEntDist[i] < minDist)
                         {
                             minDist = bestEntDist[i];
-                            bestEnt = bestEntList[i];
+                            bestEnt = candidateList[i];
                         }
                     }
                     if (bestEnt != null)
@@ -1428,6 +1434,11 @@ namespace DoxygenDB
                 }
             }
 
+            // The only possible choice
+            if (bestEntity == null && candidateList.Count == 1)
+            {
+                bestEntity = candidateList[0];
+            }
         }
 
         public Entity SearchFromUniqueName(string uniqueName)

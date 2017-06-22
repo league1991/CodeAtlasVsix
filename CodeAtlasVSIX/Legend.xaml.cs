@@ -50,7 +50,7 @@ namespace CodeAtlasVSIX
                     var cname = item.GetClassName();
                     if (cname == "")
                     {
-                        cname = "global function";
+                        cname = "globals";
                     }
                     var color = item.GetColor();
 

@@ -155,6 +155,7 @@ namespace CodeAtlasVSIX
                             var funcEnd = codeElement.GetEndPoint(vsCMPart.vsCMPartBody);
                             var funcEditPnt = funcStart.CreateEditPoint();
                             string funcText = funcEditPnt.GetText(funcEnd);
+                            srcItem.m_bodyCode = funcText;
                             
                             string indentifierPattern = string.Format(@"\b{0}\b", tarItem.GetName());
 

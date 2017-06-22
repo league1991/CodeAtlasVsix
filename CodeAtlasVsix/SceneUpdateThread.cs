@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,8 +15,8 @@ namespace CodeAtlasVSIX
     {
         class ItemData
         {
-
         }
+
         int m_sleepTime = 30;
         Thread m_thread = null;
         bool m_isActive = true;
@@ -265,7 +266,7 @@ namespace CodeAtlasVSIX
             }
 
             var nodeItem = item as CodeUIItem;
-            if (nodeItem == null || !nodeItem.IsFunction())
+            if (nodeItem == null)// || !nodeItem.IsFunction())
             {
                 return;
             }
@@ -281,7 +282,7 @@ namespace CodeAtlasVSIX
                 var edge = edgePair.Value;
                 var srcItem = itemDict[key.Item1];
                 var tarItem = itemDict[key.Item2];
-                if (key.Item1 == itemUniqueName && tarItem.IsFunction())
+                if (key.Item1 == itemUniqueName)// && tarItem.IsFunction())
                 {
                     edgeList.Add(edge);
                     Point srcPos, tarPos;
@@ -293,11 +294,11 @@ namespace CodeAtlasVSIX
 
                 if (isEdgeSelected == false)
                 {
-                    if (key.Item1 == itemUniqueName && tarItem.IsFunction())
+                    if (key.Item1 == itemUniqueName)// && tarItem.IsFunction())
                     {
                         tarItem.m_isConnectedToFocusNode = true;
                     }
-                    if (key.Item2 == itemUniqueName && srcItem.IsFunction())
+                    if (key.Item2 == itemUniqueName)// && srcItem.IsFunction())
                     {
                         srcItem.m_isConnectedToFocusNode = true;
                     }
@@ -323,7 +324,49 @@ namespace CodeAtlasVSIX
                 basePos = maxXRange;
             }
 
-            edgeList.Sort((x, y) => x.ComparePos(y));
+            bool isSorted = false;
+            try
+            {
+                string bodyCode = nodeItem.m_bodyCode;
+                if (bodyCode != null)
+                {
+                    var nodeDict = scene.GetItemDict();
+                    var edgePosList = new List<Tuple<CodeUIEdgeItem, int>>();
+                    foreach (var edge in edgeList)
+                    {
+                        var tarItem = nodeDict[edge.m_tarUniqueName];
+                        string indentifierPattern = string.Format(@"\b{0}\b", tarItem.GetName());
+
+                        var nameList = Regex.Matches(bodyCode, indentifierPattern, RegexOptions.ExplicitCapture);
+
+                        if (nameList.Count == 0)
+                        {
+                            edgePosList.Add(new Tuple<CodeUIEdgeItem, int>(edge, -1));
+                        }
+                        foreach (Match nextMatch in nameList)
+                        {
+                            edgePosList.Add(new Tuple<CodeUIEdgeItem, int>(edge, nextMatch.Index));
+                            break;
+                        }
+                    }
+                    edgePosList.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+                    edgeList.Clear();
+                    foreach (var edgePair in edgePosList)
+                    {
+                        edgeList.Add(edgePair.Item1);
+                    }
+                    isSorted = true;
+                }
+            }
+            catch (Exception)
+            {
+            }
+            
+            if(!isSorted)
+            {
+                edgeList.Sort((x, y) => x.ComparePos(y));
+            }
+
             for (int i = 0; i < edgeList.Count; i++)
             {
                 var edge = edgeList[i];

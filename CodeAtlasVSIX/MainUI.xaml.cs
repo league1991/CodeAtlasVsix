@@ -216,16 +216,16 @@ namespace CodeAtlasVSIX
 
             var tarName = tarElement.Name;
             var tarType = VSElementTypeToString(tarElement);
-            var tarFile = srcDocument.FullName;
+            var tarFile = tarDocument.FullName;
 
             var db = DBManager.Instance().GetDB();
             var scene = UIManager.Instance().GetScene();
             List<DoxygenDB.Entity> srcEntities, tarEntities;
             DoxygenDB.Entity srcBestEntity, tarBestEntity;
-            db.SearchAndFilter(srcName, srcType, srcFile, srcLine, out srcEntities, out srcBestEntity);
-            db.SearchAndFilter(tarName, tarType, tarFile, tarLine, out tarEntities, out tarBestEntity);
+            db.SearchAndFilter(srcName, srcType, srcFile, srcLine, out srcEntities, out srcBestEntity, true);
+            db.SearchAndFilter(tarName, tarType, tarFile, tarLine, out tarEntities, out tarBestEntity, true);
 
-            if (srcBestEntity != null && tarBestEntity != null)
+            if (srcBestEntity != null && tarBestEntity != null && srcBestEntity.m_id != tarBestEntity.m_id)
             {
                 scene.AcquireLock();
                 scene.AddCodeItem(srcBestEntity.m_id);
