@@ -250,33 +250,39 @@ namespace CodeAtlasVSIX
                 while (elementIter.MoveNext())
                 {
                     var element = elementIter.Current as CodeElement;
-                    var eleName = element.Name;
-                    //var start = element.GetStartPoint(vsCMPart.vsCMPartBody);
-                    //var end = element.GetEndPoint(vsCMPart.vsCMPartBody);
-                    //var vcElement = element as VCCodeElement;
-                    //if (vcElement != null)
-                    //{
-                    //    start = vcElement.get_StartPointOf(vsCMPart.vsCMPartWholeWithAttributes, vsCMWhere.vsCMWhereDeclaration);
-                    //    end = vcElement.get_EndPointOf(vsCMPart.vsCMPartWholeWithAttributes, vsCMWhere.vsCMWhereDeclaration);
-                    //}
-                    //var startLine = start.Line;
-                    //var endLine = end.Line;
-                    //string indentStr = "";
-                    //var itemDoc = start.Parent.Parent;
-                    //var itemPath = itemDoc.Name;
-                    //var docPath = document.Name;
-                    //Logger.WriteLine(indentStr + string.Format("element:{0} {1} {2}", eleName, itemPath, startLine));
-                    //Logger.WriteLine("-----" + eleName);
+                    try
+                    {
+                        var eleName = element.Name;
+                        //var start = element.GetStartPoint(vsCMPart.vsCMPartBody);
+                        //var end = element.GetEndPoint(vsCMPart.vsCMPartBody);
+                        //var vcElement = element as VCCodeElement;
+                        //if (vcElement != null)
+                        //{
+                        //    start = vcElement.get_StartPointOf(vsCMPart.vsCMPartWholeWithAttributes, vsCMWhere.vsCMWhereDeclaration);
+                        //    end = vcElement.get_EndPointOf(vsCMPart.vsCMPartWholeWithAttributes, vsCMWhere.vsCMWhereDeclaration);
+                        //}
+                        //var startLine = start.Line;
+                        //var endLine = end.Line;
+                        //string indentStr = "";
+                        //var itemDoc = start.Parent.Parent;
+                        //var itemPath = itemDoc.Name;
+                        //var docPath = document.Name;
+                        //Logger.WriteLine(indentStr + string.Format("element:{0} {1} {2}", eleName, itemPath, startLine));
+                        //Logger.WriteLine("-----" + eleName);
                     
-                    if (eleName  == uiItem.GetName())
-                    {
-                        return element;
-                    }
+                        if (eleName  == uiItem.GetName())
+                        {
+                            return element;
+                        }
 
-                    var children = element.Children;
-                    if (children != null)
+                        var children = element.Children;
+                        if (children != null)
+                        {
+                            elementsList.Add(children);
+                        }
+                    }
+                    catch (Exception e)
                     {
-                        elementsList.Add(children);
                     }
                 }
             }
