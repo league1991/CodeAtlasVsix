@@ -626,6 +626,7 @@ namespace DoxygenDB
             metaDict["INCLUDE_PATH"] = toPathList(config.m_includePaths); 
             metaDict["BUILTIN_STL_SUPPORT"] = new List<string> { "YES" };
             metaDict["CPP_CLI_SUPPORT"] = new List<string> { "YES" };
+            metaDict["ALLEXTERNALS"] = new List<string> { "YES" };
             metaDict["PREDEFINED"] = config.m_defines;
             // metaDict["INPUT_ENCODING"] = new List<string> { "iso-8859-1" };
 
