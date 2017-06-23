@@ -58,7 +58,6 @@
           If you do not want an image next to your command, remove the Icon node /> -->
       <Button guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasCommandId" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
-        <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
           <ButtonText>Open Code Atlas Window</ButtonText>
         </Strings>

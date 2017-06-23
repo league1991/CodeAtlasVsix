@@ -815,7 +815,19 @@ namespace CodeAtlasVSIX
                 m_geometry.Children.Add(rect);
                 m_highLightGeometry = rect;
             }
-
+            else
+            {
+                float w = 3.0f;
+                var rect = new RectangleGeometry(new Rect(new Point(-w, -w), new Point(w, w)));
+                var trans = new MatrixTransform();
+                var mat = new Matrix();
+                mat.RotateAtPrepend(45.0,0.0,0.0);
+                trans.Matrix = mat;
+                rect.Transform = trans;
+                m_geometry.Children.Add(rect);
+                m_highLightGeometry = rect;
+                this.Fill = new SolidColorBrush(Color.FromArgb(150, 255, 255, 255));
+            }
         }
 
         protected override Geometry DefiningGeometry
