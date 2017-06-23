@@ -187,7 +187,7 @@ namespace DoxygenDB
 
     class XmlDocItem
     {
-        static int m_maxXmlCount = 400;
+        static int m_maxXmlCount = 500;
         // filePath -> xml doc
         static LinkedList<XmlDocItem> s_xmlLRUList = new LinkedList<XmlDocItem>();
         static Dictionary<string, LinkedListNode<XmlDocItem>> s_lruDict = new Dictionary<string, LinkedListNode<XmlDocItem>>();
@@ -1221,10 +1221,11 @@ namespace DoxygenDB
         Dictionary<string, Variant> _ParseLocationDict(XPathNavigator element)
         {
             var declLineAttr = element.GetAttribute("line", "");
-            var declColumnAttr = element.GetAttribute("column", "");
+            var declLine = declLineAttr != "" ? Convert.ToInt32(declLineAttr) : 0;
 
-            var declLine = Convert.ToInt32(declLineAttr == "" ? "0" : declLineAttr);
-            var declColumn = Convert.ToInt32(declColumnAttr == "" ? "0" : declColumnAttr);
+            var declColumnAttr = element.GetAttribute("column", "");
+            var declColumn = declColumnAttr != "" ? Convert.ToInt32(declColumnAttr): 0;
+
             var declFile = element.GetAttribute("file", "");
             if (declFile != "" && !declFile.Contains(":"))
             {
@@ -1232,28 +1233,22 @@ namespace DoxygenDB
             }
 
             var bodyStartAttr = element.GetAttribute("bodystart", "");
-            if (bodyStartAttr == "")
-            {
-                bodyStartAttr = "0";
-            }
+            var bodyStart = bodyStartAttr != "" ? Convert.ToInt32(bodyStartAttr) : 0;
+
             var bodyEndAttr = element.GetAttribute("bodyend", "");
-            if (bodyEndAttr == "")
-            {
-                bodyEndAttr = bodyStartAttr;
-            }
+            var bodyEnd = bodyEndAttr != "" ? Convert.ToInt32(bodyEndAttr) : -1;
 
-            var bodyStart = Convert.ToInt32(bodyStartAttr);
-            var bodyEnd = Convert.ToInt32(bodyEndAttr);
             var bodyFile = element.GetAttribute("bodyfile", "");
-
             if (bodyFile != "" && !bodyFile.Contains(":"))
             {
                 bodyFile = m_doxyFileFolder + "/" + bodyFile;
             }
 
+            int countLine = Math.Max(bodyEnd - bodyStart + 1, 0);
             if (bodyEnd < 0)
             {
                 bodyEnd = bodyStart;
+                countLine = 0;
             }
 
             return new Dictionary<string, Variant> {
@@ -1261,7 +1256,7 @@ namespace DoxygenDB
                 { "line", new Variant(bodyStart) },
                 { "lineEnd", new Variant(bodyEnd) },
                 { "column", new Variant(0) },
-                { "CountLine", new Variant(Math.Max(bodyEnd - bodyStart, 0)) },
+                { "CountLine", new Variant(countLine) },
                 { "declLine", new Variant(declLine) },
                 { "declColumn", new Variant(declColumn) },
                 { "declFile", new Variant(declFile) },

@@ -789,7 +789,7 @@ namespace CodeAtlasVSIX
                 }
 
                 m_highLightGeometry = new EllipseGeometry(new Point(0.0, 0.0), r, r);
-                if (m_lines == 0 || m_customData["hasDef"].m_int == 0)
+                if (m_lines == 0 || (m_customData.ContainsKey("hasDef") && m_customData["hasDef"].m_int == 0))
                 {
                     var innerCircle = new EllipseGeometry(new Point(0.0, 0.0), 1.5,1.5);
                     m_highLightGeometry = Geometry.Combine(m_highLightGeometry, innerCircle, GeometryCombineMode.Exclude, null);
