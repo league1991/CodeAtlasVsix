@@ -187,7 +187,7 @@ namespace DoxygenDB
 
     class XmlDocItem
     {
-        static int m_maxXmlCount = 300;
+        static int m_maxXmlCount = 400;
         // filePath -> xml doc
         static LinkedList<XmlDocItem> s_xmlLRUList = new LinkedList<XmlDocItem>();
         static Dictionary<string, LinkedListNode<XmlDocItem>> s_lruDict = new Dictionary<string, LinkedListNode<XmlDocItem>>();

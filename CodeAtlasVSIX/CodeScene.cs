@@ -167,10 +167,6 @@ namespace CodeAtlasVSIX
             {
                 var dataList = dataItem as ArrayList;
                 var edgeKey = new EdgeKey(dataList[0] as string, dataList[1] as string);
-                if (!m_itemDict.ContainsKey(edgeKey.Item1) || !m_itemDict.ContainsKey(edgeKey.Item2))
-                {
-                    continue;
-                }
                 var edgeDataDict = dataList[2] as DataDict;
                 m_edgeDataDict[edgeKey] = edgeDataDict;
             }
@@ -182,20 +178,18 @@ namespace CodeAtlasVSIX
                 var edgePairDict = edgePair as Dictionary<string, object>;
                 var edgePairList = edgePair as ArrayList;
                 var edgeKey = new EdgeKey(edgePairList[0] as string, edgePairList[1] as string);
-                if (!m_itemDict.ContainsKey(edgeKey.Item1) || !m_itemDict.ContainsKey(edgeKey.Item2))
-                {
-                    continue;
-                }
 
+                bool isCustomEdge = false;
                 if (m_edgeDataDict.ContainsKey(edgeKey))
                 {
                     var edgeDataDict = m_edgeDataDict[edgeKey] as DataDict;
                     if (edgeDataDict.ContainsKey("customEdge") && (int)edgeDataDict["customEdge"] != 0)
                     {
                         _DoAddCodeEdgeItem(edgeKey.Item1, edgeKey.Item2, new DataDict { { "customEdge", 1 } });
+                        isCustomEdge = true;
                     }
                 }
-                else
+                if(!isCustomEdge)
                 {
                     var refObj = dbObj.SearchRefObj(edgeKey.Item1, edgeKey.Item2);
                     if (refObj != null)
@@ -502,14 +496,18 @@ namespace CodeAtlasVSIX
             foreach (var item in itemList)
             {
                 var uiItem = item as CodeUIItem;
-                if (uiItem == null)
+                if (uiItem != null)
                 {
-                    continue;
+                    uiItem.m_selectCounter += 1;
+                    uiItem.m_selectTimeStamp = m_selectTimeStamp;
+                    UpdateLRU(new List<string> { uiItem.GetUniqueName() });
                 }
 
-                uiItem.m_selectCounter += 1;
-                uiItem.m_selectTimeStamp = m_selectTimeStamp;
-                UpdateLRU(new List<string> { uiItem.GetUniqueName() });
+                var edgeItem = item as CodeUIEdgeItem;
+                if (edgeItem != null)
+                {
+                    edgeItem.m_selectTimeStamp = m_selectTimeStamp;
+                }
             }
 
             RemoveItemLRU();
@@ -843,13 +841,21 @@ namespace CodeAtlasVSIX
             {
                 if (mainDirection.X > 0.8)
                 {
+                    // Find latest edge to jump to
+                    CodeUIEdgeItem bestEdge = null;
+                    int bestTimeStamp = 0;
                     foreach (var item in m_edgeDict)
                     {
                         if (item.Key.Item1 == centerItem.GetUniqueName() &&
-                            item.Value.m_orderData != null && item.Value.m_orderData.m_order == 1)
+                            item.Value.m_orderData != null && item.Value.m_selectTimeStamp > bestTimeStamp)
                         {
-                            return item.Value;
+                            bestEdge = item.Value;
+                            bestTimeStamp = item.Value.m_selectTimeStamp;
                         }
+                    }
+                    if (bestEdge != null)
+                    {
+                        return bestEdge;
                     }
                 }
             }
@@ -1157,6 +1163,11 @@ namespace CodeAtlasVSIX
 
             if(!m_itemDict.ContainsKey(srcUniqueName) ||
                 !m_itemDict.ContainsKey(tarUniqueName))
+            {
+                return false;
+            }
+
+            if (srcUniqueName == tarUniqueName)
             {
                 return false;
             }
