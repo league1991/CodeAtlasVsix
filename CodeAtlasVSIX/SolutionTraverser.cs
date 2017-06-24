@@ -120,8 +120,9 @@ namespace CodeAtlasVSIX
 
         class ProjectInfo
         {
-            public HashSet<string> m_includePath;
-            public HashSet<string> m_defines;
+            public HashSet<string> m_includePath = new HashSet<string>();
+            public HashSet<string> m_defines = new HashSet<string>();
+            public string m_language = "";
         }
 
         string m_solutionName = "";
@@ -169,6 +170,37 @@ namespace CodeAtlasVSIX
                     }
                 }
             }
+        }
+
+        public Dictionary<string, int> GetLanguageCount()
+        {
+            var res = new Dictionary<string, int>();
+            foreach (var projectPair in m_projectInfo)
+            {
+                string lang = projectPair.Value.m_language;
+                if (!res.ContainsKey(lang))
+                {
+                    res[lang] = 0;
+                }
+                res[lang] += 1;
+            }
+            return res;
+        }
+
+        public string GetMainLanguage()
+        {
+            string mainLanguage = "";
+            int count = 0;
+            var langDict = GetLanguageCount();
+            foreach (var item in langDict)
+            {
+                if (item.Value > count)
+                {
+                    count = item.Value;
+                    mainLanguage = item.Key;
+                }
+            }
+            return mainLanguage;
         }
 
         void SetProjectParentSelected(Project project)
@@ -290,7 +322,23 @@ namespace CodeAtlasVSIX
                 }
 
                 Logger.WriteLine("Traversing Project:" + project.Name);
-
+                var codeModel = project.CodeModel;
+                if (codeModel != null)
+                {
+                    var projInfo = FindProjectInfo(project.UniqueName);
+                    if (codeModel.Language == CodeModelLanguageConstants.vsCMLanguageCSharp)
+                    {
+                        projInfo.m_language = "csharp";
+                    }
+                    else if (codeModel.Language == CodeModelLanguageConstants.vsCMLanguageVC)
+                    {
+                        projInfo.m_language = "cpp";
+                    }
+                    else
+                    {
+                        projInfo.m_language = "";
+                    }
+                }
                 //var configMgr = project.ConfigurationManager;
                 //var config = configMgr.ActiveConfiguration as Configuration;
 
@@ -325,7 +373,7 @@ namespace CodeAtlasVSIX
                         projectInc.Add(path);
                         Logger.WriteLine("include path:" + path);
                     }
-                    var projInfo = FindProjectInfo(project.Name);
+                    var projInfo = FindProjectInfo(project.UniqueName);
                     projInfo.m_includePath = projectInc;
 
                     // Parsing define

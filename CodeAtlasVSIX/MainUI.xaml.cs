@@ -530,7 +530,6 @@ namespace CodeAtlasVSIX
                 }
                 postFix = postFix.Replace(" ", "");
 
-
                 DBManager.Instance().CloseDB();
                 DoxygenDB.DoxygenDBConfig config = new DoxygenDB.DoxygenDBConfig();
                 config.m_configPath = solutionFolder + "/doxyfile" + postFix;
@@ -540,6 +539,7 @@ namespace CodeAtlasVSIX
                 config.m_includePaths = traverser.GetAllIncludePath();
                 config.m_defines = traverser.GetAllDefines();
                 config.m_useClang = useClang;
+                config.m_mainLanguage = traverser.GetMainLanguage();
 
                 DoxygenDB.DoxygenDB.GenerateDB(config);
                 DBManager.Instance().OpenDB(config.m_configPath);

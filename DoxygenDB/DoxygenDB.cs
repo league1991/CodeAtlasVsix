@@ -399,6 +399,7 @@ namespace DoxygenDB
         public List<string> m_includePaths = new List<string>();
         public List<string> m_defines = new List<string>();
         public bool m_useClang = false;
+        public string m_mainLanguage = "";
     }
 
     public class CodeBlock
@@ -624,10 +625,18 @@ namespace DoxygenDB
             metaDict["CLASS_DIAGRAMS"] = new List<string> { "NO" };
             metaDict["CLANG_ASSISTED_PARSING"] = new List<string> { config.m_useClang ? "YES" : "NO"};
             metaDict["INCLUDE_PATH"] = toPathList(config.m_includePaths); 
-            metaDict["BUILTIN_STL_SUPPORT"] = new List<string> { "YES" };
-            metaDict["CPP_CLI_SUPPORT"] = new List<string> { "YES" };
+            //metaDict["CPP_CLI_SUPPORT"] = new List<string> { "NO" };
             metaDict["ALLEXTERNALS"] = new List<string> { "YES" };
             metaDict["PREDEFINED"] = config.m_defines;
+
+            if (config.m_mainLanguage == "cpp")
+            {
+                metaDict["BUILTIN_STL_SUPPORT"] = new List<string> { "YES" };
+            }
+            else if(config.m_mainLanguage == "csharp")
+            {
+                metaDict["OPTIMIZE_OUTPUT_JAVA"] = new List<string> { "YES" };
+            }
             // metaDict["INPUT_ENCODING"] = new List<string> { "iso-8859-1" };
 
             _WriteDoxyfile(configPath, metaDict);
