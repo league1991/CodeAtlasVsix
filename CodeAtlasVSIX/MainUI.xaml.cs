@@ -500,11 +500,15 @@ namespace CodeAtlasVSIX
             return this.symbolWindow;
         }
 
-        void AnalyseSolution(bool useClang)
+        void AnalyseSolution(bool useClang, bool onlySelectedProjects = false)
         {
             try
             {
                 var traverser = new ProjectFileCollector();
+                if (onlySelectedProjects)
+                {
+                    traverser.SetToSelectedProjects();
+                }
                 traverser.Traverse();
                 var dirList = traverser.GetDirectoryList();
                 var solutionFolder = traverser.GetSolutionFolder();
@@ -514,12 +518,25 @@ namespace CodeAtlasVSIX
                     return;
                 }
 
+                // Use selected projects as postfix
+                string postFix = "";
+                if (onlySelectedProjects)
+                {
+                    var projectNameList = traverser.GetSelectedProjectName();
+                    foreach (string item in projectNameList)
+                    {
+                        postFix += "_" + item;
+                    }
+                }
+                postFix = postFix.Replace(" ", "");
+
+
                 DBManager.Instance().CloseDB();
                 DoxygenDB.DoxygenDBConfig config = new DoxygenDB.DoxygenDBConfig();
-                config.m_configPath = solutionFolder + "/doxyfile";
+                config.m_configPath = solutionFolder + "/doxyfile" + postFix;
                 config.m_inputFolders = dirList;
-                config.m_outputDirectory = solutionFolder + "/doxyData";
-                config.m_projectName = traverser.GetSolutionName();
+                config.m_outputDirectory = solutionFolder + "/doxyData" + postFix;
+                config.m_projectName = traverser.GetSolutionName() + postFix;
                 config.m_includePaths = traverser.GetAllIncludePath();
                 config.m_defines = traverser.GetAllDefines();
                 config.m_useClang = useClang;
@@ -542,6 +559,11 @@ namespace CodeAtlasVSIX
         void FastAnalyseSolutionButton_Click(object sender, RoutedEventArgs e)
         {
             AnalyseSolution(false);
+        }
+
+        private void FastAnalyseProjectsButton_Click(object sender, RoutedEventArgs e)
+        {
+            AnalyseSolution(false, true);
         }
     }
 }

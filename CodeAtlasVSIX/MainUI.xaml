@@ -18,11 +18,12 @@
 
     <Menu x:Name="menu" Height="20" DockPanel.Dock="Top" Style="{DynamicResource MenuStyle}">
         <MenuItem x:Name="OpenButton" Header="Open" Click="OpenButton_Click" />
-        <MenuItem x:Name="TestButton" Header="Test" Click="TestButton_Click" />
+        <!--<MenuItem x:Name="TestButton" Header="Test" Click="TestButton_Click" />-->
         <MenuItem x:Name="CloseButton" Header="Close" Click="CloseButton_Click" />
         <MenuItem x:Name="AnalyseButton" Header="Analyse" >
-            <MenuItem x:Name="AnalyseSolutionButton" Header="Analyse Solution" Click="AnalyseSolutionButton_Click" />
-            <MenuItem x:Name="FastAnalyseSolutionButton" Header="Fast Analyse Solution" Click="FastAnalyseSolutionButton_Click" />
+            <!--<MenuItem x:Name="AnalyseSolutionButton" Header="Analyse Solution" Click="AnalyseSolutionButton_Click" />-->
+            <MenuItem x:Name="FastAnalyseSolutionButton" Header="Analyse Solution" Click="FastAnalyseSolutionButton_Click" />
+            <MenuItem x:Name="FastAnalyseProjectsButton" Header="Analyse Selected Projects" Click="FastAnalyseProjectsButton_Click"/>
         </MenuItem>
     </Menu>
     <Grid Focusable="True">

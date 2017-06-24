@@ -126,6 +126,9 @@ namespace CodeAtlasVSIX
 
         string m_solutionName = "";
         string m_solutionPath = "";
+        bool m_onlySelectedProjects = false;
+        HashSet<string> m_selectedProjID = new HashSet<string>();
+        List<string> m_selectedProjName = new List<string>();
         List<string> m_fileList = new List<string>();
         HashSet<string> m_directoryList = new HashSet<string>();
         PathNode m_rootNode = new PathNode("root");
@@ -144,6 +147,49 @@ namespace CodeAtlasVSIX
 
         public ProjectFileCollector()
         {
+        }
+
+        public void SetToSelectedProjects()
+        {
+            m_onlySelectedProjects = true;
+            m_selectedProjID.Clear();
+            m_selectedProjName.Clear();
+
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            var activeProjects = dte.ActiveSolutionProjects as Array;
+            if (activeProjects != null)
+            {
+                foreach (var item in activeProjects)
+                {
+                    var project = item as Project;
+                    if (project != null)
+                    {
+                        m_selectedProjName.Add(project.Name);
+                        SetProjectParentSelected(project);
+                    }
+                }
+            }
+        }
+
+        void SetProjectParentSelected(Project project)
+        {
+            if (project == null)
+            {
+                return;
+            }
+            m_selectedProjID.Add(project.UniqueName);
+
+            var parentItem = project.ParentProjectItem as ProjectItem;
+            if (parentItem != null)
+            {
+                var containingProj = parentItem.ContainingProject;
+                SetProjectParentSelected(containingProj);
+            }
+        }
+
+        public List<string> GetSelectedProjectName()
+        {
+            return m_selectedProjName;
         }
 
         public List<string> GetDirectoryList()
@@ -210,7 +256,6 @@ namespace CodeAtlasVSIX
 
         protected override bool BeforeTraverseProject(Project project)
         {
-            Logger.WriteLine("projectname: " + project.Name);
             //var propertyIter = project.Properties.GetEnumerator();
             //while (propertyIter.MoveNext() && false)
             //{
@@ -234,8 +279,20 @@ namespace CodeAtlasVSIX
             //}
             try
             {
-                var configMgr = project.ConfigurationManager;
-                var config = configMgr.ActiveConfiguration as Configuration;
+                // Skip unselected projects
+                if (m_onlySelectedProjects)
+                {
+                    var projectID = project.UniqueName;
+                    if (!m_selectedProjID.Contains(projectID))
+                    {
+                        return false;
+                    }
+                }
+
+                Logger.WriteLine("Traversing Project:" + project.Name);
+
+                //var configMgr = project.ConfigurationManager;
+                //var config = configMgr.ActiveConfiguration as Configuration;
 
                 var vcProject = project.Object as VCProject;
                 if (vcProject != null)
