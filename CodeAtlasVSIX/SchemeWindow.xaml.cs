@@ -145,5 +145,10 @@ namespace CodeAtlasVSIX
         {
             OnDeleteScheme();
         }
+
+        private void filterEdit_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdateScheme();
+        }
     }
 }

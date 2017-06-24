@@ -44,7 +44,7 @@ namespace CodeAtlasVSIX
 
         private void textBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+            UpdateForbiddenSymbol();
         }
 
         private void OnUpdateComment(object sender, RoutedEventArgs e)
