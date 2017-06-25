@@ -188,10 +188,19 @@ namespace CodeAtlasVSIX
 
         public void OnShowDefinitionInAtlas(object sender, ExecutedRoutedEventArgs e)
         {
+            // Judge navigation mode
+            bool isSimpleNav = false;
+            var scene = UIManager.Instance().GetScene();
+            if (scene != null)
+            {
+                isSimpleNav = scene.IsSimpleNavigation();
+            }
+
             CodeElement srcElement, tarElement;
             Document srcDocument, tarDocument;
             int srcLine, tarLine;
-            CursorNavigator.GetCursorElement(out srcDocument, out srcElement, out srcLine);
+            var navigator = new CursorNavigator(isSimpleNav);
+            navigator.GetCursorElement(out srcDocument, out srcElement, out srcLine);
 
             Guid cmdGroup = VSConstants.GUID_VSStandardCommandSet97;
             var commandTarget = ((System.IServiceProvider)m_package).GetService(typeof(SUIHostCommandDispatcher)) as IOleCommandTarget;
@@ -204,7 +213,7 @@ namespace CodeAtlasVSIX
 
             }
 
-            CursorNavigator.GetCursorElement(out tarDocument, out tarElement, out tarLine);
+            navigator.GetCursorElement(out tarDocument, out tarElement, out tarLine);
             if (srcElement == null || tarElement == null || srcElement == tarElement)
             {
                 return;
@@ -219,7 +228,6 @@ namespace CodeAtlasVSIX
             var tarFile = tarDocument.FullName;
 
             var db = DBManager.Instance().GetDB();
-            var scene = UIManager.Instance().GetScene();
             List<DoxygenDB.Entity> srcEntities, tarEntities;
             DoxygenDB.Entity srcBestEntity, tarBestEntity;
             db.SearchAndFilter(srcName, srcType, srcFile, srcLine, out srcEntities, out srcBestEntity, true);

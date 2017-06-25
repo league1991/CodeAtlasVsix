@@ -63,7 +63,7 @@ namespace CodeAtlasVSIX
         public double m_itemMoveDistance = 0.0;
         public int m_selectTimeStamp = 0;
         public int m_schemeTimeStamp = 0;
-
+        public bool m_isSimpleNavigation = false;
 
         // LRU
         List<string> m_itemLruQueue = new List<string>();
@@ -230,6 +230,32 @@ namespace CodeAtlasVSIX
                 m_scheme[name] = schemeObj;
             }
             ReleaseLock();
+
+            JudgeNavigationMode();
+        }
+
+        void JudgeNavigationMode()
+        {
+            var counter = new ProjectCounter();
+            counter.Traverse();
+
+            int nProjs = counter.GetTotalProjects();
+            int nProjItems = counter.GetTotalProjectItems();
+
+            // Use simple navigation mode for big solution
+            if (nProjItems > 1000 || nProjs > 100)
+            {
+                m_isSimpleNavigation = true;
+            }
+            else
+            {
+                m_isSimpleNavigation = false;
+            }
+        }
+
+        public bool IsSimpleNavigation()
+        {
+            return m_isSimpleNavigation;
         }
 
         public void OnCloseDB()
@@ -569,7 +595,7 @@ namespace CodeAtlasVSIX
             }
 
             var item = itemList[0];
-            var navigator = new CursorNavigator();
+            var navigator = new CursorNavigator(m_isSimpleNavigation);
             navigator.Navigate(item);
         }
         #endregion

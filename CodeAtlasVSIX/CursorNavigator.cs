@@ -26,6 +26,8 @@ namespace CodeAtlasVSIX
         };
 
         DTE2 m_dte;
+        bool m_useCodeModel = true;
+
         static List<KindPair> s_typeMap =
             new List<KindPair>
         {
@@ -43,8 +45,9 @@ namespace CodeAtlasVSIX
             new KindPair(DoxygenDB.EntKind.VARIABLE, vsCMElement.vsCMElementVariable),
         };
 
-        public CursorNavigator()
+        public CursorNavigator(bool isSimpleNavigation)
         {
+            m_useCodeModel = !isSimpleNavigation;
             m_dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
         }
 
@@ -212,10 +215,25 @@ namespace CodeAtlasVSIX
             }
         }
 
+        FileCodeModel GetFileCodeModel(Document document)
+        {
+            if (m_useCodeModel == false)
+            {
+                return null;
+            }
+
+            var docItem = document.ProjectItem;
+            if (docItem == null)
+            {
+                return null;
+            }
+            var docModel = docItem.FileCodeModel;
+            return docModel;
+        }
+
         CodeElement GetCodeElement(CodeUIItem uiItem, Document document)
         {
-            var docItem = document.ProjectItem;
-            var docModel = docItem.FileCodeModel;
+            var docModel = GetFileCodeModel(document);
             if (docModel == null)
             {
                 return null;
@@ -281,7 +299,7 @@ namespace CodeAtlasVSIX
                             elementsList.Add(children);
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                     }
                 }
@@ -289,7 +307,7 @@ namespace CodeAtlasVSIX
             return null;
         }
 
-        public static void GetCursorElement(out Document document, out CodeElement element, out int line)
+        public void GetCursorElement(out Document document, out CodeElement element, out int line)
         {
             document = null;
             element = null;
@@ -303,7 +321,7 @@ namespace CodeAtlasVSIX
                 {
                     return;
                 }
-                var docModel = docItem.FileCodeModel;
+                var docModel = GetFileCodeModel(document);
                 if (docModel == null)
                 {
                     return;

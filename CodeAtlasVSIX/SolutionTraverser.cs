@@ -129,7 +129,7 @@ namespace CodeAtlasVSIX
         string m_solutionPath = "";
         bool m_onlySelectedProjects = false;
         HashSet<string> m_selectedProjID = new HashSet<string>();
-        List<string> m_selectedProjName = new List<string>();
+        SortedSet<string> m_selectedProjName = new SortedSet<string>();
         List<string> m_fileList = new List<string>();
         HashSet<string> m_directoryList = new HashSet<string>();
         PathNode m_rootNode = new PathNode("root");
@@ -221,7 +221,7 @@ namespace CodeAtlasVSIX
 
         public List<string> GetSelectedProjectName()
         {
-            return m_selectedProjName;
+            return m_selectedProjName.ToList();
         }
 
         public List<string> GetDirectoryList()
@@ -510,5 +510,45 @@ namespace CodeAtlasVSIX
             }
             return true;
         }
+    }
+
+
+    public class ProjectCounter : SolutionTraverser
+    {
+        class ProjectInfo
+        {
+        }
+
+        Dictionary<string, ProjectInfo> m_projectInfo = new Dictionary<string, ProjectInfo>();
+        int m_projectItems = 0;
+        int m_projects = 0;
+
+        public ProjectCounter()
+        {
+        }
+
+        protected override bool BeforeTraverseProject(Project project)
+        {
+            m_projects += 1;
+            return true;
+        }
+
+        protected override bool BeforeTraverseProjectItem(ProjectItem item)
+        {
+            m_projectItems += 1;
+            return true;
+        }
+
+        public int GetTotalProjectItems()
+        {
+            return m_projectItems;
+        }
+
+        public int GetTotalProjects()
+        {
+            return m_projects;
+        }
+
+
     }
 }
