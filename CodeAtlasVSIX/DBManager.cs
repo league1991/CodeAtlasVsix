@@ -27,7 +27,7 @@ namespace CodeAtlasVSIX
             int nProjItems = counter.GetTotalProjectItems();
 
             // Use simple navigation mode for big solution
-            if (nProjItems > 1000 || nProjs > 100)
+            if (nProjItems > 5000 || nProjs > 100)
             {
                 m_isBigSolution = true;
             }
