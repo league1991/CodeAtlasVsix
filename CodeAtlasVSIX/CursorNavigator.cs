@@ -47,7 +47,7 @@ namespace CodeAtlasVSIX
 
         public CursorNavigator()
         {
-            m_useCodeModel = DBManager.Instance().IsBigSolution();
+            m_useCodeModel = !DBManager.Instance().IsBigSolution();
             m_dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
         }
 
