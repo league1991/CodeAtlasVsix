@@ -188,18 +188,12 @@ namespace CodeAtlasVSIX
 
         public void OnShowDefinitionInAtlas(object sender, ExecutedRoutedEventArgs e)
         {
-            // Judge navigation mode
-            bool isSimpleNav = false;
             var scene = UIManager.Instance().GetScene();
-            if (scene != null)
-            {
-                isSimpleNav = scene.IsSimpleNavigation();
-            }
 
             CodeElement srcElement, tarElement;
             Document srcDocument, tarDocument;
             int srcLine, tarLine;
-            var navigator = new CursorNavigator(isSimpleNav);
+            var navigator = new CursorNavigator();
             navigator.GetCursorElement(out srcDocument, out srcElement, out srcLine);
 
             Guid cmdGroup = VSConstants.GUID_VSStandardCommandSet97;

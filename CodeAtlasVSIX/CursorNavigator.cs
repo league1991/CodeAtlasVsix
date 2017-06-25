@@ -45,9 +45,9 @@ namespace CodeAtlasVSIX
             new KindPair(DoxygenDB.EntKind.VARIABLE, vsCMElement.vsCMElementVariable),
         };
 
-        public CursorNavigator(bool isSimpleNavigation)
+        public CursorNavigator()
         {
-            m_useCodeModel = !isSimpleNavigation;
+            m_useCodeModel = DBManager.Instance().IsBigSolution();
             m_dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
         }
 

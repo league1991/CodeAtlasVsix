@@ -39,6 +39,5 @@ namespace CodeAtlasVSIX
         {
             return scene;
         }
-        
     }
 }

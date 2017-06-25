@@ -15,7 +15,28 @@ namespace CodeAtlasVSIX
         //static int s_sublimePort = 12345;
 
         DoxygenDB.DoxygenDB m_db;
-        
+        bool m_isBigSolution = false;
+
+        void FindSolutionScale()
+        {
+            m_isBigSolution = false;
+            var counter = new ProjectCounter();
+            counter.Traverse();
+
+            int nProjs = counter.GetTotalProjects();
+            int nProjItems = counter.GetTotalProjectItems();
+
+            // Use simple navigation mode for big solution
+            if (nProjItems > 1000 || nProjs > 100)
+            {
+                m_isBigSolution = true;
+            }
+            else
+            {
+                m_isBigSolution = false;
+            }
+        }
+
         DBManager()
         {
             m_db = new DoxygenDB.DoxygenDB();
@@ -38,10 +59,17 @@ namespace CodeAtlasVSIX
                 return;
             }
 
+            FindSolutionScale();
+
             m_db = new DoxygenDB.DoxygenDB();
-            m_db.Open(path);
+            m_db.Open(path, m_isBigSolution);
 
             _OnOpen();
+        }
+
+        public bool IsBigSolution()
+        {
+            return m_isBigSolution;
         }
 
         public void CloseDB()

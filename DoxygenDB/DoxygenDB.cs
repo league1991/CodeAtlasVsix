@@ -229,12 +229,19 @@ namespace DoxygenDB
                 s_xmlLRUList.RemoveLast();
             }
 
-            var rawContent = File.ReadAllText(m_filePath, Encoding.UTF8);
-            var content = new string(rawContent.Where(c => !char.IsControl(c)).ToArray());
-            var bytes = Encoding.UTF8.GetBytes(content);
-            var doc = new XPathDocument(new MemoryStream(bytes));
-            m_doc = doc;
-            m_navigator = doc.CreateNavigator();
+            try
+            {
+                var rawContent = File.ReadAllText(m_filePath, Encoding.UTF8);
+                var content = new string(rawContent.Where(c => !char.IsControl(c)).ToArray());
+                var bytes = Encoding.UTF8.GetBytes(content);
+                var doc = new XPathDocument(new MemoryStream(bytes));
+                m_doc = doc;
+                m_navigator = doc.CreateNavigator();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Load xml failed!");
+            }
             
             // update lru
             if (s_lruDict.ContainsKey(m_filePath))
@@ -456,6 +463,8 @@ namespace DoxygenDB
         static Regex s_identifierReg = new Regex(@"[a-zA-Z_][a-zA-Z0-9_]*", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
         // xml management
         Dictionary<string, XmlDocItem> m_xmlCache = new Dictionary<string, XmlDocItem>();
+
+        bool m_resolveReferencePosition = false;
 
         public DoxygenDB() { }
 
@@ -708,8 +717,11 @@ namespace DoxygenDB
             nameToRowDict = new Dictionary<string, List<int>>();
 
             // temporary disable following code
-            return;
-            /*
+            if (!m_resolveReferencePosition)
+            {
+                return;
+            }
+            
             if (fileId == "")
             {
                 return;
@@ -815,7 +827,7 @@ namespace DoxygenDB
 
             
             m_blockRefDict[block] = new BlockRefData(idToRowDict, nameToRowDict);
-            return;*/
+            return;
         }
 
         void _AddToNameIDDict(string name, string id)
@@ -1354,7 +1366,7 @@ namespace DoxygenDB
             }
         }
 
-        public void Open(string fullPath)
+        public void Open(string fullPath, bool resolveRefPosition)
         {
             if (m_dbFolder != "")
             {
