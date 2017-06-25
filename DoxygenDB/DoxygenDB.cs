@@ -1372,6 +1372,7 @@ namespace DoxygenDB
             {
                 Close();
             }
+            m_resolveReferencePosition = resolveRefPosition;
 
             m_doxyFileFolder = System.IO.Path.GetDirectoryName(fullPath);
             m_doxyFileFolder = m_doxyFileFolder.Replace('\\', '/');
