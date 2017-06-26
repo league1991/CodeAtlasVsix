@@ -266,7 +266,7 @@ namespace CodeAtlasVSIX
             }
 
             var nodeItem = item as CodeUIItem;
-            if (nodeItem == null)// || !nodeItem.IsFunction())
+            if (nodeItem == null || !nodeItem.IsFunction())
             {
                 return;
             }
