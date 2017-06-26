@@ -427,6 +427,7 @@ namespace CodeAtlasVSIX
             {
                 return false;
             }
+            m_selectTimeStamp += 1;
             m_itemDict[uniqueName].IsSelected = true;
             return true;
         }
@@ -439,11 +440,13 @@ namespace CodeAtlasVSIX
             if (node != null)
             {
                 Logger.WriteLine("Select Node:" + node.GetUniqueName());
+                m_selectTimeStamp += 1;
                 node.IsSelected = true;
                 return true;
             }
             else if (edge != null)
             {
+                m_selectTimeStamp += 1;
                 edge.IsSelected = true;
                 return true;
             }
@@ -453,6 +456,7 @@ namespace CodeAtlasVSIX
         public bool SelectOneEdge(CodeUIEdgeItem edge)
         {
             ClearSelection();
+            m_selectTimeStamp += 1;
             edge.IsSelected = true;
             return true;
         }
@@ -490,7 +494,6 @@ namespace CodeAtlasVSIX
             }
 
             var itemList = SelectedItems();
-            m_selectTimeStamp += 1;
 
             foreach (var item in itemList)
             {
@@ -843,14 +846,25 @@ namespace CodeAtlasVSIX
                     // Find latest edge to jump to
                     CodeUIEdgeItem bestEdge = null;
                     int bestTimeStamp = 0;
+                    CodeUIEdgeItem bestTimeStampEdge = null;
                     foreach (var item in m_edgeDict)
                     {
-                        if (item.Key.Item1 == centerItem.GetUniqueName() &&
-                            item.Value.m_orderData != null && item.Value.m_selectTimeStamp > bestTimeStamp)
+                        if (item.Key.Item1 == centerItem.GetUniqueName())
                         {
-                            bestEdge = item.Value;
-                            bestTimeStamp = item.Value.m_selectTimeStamp;
+                            if(item.Value.m_selectTimeStamp > bestTimeStamp)
+                            {
+                                bestTimeStampEdge = item.Value;
+                                bestTimeStamp = item.Value.m_selectTimeStamp;
+                            }
+                            if (item.Value.m_orderData != null && item.Value.m_orderData.m_order == 1)
+                            {
+                                bestEdge = item.Value;
+                            }
                         }
+                    }
+                    if (bestTimeStamp >= m_selectTimeStamp - 1 && bestTimeStampEdge != null)
+                    {
+                        return bestTimeStampEdge;
                     }
                     if (bestEdge != null)
                     {
