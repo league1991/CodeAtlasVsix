@@ -567,5 +567,18 @@ namespace CodeAtlasVSIX
         {
             AnalyseSolution(false, true);
         }
+
+        private void dynamicNavigationButton_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void staticNavigationButton_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        public bool IsDynamicNavigation()
+        {
+            return dynamicNavigationButton.IsChecked == true;
+        }
     }
 }
