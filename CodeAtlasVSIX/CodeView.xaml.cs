@@ -29,28 +29,12 @@ namespace CodeAtlasVSIX
 
         private void testButton_Click(object sender, RoutedEventArgs e)
         {
-            Dictionary<string, object> data = new Dictionary<string, object>() { { "1", "a" }, { "2", 1 }, { "3", new Dictionary<string, object> { { "1",2} } } };
-            JavaScriptSerializer js = new JavaScriptSerializer();
-            string jsonData = js.Serialize(data);
-            Logger.WriteLine(jsonData);
-
-            var jarr = js.Deserialize<Dictionary<string, object>>(jsonData);
-
             //UIManager.Instance().GetScene().OnCloseDB();
             UIManager.Instance().GetScene().OnOpenDB();
         }
 
         private void canvas_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
-            //var element = this.canvas as UIElement;
-            //var position = e.GetPosition(element);
-            //var transform = element.RenderTransform as MatrixTransform;
-            //var matrix = transform.Matrix;
-            //var scale = e.Delta >= 0 ? 1.1 : (1.0 / 1.1); // choose appropriate scaling factor
-
-            //matrix.ScaleAtPrepend(scale, scale, position.X, position.Y);
-            //transform.Matrix = matrix;
-
             var element = this.canvas as UIElement;
             var position = e.GetPosition(element);
             var scale = e.Delta >= 0 ? 1.1 : (1.0 / 1.1); // choose appropriate scaling factor
@@ -130,6 +114,11 @@ namespace CodeAtlasVSIX
         {
             base.OnRender(dc);
         }
-        
+
+        private void background_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            InvalidateLegend();
+            InvalidateScheme();
+        }
     }
 }
