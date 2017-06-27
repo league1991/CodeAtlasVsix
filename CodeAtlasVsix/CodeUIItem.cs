@@ -475,16 +475,20 @@ namespace CodeAtlasVSIX
             get { return m_isSelected; }
             set
             {
+                var oldValue = m_isSelected;
                 m_isSelected = value;
-                if(m_isSelected)
+                if (oldValue != value)
                 {
-                    this.Stroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
+                    if (m_isSelected)
+                    {
+                        this.Stroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
+                    }
+                    else
+                    {
+                        this.Stroke = Brushes.Transparent;
+                    }
+                    UIManager.Instance().GetScene().OnSelectItems();
                 }
-                else
-                {
-                    this.Stroke = Brushes.Transparent;
-                }
-                UIManager.Instance().GetScene().OnSelectItems();
             }
         }
 
@@ -666,8 +670,9 @@ namespace CodeAtlasVSIX
 
         void MouseClickCallback(object sender, MouseEventArgs args)
         {
-            UIManager.Instance().GetScene().ClearSelection();
-            IsSelected = true;
+            var scene = UIManager.Instance().GetScene();
+            scene.ClearSelection();
+            scene.SelectCodeItem(this.m_uniqueName);
             dragStart = args.GetPosition(this);
             CaptureMouse();
             if (args.RightButton == MouseButtonState.Pressed)
@@ -678,7 +683,9 @@ namespace CodeAtlasVSIX
 
         void MouseDoubleClickCallback(object sender, MouseEventArgs args)
         {
-            IsSelected = true;
+            var scene = UIManager.Instance().GetScene();
+            scene.ClearSelection();
+            scene.SelectCodeItem(this.m_uniqueName);
             UIManager.Instance().GetScene().ShowInEditor();
         }
 

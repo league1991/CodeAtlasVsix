@@ -235,9 +235,13 @@ namespace CodeAtlasVSIX
             get { return m_isSelected; }
             set
             {
+                var oldValue = m_isSelected;
                 m_isSelected = value;
-                UpdateStroke();
-                UIManager.Instance().GetScene().OnSelectItems();
+                if (oldValue != value)
+                {
+                    UpdateStroke();
+                    UIManager.Instance().GetScene().OnSelectItems();
+                }
             }
         }
 
@@ -299,15 +303,15 @@ namespace CodeAtlasVSIX
 
         void MouseClickCallback(object sender, MouseEventArgs args)
         {
-            UIManager.Instance().GetScene().ClearSelection();
-            IsSelected = true;
+            var scene = UIManager.Instance().GetScene();
+            scene.SelectOneEdge(this);
         }
 
         void MouseDoubleClickCallback(object sender, MouseEventArgs args)
         {
-            UIManager.Instance().GetScene().ClearSelection();
-            IsSelected = true;
-            UIManager.Instance().GetScene().ShowInEditor();
+            var scene = UIManager.Instance().GetScene();
+            scene.SelectOneEdge(this);
+            scene.ShowInEditor();
         }
 
         void MouseMoveCallback(object sender, MouseEventArgs args)
