@@ -158,27 +158,26 @@ namespace CodeAtlasVSIX
                             var funcStart = codeElement.GetStartPoint(vsCMPart.vsCMPartBody);
                             var funcEnd = codeElement.GetEndPoint(vsCMPart.vsCMPartBody);
                             var funcEditPnt = funcStart.CreateEditPoint();
-                            string funcText = funcEditPnt.GetText(funcEnd);
+                            string funcText = funcEditPnt.GetText(funcEnd).Replace("\r\n", "\n");
                             srcItem.m_bodyCode = funcText;
-                            
-                            string indentifierPattern = string.Format(@"\b{0}\b", tarItem.GetName());
 
                             try
                             {
-                                var nameList = Regex.Matches(funcText, indentifierPattern, RegexOptions.ExplicitCapture);
-
-                                foreach (Match nextMatch in nameList)
+                                int offset = -1;
+                                if (tarItem.IsFunction())
                                 {
-                                    var tokenValue = nextMatch.Value;
-                                    var tokenIndex = nextMatch.Index;
-                                    var prevText = funcText.Substring(0, nextMatch.Index);
-                                    var nReturnChar = prevText.Length - prevText.Replace("\r\n", "\n").Length;
-                                    var absOffset = funcStart.AbsoluteCharOffset + tokenIndex - nReturnChar;
-
+                                    offset = FindOffset(funcText, string.Format(@"\b{0}\(", tarItem.GetName()));
+                                }
+                                if (offset == -1)
+                                {
+                                    offset = FindOffset(funcText, string.Format(@"\b{0}\b", tarItem.GetName()));
+                                }
+                                if (offset != -1)
+                                {
+                                    var absOffset = funcStart.AbsoluteCharOffset + offset;
                                     TextSelection ts = document.Selection as TextSelection;
                                     ts.MoveToAbsoluteOffset(absOffset);
                                     res = true;
-                                    break;
                                 }
                             }
                             catch (Exception)
@@ -214,6 +213,18 @@ namespace CodeAtlasVSIX
                     }
                 }
             }
+        }
+
+        int FindOffset(string funcText, string pattern)
+        {
+            int offset = -1;
+
+            var match = Regex.Match(funcText, pattern, RegexOptions.ExplicitCapture);
+            if (match.Success)
+            {
+                return match.Index;
+            }
+            return offset;
         }
 
         FileCodeModel GetFileCodeModel(Document document)
