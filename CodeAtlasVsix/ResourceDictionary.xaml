@@ -29,7 +29,7 @@
         <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.FileTabBorderKey}}"/>
     </Style>
 
-    <!--<Style TargetType="CheckBox">
+    <!--<Style TargetType="RadioButton">
         <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundKey}}"/>
         <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
     </Style>-->
