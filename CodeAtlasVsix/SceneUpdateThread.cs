@@ -57,26 +57,26 @@ namespace CodeAtlasVSIX
         void Run()
         {
             var scene = UIManager.Instance().GetScene();
-            while(true)
+            while (true)
             {
                 if (m_abort)
                 {
                     break;
                 }
-                if(m_isActive)
+                if (m_isActive)
                 {
                     scene.AcquireLock();
 
                     //m_timeStamp = DateTime.Now;
                     //Console.WriteLine("-------------------------------------");
                     var itemDict = scene.GetItemDict();
-                    if(scene.m_isLayoutDirty)
+                    if (scene.m_isLayoutDirty)
                     {
                         UpdateLayeredLayoutWithComp();
 
                         // update internal dict
                         m_itemSet.Clear();
-                        foreach(var item in itemDict)
+                        foreach (var item in itemDict)
                         {
                             m_itemSet.Add(item.Key, new ItemData());
                         }
@@ -89,7 +89,7 @@ namespace CodeAtlasVSIX
 
                     UpdateCallOrder();
                     UpdateTimeStamp("Call Order");
-                    
+
                     if (m_selectTimeStamp != scene.m_selectTimeStamp || m_schemeTimeStamp != scene.m_schemeTimeStamp)
                     {
                         scene.UpdateCurrentValidScheme();
@@ -131,11 +131,11 @@ namespace CodeAtlasVSIX
 
             var itemDict = scene.GetItemDict();
             var edgeDict = scene.GetEdgeDict();
-            foreach(var item in itemDict)
+            foreach (var item in itemDict)
             {
                 var node = graph.AddNode(item.Key);
             }
-            foreach(var edge in edgeDict)
+            foreach (var edge in edgeDict)
             {
                 var key = edge.Key;
                 graph.AddEdge(key.Item1, key.Item2);
@@ -171,7 +171,7 @@ namespace CodeAtlasVSIX
                 sceneNode.SetTargetPos(new Point(pos.X, nodeBegin + radius));
             }
         }
-        
+
         void UpdateLegend()
         {
             var scene = UIManager.Instance().GetScene();
@@ -186,7 +186,7 @@ namespace CodeAtlasVSIX
         {
             var scene = UIManager.Instance().GetScene();
             scene.MoveItems();
-            if(scene.View != null)
+            if (scene.View != null)
             {
                 Point centerPnt;
                 bool res = scene.GetSelectedCenter(out centerPnt);
@@ -325,44 +325,43 @@ namespace CodeAtlasVSIX
             }
 
             bool isSorted = false;
-            try
+            string bodyCode = nodeItem.m_bodyCode;
+            if (bodyCode != null && bodyCode != "")
             {
-                string bodyCode = nodeItem.m_bodyCode;
-                if (bodyCode != null)
+                var nodeDict = scene.GetItemDict();
+                var edgePosList = new List<Tuple<CodeUIEdgeItem, int>>();
+                foreach (var edge in edgeList)
                 {
-                    var nodeDict = scene.GetItemDict();
-                    var edgePosList = new List<Tuple<CodeUIEdgeItem, int>>();
-                    foreach (var edge in edgeList)
+                    var tarItem = nodeDict[edge.m_tarUniqueName];
+                    string indentifierPattern = string.Format(@"\b{0}\b", tarItem.GetName());
+
+                    try
                     {
-                        var tarItem = nodeDict[edge.m_tarUniqueName];
-                        string indentifierPattern = string.Format(@"\b{0}\b", tarItem.GetName());
+                        var match = Regex.Match(bodyCode, indentifierPattern, RegexOptions.ExplicitCapture);
 
-                        var nameList = Regex.Matches(bodyCode, indentifierPattern, RegexOptions.ExplicitCapture);
-
-                        if (nameList.Count == 0)
+                        if (match.Success)
+                        {
+                            edgePosList.Add(new Tuple<CodeUIEdgeItem, int>(edge, match.Index));
+                        }
+                        else
                         {
                             edgePosList.Add(new Tuple<CodeUIEdgeItem, int>(edge, -1));
                         }
-                        foreach (Match nextMatch in nameList)
-                        {
-                            edgePosList.Add(new Tuple<CodeUIEdgeItem, int>(edge, nextMatch.Index));
-                            break;
-                        }
                     }
-                    edgePosList.Sort((x, y) => x.Item2.CompareTo(y.Item2));
-                    edgeList.Clear();
-                    foreach (var edgePair in edgePosList)
+                    catch (Exception)
                     {
-                        edgeList.Add(edgePair.Item1);
                     }
-                    isSorted = true;
                 }
+                edgePosList.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+                edgeList.Clear();
+                foreach (var edgePair in edgePosList)
+                {
+                    edgeList.Add(edgePair.Item1);
+                }
+                isSorted = true;
             }
-            catch (Exception)
-            {
-            }
-            
-            if(!isSorted)
+
+            if (!isSorted)
             {
                 edgeList.Sort((x, y) => x.ComparePos(y));
             }
@@ -383,7 +382,7 @@ namespace CodeAtlasVSIX
                     x = basePos + padding;
                 }
                 y = edge.FindCurveYPos(x);
-                edge.m_orderData = new OrderData(i + 1, new Point(x,y));
+                edge.m_orderData = new OrderData(i + 1, new Point(x, y));
             }
         }
     }
