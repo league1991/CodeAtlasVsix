@@ -80,6 +80,7 @@ namespace CodeAtlasVSIX
                 {
                     try
                     {
+                        UpdateBodyCode(codeItem, codeElement);
                         var startPnt = codeElement.StartPoint;
                         if (CheckAndMoveTo(startPnt, document))
                         {
@@ -115,6 +116,20 @@ namespace CodeAtlasVSIX
                 }
             }
             return false;
+        }
+
+        string UpdateBodyCode(CodeUIItem item, CodeElement codeElement)
+        {
+            if (codeElement == null || item == null || !item.IsFunction())
+            {
+                return "";
+            }
+            var funcStart = codeElement.GetStartPoint(vsCMPart.vsCMPartBody);
+            var funcEnd = codeElement.GetEndPoint(vsCMPart.vsCMPartBody);
+            var funcEditPnt = funcStart.CreateEditPoint();
+            string funcText = funcEditPnt.GetText(funcEnd).Replace("\r\n", "\n");
+            item.m_bodyCode = funcText;
+            return funcText;
         }
 
         public void Navigate(object item)
@@ -156,10 +171,7 @@ namespace CodeAtlasVSIX
                         if (codeElement != null)
                         {
                             var funcStart = codeElement.GetStartPoint(vsCMPart.vsCMPartBody);
-                            var funcEnd = codeElement.GetEndPoint(vsCMPart.vsCMPartBody);
-                            var funcEditPnt = funcStart.CreateEditPoint();
-                            string funcText = funcEditPnt.GetText(funcEnd).Replace("\r\n", "\n");
-                            srcItem.m_bodyCode = funcText;
+                            var funcText = UpdateBodyCode(srcItem, codeElement);
 
                             try
                             {

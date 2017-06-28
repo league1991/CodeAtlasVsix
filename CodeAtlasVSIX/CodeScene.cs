@@ -851,12 +851,13 @@ namespace CodeAtlasVSIX
                     {
                         if (item.Key.Item1 == centerItem.GetUniqueName())
                         {
-                            if(item.Value.m_selectTimeStamp > bestTimeStamp)
+                            var edge = item.Value;
+                            if(edge.m_selectTimeStamp > bestTimeStamp)
                             {
-                                bestTimeStampEdge = item.Value;
-                                bestTimeStamp = item.Value.m_selectTimeStamp;
+                                bestTimeStampEdge = edge;
+                                bestTimeStamp = edge.m_selectTimeStamp;
                             }
-                            if (item.Value.m_orderData != null && item.Value.m_orderData.m_order == 1)
+                            if (edge.m_orderData != null && edge.m_orderData.m_order == 1)
                             {
                                 bestEdge = item.Value;
                             }
