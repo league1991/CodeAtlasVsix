@@ -34,6 +34,7 @@ namespace CodeAtlasVSIX
         PathGeometry m_geometry = new PathGeometry();
         bool m_isDirty = false;
         bool m_isSelected = false;
+        bool m_isMouseHover = false;
         DateTime m_mouseDownTime = new DateTime();
         public OrderData m_orderData = null;
         public bool m_isConnectedToFocusNode = false;
@@ -249,20 +250,23 @@ namespace CodeAtlasVSIX
         {
             this.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
-                if (m_isSelected)
+                if (m_isSelected || m_isMouseHover)
                 {
                     StrokeThickness = 5.5;
                     this.Stroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
+                    Canvas.SetZIndex(this, -1);
                 }
                 else if (m_isCandidate)
                 {
-                    StrokeThickness = 5.5;
-                    this.Stroke = new SolidColorBrush(Color.FromArgb(90, 255, 157, 38));
+                    StrokeThickness = 4.0;
+                    this.Stroke = new SolidColorBrush(Color.FromArgb(255, 169, 111, 42));
+                    Canvas.SetZIndex(this, -2);
                 }
                 else
                 {
                     StrokeThickness = 2.0;
                     this.Stroke = new SolidColorBrush(Color.FromArgb(100, 150,150,150));
+                    Canvas.SetZIndex(this, -2);
                 }
             });
         }
@@ -324,18 +328,22 @@ namespace CodeAtlasVSIX
 
         void MouseEnterCallback(object sender, MouseEventArgs e)
         {
-            if(!IsSelected)
-            {
-                StrokeThickness = 2.0;
-            }
+            m_isMouseHover = true;
+            UpdateStroke();
+            //if (!IsSelected)
+            //{
+            //    //StrokeThickness = 2.0;
+            //}
         }
 
         void MouseLeaveCallback(object sender, MouseEventArgs e)
         {
-            if (!IsSelected)
-            {
-                StrokeThickness = 1.0;
-            }
+            m_isMouseHover = false;
+            UpdateStroke();
+            //if (!IsSelected)
+            //{
+            //    //StrokeThickness = 1.0;
+            //}
         }
 
         void BuildGeometry()
@@ -400,9 +408,12 @@ namespace CodeAtlasVSIX
                                                         CultureInfo.CurrentUICulture,
                                                         FlowDirection.LeftToRight,
                                                         new Typeface("tahoma"),
-                                                        8.0,
-                                                        Brushes.White);
-                drawingContext.DrawText(formattedText, (m_orderData.m_point));
+                                                        10.0,
+                                                        Brushes.Black);
+                var pos = new Point(m_orderData.m_point.X - formattedText.Width*0.5, m_orderData.m_point.Y - formattedText.Height * 0.5);
+                
+                drawingContext.DrawEllipse(this.Stroke, new Pen(), m_orderData.m_point, 6.0, 6.0);
+                drawingContext.DrawText(formattedText, pos);
             }
             scene.ReleaseLock();
         }
