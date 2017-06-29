@@ -258,7 +258,7 @@ namespace CodeAtlasVSIX
                 }
                 else if (m_isCandidate)
                 {
-                    StrokeThickness = 4.0;
+                    StrokeThickness = 5.5;
                     this.Stroke = new SolidColorBrush(Color.FromArgb(255, 169, 111, 42));
                     Canvas.SetZIndex(this, -2);
                 }
