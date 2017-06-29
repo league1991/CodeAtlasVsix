@@ -177,13 +177,31 @@ namespace CodeAtlasVSIX
             if (token != null)
             {
                 string docPath = doc.FullName;
-                searchWindow.nameEdit.Text = token;
-                searchWindow.typeEdit.Text = "";
-                searchWindow.fileEdit.Text = docPath;
-                searchWindow.lineEdit.Text = lineNum.ToString();
-                searchWindow.OnSearch();
-                searchWindow.OnAddToScene();
+                SearchAndAddToScene(token, "", docPath, lineNum);
             }
+            else
+            {
+                var navigator = new CursorNavigator();
+                Document cursorDoc;
+                CodeElement element;
+                int line;
+                navigator.GetCursorElement(out cursorDoc, out element, out line);
+                if (element != null && cursorDoc != null)
+                {
+                    var kind = VSElementTypeToString(element);
+                    SearchAndAddToScene(element.Name, kind, cursorDoc.FullName, lineNum);
+                }
+            }
+        }
+
+        void SearchAndAddToScene(string name, string type, string docPath, int lineNum)
+        {
+            searchWindow.nameEdit.Text = name;
+            searchWindow.typeEdit.Text = type;
+            searchWindow.fileEdit.Text = docPath;
+            searchWindow.lineEdit.Text = lineNum.ToString();
+            searchWindow.OnSearch();
+            searchWindow.OnAddToScene();
         }
 
         public void OnShowDefinitionInAtlas(object sender, ExecutedRoutedEventArgs e)

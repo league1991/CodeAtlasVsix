@@ -28,8 +28,8 @@ namespace CodeAtlasVSIX
         public CodeNotifierFormat()
         {
             this.DisplayName = "CodeNotifier"; // Human readable version of the name
-            this.BackgroundColor = Colors.BlueViolet;
-            this.TextDecorations = System.Windows.TextDecorations.Underline;
+            //this.BackgroundColor = Colors.BlueViolet;
+            //this.TextDecorations = System.Windows.TextDecorations.Underline;
         }
     }
 }

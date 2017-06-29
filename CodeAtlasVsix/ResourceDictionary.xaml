@@ -100,7 +100,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <ContentPresenter Margin="6,2,6,2" ContentSource="Header" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            <ContentPresenter Margin="6,1,6,1" ContentSource="Header" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                             <Popup x:Name="pop" Margin="0" IsOpen="{TemplateBinding IsSubmenuOpen}" AllowsTransparency="True" Placement="Bottom">
                                 <Border Margin="0" CornerRadius="0" BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.ActiveBorderKey}}" BorderThickness="1">
                                     <StackPanel IsItemsHost="True">
