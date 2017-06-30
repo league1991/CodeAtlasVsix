@@ -563,10 +563,11 @@ namespace CodeAtlasVSIX
 
                 DoxygenDB.DoxygenDB.GenerateDB(config);
                 DBManager.Instance().OpenDB(config.m_configPath);
+                UpdateUI();
             }
             catch (Exception)
             {
-                Logger.WriteLine("Analyse failed.");
+                Logger.WriteLine("Analyse failed. Please try again.");
                 DBManager.Instance().CloseDB();
             }
         }

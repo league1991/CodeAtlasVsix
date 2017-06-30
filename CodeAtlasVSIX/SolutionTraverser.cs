@@ -59,14 +59,17 @@ namespace CodeAtlasVSIX
             if(BeforeTraverseProject(project))
             {
                 ProjectItems projectItems = project.ProjectItems;
-                //var codeModel = project.CodeModel;
-                //var codeLanguage = codeModel.Language;
-
-                var items = projectItems.GetEnumerator();
-                while (items.MoveNext())
+                if (projectItems != null)
                 {
-                    var item = items.Current as ProjectItem;
-                    TraverseProjectItem(item);
+                    //var codeModel = project.CodeModel;
+                    //var codeLanguage = codeModel.Language;
+
+                    var items = projectItems.GetEnumerator();
+                    while (items.MoveNext())
+                    {
+                        var item = items.Current as ProjectItem;
+                        TraverseProjectItem(item);
+                    }
                 }
                 AfterTraverseProject(project);
             }

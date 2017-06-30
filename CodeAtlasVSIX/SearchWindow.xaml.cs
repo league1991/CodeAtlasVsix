@@ -69,7 +69,7 @@ namespace CodeAtlasVSIX
             for (int i = 0; i < bestEntList.Count; i++)
             {
                 var ent = bestEntList[i];
-                var resItem = new ResultItem(ent.Name(), ent.UniqueName());
+                var resItem = new ResultItem(ent.Longname(), ent.UniqueName());
                 if (bestEntList.Count > 0 && ent == bestEntList[0])
                 {
                     bestItem = resItem;

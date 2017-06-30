@@ -49,7 +49,6 @@ namespace CodeAtlasVSIX
         public int m_selectCounter = 0;
         public double m_selectTimeStamp = 0;
         Point m_position = new Point();
-        static FontFamily s_titleFont = new FontFamily("tahoma");
         Size m_fontSize = new Size();
         Size m_commentSize = new Size();
         double m_lineHeight = 0.0;
@@ -302,7 +301,7 @@ namespace CodeAtlasVSIX
             var formattedText = new FormattedText(m_displayName,
                                                     CultureInfo.CurrentUICulture,
                                                     FlowDirection.LeftToRight,
-                                                    new Typeface("tahoma"),
+                                                    new Typeface("Arial"),
                                                     12.0,
                                                     Brushes.White);
             m_fontSize = new Size(formattedText.Width, formattedText.Height);
