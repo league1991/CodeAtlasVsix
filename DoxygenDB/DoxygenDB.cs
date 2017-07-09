@@ -1478,6 +1478,12 @@ namespace DoxygenDB
             {
                 return;
             }
+            if (ents.Count == 1)
+            {
+                bestEntity = ents[0];
+                candidateList.Add(bestEntity);
+                return;
+            }
 
             // Filter name
             foreach (var entity in ents)
