@@ -149,6 +149,9 @@ namespace CodeAtlasVSIX
             }
 
             // code item
+            var t0 = DateTime.Now;
+            var t1 = t0;
+            Logger.WriteLine("----------------- open ------------------------");
             var codeItemList = sceneData["codeItem"] as ArrayList;
             foreach (var item in codeItemList)
             {
@@ -160,6 +163,9 @@ namespace CodeAtlasVSIX
                 }
                 AddCodeItem(item as string);
             }
+            t1 = DateTime.Now;
+            Logger.WriteLine("--------------AddCodeItem " + (t1 - t0).TotalMilliseconds.ToString());
+            t0 = t1;
 
             // edge data
             var edgeData = sceneData["edgeData"] as ArrayList;
@@ -170,6 +176,9 @@ namespace CodeAtlasVSIX
                 var edgeDataDict = dataList[2] as DataDict;
                 m_edgeDataDict[edgeKey] = edgeDataDict;
             }
+            t1 = DateTime.Now;
+            Logger.WriteLine("--------------Edgedata " + (t1 - t0).TotalMilliseconds.ToString());
+            t0 = t1;
 
             // edge item
             var edgeItemList = sceneData["edgeItem"] as ArrayList;
@@ -202,6 +211,9 @@ namespace CodeAtlasVSIX
                     }
                 }
             }
+            t1 = DateTime.Now;
+            Logger.WriteLine("--------------AddCodeEdgeItem " + (t1 - t0).TotalMilliseconds.ToString());
+            t0 = t1;
 
             if (m_itemDict.Count > 0)
             {
@@ -229,6 +241,9 @@ namespace CodeAtlasVSIX
                 }
                 m_scheme[name] = schemeObj;
             }
+            t1 = DateTime.Now;
+            Logger.WriteLine("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
+            t0 = t1;
             ReleaseLock();
         }
 
@@ -1120,7 +1135,14 @@ namespace CodeAtlasVSIX
             {
                 return false;
             }
+            Console.WriteLine("======================");
+            var t0 = DateTime.Now;
             var item = new CodeUIItem(srcUniqueName);
+
+            var t1 = DateTime.Now;
+            Console.WriteLine("======new CodeUIItem " + (t1-t0).TotalMilliseconds.ToString());
+            t0 = t1;
+
             m_itemDict[srcUniqueName] = item;
             m_view.canvas.Children.Add(item);
             Point center;
@@ -1128,6 +1150,10 @@ namespace CodeAtlasVSIX
             item.Pos = center;
             item.SetTargetPos(center);
             m_isLayoutDirty = true;
+
+            t1 = DateTime.Now;
+            Console.WriteLine("====================== " + (t1 - t0).TotalMilliseconds.ToString());
+            t0 = t1;
             return true;
         }
 
@@ -1476,7 +1502,7 @@ namespace CodeAtlasVSIX
             {
                 res = SelectOneEdge(lastFunction);
             }
-            if (res == false && lastPos.X != Double.NaN)
+            if (res == false && !double.IsNaN(lastPos.X))
             {
                 res = SelectNearestItem(lastPos);
             }

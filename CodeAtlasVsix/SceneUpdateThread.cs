@@ -373,7 +373,7 @@ namespace CodeAtlasVSIX
                 edge.GetNodePos(out srcPos, out tarPos);
                 double padding = srcPos.X < tarPos.X ? -8.0 : 8.0;
                 double x, y;
-                if (basePos == double.NaN)
+                if (double.IsNaN(basePos))
                 {
                     x = tarPos.X + padding;
                 }

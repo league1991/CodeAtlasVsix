@@ -231,14 +231,29 @@ namespace DoxygenDB
 
             try
             {
-                var rawContent = File.ReadAllText(m_filePath, Encoding.UTF8);
-                var content = new string(rawContent.Where(c => !char.IsControl(c)).ToArray());
-                var bytes = Encoding.UTF8.GetBytes(content);
-                var doc = new XPathDocument(new MemoryStream(bytes));
+                var t0 = DateTime.Now;
+                var t1 = t0;
+                //var rawContent = File.ReadAllText(m_filePath, Encoding.UTF8);
+                //t1 = DateTime.Now;
+                //Console.WriteLine("------------ ReadAllText " + (t1 - t0).TotalMilliseconds.ToString());
+                //t0 = t1;
+
+                //var content = new string(rawContent.Where(c => !char.IsControl(c)).ToArray());
+                //var bytes = Encoding.UTF8.GetBytes(content);
+                //t1 = DateTime.Now;
+                //Console.WriteLine("------------ Filter " + (t1 - t0).TotalMilliseconds.ToString());
+                //t0 = t1;
+
+                //var doc = new XPathDocument(new MemoryStream(bytes));
+                var reader = new StreamReader(m_filePath, Encoding.UTF8);
+                var doc = new XPathDocument(reader);
+                t1 = DateTime.Now;
+                Console.WriteLine("------------ Parse " + (t1 - t0).TotalMilliseconds.ToString());
+                t0 = t1;
                 m_doc = doc;
                 m_navigator = doc.CreateNavigator();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 Console.WriteLine("Load xml failed!");
             }
@@ -1648,7 +1663,10 @@ namespace DoxygenDB
             {
                 compoundId = m_idToCompoundDict[uniqueName];
             }
+            var t0 = DateTime.Now;
             _ReadRef(compoundId);
+            var t1 = DateTime.Now;
+            Console.WriteLine("_ReadRef " + (t1 - t0).TotalMilliseconds.ToString());
 
             // find references
             var refs = thisItem.GetRefItemList();
