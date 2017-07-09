@@ -862,8 +862,8 @@ namespace CodeAtlasVSIX
             }
             if (m_displayText != null)
             {
-                m_displayText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(50,50,50)));
-                drawingContext.DrawText(m_displayText, new Point(baseX+0.8, baseY+0.8));
+                m_displayText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(10,10,10)));
+                drawingContext.DrawText(m_displayText, new Point(baseX+1.0, baseY+1.0));
                 m_displayText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(255, 239, 183)));
                 drawingContext.DrawText(m_displayText, new Point(baseX, baseY));
             }

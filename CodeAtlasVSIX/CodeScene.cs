@@ -23,6 +23,7 @@ namespace CodeAtlasVSIX
     using Microsoft.VisualStudio.Shell;
     using EnvDTE;
     using EnvDTE80;
+    using System.Windows.Threading;
 
     //public class DataDict: Dictionary<string, object>
     //{
@@ -34,7 +35,7 @@ namespace CodeAtlasVSIX
         public Dictionary<EdgeKey, DataDict> m_edgeDict = new Dictionary<EdgeKey, DataDict>();
     }
 
-    public class CodeScene
+    public class CodeScene: DispatcherObject
     {
         #region Data Member
         // Data
@@ -572,6 +573,7 @@ namespace CodeAtlasVSIX
 
             var item = itemList[0];
             var navigator = new CursorNavigator();
+
             navigator.Navigate(item);
         }
         #endregion
