@@ -324,7 +324,9 @@ namespace CodeAtlasVSIX
             //    win.Visible = true;
             //    win.SetFocus();
             //}
-            m_dte.OpenFile(EnvDTE.Constants.vsViewKindCode, fileName);
+            var window = m_dte.OpenFile(EnvDTE.Constants.vsViewKindCode, fileName);
+            window.Visible = true;
+            window.Activate();
         }
 
         FileCodeModel GetFileCodeModel(Document document)

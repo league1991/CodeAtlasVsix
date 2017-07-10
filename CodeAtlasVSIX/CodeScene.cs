@@ -673,12 +673,19 @@ namespace CodeAtlasVSIX
         public void FindNeighbour(Vector mainDirection)
         {
             // Logger.WriteLine("find neighbour:" + mainDirection.ToString());
+            var t0 = DateTime.Now;
+            var t1 = t0;
             var itemList = SelectedItems();
             if (itemList.Count == 0)
             {
                 return;
             }
             AcquireLock();
+
+            t1 = DateTime.Now;
+            Logger.WriteLine("## AcquireLock " + (t1 - t0).TotalMilliseconds.ToString());
+            t0 = t1;
+
             var centerItem = itemList[0];
             var centerNode = centerItem as CodeUIItem;
             var centerEdge = centerItem as CodeUIEdgeItem;
@@ -691,7 +698,16 @@ namespace CodeAtlasVSIX
             {
                 minItem = FindNeighbourForEdge(centerEdge, mainDirection);
             }
+
+            t1 = DateTime.Now;
+            Logger.WriteLine("## FindNeighbour " + (t1 - t0).TotalMilliseconds.ToString());
+            t0 = t1;
+
             ReleaseLock();
+
+            t1 = DateTime.Now;
+            Logger.WriteLine("## ReleaseLock " + (t1 - t0).TotalMilliseconds.ToString());
+            t0 = t1;
 
             if (minItem == null)
             {
@@ -703,6 +719,10 @@ namespace CodeAtlasVSIX
             {
                 ShowInEditor();
             }
+
+            t1 = DateTime.Now;
+            Logger.WriteLine("## ShowInEditor " + (t1 - t0).TotalMilliseconds.ToString());
+            t0 = t1;
         }
 
         public Shape FindNeighbourForEdge(CodeUIEdgeItem centerItem, Vector mainDirection)
