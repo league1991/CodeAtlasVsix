@@ -54,10 +54,6 @@
     <Compile Include="CodeAtlas.cs" />
     <Compile Include="CodeAtlasCommand.cs" />
     <Compile Include="CodeAtlasPackage.cs" />
-    <Compile Include="CodeNotifier.cs" />
-    <Compile Include="CodeNotifierClassificationDefinition.cs" />
-    <Compile Include="CodeNotifierFormat.cs" />
-    <Compile Include="CodeNotifierProvider.cs" />
     <Compile Include="CodeScene.cs" />
     <Compile Include="CodeUIEdgeItem.cs" />
     <Compile Include="CodeUIItem.cs" />
