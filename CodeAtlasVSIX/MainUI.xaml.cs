@@ -125,7 +125,7 @@ namespace CodeAtlasVSIX
             var newDownTime = DateTime.Now;
             DBManager.Instance().OpenDB(defaultPath);
             double duration = (DateTime.Now - newDownTime).TotalSeconds;
-            Logger.WriteLine("open time:" + duration.ToString());
+            Logger.Debug("open time:" + duration.ToString());
             UpdateUI();
         }
 
@@ -567,7 +567,7 @@ namespace CodeAtlasVSIX
             }
             catch (Exception)
             {
-                Logger.WriteLine("Analyse failed. Please try again.");
+                Logger.Debug("Analyse failed. Please try again.");
                 DBManager.Instance().CloseDB();
             }
         }

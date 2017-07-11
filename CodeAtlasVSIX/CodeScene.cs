@@ -151,7 +151,7 @@ namespace CodeAtlasVSIX
             // code item
             var t0 = DateTime.Now;
             var t1 = t0;
-            Logger.WriteLine("----------------- open ------------------------");
+            Logger.Debug("----------------- open ------------------------");
             var codeItemList = sceneData["codeItem"] as ArrayList;
             foreach (var item in codeItemList)
             {
@@ -164,7 +164,7 @@ namespace CodeAtlasVSIX
                 AddCodeItem(item as string);
             }
             t1 = DateTime.Now;
-            Logger.WriteLine("--------------AddCodeItem " + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Debug("--------------AddCodeItem " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
 
             // edge data
@@ -177,7 +177,7 @@ namespace CodeAtlasVSIX
                 m_edgeDataDict[edgeKey] = edgeDataDict;
             }
             t1 = DateTime.Now;
-            Logger.WriteLine("--------------Edgedata " + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Debug("--------------Edgedata " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
 
             // edge item
@@ -207,12 +207,12 @@ namespace CodeAtlasVSIX
                     }
                     else
                     {
-                        Logger.WriteLine("ignore edge:" + edgeKey.Item1 + " -> " + edgeKey.Item2);
+                        Logger.Debug("ignore edge:" + edgeKey.Item1 + " -> " + edgeKey.Item2);
                     }
                 }
             }
             t1 = DateTime.Now;
-            Logger.WriteLine("--------------AddCodeEdgeItem " + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Debug("--------------AddCodeEdgeItem " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
 
             if (m_itemDict.Count > 0)
@@ -242,7 +242,7 @@ namespace CodeAtlasVSIX
                 m_scheme[name] = schemeObj;
             }
             t1 = DateTime.Now;
-            Logger.WriteLine("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Debug("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
             ReleaseLock();
         }
@@ -455,7 +455,7 @@ namespace CodeAtlasVSIX
             var edge = item as CodeUIEdgeItem;
             if (node != null)
             {
-                Logger.WriteLine("Select Node:" + node.GetUniqueName());
+                Logger.Debug("Select Node:" + node.GetUniqueName());
                 m_selectTimeStamp += 1;
                 node.IsSelected = true;
                 return true;
@@ -683,7 +683,7 @@ namespace CodeAtlasVSIX
             AcquireLock();
 
             t1 = DateTime.Now;
-            Logger.WriteLine("## AcquireLock " + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Debug("## AcquireLock " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
 
             var centerItem = itemList[0];
@@ -700,13 +700,13 @@ namespace CodeAtlasVSIX
             }
 
             t1 = DateTime.Now;
-            Logger.WriteLine("## FindNeighbour " + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Debug("## FindNeighbour " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
 
             ReleaseLock();
 
             t1 = DateTime.Now;
-            Logger.WriteLine("## ReleaseLock " + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Debug("## ReleaseLock " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
 
             if (minItem == null)
@@ -721,7 +721,7 @@ namespace CodeAtlasVSIX
             }
 
             t1 = DateTime.Now;
-            Logger.WriteLine("## ShowInEditor " + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Debug("## ShowInEditor " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
         }
 

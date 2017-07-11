@@ -324,7 +324,7 @@ namespace CodeAtlasVSIX
                     }
                 }
 
-                Logger.WriteLine("Traversing Project:" + project.Name);
+                Logger.Debug("Traversing Project:" + project.Name);
                 var codeModel = project.CodeModel;
                 if (codeModel != null)
                 {
@@ -374,7 +374,7 @@ namespace CodeAtlasVSIX
                         }
                         path = path.Replace('\\', '/').Trim();
                         projectInc.Add(path);
-                        Logger.WriteLine("include path:" + path);
+                        Logger.Debug("include path:" + path);
                     }
                     var projInfo = FindProjectInfo(project.UniqueName);
                     projInfo.m_includePath = projectInc;
@@ -457,7 +457,7 @@ namespace CodeAtlasVSIX
             }
             catch
             {
-                Logger.WriteLine("project error-------------");
+                Logger.Debug("project error-------------");
             }
             return true;
         }

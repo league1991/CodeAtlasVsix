@@ -27,7 +27,7 @@ namespace CodeAtlasVSIX
             }
         }
 
-        public static void WriteLine(string content)
+        public static void Debug(string content)
         {
             if (s_initialized == false)
             {
@@ -35,6 +35,7 @@ namespace CodeAtlasVSIX
                 s_initialized = true;
             }
 
+#if DEBUG
             if (s_outputPane != null)
             {
                 s_outputPane.OutputString(content + "\n");
@@ -44,6 +45,8 @@ namespace CodeAtlasVSIX
             {
                 System.Console.WriteLine(content);
             }
+#elif RELEASE
+#endif
         }
     }
 }

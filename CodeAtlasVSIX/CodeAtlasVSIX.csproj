@@ -101,6 +101,10 @@
       <SubType>Designer</SubType>
     </VSCTCompile>
     <Content Include="Config\index.html" />
+    <Content Include="LICENSE.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\CodeAtlasCommand.png" />
     <Content Include="Resources\CodeAtlasPackage.ico" />
     <Content Include="Config\stylesheet.css" />

@@ -54,7 +54,7 @@ namespace CodeAtlasVSIX
             m_dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
 
             var t1 = DateTime.Now;
-            Logger.WriteLine("---CursorNavigator::CursorNavigator" + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Debug("---CursorNavigator::CursorNavigator" + (t1 - t0).TotalMilliseconds.ToString());
         }
 
         static bool IsMatchPair(DoxygenDB.EntKind doxyKind, vsCMElement vsKind)
@@ -83,14 +83,14 @@ namespace CodeAtlasVSIX
                 OpenFile(fileName);
 
                 t1 = DateTime.Now;
-                Logger.WriteLine("---ShowItemDefinition:: open file" + (t1 - t0).TotalMilliseconds.ToString());
+                Logger.Debug("---ShowItemDefinition:: open file" + (t1 - t0).TotalMilliseconds.ToString());
                 t0 = t1;
 
                 var document = m_dte.ActiveDocument;
                 var codeElement = GetCodeElement(codeItem, document);
 
                 t1 = DateTime.Now;
-                Logger.WriteLine("---ShowItemDefinition:: GetCodeElement" + (t1 - t0).TotalMilliseconds.ToString());
+                Logger.Debug("---ShowItemDefinition:: GetCodeElement" + (t1 - t0).TotalMilliseconds.ToString());
                 t0 = t1;
 
                 if (codeElement != null)
@@ -100,14 +100,14 @@ namespace CodeAtlasVSIX
                         UpdateBodyCode(codeItem, codeElement);
 
                         t1 = DateTime.Now;
-                        Logger.WriteLine("---ShowItemDefinition:: UpdateBodyCode" + (t1 - t0).TotalMilliseconds.ToString());
+                        Logger.Debug("---ShowItemDefinition:: UpdateBodyCode" + (t1 - t0).TotalMilliseconds.ToString());
                         t0 = t1;
 
                         var startPnt = codeElement.StartPoint;
                         if (CheckAndMoveTo(startPnt, document))
                         {
                             t1 = DateTime.Now;
-                            Logger.WriteLine("---ShowItemDefinition:: CheckAndMoveTo" + (t1 - t0).TotalMilliseconds.ToString());
+                            Logger.Debug("---ShowItemDefinition:: CheckAndMoveTo" + (t1 - t0).TotalMilliseconds.ToString());
                             t0 = t1;
                             return true;
                         }
@@ -128,13 +128,13 @@ namespace CodeAtlasVSIX
                                 startPnt = vcCodeElement.get_StartPointOf(vsCMPart.vsCMPartWholeWithAttributes, where);
 
                                 t1 = DateTime.Now;
-                                Logger.WriteLine("---ShowItemDefinition:: get_StartPointOf" + (t1 - t0).TotalMilliseconds.ToString());
+                                Logger.Debug("---ShowItemDefinition:: get_StartPointOf" + (t1 - t0).TotalMilliseconds.ToString());
                                 t0 = t1;
 
                                 if (CheckAndMoveTo(startPnt, document))
                                 {
                                     t1 = DateTime.Now;
-                                    Logger.WriteLine("---ShowItemDefinition:: CheckAndMoveTo" + (t1 - t0).TotalMilliseconds.ToString());
+                                    Logger.Debug("---ShowItemDefinition:: CheckAndMoveTo" + (t1 - t0).TotalMilliseconds.ToString());
                                     t0 = t1;
                                     return true;
                                 }
@@ -173,8 +173,8 @@ namespace CodeAtlasVSIX
             }
             var t0 = DateTime.Now;
             var t1 = t0;
-            Logger.WriteLine("--------------------------------------------------------------");
-            Logger.WriteLine("begin navigate");
+            Logger.Debug("--------------------------------------------------------------");
+            Logger.Debug("begin navigate");
 
             var codeItem = item as CodeUIItem;
             var edgeItem = item as CodeUIEdgeItem;
@@ -187,13 +187,13 @@ namespace CodeAtlasVSIX
                 codeItem.GetDefinitionPosition(out fileName, out line, out column);
 
                 t1 = DateTime.Now;
-                Logger.WriteLine("item GetDefinitionPosition " + (t1 - t0).TotalMilliseconds.ToString());
+                Logger.Debug("item GetDefinitionPosition " + (t1 - t0).TotalMilliseconds.ToString());
                 t0 = t1;
 
                 res = ShowItemDefinition(codeItem, fileName);
 
                 t1 = DateTime.Now;
-                Logger.WriteLine("item ShowItemDefinition " + (t1 - t0).TotalMilliseconds.ToString());
+                Logger.Debug("item ShowItemDefinition " + (t1 - t0).TotalMilliseconds.ToString());
                 t0 = t1;
             }
             else if (edgeItem != null)
@@ -210,26 +210,26 @@ namespace CodeAtlasVSIX
                 if (srcItem.IsFunction())
                 {
                     t1 = DateTime.Now;
-                    Logger.WriteLine("edge is function " + (t1 - t0).TotalMilliseconds.ToString());
+                    Logger.Debug("edge is function " + (t1 - t0).TotalMilliseconds.ToString());
                     t0 = t1;
 
                     if (File.Exists(fileName))
                     {
                         t1 = DateTime.Now;
-                        Logger.WriteLine("edge file exist " + (t1 - t0).TotalMilliseconds.ToString());
+                        Logger.Debug("edge file exist " + (t1 - t0).TotalMilliseconds.ToString());
                         t0 = t1;
 
                         OpenFile(fileName);
                         var document = m_dte.ActiveDocument;
 
                         t1 = DateTime.Now;
-                        Logger.WriteLine("edge open document" + (t1 - t0).TotalMilliseconds.ToString());
+                        Logger.Debug("edge open document" + (t1 - t0).TotalMilliseconds.ToString());
                         t0 = t1;
                         var codeElement = GetCodeElement(srcItem, document);
 
 
                         t1 = DateTime.Now;
-                        Logger.WriteLine("edge get code item" + (t1 - t0).TotalMilliseconds.ToString());
+                        Logger.Debug("edge get code item" + (t1 - t0).TotalMilliseconds.ToString());
                         t0 = t1;
                         if (codeElement != null)
                         {
@@ -237,7 +237,7 @@ namespace CodeAtlasVSIX
                             var funcText = UpdateBodyCode(srcItem, codeElement);
 
                             t1 = DateTime.Now;
-                            Logger.WriteLine("edge update body code" + (t1 - t0).TotalMilliseconds.ToString());
+                            Logger.Debug("edge update body code" + (t1 - t0).TotalMilliseconds.ToString());
                             t0 = t1;
 
                             try
@@ -274,7 +274,7 @@ namespace CodeAtlasVSIX
             //Logger.WriteLine(string.Format("show in editor:{0} {1}", fileName, line));
 
             t1 = DateTime.Now;
-            Logger.WriteLine("navigate " + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Debug("navigate " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
             //m_timeStamp = now;
             if (res == false)
@@ -291,7 +291,7 @@ namespace CodeAtlasVSIX
                         }
                         catch (Exception)
                         {
-                            Logger.WriteLine("Go to page fail.");
+                            Logger.Debug("Go to page fail.");
                         }
                     }
                 }
@@ -356,20 +356,20 @@ namespace CodeAtlasVSIX
             }
 
             var t1 = DateTime.Now;
-            Logger.WriteLine("GetCodeElement:: get file code model " + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Debug("GetCodeElement:: get file code model " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
 
             var vcDocModel = docModel as VCFileCodeModel;
             if (vcDocModel != null)
             {
                 t1 = DateTime.Now;
-                Logger.WriteLine("GetCodeElement:: vc file code model " + (t1 - t0).TotalMilliseconds.ToString());
+                Logger.Debug("GetCodeElement:: vc file code model " + (t1 - t0).TotalMilliseconds.ToString());
                 t0 = t1;
 
                 var candidates = vcDocModel.CodeElementFromFullName(uiItem.GetLongName());
 
                 t1 = DateTime.Now;
-                Logger.WriteLine("GetCodeElement:: CodeElementFromFullName " + (t1 - t0).TotalMilliseconds.ToString());
+                Logger.Debug("GetCodeElement:: CodeElementFromFullName " + (t1 - t0).TotalMilliseconds.ToString());
                 t0 = t1;
 
                 if (candidates != null)
@@ -380,7 +380,7 @@ namespace CodeAtlasVSIX
                         if (candidate != null)
                         {
                             t1 = DateTime.Now;
-                            Logger.WriteLine("GetCodeElement:: return candidate " + (t1 - t0).TotalMilliseconds.ToString());
+                            Logger.Debug("GetCodeElement:: return candidate " + (t1 - t0).TotalMilliseconds.ToString());
                             t0 = t1;
                             return candidate;
                         }
@@ -486,7 +486,7 @@ namespace CodeAtlasVSIX
                 {
                     indentStr += "\t";
                 }
-                Logger.WriteLine(indentStr + string.Format("element:{0} {1} {2}", eleName, startLine, endLine));
+                Logger.Debug(indentStr + string.Format("element:{0} {1} {2}", eleName, startLine, endLine));
                 
 
                 var children = element.Children;
