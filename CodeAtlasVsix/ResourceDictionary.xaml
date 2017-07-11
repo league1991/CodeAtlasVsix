@@ -40,6 +40,7 @@
 
     <Style TargetType="GroupBox" x:Key="GroupBoxStyle">
         <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.ActiveBorderKey}}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
     </Style>
 
     <Style TargetType="{x:Type TabItem}" x:Key="TabItemStyle">
