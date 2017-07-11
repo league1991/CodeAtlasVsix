@@ -54,8 +54,8 @@ Press `Alt+O` to find overloaded functions.
 Find Class Member
 -----------------
 
-Press `Alt+M` to find all class variables and the largest member function. 
-Press `Alt+M` several times to see smaller member functions.
+Press `Alt+M` to find one class variable and the largest member function. 
+Press `Alt+M` several times to see more members.
 ![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/member.gif)  
  
 Find Variable Usage
@@ -70,7 +70,7 @@ Save / Load Relationship Graph
 Press `Ctrl+Num` to add selected edge to a relationship graph.
 ![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/addGraph.gif)  
 
-Press `Alt+Num` to show relationship graph listed at the top left corner.
+Press `Alt+Num` to show relationship graph listed at the bottom left corner.
 ![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/graph.gif)  
 
 Add Comment
