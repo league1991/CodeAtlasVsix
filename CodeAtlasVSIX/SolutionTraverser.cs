@@ -346,6 +346,7 @@ namespace CodeAtlasVSIX
                 //var config = configMgr.ActiveConfiguration as Configuration;
 
                 var vcProject = project.Object as VCProject;
+                Logger.Debug("check vc project");
                 if (vcProject != null)
                 {
                     var vccon = vcProject.ActiveConfiguration as VCConfiguration;
