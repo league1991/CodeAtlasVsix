@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace CodeAtlasVSIX
 {
@@ -27,7 +28,7 @@ namespace CodeAtlasVSIX
             }
         }
 
-        public static void Debug(string content)
+        static void Output(string content)
         {
             if (s_initialized == false)
             {
@@ -35,7 +36,6 @@ namespace CodeAtlasVSIX
                 s_initialized = true;
             }
 
-#if DEBUG
             if (s_outputPane != null)
             {
                 s_outputPane.OutputString(content + "\n");
@@ -45,6 +45,23 @@ namespace CodeAtlasVSIX
             {
                 System.Console.WriteLine(content);
             }
+        }
+
+        public static void Warning(string content)
+        {
+            Output(content);
+            MessageBox.Show(content, "Warning");
+        }
+
+        public static void Info(string content)
+        {
+            Output(content);
+        }
+
+        public static void Debug(string content)
+        {
+#if DEBUG
+            Output(content);
 #elif RELEASE
 #endif
         }

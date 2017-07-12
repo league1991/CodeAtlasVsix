@@ -41,6 +41,9 @@
     </Menus>
 
     <Groups>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
       <Group guid="guidCodeAtlasPackageCmdSet" id="DBMenuGroup" priority="0x0600">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
       </Group>
@@ -73,7 +76,7 @@
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
       <Button guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasCommandId" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="DBMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasGroup" />
         <Strings>
           <ButtonText>Open Code Atlas Window</ButtonText>
         </Strings>
@@ -338,7 +341,6 @@
     <GuidSymbol name="guidCodeAtlasPackageCmdSet" value="{69c47ed5-456c-45d2-8d14-c3dbbce248b3}">
       <IDSymbol name="CodeAtlasCommandId" value="0x0100" />
       <IDSymbol name="TopLevelMenu" value="0x0101" />
-      <IDSymbol name="DBMenuGroup" value="0x0102" />
       <IDSymbol name="FindCallersCommand" value="0x0103" />
       <IDSymbol name="FindCalleesCommand" value="0x0104" />
       <IDSymbol name="FindMembersCommand" value="0x0105" />
@@ -367,11 +369,13 @@
       <IDSymbol name="ShowDefinitionInAtlas" value="0x011c" />
       <IDSymbol name="AnalyseSolutionCommand" value="0x011d" />
       <IDSymbol name="AnalyseSelectedProjectsCommand" value="0x011e" />
-      <IDSymbol name="ShowInAtlasMenuGroup" value="0x011f" />
-      <IDSymbol name="NavigationMenuGroup" value="0x0120" />
-      <IDSymbol name="SymbolMenuGroup" value="0x0121" />
-      <IDSymbol name="ShowSchemeMenuGroup" value="0x0122" />
-      <IDSymbol name="ToggleSchemeMenuGroup" value="0x0123" />
+      <IDSymbol name="CodeAtlasGroup" value="0x0102" />
+      <IDSymbol name="DBMenuGroup" value="0x011f" />
+      <IDSymbol name="ShowInAtlasMenuGroup" value="0x0120" />
+      <IDSymbol name="NavigationMenuGroup" value="0x0121" />
+      <IDSymbol name="SymbolMenuGroup" value="0x0122" />
+      <IDSymbol name="ShowSchemeMenuGroup" value="0x0123" />
+      <IDSymbol name="ToggleSchemeMenuGroup" value="0x0126" />
       <IDSymbol name="OpenAnalysisResultCommand" value="0x0124" />
       <IDSymbol name="CloseAnalysisResultCommand" value="0x0125" />
     </GuidSymbol>

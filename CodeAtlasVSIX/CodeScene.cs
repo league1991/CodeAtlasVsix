@@ -317,10 +317,17 @@ namespace CodeAtlasVSIX
                 {"edgeData", edgeDataList },
                 {"scheme", scheme }
             };
-            
-            JavaScriptSerializer js = new JavaScriptSerializer();
-            var jsonStr = js.Serialize(jsonDict);
-            File.WriteAllText(dbPath + ".config", jsonStr);
+
+            try
+            {
+                JavaScriptSerializer js = new JavaScriptSerializer();
+                var jsonStr = js.Serialize(jsonDict);
+                File.WriteAllText(dbPath + ".config", jsonStr);
+            }
+            catch (Exception)
+            {
+                Logger.Info("Save DB configuration failed.");
+            }
         }
         #endregion
 

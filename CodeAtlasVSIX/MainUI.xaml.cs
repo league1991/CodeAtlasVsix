@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -99,11 +100,13 @@ namespace CodeAtlasVSIX
                 var solutionFile = solution.FileName;
                 if (solutionFile != "")
                 {
-                    ofd.InitialDirectory = System.IO.Path.GetDirectoryName(solutionFile);
+                    var doxyFolder = System.IO.Path.GetDirectoryName(solutionFile) + "\\CodeAtlasData";
+                    CheckOrCreateFolder(doxyFolder);
+                    ofd.InitialDirectory = doxyFolder;
                 }
             }
-            //ofd.DefaultExt = ".xml";
-            //ofd.Filter = "xml file|*.xml";
+            ofd.DefaultExt = ".atlas";
+            ofd.Filter = "Code Atlas Data File|*.atlas";
             if (ofd.ShowDialog() == true)
             {
                 if (DBManager.Instance().GetDB().IsOpen())
@@ -112,6 +115,14 @@ namespace CodeAtlasVSIX
                 }
                 DBManager.Instance().OpenDB(ofd.FileName);
                 UpdateUI();
+            }
+        }
+
+        void CheckOrCreateFolder(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
             }
         }
 
@@ -537,6 +548,8 @@ namespace CodeAtlasVSIX
                 {
                     return;
                 }
+                string doxyFolder = solutionFolder + "/CodeAtlasData";
+                CheckOrCreateFolder(doxyFolder);
 
                 // Use selected projects as postfix
                 string postFix = "";
@@ -552,9 +565,9 @@ namespace CodeAtlasVSIX
 
                 DBManager.Instance().CloseDB();
                 DoxygenDB.DoxygenDBConfig config = new DoxygenDB.DoxygenDBConfig();
-                config.m_configPath = solutionFolder + "/doxyfile" + postFix;
+                config.m_configPath = doxyFolder + "/doxyfile" + postFix + ".atlas";
                 config.m_inputFolders = dirList;
-                config.m_outputDirectory = solutionFolder + "/doxyData" + postFix;
+                config.m_outputDirectory = doxyFolder + "/doxyData" + postFix;
                 config.m_projectName = traverser.GetSolutionName() + postFix;
                 config.m_includePaths = traverser.GetAllIncludePath();
                 config.m_defines = traverser.GetAllDefines();
@@ -567,7 +580,7 @@ namespace CodeAtlasVSIX
             }
             catch (Exception)
             {
-                Logger.Debug("Analyse failed. Please try again.");
+                Logger.Warning("Analyse failed. Please try again.");
                 DBManager.Instance().CloseDB();
             }
         }
