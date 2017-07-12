@@ -88,7 +88,7 @@ namespace CodeAtlasVSIX
             e.CanExecute = true;
         }
 
-        private void OpenButton_Click(object sender, RoutedEventArgs e)
+        public void OnOpen(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
 
@@ -129,7 +129,7 @@ namespace CodeAtlasVSIX
             UpdateUI();
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        public void OnClose(object sender, RoutedEventArgs e)
         {
             DBManager.Instance().CloseDB();
             UpdateUI();

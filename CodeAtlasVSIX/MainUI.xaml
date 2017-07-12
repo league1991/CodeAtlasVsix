@@ -17,13 +17,13 @@
     </DockPanel.Resources>
 
     <Menu x:Name="menu" Height="20" DockPanel.Dock="Top" Style="{DynamicResource MenuStyle}">
-        <MenuItem x:Name="OpenButton" Header="Open" Click="OpenButton_Click" />
         <!--<MenuItem x:Name="TestButton" Header="Test" Click="TestButton_Click" />-->
-        <MenuItem x:Name="CloseButton" Header="Close" Click="CloseButton_Click" />
         <MenuItem x:Name="AnalyseButton" Header="Analyse" >
             <!--<MenuItem x:Name="AnalyseSolutionButton" Header="Analyse Solution" Click="AnalyseSolutionButton_Click" />-->
             <MenuItem x:Name="FastAnalyseSolutionButton" Header="Analyse Solution" Click="OnFastAnalyseSolutionButton" />
             <MenuItem x:Name="FastAnalyseProjectsButton" Header="Analyse Selected Projects" Click="OnFastAnalyseProjectsButton"/>
+            <MenuItem x:Name="OpenButton" Header="Open Analysis Result" Click="OnOpen" />
+            <MenuItem x:Name="CloseButton" Header="Close Analysis Result" Click="OnClose" />
         </MenuItem>
         <MenuItem Header="Navigation" >
             <RadioButton x:Name="dynamicNavigationButton" Content="Dynamic Navigation" IsChecked="True" Click="dynamicNavigationButton_Click" />

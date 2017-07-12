@@ -93,6 +93,20 @@
         </Strings>
       </Button>
 
+      <Button guid="guidCodeAtlasPackageCmdSet" id="OpenAnalysisResultCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="DBMenuGroup" />
+        <Strings>
+          <ButtonText>Open Analysis Result</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidCodeAtlasPackageCmdSet" id="CloseAnalysisResultCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="DBMenuGroup" />
+        <Strings>
+          <ButtonText>Close Analysis Result</ButtonText>
+        </Strings>
+      </Button>
+      
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlas" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" />
         <Strings>
@@ -358,6 +372,8 @@
       <IDSymbol name="SymbolMenuGroup" value="0x0121" />
       <IDSymbol name="ShowSchemeMenuGroup" value="0x0122" />
       <IDSymbol name="ToggleSchemeMenuGroup" value="0x0123" />
+      <IDSymbol name="OpenAnalysisResultCommand" value="0x0124" />
+      <IDSymbol name="CloseAnalysisResultCommand" value="0x0125" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{e8b62cf1-f2d4-4924-a788-7d9f6eb6d635}">
