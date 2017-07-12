@@ -41,10 +41,26 @@
     </Menus>
 
     <Groups>
-      <Group guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" priority="0x0600">
+      <Group guid="guidCodeAtlasPackageCmdSet" id="DBMenuGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" priority="0x0600">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
       </Group>
     </Groups>
+
     <!--Buttons section. -->
     <!--This section defines the elements the user can interact with, like a menu command or a button
         or combo box in a toolbar. -->
@@ -57,189 +73,203 @@
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
       <Button guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasCommandId" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="DBMenuGroup" />
         <Strings>
           <ButtonText>Open Code Atlas Window</ButtonText>
         </Strings>
       </Button>
+
+      <Button guid="guidCodeAtlasPackageCmdSet" id="AnalyseSolutionCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="DBMenuGroup" />
+        <Strings>
+          <ButtonText>Analyse Solution</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidCodeAtlasPackageCmdSet" id="AnalyseSelectedProjectsCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="DBMenuGroup" />
+        <Strings>
+          <ButtonText>Analyse Selected Projects</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlas" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" />
+        <Strings>
+          <ButtonText>Show In Atlas</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowDefinitionInAtlas" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" />
+        <Strings>
+          <ButtonText>Show Definition In Atlas</ButtonText>
+        </Strings>
+      </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindCallersCommand" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
           <ButtonText>Find Callers</ButtonText>
         </Strings>
       </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindCalleesCommand" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
           <ButtonText>Find Callees</ButtonText>
         </Strings>
       </Button>    
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindMembersCommand" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
           <ButtonText>Find Members</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindOverridesCommand" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
           <ButtonText>Find Overrides</ButtonText>
         </Strings>
       </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindBasesCommand" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
           <ButtonText>Find Bases</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindUsesCommand" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
           <ButtonText>Find Uses</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="GoUpCommand" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
         <Strings>
           <ButtonText>Go Up</ButtonText>
         </Strings>
       </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="GoDownCommand" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
         <Strings>
           <ButtonText>Go Down</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="GoLeftCommand" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
         <Strings>
           <ButtonText>Go Left</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="GoRightCommand" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
         <Strings>
           <ButtonText>Go Right</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="DeleteSelectedItemsCommand" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
           <ButtonText>Delete Selected Items</ButtonText>
         </Strings>
       </Button>
 
       <Button guid="guidCodeAtlasPackageCmdSet" id="IgnoreSelectedItemsCommand" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
           <ButtonText>Ignore Selected Items</ButtonText>
         </Strings>
       </Button>
             
       <Button guid="guidCodeAtlasPackageCmdSet" id="DeleteNearbyItemsCommand" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
           <ButtonText>Delete Nearby Items</ButtonText>
         </Strings>
       </Button>
       
-      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowDefinitionInAtlas" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
-        <Strings>
-          <ButtonText>Show Definition In Atlas</ButtonText>
-        </Strings>
-      </Button>
-      
       <Button guid="guidCodeAtlasPackageCmdSet" id="AddSimilarItem" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
           <ButtonText>Add Similar Items</ButtonText>
         </Strings>
       </Button>
-    
-      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlas" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
-        <Strings>
-          <ButtonText>Show In Atlas</ButtonText>
-        </Strings>
-      </Button>
         
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme1" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
           <ButtonText>Show Scheme 1</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme2" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
           <ButtonText>Show Scheme 2</ButtonText>
         </Strings>
       </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme3" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
           <ButtonText>Show Scheme 3</ButtonText>
         </Strings>
       </Button>
           
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme4" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
           <ButtonText>Show Scheme 4</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme5" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
           <ButtonText>Show Scheme 5</ButtonText>
         </Strings>
       </Button>
         
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme1" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Strings>
           <ButtonText>Toggle Scheme 1</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme2" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Strings>
           <ButtonText>Toggle Scheme 2</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme3" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Strings>
           <ButtonText>Toggle Scheme 3</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme4" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Strings>
           <ButtonText>Toggle Scheme 4</ButtonText>
         </Strings>
       </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme5" priority="0x0100" type="Button">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenuGroup" />
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Strings>
           <ButtonText>Toggle Scheme 5</ButtonText>
         </Strings>
@@ -294,7 +324,7 @@
     <GuidSymbol name="guidCodeAtlasPackageCmdSet" value="{69c47ed5-456c-45d2-8d14-c3dbbce248b3}">
       <IDSymbol name="CodeAtlasCommandId" value="0x0100" />
       <IDSymbol name="TopLevelMenu" value="0x0101" />
-      <IDSymbol name="TopLevelMenuGroup" value="0x0102" />
+      <IDSymbol name="DBMenuGroup" value="0x0102" />
       <IDSymbol name="FindCallersCommand" value="0x0103" />
       <IDSymbol name="FindCalleesCommand" value="0x0104" />
       <IDSymbol name="FindMembersCommand" value="0x0105" />
@@ -321,6 +351,13 @@
       <IDSymbol name="ToggleScheme5" value="0x011a" />
       <IDSymbol name="DeleteNearbyItemsCommand" value="0x011b" />
       <IDSymbol name="ShowDefinitionInAtlas" value="0x011c" />
+      <IDSymbol name="AnalyseSolutionCommand" value="0x011d" />
+      <IDSymbol name="AnalyseSelectedProjectsCommand" value="0x011e" />
+      <IDSymbol name="ShowInAtlasMenuGroup" value="0x011f" />
+      <IDSymbol name="NavigationMenuGroup" value="0x0120" />
+      <IDSymbol name="SymbolMenuGroup" value="0x0121" />
+      <IDSymbol name="ShowSchemeMenuGroup" value="0x0122" />
+      <IDSymbol name="ToggleSchemeMenuGroup" value="0x0123" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{e8b62cf1-f2d4-4924-a788-7d9f6eb6d635}">

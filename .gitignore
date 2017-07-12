@@ -24,3 +24,7 @@ Debug
 /doxyData_DoxygenDB/xml
 /doxyData_DoxygenDB_CodeAtlasVSIX_CodeView/xml
 /doxyData_CodeAtlasVSIX/xml
+/doxyData_CodeAtlasVSIX_CodeView_DoxygenDB/xml
+/GraphLayout/GraphLayout/MSAGL/bin/Release
+/GraphLayout/GraphLayout/Drawing/bin/Release
+/GraphLayout/GraphLayout/MSAGL/obj/Release

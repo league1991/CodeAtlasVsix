@@ -22,8 +22,8 @@
         <MenuItem x:Name="CloseButton" Header="Close" Click="CloseButton_Click" />
         <MenuItem x:Name="AnalyseButton" Header="Analyse" >
             <!--<MenuItem x:Name="AnalyseSolutionButton" Header="Analyse Solution" Click="AnalyseSolutionButton_Click" />-->
-            <MenuItem x:Name="FastAnalyseSolutionButton" Header="Analyse Solution" Click="FastAnalyseSolutionButton_Click" />
-            <MenuItem x:Name="FastAnalyseProjectsButton" Header="Analyse Selected Projects" Click="FastAnalyseProjectsButton_Click"/>
+            <MenuItem x:Name="FastAnalyseSolutionButton" Header="Analyse Solution" Click="OnFastAnalyseSolutionButton" />
+            <MenuItem x:Name="FastAnalyseProjectsButton" Header="Analyse Selected Projects" Click="OnFastAnalyseProjectsButton"/>
         </MenuItem>
         <MenuItem Header="Navigation" >
             <RadioButton x:Name="dynamicNavigationButton" Content="Dynamic Navigation" IsChecked="True" Click="dynamicNavigationButton_Click" />

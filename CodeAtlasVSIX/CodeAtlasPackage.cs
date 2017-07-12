@@ -101,6 +101,9 @@ namespace CodeAtlasVSIX
             AddCommand(0x0118, mainUI.OnToggleScheme3);
             AddCommand(0x0119, mainUI.OnToggleScheme4);
             AddCommand(0x011a, mainUI.OnToggleScheme5);
+
+            AddCommand(0x011d, mainUI.OnFastAnalyseSolutionButton);
+            AddCommand(0x011e, mainUI.OnFastAnalyseProjectsButton);
         }
 
         void AddCommand(int commandID, ExecutedRoutedEventHandler handler)

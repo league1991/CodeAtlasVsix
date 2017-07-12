@@ -577,12 +577,12 @@ namespace CodeAtlasVSIX
             AnalyseSolution(true);
         }
 
-        void FastAnalyseSolutionButton_Click(object sender, RoutedEventArgs e)
+        public void OnFastAnalyseSolutionButton(object sender, RoutedEventArgs e)
         {
             AnalyseSolution(false);
         }
 
-        private void FastAnalyseProjectsButton_Click(object sender, RoutedEventArgs e)
+        public void OnFastAnalyseProjectsButton(object sender, RoutedEventArgs e)
         {
             AnalyseSolution(false, true);
         }
