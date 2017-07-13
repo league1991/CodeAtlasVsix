@@ -210,6 +210,7 @@ namespace DoxygenDB
         static LinkedList<XmlDocItem> s_xmlLRUList = new LinkedList<XmlDocItem>();
         static Dictionary<string, LinkedListNode<XmlDocItem>> s_lruDict = new Dictionary<string, LinkedListNode<XmlDocItem>>();
         static Dictionary<string, XPathNavigator> s_xmlElementCache = new Dictionary<string, XPathNavigator>();
+        static string s_emptyXml = "<?xml version='1.0' encoding='UTF-8' standalone='no'?><doxygen></doxygen>";
 
         public enum CacheStatus
         {
@@ -251,31 +252,32 @@ namespace DoxygenDB
             {
                 var t0 = DateTime.Now;
                 var t1 = t0;
-                //var rawContent = File.ReadAllText(m_filePath, Encoding.UTF8);
-                //t1 = DateTime.Now;
-                //Console.WriteLine("------------ ReadAllText " + (t1 - t0).TotalMilliseconds.ToString());
-                //t0 = t1;
-
-                //var content = new string(rawContent.Where(c => !char.IsControl(c)).ToArray());
-                //var bytes = Encoding.UTF8.GetBytes(content);
-                //t1 = DateTime.Now;
-                //Console.WriteLine("------------ Filter " + (t1 - t0).TotalMilliseconds.ToString());
-                //t0 = t1;
-
-                //var doc = new XPathDocument(new MemoryStream(bytes));
                 var reader = new StreamReader(m_filePath, Encoding.UTF8);
                 var doc = new XPathDocument(reader);
                 t1 = DateTime.Now;
                 Console.WriteLine("------------ Parse " + (t1 - t0).TotalMilliseconds.ToString());
                 t0 = t1;
                 m_doc = doc;
-                m_navigator = doc.CreateNavigator();
             }
-            catch (Exception e)
+            catch (Exception e1)
             {
-                Console.WriteLine("Load xml failed!");
+                // Try to filter out problematic characters
+                try
+                {
+                    var rawContent = File.ReadAllText(m_filePath, Encoding.UTF8);
+                    var content = new string(rawContent.Where(c => !char.IsControl(c)).ToArray());
+                    var bytes = Encoding.UTF8.GetBytes(content);
+                    m_doc = new XPathDocument(new MemoryStream(bytes));
+                }
+                catch (Exception)
+                {
+                    // Still invalid, create an empty xml document
+                    m_doc = new XPathDocument(new MemoryStream(Encoding.UTF8.GetBytes(s_emptyXml)));
+                }
             }
-            
+
+            m_navigator = m_doc.CreateNavigator();
+
             // update lru
             if (s_lruDict.ContainsKey(m_filePath))
             {
@@ -750,7 +752,7 @@ namespace DoxygenDB
             nameToRowDict = new Dictionary<string, List<int>>();
             
             
-            if (fileId == "" || true)
+            if (fileId == "")
             {
                 return;
             }
