@@ -84,6 +84,13 @@ namespace DoxygenDB
         public string m_name;
         public EntKind m_kind;
         public HashSet<IndexRefItem> m_refs = new HashSet<IndexRefItem>();
+        public int m_cacheStatus;
+
+        public enum CacheStatus
+        {
+            NONE = 0,
+            REF = 1
+        }
 
         public IndexItem(string name, string kindStr, string id)
         {
@@ -95,6 +102,7 @@ namespace DoxygenDB
             }
             m_id = id;
             m_kind = s_kindDict[kindStr];
+            m_cacheStatus = (int)CacheStatus.NONE;
         }
 
         public bool IsCompoundKind()
@@ -115,6 +123,16 @@ namespace DoxygenDB
         public void ClearRefItem()
         {
             m_refs.Clear();
+        }
+
+        public bool GetCacheStatus(CacheStatus status)
+        {
+            return (m_cacheStatus & (int)status) > 0;
+        }
+
+        public void SetCacheStatus(CacheStatus status)
+        {
+            m_cacheStatus |= (int)status;
         }
 
         public List<IndexRefItem> GetRefItemList()
@@ -730,14 +748,9 @@ namespace DoxygenDB
         {
             idToRowDict = new Dictionary<string, List<int>>();
             nameToRowDict = new Dictionary<string, List<int>>();
-
-            // temporary disable following code
-            if (!m_resolveReferencePosition)
-            {
-                return;
-            }
             
-            if (fileId == "")
+            
+            if (fileId == "" || true)
             {
                 return;
             }
@@ -973,9 +986,6 @@ namespace DoxygenDB
                         memberStartLine = locationDict["declLine"].m_int;
                         memberEndLine = memberStartLine;
                     }
-                    var refItem = new IndexRefItem(compoundId, memberId, "member", memberFilePath, memberStartLine);
-                    memberItem.AddRefItem(refItem);
-                    compoundItem.AddRefItem(refItem);
                 }
             }
 
@@ -1109,8 +1119,34 @@ namespace DoxygenDB
             }
         }
 
-        void _ReadRef(string compoundFileId)
+        void _ReadRef(string uniqueName)
         {
+            // Find symbol index item
+            IndexItem indexItem;
+            if (!m_idInfoDict.TryGetValue(uniqueName, out indexItem))
+            {
+                return;
+            }
+            
+            if (indexItem.GetCacheStatus(IndexItem.CacheStatus.REF))
+            {
+                return;
+            }
+
+            // Find compound index item
+            var compoundFileId = uniqueName;
+            bool isMember = _IsMember(uniqueName);
+            if (isMember)
+            {
+                compoundFileId = m_idToCompoundDict[uniqueName];
+            }
+            IndexItem compoundIndexItem;
+            if (!m_idInfoDict.TryGetValue(compoundFileId, out compoundIndexItem))
+            {
+                return;
+            }
+
+            // Find xml document
             var doc = _GetXmlDocument(compoundFileId);
             if (doc == null)
             {
@@ -1118,76 +1154,108 @@ namespace DoxygenDB
             }
 
             var xmlDocItem = _GetXmlDocumentItem(compoundFileId);
-            if (xmlDocItem.GetCacheStatus(XmlDocItem.CacheStatus.REF))
+
+            // Parse compound if necessary
+            if (!compoundIndexItem.GetCacheStatus(IndexItem.CacheStatus.REF))
             {
-                return;
-            }
-
-            // build references
-            string filePath = "";
-            int startLine = 0;
-            var compoundDefIter = doc.Select("doxygen/compounddef");
-            while (compoundDefIter.MoveNext())
-            {
-                var compoundDef = compoundDefIter.Current;
-                var compoundId = compoundDef.GetAttribute("id", "");
-
-                if (!m_idInfoDict.ContainsKey(compoundId))
+                string filePath = "";
+                int startLine = 0;
+                var compoundDefIter = doc.Select("doxygen/compounddef");
+                while (compoundDefIter.MoveNext())
                 {
-                    continue;
-                }
-                var compoundItem = m_idInfoDict[compoundId];
+                    var compoundDef = compoundDefIter.Current;
+                    var compoundId = compoundDef.GetAttribute("id", "");
 
-                var compoundChildrenIter = compoundDef.SelectChildren(XPathNodeType.Element);
-                while (compoundChildrenIter.MoveNext())
-                {
-                    var compoundChild = compoundChildrenIter.Current;
-                    // find base classes
-                    if (compoundChild.Name == "basecompoundref")
+                    if (!m_idInfoDict.ContainsKey(compoundId))
                     {
-                        var baseCompoundId = compoundChild.GetAttribute("refid", "");
-                        if (m_idInfoDict.ContainsKey(baseCompoundId))
-                        {
-                            var baseCompoundItem = m_idInfoDict[baseCompoundId];
-                            _ParseRefLocation(compoundChild, out filePath, out startLine);
-                            var refItem = new IndexRefItem(baseCompoundId, compoundId, "derive", filePath, startLine);
-                            baseCompoundItem.AddRefItem(refItem);
-                            compoundItem.AddRefItem(refItem);
-                        }
+                        continue;
                     }
+                    var compoundItem = m_idInfoDict[compoundId];
 
-                    // find derived classes
-                    if (compoundChild.Name == "derivedcompoundref")
+                    var compoundChildrenIter = compoundDef.SelectChildren(XPathNodeType.Element);
+                    while (compoundChildrenIter.MoveNext())
                     {
-                        var derivedCompoundId = compoundChild.GetAttribute("refid", "");
-                        if (m_idInfoDict.ContainsKey(derivedCompoundId))
+                        var compoundChild = compoundChildrenIter.Current;
+                        // find base classes
+                        if (compoundChild.Name == "basecompoundref")
                         {
-                            var derivedCompoundItem = m_idInfoDict[derivedCompoundId];
-                            _ParseRefLocation(compoundChild, out filePath, out startLine);
-                            var refItem = new IndexRefItem(compoundId, derivedCompoundId, "derive", filePath, startLine);
-                            derivedCompoundItem.AddRefItem(refItem);
-                            compoundItem.AddRefItem(refItem);
-                        }
-                    }
-
-                    // find member's refs
-                    if (compoundChild.Name == "sectiondef")
-                    {
-                        var sectionIter = compoundChild.SelectChildren(XPathNodeType.Element);
-                        while (sectionIter.MoveNext())
-                        {
-                            var sectionChild = sectionIter.Current;
-                            if (sectionChild.Name == "memberdef")
+                            var baseCompoundId = compoundChild.GetAttribute("refid", "");
+                            if (m_idInfoDict.ContainsKey(baseCompoundId))
                             {
-                                _ReadMemberRef(sectionChild, compoundItem);
+                                var baseCompoundItem = m_idInfoDict[baseCompoundId];
+                                _ParseRefLocation(compoundChild, out filePath, out startLine);
+                                var refItem = new IndexRefItem(baseCompoundId, compoundId, "derive", filePath, startLine);
+                                baseCompoundItem.AddRefItem(refItem);
+                                compoundItem.AddRefItem(refItem);
+                            }
+                        }
+
+                        // find derived classes
+                        if (compoundChild.Name == "derivedcompoundref")
+                        {
+                            var derivedCompoundId = compoundChild.GetAttribute("refid", "");
+                            if (m_idInfoDict.ContainsKey(derivedCompoundId))
+                            {
+                                var derivedCompoundItem = m_idInfoDict[derivedCompoundId];
+                                _ParseRefLocation(compoundChild, out filePath, out startLine);
+                                var refItem = new IndexRefItem(compoundId, derivedCompoundId, "derive", filePath, startLine);
+                                derivedCompoundItem.AddRefItem(refItem);
+                                compoundItem.AddRefItem(refItem);
+                            }
+                        }
+
+                        // find member's refs
+                        if (compoundChild.Name == "sectiondef")
+                        {
+                            var sectionIter = compoundChild.SelectChildren(XPathNodeType.Element);
+                            while (sectionIter.MoveNext())
+                            {
+                                var memberDef = sectionIter.Current;
+                                if (memberDef.Name == "memberdef")
+                                {
+                                    string memberFilePath = "";
+                                    int memberStartLine = -1, memberEndLine = -1;
+                                    var memberId = memberDef.GetAttribute("id", "");
+                                    var memberItem = m_idInfoDict[memberId];
+                                    if (compoundItem != null)
+                                    {
+                                        var memberLocationIter = memberDef.Select("./location");
+                                        if (memberLocationIter.MoveNext())
+                                        {
+                                            var locationDict = _ParseLocationDict(memberLocationIter.Current);
+                                            memberFilePath = locationDict["file"].m_string;
+                                            memberStartLine = locationDict["line"].m_int;
+                                            memberEndLine = locationDict["lineEnd"].m_int;
+                                            if (memberFilePath == "")
+                                            {
+                                                memberFilePath = locationDict["declFile"].m_string;
+                                                memberStartLine = locationDict["declLine"].m_int;
+                                                memberEndLine = memberStartLine;
+                                            }
+                                            var refItem = new IndexRefItem(compoundId, memberId, "member", memberFilePath, memberStartLine);
+                                            memberItem.AddRefItem(refItem);
+                                            compoundItem.AddRefItem(refItem);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
-                // TODO: more code
+                compoundIndexItem.SetCacheStatus(IndexItem.CacheStatus.REF);
             }
 
-            xmlDocItem.SetCacheStatus(XmlDocItem.CacheStatus.REF);
+            // find member's refs
+            if (isMember)
+            {
+                var memberIter = doc.Select(string.Format("doxygen/compounddef/sectiondef/memberdef[@id=\'{0}\']", indexItem.m_id));
+                while (memberIter.MoveNext())
+                {
+                    var member = memberIter.Current;
+                    _ReadMemberRef(member, compoundIndexItem);
+                }
+                indexItem.SetCacheStatus(IndexItem.CacheStatus.REF);
+            }
         }
 
         void _ReadRefs()
@@ -1664,7 +1732,7 @@ namespace DoxygenDB
                 compoundId = m_idToCompoundDict[uniqueName];
             }
             var t0 = DateTime.Now;
-            _ReadRef(compoundId);
+            _ReadRef(uniqueName);
             var t1 = DateTime.Now;
             Console.WriteLine("_ReadRef " + (t1 - t0).TotalMilliseconds.ToString());
 

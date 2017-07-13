@@ -151,6 +151,7 @@ namespace CodeAtlasVSIX
             // code item
             var t0 = DateTime.Now;
             var t1 = t0;
+            var beginTime = t0;
             Logger.Debug("----------------- open ------------------------");
             var codeItemList = sceneData["codeItem"] as ArrayList;
             foreach (var item in codeItemList)
@@ -243,6 +244,7 @@ namespace CodeAtlasVSIX
             }
             t1 = DateTime.Now;
             Logger.Debug("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Info("Open Time: " + (t1 - beginTime).TotalSeconds.ToString() + "s");
             t0 = t1;
             ReleaseLock();
         }
