@@ -55,7 +55,11 @@ namespace CodeAtlasVSIX.Commands
         
         private void MenuItemCallback(object sender, EventArgs e)
         {
-            m_handler(this, null);
+            var mainUI = UIManager.Instance().GetMainUI();
+            if (mainUI.GetCommandActive())
+            {
+                m_handler(this, null);
+            }
         }
     }
 }

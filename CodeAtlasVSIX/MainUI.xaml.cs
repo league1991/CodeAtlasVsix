@@ -30,6 +30,8 @@ namespace CodeAtlasVSIX
     {
         List<KeyBinding> m_keyCommands = new List<KeyBinding>();
         Package m_package;
+        // Switch for all commands
+        bool m_isCommandEnable = true;
 
         public MainUI()
         {
@@ -61,6 +63,16 @@ namespace CodeAtlasVSIX
             AddCommand(OnShowScheme3, Key.D3, ModifierKeys.Alt);
             AddCommand(OnShowScheme4, Key.D4, ModifierKeys.Alt);
             AddCommand(OnShowScheme5, Key.D5, ModifierKeys.Alt);
+        }
+
+        public void SetCommandActive(bool isActive)
+        {
+            m_isCommandEnable = isActive;
+        }
+
+        public bool GetCommandActive()
+        {
+            return m_isCommandEnable;
         }
 
         public void SetPackage(Package package)
@@ -157,6 +169,11 @@ namespace CodeAtlasVSIX
 
         public void OnShowInAtlas(object sender, ExecutedRoutedEventArgs e)
         {
+            if (!m_isCommandEnable)
+            {
+                return;
+            }
+
             var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
             Document doc = dte.ActiveDocument;
             EnvDTE.TextSelection ts = doc.Selection as EnvDTE.TextSelection;

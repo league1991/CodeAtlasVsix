@@ -55,13 +55,13 @@ namespace CodeAtlasVSIX
         FormattedText m_displayText = null;
         FormattedText m_commentText = null;
         public bool m_isConnectedToFocusNode = false;
-        Dictionary<string, Variant> m_customData = new Dictionary<string, Variant>();
+        Dictionary<string, Variant> m_customData;
         Color m_color = new Color();
         bool m_customEdgeMode = false;
         Geometry m_highLightGeometry = new EllipseGeometry();
         public string m_bodyCode = "";
 
-        public CodeUIItem(string uniqueName)
+        public CodeUIItem(string uniqueName, Dictionary<string, object> customData)
         {
             m_uniqueName = uniqueName;
             this.MouseDown += new MouseButtonEventHandler(MouseDownCallback);
@@ -69,99 +69,47 @@ namespace CodeAtlasVSIX
             this.MouseMove += new MouseEventHandler(MouseMoveCallback);
             this.MouseEnter += new MouseEventHandler(MouseEnterCallback);
             this.MouseLeave += new MouseEventHandler(MouseLeaveCallback);
-
-            var dbObj = DBManager.Instance().GetDB();
+            
             var scene = UIManager.Instance().GetScene();
-            var entity = dbObj.SearchFromUniqueName(uniqueName);
 
-            if (entity != null)
+            m_name = (string)customData["name"];
+            m_longName = (string)customData["longName"];
+            m_kind = (DoxygenDB.EntKind)customData["kind"];
+            this.ToolTip = m_longName;
+            BuildDisplayName(m_name);
+            var comment = scene.GetComment(m_uniqueName);
+            BuildCommentSize(comment);
+            m_kindName = (string)customData["kindName"];
+            m_metric = (Dictionary<string, DoxygenDB.Variant>)customData["metric"];
+            if (m_metric.ContainsKey("CountLine"))
             {
-                m_name = entity.Name();
-                m_longName = entity.Longname();
-                this.ToolTip = entity.Longname();
-                BuildDisplayName(m_name);
-                var comment = scene.GetComment(m_uniqueName);
-                BuildCommentSize(comment);
-                m_kindName = entity.KindName();
-                var metricRes = entity.Metric();
-                m_metric = metricRes;
-                if (metricRes.ContainsKey("CountLine"))
-                {
-                    var metricLine = metricRes["CountLine"].m_int;
-                    m_lines = metricLine;
-                }
+                var metricLine = m_metric["CountLine"].m_int;
+                m_lines = metricLine;
             }
 
             var kindStr = m_kindName.ToLower();
+
             // custom data
-
-            if (kindStr.Contains("function") || kindStr.Contains("method"))
+            m_customData = new Dictionary<string, Variant>();
+            if (m_kind == DoxygenDB.EntKind.FUNCTION)
             {
-                m_kind = DoxygenDB.EntKind.FUNCTION;
                 // Find caller and callee count
-                var callerList = new List<DoxygenDB.Entity>();
-                var callerRefList = new List<DoxygenDB.Reference>();
-                var calleeList = new List<DoxygenDB.Entity>();
-                var calleeRefList = new List<DoxygenDB.Reference>();
-                dbObj.SearchRefEntity(out callerList, out callerRefList, m_uniqueName, "callby", "function, method", true);
-                dbObj.SearchRefEntity(out calleeList, out calleeRefList, m_uniqueName, "call", "function, method", true);
-                m_customData.Add("nCaller", new Variant(callerList.Count));
-                m_customData.Add("nCallee", new Variant(calleeList.Count));
-                m_customData.Add("callerR", new Variant(GetCallerRadius(callerList.Count)));
-                m_customData.Add("calleeR", new Variant(GetCallerRadius(calleeList.Count)));
-            }
-            else if (kindStr.Contains("attribute") || kindStr.Contains("variable") ||
-                kindStr.Contains("object"))
-            {
-                m_kind = DoxygenDB.EntKind.VARIABLE;
-            }
-            else if (kindStr.Contains("class") || kindStr.Contains("struct"))
-            {
-                m_kind = DoxygenDB.EntKind.CLASS;
-            }
-            else
-            {
-                m_kind = DoxygenDB.EntKind.UNKNOWN;
+                int nCaller = (int)customData["nCaller"];
+                int nCallee = (int)customData["nCallee"];
+                m_customData["nCaller"] = new Variant(nCaller);
+                m_customData["nCallee"] = new Variant(nCallee);
+                m_customData["callerR"] = new Variant(GetCallerRadius(nCaller));
+                m_customData["calleeR"] = new Variant(GetCallerRadius(nCallee));
             }
 
+            m_color = (Color)customData["color"];
             if (m_kind == DoxygenDB.EntKind.FUNCTION || m_kind == DoxygenDB.EntKind.VARIABLE)
             {
-                if (entity == null)
+                m_customData["hasDef"] = new Variant((int)customData["hasDef"]);
+                if (customData.ContainsKey("className"))
                 {
-                    m_color = Color.FromRgb(195, 195, 195);
+                    m_customData["className"] = new Variant((string)customData["className"]);
                 }
-                else
-                {
-                    List<DoxygenDB.Entity> defineList;
-                    List<DoxygenDB.Reference> defineRefList;
-                    dbObj.SearchRefEntity(out defineList, out defineRefList, uniqueName, "definein");
-                    var name = "";
-                    var hasDefinition = true;
-                    if (defineList.Count == 0)
-                    {
-                        dbObj.SearchRefEntity(out defineList, out defineRefList, uniqueName, "declarein");
-                        hasDefinition = false;
-                    }
-                    m_customData.Add("hasDef", new Variant(hasDefinition ? 1 : 0));
-                    if (defineList.Count != 0)
-                    {
-                        foreach (var defineEnt in defineList)
-                        {
-                            if (defineEnt.KindName().ToLower().Contains("class") ||
-                                defineEnt.KindName().ToLower().Contains("struct"))
-                            {
-                                name = defineEnt.Name();
-                                m_customData.Add("className", new Variant(name));
-                                break;
-                            }
-                        }
-                    }
-                    m_color = NameToColor(name);
-                }
-            }
-            else if (m_kind == DoxygenDB.EntKind.CLASS)
-            {
-                m_color = NameToColor(m_name);
             }
 
             SolidColorBrush brush = new SolidColorBrush();

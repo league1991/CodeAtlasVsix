@@ -30,6 +30,7 @@ namespace CodeAtlasVSIX
         public SceneUpdateThread(CodeScene scene)
         {
             m_thread = new Thread(new ThreadStart(Run));
+            m_thread.Name = "Scene Update Thread";
         }
 
         public void Start()
@@ -67,7 +68,7 @@ namespace CodeAtlasVSIX
                 {
                     scene.AcquireLock();
 
-                    //m_timeStamp = DateTime.Now;
+                    m_timeStamp = DateTime.Now;
                     //Console.WriteLine("-------------------------------------");
                     var itemDict = scene.GetItemDict();
                     if (scene.m_isLayoutDirty)
@@ -107,9 +108,10 @@ namespace CodeAtlasVSIX
                         m_selectTimeStamp = scene.m_selectTimeStamp;
                     }
 
-                    scene.ClearInvalidate();
                     scene.ReleaseLock();
                 }
+
+                scene.ClearInvalidate();
 
                 var moveDistance = scene.m_itemMoveDistance;
                 if (scene.View != null)

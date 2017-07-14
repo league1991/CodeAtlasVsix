@@ -114,6 +114,7 @@ namespace CodeAtlasVSIX
         public void OnOpenDB()
         {
             var dbObj = DBManager.Instance().GetDB();
+            var mainUI = UIManager.Instance().GetMainUI();
             var dbPath = dbObj.GetDBPath();
             if (dbPath == null || dbPath == "")
             {
@@ -131,15 +132,22 @@ namespace CodeAtlasVSIX
                 return;
             }
 
+            mainUI.SetCommandActive(false);
             JavaScriptSerializer js = new JavaScriptSerializer();
             var sceneData = js.Deserialize<Dictionary<string, object>>(jsonStr);
             AcquireLock();
+            Logger.Info("Open File: " + configPath);
+            var t0 = DateTime.Now;
+            var t1 = t0;
+            var beginTime = t0;
+
             // Stop item
             var stopItemData = sceneData["stopItem"] as Dictionary<string, object>;
             foreach (var item in stopItemData)
             {
                 m_stopItem[item.Key] = item.Value as string;
             }
+
             // Item Data
             var itemDataDict = sceneData["codeData"] as Dictionary<string, object>;
             foreach (var itemPair in itemDataDict)
@@ -147,26 +155,6 @@ namespace CodeAtlasVSIX
                 var itemData = itemPair.Value as DataDict;
                 m_itemDataDict[itemPair.Key] = itemData;
             }
-
-            // code item
-            var t0 = DateTime.Now;
-            var t1 = t0;
-            var beginTime = t0;
-            Logger.Debug("----------------- open ------------------------");
-            var codeItemList = sceneData["codeItem"] as ArrayList;
-            foreach (var item in codeItemList)
-            {
-                var uname = item as string;
-                var entity = dbObj.SearchFromUniqueName(uname);
-                if (entity == null)
-                {
-                    continue;
-                }
-                AddCodeItem(item as string);
-            }
-            t1 = DateTime.Now;
-            Logger.Debug("--------------AddCodeItem " + (t1 - t0).TotalMilliseconds.ToString());
-            t0 = t1;
 
             // edge data
             var edgeData = sceneData["edgeData"] as ArrayList;
@@ -180,46 +168,6 @@ namespace CodeAtlasVSIX
             t1 = DateTime.Now;
             Logger.Debug("--------------Edgedata " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
-
-            // edge item
-            var edgeItemList = sceneData["edgeItem"] as ArrayList;
-            foreach (var edgePair in edgeItemList)
-            {
-                var edgePairDict = edgePair as Dictionary<string, object>;
-                var edgePairList = edgePair as ArrayList;
-                var edgeKey = new EdgeKey(edgePairList[0] as string, edgePairList[1] as string);
-
-                bool isCustomEdge = false;
-                if (m_edgeDataDict.ContainsKey(edgeKey))
-                {
-                    var edgeDataDict = m_edgeDataDict[edgeKey] as DataDict;
-                    if (edgeDataDict.ContainsKey("customEdge") && (int)edgeDataDict["customEdge"] != 0)
-                    {
-                        _DoAddCodeEdgeItem(edgeKey.Item1, edgeKey.Item2, new DataDict { { "customEdge", 1 } });
-                        isCustomEdge = true;
-                    }
-                }
-                if(!isCustomEdge)
-                {
-                    var refObj = dbObj.SearchRefObj(edgeKey.Item1, edgeKey.Item2);
-                    if (refObj != null)
-                    {
-                        _DoAddCodeEdgeItem(edgeKey.Item1, edgeKey.Item2, new DataDict { { "dbRef", refObj } });
-                    }
-                    else
-                    {
-                        Logger.Debug("ignore edge:" + edgeKey.Item1 + " -> " + edgeKey.Item2);
-                    }
-                }
-            }
-            t1 = DateTime.Now;
-            Logger.Debug("--------------AddCodeEdgeItem " + (t1 - t0).TotalMilliseconds.ToString());
-            t0 = t1;
-
-            if (m_itemDict.Count > 0)
-            {
-                SelectNearestItem(new Point());
-            }
 
             // scheme
             var schemeDict = sceneData["scheme"] as Dictionary<string, object>;
@@ -244,9 +192,69 @@ namespace CodeAtlasVSIX
             }
             t1 = DateTime.Now;
             Logger.Debug("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
-            Logger.Info("Open Time: " + (t1 - beginTime).TotalSeconds.ToString() + "s");
-            t0 = t1;
+
             ReleaseLock();
+
+            // code item
+            System.Threading.Thread addingThread = new System.Threading.Thread((ThreadStart)delegate
+            {
+                var codeItemList = sceneData["codeItem"] as ArrayList;
+                foreach (var item in codeItemList)
+                {
+                    var uname = item as string;
+                    var entity = dbObj.SearchFromUniqueName(uname);
+                    if (entity == null)
+                    {
+                        continue;
+                    }
+                    //AddCodeItem(item as string);
+                    _DoAddCodeItem(item as string);
+                }
+                t1 = DateTime.Now;
+                Logger.Debug("--------------AddCodeItem " + (t1 - t0).TotalMilliseconds.ToString());
+                t0 = t1;
+
+                // edge item
+                var edgeItemList = sceneData["edgeItem"] as ArrayList;
+                foreach (var edgePair in edgeItemList)
+                {
+                    var edgePairDict = edgePair as Dictionary<string, object>;
+                    var edgePairList = edgePair as ArrayList;
+                    var edgeKey = new EdgeKey(edgePairList[0] as string, edgePairList[1] as string);
+
+                    bool isCustomEdge = false;
+                    if (m_edgeDataDict.ContainsKey(edgeKey))
+                    {
+                        var edgeDataDict = m_edgeDataDict[edgeKey] as DataDict;
+                        if (edgeDataDict.ContainsKey("customEdge") && (int)edgeDataDict["customEdge"] != 0)
+                        {
+                            _DoAddCodeEdgeItem(edgeKey.Item1, edgeKey.Item2, new DataDict { { "customEdge", 1 } });
+                            isCustomEdge = true;
+                        }
+                    }
+                    if (!isCustomEdge)
+                    {
+                        var refObj = dbObj.SearchRefObj(edgeKey.Item1, edgeKey.Item2);
+                        if (refObj != null)
+                        {
+                            _DoAddCodeEdgeItem(edgeKey.Item1, edgeKey.Item2, new DataDict { { "dbRef", refObj } });
+                        }
+                        else
+                        {
+                            Logger.Debug("ignore edge:" + edgeKey.Item1 + " -> " + edgeKey.Item2);
+                        }
+                    }
+                }
+                t1 = DateTime.Now;
+                Logger.Debug("--------------AddCodeEdgeItem " + (t1 - t0).TotalMilliseconds.ToString());
+                Logger.Info("Open Time: " + (t1 - beginTime).TotalSeconds.ToString() + "s");
+                t0 = t1;
+
+                // Activeate commands
+                mainUI.SetCommandActive(true);
+            });
+            addingThread.Name = "Open DB Thread";
+            addingThread.Start();
         }
 
         public void OnCloseDB()
@@ -1083,6 +1091,7 @@ namespace CodeAtlasVSIX
             }
             m_view.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
+                var now = DateTime.Now;
                 AcquireLock();
                 m_itemMoveDistance = 0;
                 foreach (var node in m_itemDict)
@@ -1164,25 +1173,107 @@ namespace CodeAtlasVSIX
             {
                 return false;
             }
-            Console.WriteLine("======================");
-            var t0 = DateTime.Now;
-            var item = new CodeUIItem(srcUniqueName);
 
-            var t1 = DateTime.Now;
-            Console.WriteLine("======new CodeUIItem " + (t1-t0).TotalMilliseconds.ToString());
-            t0 = t1;
+            var dbObj = DBManager.Instance().GetDB();
+            var entity = dbObj.SearchFromUniqueName(srcUniqueName);
+            if (entity == null)
+            {
+                return false;
+            }
 
-            m_itemDict[srcUniqueName] = item;
-            m_view.canvas.Children.Add(item);
-            Point center;
-            GetSelectedCenter(out center);
-            item.Pos = center;
-            item.SetTargetPos(center);
-            m_isLayoutDirty = true;
+            // Build custom data
+            var customData = new Dictionary<string, object>();
+            customData["name"] = entity.Name();
+            customData["longName"] = entity.Longname();
+            customData["comment"] = GetComment(srcUniqueName);
+            customData["kindName"] = entity.KindName();
+            var metricRes = entity.Metric();
+            customData["metric"] = metricRes;
+            if (metricRes.ContainsKey("CountLine"))
+            {
+                var metricLine = metricRes["CountLine"].m_int;
+                customData["lines"] = metricLine;
+            }
 
-            t1 = DateTime.Now;
-            Console.WriteLine("====================== " + (t1 - t0).TotalMilliseconds.ToString());
-            t0 = t1;
+            var kindStr = entity.KindName().ToLower();
+
+            DoxygenDB.EntKind kind = DoxygenDB.EntKind.UNKNOWN;
+            if (kindStr.Contains("function") || kindStr.Contains("method"))
+            {
+                kind = DoxygenDB.EntKind.FUNCTION;
+                // Find caller and callee count
+                var callerList = new List<DoxygenDB.Entity>();
+                var callerRefList = new List<DoxygenDB.Reference>();
+                var calleeList = new List<DoxygenDB.Entity>();
+                var calleeRefList = new List<DoxygenDB.Reference>();
+                dbObj.SearchRefEntity(out callerList, out callerRefList, srcUniqueName, "callby", "function, method", true);
+                dbObj.SearchRefEntity(out calleeList, out calleeRefList, srcUniqueName, "call", "function, method", true);
+                customData.Add("nCaller", callerList.Count);
+                customData.Add("nCallee", calleeList.Count);
+            }
+            else if (kindStr.Contains("attribute") || kindStr.Contains("variable") ||
+                kindStr.Contains("object"))
+            {
+                kind = DoxygenDB.EntKind.VARIABLE;
+            }
+            else if (kindStr.Contains("class") || kindStr.Contains("struct"))
+            {
+                kind = DoxygenDB.EntKind.CLASS;
+            }
+            customData["kind"] = kind;
+
+            customData["color"] = Color.FromRgb(195, 195, 195);
+            if (kind == DoxygenDB.EntKind.FUNCTION || kind == DoxygenDB.EntKind.VARIABLE)
+            {
+                List<DoxygenDB.Entity> defineList;
+                List<DoxygenDB.Reference> defineRefList;
+                dbObj.SearchRefEntity(out defineList, out defineRefList, srcUniqueName, "definein");
+                var name = "";
+                var hasDefinition = true;
+                if (defineList.Count == 0)
+                {
+                    dbObj.SearchRefEntity(out defineList, out defineRefList, srcUniqueName, "declarein");
+                    hasDefinition = false;
+                }
+                customData.Add("hasDef", hasDefinition ? 1 : 0);
+                if (defineList.Count != 0)
+                {
+                    foreach (var defineEnt in defineList)
+                    {
+                        if (defineEnt.KindName().ToLower().Contains("class") ||
+                            defineEnt.KindName().ToLower().Contains("struct"))
+                        {
+                            name = defineEnt.Name();
+                            customData["className"] = name;
+                            customData["color"] = CodeUIItem.NameToColor(name);
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (kind == DoxygenDB.EntKind.CLASS)
+            {
+                customData["color"] = CodeUIItem.NameToColor((string)customData["name"]);
+            }
+
+            // Add CodeUIItem
+            this.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                AcquireLock();
+                var item = new CodeUIItem(srcUniqueName, customData);
+                m_itemDict[srcUniqueName] = item;
+                m_view.canvas.Children.Add(item);
+                Point center;
+                GetSelectedCenter(out center);
+                item.Pos = center;
+                item.SetTargetPos(center);
+                m_isLayoutDirty = true;
+                if (m_itemDict.Count == 1)
+                {
+                    SelectOneItem(item);
+                }
+                ReleaseLock();
+            });
             return true;
         }
 
@@ -1243,31 +1334,38 @@ namespace CodeAtlasVSIX
                 return false;
             }
 
-            var srcNode = m_itemDict[srcUniqueName];
-            var tarNode = m_itemDict[tarUniqueName];
-            var edgeItem = new CodeUIEdgeItem(srcUniqueName, tarUniqueName, data);
-            //var srcBinding = new Binding("RightPoint") { Source = srcNode };
-            //var tarBinding = new Binding("LeftPoint") { Source = tarNode };
-            //BindingOperations.SetBinding(edgeItem, CodeUIEdgeItem.StartPointProperty, srcBinding);
-            //BindingOperations.SetBinding(edgeItem, CodeUIEdgeItem.EndPointProperty, tarBinding);
-            m_edgeDict.Add(key, edgeItem);
-            if(data != null && data.ContainsKey("customEdge"))
+            // Add CodeUIItem
+            this.Dispatcher.Invoke((ThreadStart)delegate
             {
-                bool isCustomEdge = (int)data["customEdge"] != 0;
-                if (isCustomEdge)
+                AcquireLock();
+                var srcNode = m_itemDict[srcUniqueName];
+                var tarNode = m_itemDict[tarUniqueName];
+                var edgeItem = new CodeUIEdgeItem(srcUniqueName, tarUniqueName, data);
+                //var srcBinding = new Binding("RightPoint") { Source = srcNode };
+                //var tarBinding = new Binding("LeftPoint") { Source = tarNode };
+                //BindingOperations.SetBinding(edgeItem, CodeUIEdgeItem.StartPointProperty, srcBinding);
+                //BindingOperations.SetBinding(edgeItem, CodeUIEdgeItem.EndPointProperty, tarBinding);
+                m_edgeDict.Add(key, edgeItem);
+                if (data != null && data.ContainsKey("customEdge"))
                 {
-                    if (!m_edgeDataDict.ContainsKey(key))
+                    bool isCustomEdge = (int)data["customEdge"] != 0;
+                    if (isCustomEdge)
                     {
-                        m_edgeDataDict.Add(key, new DataDict { { "customEdge", 1} });
-                    }
-                    else
-                    {
-                        AddOrReplaceDict(m_edgeDataDict[key],"customEdge", 1);
+                        if (!m_edgeDataDict.ContainsKey(key))
+                        {
+                            m_edgeDataDict.Add(key, new DataDict { { "customEdge", 1 } });
+                        }
+                        else
+                        {
+                            AddOrReplaceDict(m_edgeDataDict[key], "customEdge", 1);
+                        }
                     }
                 }
-            }
-            m_view.canvas.Children.Add(edgeItem);
-            m_isLayoutDirty = true;
+                m_view.canvas.Children.Add(edgeItem);
+                m_isLayoutDirty = true;
+                ReleaseLock();
+            });
+
             return true;
         }
 
@@ -2084,9 +2182,9 @@ namespace CodeAtlasVSIX
 
         public void ClearInvalidate()
         {
-            AcquireLock();
             if (m_isInvalidate)
             {
+                AcquireLock();
                 foreach (var node in m_itemDict)
                 {
                     node.Value.Invalidate();
@@ -2108,8 +2206,8 @@ namespace CodeAtlasVSIX
                     edge.Value.IsDirty = false;
                 }
                 m_isInvalidate = false;
+                ReleaseLock();
             }
-            ReleaseLock();
         }
     }
 }
