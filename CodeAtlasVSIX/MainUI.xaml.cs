@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -169,10 +170,19 @@ namespace CodeAtlasVSIX
 
         public void UpdateUI()
         {
-            schemeWindow.UpdateScheme();
-            symbolWindow.UpdateForbiddenSymbol();
-            symbolWindow.UpdateSymbol("", "");
-            searchWindow.OnSearch();
+            schemeWindow.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                schemeWindow.UpdateScheme();
+            });
+            symbolWindow.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                symbolWindow.UpdateForbiddenSymbol();
+                symbolWindow.UpdateSymbol("", "");
+            });
+            symbolWindow.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                searchWindow.OnSearch();
+            });
         }
 
         public void OnShowInAtlas(object sender, ExecutedRoutedEventArgs e)
@@ -558,8 +568,13 @@ namespace CodeAtlasVSIX
 
         void AnalyseSolution(bool useClang, bool onlySelectedProjects = false)
         {
+            if (!m_isCommandEnable)
+            {
+                return;
+            }
             try
             {
+                m_isCommandEnable = false;
                 var traverser = new ProjectFileCollector();
                 if (onlySelectedProjects)
                 {
@@ -592,7 +607,6 @@ namespace CodeAtlasVSIX
                 }
                 postFix = postFix.Replace(" ", "");
 
-                DBManager.Instance().CloseDB();
                 DoxygenDB.DoxygenDBConfig config = new DoxygenDB.DoxygenDBConfig();
                 config.m_configPath = doxyFolder + "/Result" + postFix + ".atlas";
                 config.m_inputFolders = dirList;
@@ -602,15 +616,23 @@ namespace CodeAtlasVSIX
                 config.m_defines = traverser.GetAllDefines();
                 config.m_useClang = useClang;
                 config.m_mainLanguage = traverser.GetMainLanguage();
+                DBManager.Instance().CloseDB();
 
-                DoxygenDB.DoxygenDB.GenerateDB(config);
-                DBManager.Instance().OpenDB(config.m_configPath);
-                UpdateUI();
+                System.Threading.Thread analysisThread = new System.Threading.Thread((ThreadStart)delegate
+                {
+                    DoxygenDB.DoxygenDB.GenerateDB(config);
+                    DBManager.Instance().OpenDB(config.m_configPath);
+                    UpdateUI();
+                    m_isCommandEnable = true;
+                });
+                analysisThread.Name = "Analysis Thread";
+                analysisThread.Start();
             }
             catch (Exception)
             {
                 Logger.Warning("Analyse failed. Please try again.");
                 DBManager.Instance().CloseDB();
+                m_isCommandEnable = true;
             }
         }
 
