@@ -103,6 +103,10 @@ namespace CodeAtlasVSIX
 
         public void OnOpen(object sender, RoutedEventArgs e)
         {
+            if (!m_isCommandEnable)
+            {
+                return;
+            }
             Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
 
             var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
@@ -154,6 +158,10 @@ namespace CodeAtlasVSIX
 
         public void OnClose(object sender, RoutedEventArgs e)
         {
+            if (!m_isCommandEnable)
+            {
+                return;
+            }
             DBManager.Instance().CloseDB();
             UpdateUI();
             UIManager.Instance().GetScene().m_selectTimeStamp += 1;
