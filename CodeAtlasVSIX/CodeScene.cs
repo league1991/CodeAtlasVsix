@@ -133,71 +133,73 @@ namespace CodeAtlasVSIX
             }
 
             mainUI.SetCommandActive(false);
-            JavaScriptSerializer js = new JavaScriptSerializer();
-            var sceneData = js.Deserialize<Dictionary<string, object>>(jsonStr);
-            AcquireLock();
-            Logger.Info("Open File: " + configPath);
-            var t0 = DateTime.Now;
-            var t1 = t0;
-            var beginTime = t0;
 
-            // Stop item
-            var stopItemData = sceneData["stopItem"] as Dictionary<string, object>;
-            foreach (var item in stopItemData)
-            {
-                m_stopItem[item.Key] = item.Value as string;
-            }
-
-            // Item Data
-            var itemDataDict = sceneData["codeData"] as Dictionary<string, object>;
-            foreach (var itemPair in itemDataDict)
-            {
-                var itemData = itemPair.Value as DataDict;
-                m_itemDataDict[itemPair.Key] = itemData;
-            }
-
-            // edge data
-            var edgeData = sceneData["edgeData"] as ArrayList;
-            foreach (var dataItem in edgeData)
-            {
-                var dataList = dataItem as ArrayList;
-                var edgeKey = new EdgeKey(dataList[0] as string, dataList[1] as string);
-                var edgeDataDict = dataList[2] as DataDict;
-                m_edgeDataDict[edgeKey] = edgeDataDict;
-            }
-            t1 = DateTime.Now;
-            Logger.Debug("--------------Edgedata " + (t1 - t0).TotalMilliseconds.ToString());
-            t0 = t1;
-
-            // scheme
-            var schemeDict = sceneData["scheme"] as Dictionary<string, object>;
-            foreach (var schemeItem in schemeDict)
-            {
-                var name = schemeItem.Key;
-                var schemeData = schemeItem.Value as Dictionary<string, object>;
-                var nodeList = schemeData["node"] as ArrayList;
-                var edgeList = schemeData["edge"] as ArrayList;
-                var schemeObj = new SchemeData();
-                foreach (var node in nodeList)
-                {
-                    schemeObj.m_nodeList.Add(node as string);
-                }
-                foreach (var item in edgeList)
-                {
-                    var edgeItem = item as ArrayList;
-                    schemeObj.m_edgeDict[new EdgeKey(edgeItem[0] as string, edgeItem[1] as string)] =
-                        edgeItem[2] as DataDict;
-                }
-                m_scheme[name] = schemeObj;
-            }
-            t1 = DateTime.Now;
-            Logger.Debug("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
-
-            ReleaseLock();
-
-            // code item
             System.Threading.Thread addingThread = new System.Threading.Thread((ThreadStart)delegate
             {
+                JavaScriptSerializer js = new JavaScriptSerializer();
+                var sceneData = js.Deserialize<Dictionary<string, object>>(jsonStr);
+
+                AcquireLock();
+                Logger.Info("Open File: " + configPath);
+                var t0 = DateTime.Now;
+                var t1 = t0;
+                var beginTime = t0;
+
+                // Stop item
+                var stopItemData = sceneData["stopItem"] as Dictionary<string, object>;
+                foreach (var item in stopItemData)
+                {
+                    m_stopItem[item.Key] = item.Value as string;
+                }
+
+                // Item Data
+                var itemDataDict = sceneData["codeData"] as Dictionary<string, object>;
+                foreach (var itemPair in itemDataDict)
+                {
+                    var itemData = itemPair.Value as DataDict;
+                    m_itemDataDict[itemPair.Key] = itemData;
+                }
+
+                // edge data
+                var edgeData = sceneData["edgeData"] as ArrayList;
+                foreach (var dataItem in edgeData)
+                {
+                    var dataList = dataItem as ArrayList;
+                    var edgeKey = new EdgeKey(dataList[0] as string, dataList[1] as string);
+                    var edgeDataDict = dataList[2] as DataDict;
+                    m_edgeDataDict[edgeKey] = edgeDataDict;
+                }
+                t1 = DateTime.Now;
+                Logger.Debug("--------------Edgedata " + (t1 - t0).TotalMilliseconds.ToString());
+                t0 = t1;
+
+                // scheme
+                var schemeDict = sceneData["scheme"] as Dictionary<string, object>;
+                foreach (var schemeItem in schemeDict)
+                {
+                    var name = schemeItem.Key;
+                    var schemeData = schemeItem.Value as Dictionary<string, object>;
+                    var nodeList = schemeData["node"] as ArrayList;
+                    var edgeList = schemeData["edge"] as ArrayList;
+                    var schemeObj = new SchemeData();
+                    foreach (var node in nodeList)
+                    {
+                        schemeObj.m_nodeList.Add(node as string);
+                    }
+                    foreach (var item in edgeList)
+                    {
+                        var edgeItem = item as ArrayList;
+                        schemeObj.m_edgeDict[new EdgeKey(edgeItem[0] as string, edgeItem[1] as string)] =
+                            edgeItem[2] as DataDict;
+                    }
+                    m_scheme[name] = schemeObj;
+                }
+                t1 = DateTime.Now;
+                Logger.Debug("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
+
+                ReleaseLock();
+
+                // code item
                 var codeItemList = sceneData["codeItem"] as ArrayList;
                 foreach (var item in codeItemList)
                 {

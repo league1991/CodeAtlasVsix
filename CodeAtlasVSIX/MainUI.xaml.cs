@@ -69,6 +69,10 @@ namespace CodeAtlasVSIX
         public void SetCommandActive(bool isActive)
         {
             m_isCommandEnable = isActive;
+            schemeWindow.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                this.mask.Visibility = isActive ? Visibility.Hidden : Visibility.Visible;
+            });
         }
 
         public bool GetCommandActive()
@@ -104,7 +108,7 @@ namespace CodeAtlasVSIX
 
         public void OnOpen(object sender, RoutedEventArgs e)
         {
-            if (!m_isCommandEnable)
+            if (!GetCommandActive())
             {
                 return;
             }
@@ -159,7 +163,7 @@ namespace CodeAtlasVSIX
 
         public void OnClose(object sender, RoutedEventArgs e)
         {
-            if (!m_isCommandEnable)
+            if (!GetCommandActive())
             {
                 return;
             }
@@ -187,7 +191,7 @@ namespace CodeAtlasVSIX
 
         public void OnShowInAtlas(object sender, ExecutedRoutedEventArgs e)
         {
-            if (!m_isCommandEnable)
+            if (!GetCommandActive())
             {
                 return;
             }
@@ -568,13 +572,13 @@ namespace CodeAtlasVSIX
 
         void AnalyseSolution(bool useClang, bool onlySelectedProjects = false)
         {
-            if (!m_isCommandEnable)
+            if (!GetCommandActive())
             {
                 return;
             }
             try
             {
-                m_isCommandEnable = false;
+                SetCommandActive(false);
                 var traverser = new ProjectFileCollector();
                 if (onlySelectedProjects)
                 {
@@ -586,6 +590,7 @@ namespace CodeAtlasVSIX
 
                 if (dirList.Count == 0 || solutionFolder == "")
                 {
+                    SetCommandActive(true);
                     return;
                 }
                 string doxyFolder = solutionFolder + "/CodeAtlasData";
@@ -623,7 +628,7 @@ namespace CodeAtlasVSIX
                     DoxygenDB.DoxygenDB.GenerateDB(config);
                     DBManager.Instance().OpenDB(config.m_configPath);
                     UpdateUI();
-                    m_isCommandEnable = true;
+                    SetCommandActive(true);
                 });
                 analysisThread.Name = "Analysis Thread";
                 analysisThread.Start();
@@ -632,7 +637,7 @@ namespace CodeAtlasVSIX
             {
                 Logger.Warning("Analyse failed. Please try again.");
                 DBManager.Instance().CloseDB();
-                m_isCommandEnable = true;
+                SetCommandActive(true);
             }
         }
 

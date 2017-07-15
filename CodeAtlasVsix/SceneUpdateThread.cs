@@ -69,7 +69,6 @@ namespace CodeAtlasVSIX
                     scene.AcquireLock();
 
                     m_timeStamp = DateTime.Now;
-                    //Console.WriteLine("-------------------------------------");
                     var itemDict = scene.GetItemDict();
                     if (scene.m_isLayoutDirty)
                     {
@@ -109,17 +108,15 @@ namespace CodeAtlasVSIX
                     }
 
                     scene.ReleaseLock();
-                }
 
-                scene.ClearInvalidate();
+                    scene.ClearInvalidate();
+                }
 
                 var moveDistance = scene.m_itemMoveDistance;
                 if (scene.View != null)
                 {
                     moveDistance += scene.View.m_lastMoveOffset;
                 }
-                //Console.WriteLine("Move dist: " + moveDistance.ToString());
-
                 m_sleepTime = (moveDistance > 0.1) ? 30 : 300;
                 Thread.Sleep(m_sleepTime);
             }
