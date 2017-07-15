@@ -17,6 +17,7 @@ namespace CodeAtlasVSIX
         {
         }
 
+        int m_forceSleepTime = -1;
         int m_sleepTime = 30;
         Thread m_thread = null;
         bool m_isActive = true;
@@ -55,6 +56,16 @@ namespace CodeAtlasVSIX
             //m_timeStamp = now;
         }
 
+        public void SetForceSleepTime(int t)
+        {
+            m_forceSleepTime = t;
+        }
+
+        public void ClearForceSleepTime()
+        {
+            m_forceSleepTime = -1;
+        }
+
         void Run()
         {
             var scene = UIManager.Instance().GetScene();
@@ -64,6 +75,8 @@ namespace CodeAtlasVSIX
                 {
                     break;
                 }
+
+                var beginTime = DateTime.Now;
                 if (m_isActive)
                 {
                     scene.AcquireLock();
@@ -116,7 +129,16 @@ namespace CodeAtlasVSIX
                 {
                     moveDistance += scene.View.m_lastMoveOffset;
                 }
-                m_sleepTime = (moveDistance > 0.1) ? 30 : 300;
+                
+                if (m_forceSleepTime > 0)
+                {
+                    m_sleepTime = m_forceSleepTime;
+                }
+                else
+                {
+                    m_sleepTime = (moveDistance > 0.1) ? 50 : 500;
+                }
+
                 Thread.Sleep(m_sleepTime);
             }
         }

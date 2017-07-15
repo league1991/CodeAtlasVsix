@@ -134,6 +134,7 @@ namespace CodeAtlasVSIX
             }
 
             mainUI.SetCommandActive(false);
+            m_updateThread.SetForceSleepTime(100);
 
             System.Threading.Thread addingThread = new System.Threading.Thread((ThreadStart)delegate
             {
@@ -255,6 +256,7 @@ namespace CodeAtlasVSIX
 
                 // Activeate commands
                 mainUI.SetCommandActive(true);
+                m_updateThread.ClearForceSleepTime();
             });
             addingThread.Name = "Open DB Thread";
             addingThread.Start();
