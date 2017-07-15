@@ -62,6 +62,7 @@ namespace CodeAtlasVSIX
         public bool m_autoFocus = true;
         bool m_autoFocusToggle = true;
         public double m_itemMoveDistance = 0.0;
+        public bool m_waitingItemMove = false;
         public int m_selectTimeStamp = 0;
         public int m_schemeTimeStamp = 0;
 
@@ -1091,6 +1092,11 @@ namespace CodeAtlasVSIX
             {
                 return;
             }
+
+            //AcquireLock();
+            //m_waitingItemMove = true;
+            //ReleaseLock();
+
             m_view.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
                 var now = DateTime.Now;
@@ -1101,6 +1107,7 @@ namespace CodeAtlasVSIX
                     var item = node.Value;
                     m_itemMoveDistance += item.MoveToTarget(0.05);
                 }
+                m_waitingItemMove = false;
                 ReleaseLock();
             });
         }

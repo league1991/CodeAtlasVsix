@@ -17,6 +17,7 @@ namespace CodeAtlasVSIX
     {
         public double scaleValue = 1.0;
         public double m_lastMoveOffset = 0.0;
+        public bool m_isViewMoving = false;
 
         public CodeView()
         {
@@ -53,6 +54,12 @@ namespace CodeAtlasVSIX
 
         public void MoveView(Point center)
         {
+            //if (m_isViewMoving)
+            //{
+            //    return;
+            //}
+
+            m_isViewMoving = true;
             Dispatcher.BeginInvoke((ThreadStart)delegate
             {
                 var transform = this.canvas.RenderTransform as MatrixTransform;
@@ -66,6 +73,7 @@ namespace CodeAtlasVSIX
 
                 matrix.TranslatePrepend(offset.X, offset.Y);
                 transform.Matrix = matrix;
+                m_isViewMoving = false;
             });
         }
 

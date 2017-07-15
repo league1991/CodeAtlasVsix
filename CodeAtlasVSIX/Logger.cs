@@ -38,7 +38,7 @@ namespace CodeAtlasVSIX
 
             if (s_outputPane != null)
             {
-                s_outputPane.OutputStringThreadSafe(content + "\n");
+                s_outputPane.OutputString(content + "\n");
                 s_outputPane.Activate(); // Brings this pane into view
             }
             else

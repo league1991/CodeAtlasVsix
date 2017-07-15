@@ -87,11 +87,10 @@ namespace CodeAtlasVSIX
                     MoveItems();
                     UpdateTimeStamp("Move Items");
 
-                    UpdateCallOrder();
-                    UpdateTimeStamp("Call Order");
-
                     if (m_selectTimeStamp != scene.m_selectTimeStamp || m_schemeTimeStamp != scene.m_schemeTimeStamp)
                     {
+                        UpdateCallOrder();
+                        UpdateTimeStamp("Call Order");
                         scene.UpdateCurrentValidScheme();
                         UpdateTimeStamp("Scheme");
                         m_schemeTimeStamp = scene.m_schemeTimeStamp;
