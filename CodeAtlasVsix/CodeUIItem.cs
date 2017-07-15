@@ -553,19 +553,14 @@ namespace CodeAtlasVSIX
 
         public double MoveToTarget(double ratio)
         {
-            var offset = m_targetPos - Pos;
-            var offsetLength = Math.Abs(offset.X) + Math.Abs(offset.Y);
+            Vector offset = m_targetPos - Pos;
+            var offsetLength = offset.Length;
             if (offsetLength < 0.1)
             {
                 return 0.0;
             }
 
-            double pntX = Pos.X;
-            double pntY = Pos.Y;
-            pntX = pntX * (1.0 - ratio) + m_targetPos.X * ratio;
-            pntY = pntY * (1.0 - ratio) + m_targetPos.Y * ratio;
-            var tar = new Point(pntX, pntY);
-            Pos = tar;
+            Pos = Pos + offset * ratio;
             return offsetLength * ratio;
         }
 
