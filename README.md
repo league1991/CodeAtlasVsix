@@ -82,13 +82,13 @@ Input your comment for functions/classes/variables in Symbol panel.
 Setup
 --------
 
-1. Download the vsix package or compile one yourself
+1. Download the vsix package or compile one yourself.
 ![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/setup1.png) 
 
-2. Open and install the package
+2. Open and install the package.
 ![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/setup2.png) 
 
-3. The package is installed
+3. The package is installed.
 ![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/setup3.png) 
 
 4. Open Visual Studio, you can see a menu named "Code Atlas". Press "Open Code Atlas Window" to show the window.
