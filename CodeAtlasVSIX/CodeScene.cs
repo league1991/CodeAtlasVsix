@@ -720,11 +720,12 @@ namespace CodeAtlasVSIX
             {
                 minItem = FindNeighbourForEdge(centerEdge, mainDirection);
             }
-
+            ReleaseLock();
             t1 = DateTime.Now;
-            Logger.Debug("## FindNeighbour " + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Debug("## Find Neighbour " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
-            
+
+            AcquireLock();
             if (minItem != null)
             {
                 bool res = SelectOneItem(minItem);
@@ -733,15 +734,10 @@ namespace CodeAtlasVSIX
                     ShowInEditor();
                 }
             }
-
-            t1 = DateTime.Now;
-            Logger.Debug("## ShowInEditor " + (t1 - t0).TotalMilliseconds.ToString());
-            t0 = t1;
-
             ReleaseLock();
 
             t1 = DateTime.Now;
-            Logger.Debug("## Find Neighbour " + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Debug("## ShowInEditor " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
         }
 

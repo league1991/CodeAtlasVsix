@@ -52,15 +52,15 @@ namespace CodeAtlasVSIX
 
         void UpdateTimeStamp(string info)
         {
-            var now = DateTime.Now;
-            var ms = (now - m_timeStamp).TotalMilliseconds;
-            m_timeStamp = now;
+            //var now = DateTime.Now;
+            //var ms = (now - m_timeStamp).TotalMilliseconds;
+            //m_timeStamp = now;
 
-            var scene = UIManager.Instance().GetScene();
-            scene.Dispatcher.BeginInvoke((ThreadStart)delegate
-            {
-                Logger.Debug(info + ":" + ms.ToString());
-            });
+            //var scene = UIManager.Instance().GetScene();
+            //scene.Dispatcher.BeginInvoke((ThreadStart)delegate
+            //{
+            //    Logger.Debug(info + ":" + ms.ToString());
+            //});
         }
 
         public void SetForceSleepTime(int t)
@@ -91,7 +91,6 @@ namespace CodeAtlasVSIX
                     m_timeStamp = DateTime.Now;
                     if (scene.m_isLayoutDirty)
                     {
-                        Thread.Sleep(m_sleepTime / 2);
                         scene.AcquireLock();
                         UpdateLayeredLayoutWithComp();
                         scene.m_isLayoutDirty = false;
@@ -105,6 +104,7 @@ namespace CodeAtlasVSIX
                     UpdateTimeStamp("Move Items");
                     scene.ReleaseLock();
 
+                    Thread.Sleep(m_sleepTime / 2);
                     scene.AcquireLock();
                     UpdateCallOrder();
                     UpdateTimeStamp("Call Order");

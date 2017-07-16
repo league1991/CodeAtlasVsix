@@ -186,6 +186,14 @@ namespace CodeAtlasVSIX
 
         public double FindCurveYPos(double x)
         {
+            var scene = UIManager.Instance().GetScene();
+            var srcNode = scene.GetNode(m_srcUniqueName);
+            var tarNode = scene.GetNode(m_tarUniqueName);
+            m_p0 = srcNode.GetRightSlotPos();
+            m_p3 = tarNode.GetLeftSlotPos();
+            m_p1 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p0.Y);
+            m_p2 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p3.Y);
+
             var sign = 1.0;
             if (m_p3.X < m_p0.X)
             {
