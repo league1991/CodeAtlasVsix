@@ -724,26 +724,24 @@ namespace CodeAtlasVSIX
             t1 = DateTime.Now;
             Logger.Debug("## FindNeighbour " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
-
-            ReleaseLock();
-
-            t1 = DateTime.Now;
-            Logger.Debug("## ReleaseLock " + (t1 - t0).TotalMilliseconds.ToString());
-            t0 = t1;
-
-            if (minItem == null)
+            
+            if (minItem != null)
             {
-                return;
-            }
-
-            bool res = SelectOneItem(minItem);
-            if (res)
-            {
-                ShowInEditor();
+                bool res = SelectOneItem(minItem);
+                if (res)
+                {
+                    ShowInEditor();
+                }
             }
 
             t1 = DateTime.Now;
             Logger.Debug("## ShowInEditor " + (t1 - t0).TotalMilliseconds.ToString());
+            t0 = t1;
+
+            ReleaseLock();
+
+            t1 = DateTime.Now;
+            Logger.Debug("## Find Neighbour " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
         }
 
@@ -1090,14 +1088,12 @@ namespace CodeAtlasVSIX
 
         public void MoveItems()
         {
-            if(m_view == null)
+            if(m_view == null || m_waitingItemMove)
             {
                 return;
             }
-
-            //AcquireLock();
-            //m_waitingItemMove = true;
-            //ReleaseLock();
+            
+            m_waitingItemMove = true;
 
             m_view.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
@@ -1109,8 +1105,9 @@ namespace CodeAtlasVSIX
                     var item = node.Value;
                     m_itemMoveDistance += item.MoveToTarget(0.05);
                 }
-                m_waitingItemMove = false;
                 ReleaseLock();
+                Logger.Debug("MoveItems: BeginInvoke:" + (DateTime.Now - now).TotalMilliseconds);
+                m_waitingItemMove = false;
             });
         }
 

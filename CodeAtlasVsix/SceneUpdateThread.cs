@@ -32,6 +32,7 @@ namespace CodeAtlasVSIX
         {
             m_thread = new Thread(new ThreadStart(Run));
             m_thread.Name = "Scene Update Thread";
+            m_thread.Priority = ThreadPriority.Lowest;
         }
 
         public void Start()
@@ -51,9 +52,15 @@ namespace CodeAtlasVSIX
 
         void UpdateTimeStamp(string info)
         {
-            //var now = DateTime.Now;
-            //Console.WriteLine(info + ":" + (now - m_timeStamp).TotalMilliseconds.ToString());
-            //m_timeStamp = now;
+            var now = DateTime.Now;
+            var ms = (now - m_timeStamp).TotalMilliseconds;
+            m_timeStamp = now;
+
+            var scene = UIManager.Instance().GetScene();
+            scene.Dispatcher.BeginInvoke((ThreadStart)delegate
+            {
+                Logger.Debug(info + ":" + ms.ToString());
+            });
         }
 
         public void SetForceSleepTime(int t)
@@ -79,36 +86,40 @@ namespace CodeAtlasVSIX
                 var beginTime = DateTime.Now;
                 if (m_isActive)
                 {
-                    scene.AcquireLock();
+                    UpdateTimeStamp("++++++++++++++++++++ begin thread ++++++++++++++++++++");
 
                     m_timeStamp = DateTime.Now;
-                    var itemDict = scene.GetItemDict();
                     if (scene.m_isLayoutDirty)
                     {
+                        Thread.Sleep(m_sleepTime / 2);
+                        scene.AcquireLock();
                         UpdateLayeredLayoutWithComp();
-
-                        // update internal dict
-                        m_itemSet.Clear();
-                        foreach (var item in itemDict)
-                        {
-                            m_itemSet.Add(item.Key, new ItemData());
-                        }
                         scene.m_isLayoutDirty = false;
+                        UpdateTimeStamp("Layout");
+                        scene.ReleaseLock();
                     }
-                    UpdateTimeStamp("Layout");
-
+                    
+                    Thread.Sleep(m_sleepTime/2);
+                    scene.AcquireLock();
                     MoveItems();
                     UpdateTimeStamp("Move Items");
+                    scene.ReleaseLock();
 
+                    scene.AcquireLock();
+                    UpdateCallOrder();
+                    UpdateTimeStamp("Call Order");
+                    scene.ReleaseLock();
+
+                    scene.AcquireLock();
                     if (m_selectTimeStamp != scene.m_selectTimeStamp || m_schemeTimeStamp != scene.m_schemeTimeStamp)
                     {
-                        UpdateCallOrder();
-                        UpdateTimeStamp("Call Order");
                         scene.UpdateCurrentValidScheme();
                         UpdateTimeStamp("Scheme");
                         m_schemeTimeStamp = scene.m_schemeTimeStamp;
                     }
+                    scene.ReleaseLock();
 
+                    scene.AcquireLock();
                     scene.UpdateCandidateEdge();
                     UpdateTimeStamp("Candidate Edge");
 
@@ -119,9 +130,14 @@ namespace CodeAtlasVSIX
                         m_selectTimeStamp = scene.m_selectTimeStamp;
                     }
 
+                    UpdateTimeStamp("---------------------- end thread ------------------");
                     scene.ReleaseLock();
 
                     scene.ClearInvalidate();
+                }
+                else
+                {
+                    Thread.Sleep(m_sleepTime);
                 }
 
                 var moveDistance = scene.m_itemMoveDistance;
@@ -136,10 +152,9 @@ namespace CodeAtlasVSIX
                 }
                 else
                 {
-                    m_sleepTime = (moveDistance > 0.1) ? 50 : 500;
+                    m_sleepTime = (moveDistance > 0.1) ? 30 : 500;
                 }
-
-                Thread.Sleep(m_sleepTime);
+                //Thread.Sleep(m_sleepTime/2);
             }
         }
 

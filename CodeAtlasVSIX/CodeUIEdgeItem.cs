@@ -29,6 +29,12 @@ namespace CodeAtlasVSIX
 
     public class CodeUIEdgeItem: Shape
     {
+        enum StrokeMode
+        {
+            STROKE_SELECTED = 1,
+            STROKE_CANDIDATE = 2,
+            STROKE_NORMAL = 3
+        };
         public string m_srcUniqueName;
         public string m_tarUniqueName;
         PathGeometry m_geometry = new PathGeometry();
@@ -45,6 +51,7 @@ namespace CodeAtlasVSIX
         public int m_column = 0;
         public bool m_customEdge = false;
         public int m_selectTimeStamp = 0;
+        StrokeMode m_strokeMode = StrokeMode.STROKE_NORMAL;
         List<Color> m_schemeColorList = new List<Color>();
 
         public CodeUIEdgeItem(string srcName, string tarName, DataDict edgeData)
@@ -91,6 +98,7 @@ namespace CodeAtlasVSIX
             SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(100, 150,150,150));
             this.Fill = Brushes.Transparent;
             this.Stroke = brush;
+            this.StrokeThickness = 2.0;
             BuildGeometry();
 
             Canvas.SetZIndex(this, -1);
@@ -248,27 +256,48 @@ namespace CodeAtlasVSIX
 
         public void UpdateStroke()
         {
-            this.Dispatcher.BeginInvoke((ThreadStart)delegate
+            StrokeMode newMode = StrokeMode.STROKE_NORMAL;
+
+            if (m_isSelected || m_isMouseHover)
             {
-                if (m_isSelected || m_isMouseHover)
+                newMode = StrokeMode.STROKE_SELECTED;
+            }
+            else if (m_isCandidate)
+            {
+                newMode = StrokeMode.STROKE_CANDIDATE;
+            }
+            else
+            {
+                newMode = StrokeMode.STROKE_NORMAL;
+            }
+
+            if (newMode != m_strokeMode)
+            {
+                m_strokeMode = newMode;
+
+                this.Dispatcher.BeginInvoke((ThreadStart)delegate
                 {
-                    StrokeThickness = 5.5;
-                    this.Stroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
-                    Canvas.SetZIndex(this, -1);
-                }
-                else if (m_isCandidate)
-                {
-                    StrokeThickness = 5.5;
-                    this.Stroke = new SolidColorBrush(Color.FromArgb(255, 169, 111, 42));
-                    Canvas.SetZIndex(this, -2);
-                }
-                else
-                {
-                    StrokeThickness = 2.0;
-                    this.Stroke = new SolidColorBrush(Color.FromArgb(100, 150,150,150));
-                    Canvas.SetZIndex(this, -2);
-                }
-            });
+                    switch (m_strokeMode)
+                    {
+                        case StrokeMode.STROKE_SELECTED:
+                            StrokeThickness = 5.5;
+                            this.Stroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
+                            Canvas.SetZIndex(this, -1);
+                            break;
+                        case StrokeMode.STROKE_CANDIDATE:
+                            StrokeThickness = 5.5;
+                            this.Stroke = new SolidColorBrush(Color.FromArgb(255, 169, 111, 42));
+                            Canvas.SetZIndex(this, -2);
+                            break;
+                        case StrokeMode.STROKE_NORMAL:
+                        default:
+                            StrokeThickness = 2.0;
+                            this.Stroke = new SolidColorBrush(Color.FromArgb(100, 150, 150, 150));
+                            Canvas.SetZIndex(this, -2);
+                            break;
+                    }
+                });
+            }
         }
         //public Point StartPoint
         //{
