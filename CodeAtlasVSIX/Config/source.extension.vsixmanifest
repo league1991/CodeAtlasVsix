@@ -7,6 +7,7 @@
     <Description xml:space="preserve">A tool to show relationship between variables, functions and classes.</Description>
     <Locale>1033</Locale>
     <License>License.txt</License>
+    <Icon>Resources/logo.png</Icon>
     <SupportedProducts>
       <VisualStudio Version="10.0">
         <Edition>Pro</Edition>

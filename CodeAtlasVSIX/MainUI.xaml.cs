@@ -628,7 +628,7 @@ namespace CodeAtlasVSIX
                     DoxygenDB.DoxygenDB.GenerateDB(config);
                     DBManager.Instance().OpenDB(config.m_configPath);
                     UpdateUI();
-                    SetCommandActive(true);
+                    //SetCommandActive(true);
                 });
                 analysisThread.Name = "Analysis Thread";
                 analysisThread.Start();
