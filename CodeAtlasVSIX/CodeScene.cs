@@ -720,12 +720,10 @@ namespace CodeAtlasVSIX
             {
                 minItem = FindNeighbourForEdge(centerEdge, mainDirection);
             }
-            ReleaseLock();
             t1 = DateTime.Now;
             Logger.Debug("## Find Neighbour " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
-
-            AcquireLock();
+            
             if (minItem != null)
             {
                 bool res = SelectOneItem(minItem);
@@ -1093,7 +1091,7 @@ namespace CodeAtlasVSIX
 
             m_view.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
-                var now = DateTime.Now;
+                var now = System.Environment.TickCount;
                 AcquireLock();
                 m_itemMoveDistance = 0;
                 foreach (var node in m_itemDict)
@@ -1102,7 +1100,7 @@ namespace CodeAtlasVSIX
                     m_itemMoveDistance += item.MoveToTarget(0.05);
                 }
                 ReleaseLock();
-                Logger.Debug("MoveItems: BeginInvoke:" + (DateTime.Now - now).TotalMilliseconds);
+                //Logger.Debug("MoveItems: BeginInvoke:" + (System.Environment.TickCount - now));
                 m_waitingItemMove = false;
             });
         }
@@ -2193,13 +2191,16 @@ namespace CodeAtlasVSIX
                 {
                     node.Value.Invalidate();
                 }
+                ReleaseLock();
 
+                AcquireLock();
                 foreach (var edge in m_edgeDict)
                 {
                     edge.Value.Invalidate();
                 }
+                ReleaseLock();
 
-
+                AcquireLock();
                 foreach (var node in m_itemDict)
                 {
                     node.Value.IsDirty = false;

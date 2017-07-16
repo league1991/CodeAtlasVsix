@@ -45,6 +45,7 @@ namespace CodeAtlasVSIX
         public OrderData m_orderData = null;
         public bool m_isConnectedToFocusNode = false;
         Point m_p0, m_p1, m_p2, m_p3;
+        bool m_isPathDirty = false;
         bool m_isCandidate = false;
         public string m_file = "";
         public int m_line = 0;
@@ -189,8 +190,14 @@ namespace CodeAtlasVSIX
             var scene = UIManager.Instance().GetScene();
             var srcNode = scene.GetNode(m_srcUniqueName);
             var tarNode = scene.GetNode(m_tarUniqueName);
-            m_p0 = srcNode.GetRightSlotPos();
-            m_p3 = tarNode.GetLeftSlotPos();
+            var p0 = srcNode.GetRightSlotPos();
+            var p3 = tarNode.GetLeftSlotPos();
+            if (p0 != m_p0 || p3 != m_p3)
+            {
+                m_isPathDirty = true;
+            }
+            m_p0 = p0;
+            m_p3 = p3;
             m_p1 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p0.Y);
             m_p2 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p3.Y);
 
@@ -460,20 +467,17 @@ namespace CodeAtlasVSIX
         {
             get
             {
-                //EllipseGeometry circle0 = new EllipseGeometry(srcCtrlPnt, 20.0, 20.0);
-                //EllipseGeometry circle1 = new EllipseGeometry(tarCtrlPnt, 20.0, 20.0);
-
-                //var group = new GeometryGroup();
-                //group.Children.Add(circle0);
-                //group.Children.Add(circle1);
-                //group.Children.Add(geometry);
-                //return group;
-
                 var scene = UIManager.Instance().GetScene();
                 var srcNode = scene.GetNode(m_srcUniqueName);
                 var tarNode = scene.GetNode(m_tarUniqueName);
-                m_p0 = srcNode.GetRightSlotPos();
-                m_p3 = tarNode.GetLeftSlotPos();
+                var p0 = srcNode.GetRightSlotPos();
+                var p3 = tarNode.GetLeftSlotPos();
+                if (p0 == m_p0 && p3 == m_p3 && m_geometry != null && !m_isPathDirty)
+                {
+                    return m_geometry;
+                }
+                m_p0 = p0;
+                m_p3 = p3;
                 m_p1 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p0.Y);
                 m_p2 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p3.Y);
 

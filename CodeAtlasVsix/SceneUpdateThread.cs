@@ -26,7 +26,7 @@ namespace CodeAtlasVSIX
         Dictionary<string, ItemData> m_itemSet = new Dictionary<string, ItemData>();
         //int m_edgeNum = 0;
         bool m_abort = false;
-        DateTime m_timeStamp = DateTime.Now;
+        int m_timeStamp = 0;
 
         public SceneUpdateThread(CodeScene scene)
         {
@@ -50,17 +50,23 @@ namespace CodeAtlasVSIX
             m_isActive = active;
         }
 
-        void UpdateTimeStamp(string info)
+        void BeginTimeStamp()
         {
-            //var now = DateTime.Now;
-            //var ms = (now - m_timeStamp).TotalMilliseconds;
-            //m_timeStamp = now;
+            m_timeStamp = System.Environment.TickCount;
+        }
 
-            //var scene = UIManager.Instance().GetScene();
-            //scene.Dispatcher.BeginInvoke((ThreadStart)delegate
-            //{
-            //    Logger.Debug(info + ":" + ms.ToString());
-            //});
+        int EndTimeStamp(string info)
+        {
+            var now = System.Environment.TickCount;
+            var ms = (now - m_timeStamp);
+            m_timeStamp = now;
+            return ms;
+            var scene = UIManager.Instance().GetScene();
+            scene.Dispatcher.BeginInvoke((ThreadStart)delegate
+            {
+                Logger.Debug(info + ":" + ms.ToString());
+            });
+            return ms;
         }
 
         public void SetForceSleepTime(int t)
@@ -86,51 +92,56 @@ namespace CodeAtlasVSIX
                 var beginTime = DateTime.Now;
                 if (m_isActive)
                 {
-                    UpdateTimeStamp("++++++++++++++++++++ begin thread ++++++++++++++++++++");
+                    EndTimeStamp("++++++++++++++++++++ begin thread ++++++++++++++++++++");
 
-                    m_timeStamp = DateTime.Now;
+                    m_timeStamp = System.Environment.TickCount;
+                    int layoutTime = 0;
                     if (scene.m_isLayoutDirty)
                     {
                         scene.AcquireLock();
+                        BeginTimeStamp();
                         UpdateLayeredLayoutWithComp();
                         scene.m_isLayoutDirty = false;
-                        UpdateTimeStamp("Layout");
+                        layoutTime = EndTimeStamp("Layout");
                         scene.ReleaseLock();
                     }
-                    
-                    Thread.Sleep(m_sleepTime/2);
-                    scene.AcquireLock();
-                    MoveItems();
-                    UpdateTimeStamp("Move Items");
-                    scene.ReleaseLock();
 
                     Thread.Sleep(m_sleepTime / 2);
                     scene.AcquireLock();
-                    UpdateCallOrder();
-                    UpdateTimeStamp("Call Order");
+                    BeginTimeStamp();
+                    MoveItems();
+                    int moveTime = EndTimeStamp("Move Items");
                     scene.ReleaseLock();
+                    Thread.Sleep(m_sleepTime / 2);
+
+                    scene.AcquireLock();
+                    BeginTimeStamp();
+                    UpdateCallOrder();
+                    int callOrderTime = EndTimeStamp("Call Order");
+                    scene.ReleaseLock();
+                    //Thread.Sleep(m_sleepTime / 2 + callOrderTime);
 
                     scene.AcquireLock();
                     if (m_selectTimeStamp != scene.m_selectTimeStamp || m_schemeTimeStamp != scene.m_schemeTimeStamp)
                     {
+                        BeginTimeStamp();
                         scene.UpdateCurrentValidScheme();
-                        UpdateTimeStamp("Scheme");
+                        EndTimeStamp("Scheme");
                         m_schemeTimeStamp = scene.m_schemeTimeStamp;
                     }
-                    scene.ReleaseLock();
-
-                    scene.AcquireLock();
+                    BeginTimeStamp();
                     scene.UpdateCandidateEdge();
-                    UpdateTimeStamp("Candidate Edge");
+                    EndTimeStamp("Candidate Edge");
 
                     if (m_selectTimeStamp != scene.m_selectTimeStamp)
                     {
+                        BeginTimeStamp();
                         UpdateLegend();
-                        UpdateTimeStamp("Legend");
+                        EndTimeStamp("Legend");
                         m_selectTimeStamp = scene.m_selectTimeStamp;
                     }
 
-                    UpdateTimeStamp("---------------------- end thread ------------------");
+                    EndTimeStamp("---------------------- end thread ------------------");
                     scene.ReleaseLock();
 
                     scene.ClearInvalidate();
@@ -154,7 +165,7 @@ namespace CodeAtlasVSIX
                 {
                     m_sleepTime = (moveDistance > 0.1) ? 30 : 500;
                 }
-                //Thread.Sleep(m_sleepTime/2);
+                //m_sleepTime = 2000;
             }
         }
 

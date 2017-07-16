@@ -385,27 +385,6 @@ namespace CodeAtlasVSIX
             }
         }
 
-
-    //    public Point LeftPoint
-    //    {
-    //        set { SetValue(LeftPointProperty, value); }
-    //        get { return (Point)GetValue(LeftPointProperty); }
-    //    }
-
-    //    public Point RightPoint
-    //    {
-    //        set { SetValue(RightPointProperty, value); }
-    //        get { return (Point)GetValue(RightPointProperty); }
-    //    }
-
-    //    public static readonly DependencyProperty LeftPointProperty =
-    //DependencyProperty.Register("LeftPoint", typeof(Point), typeof(CodeUIItem),
-    //    new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.AffectsRender));
-
-    //    public static readonly DependencyProperty RightPointProperty =
-    //        DependencyProperty.Register("RightPoint", typeof(Point), typeof(CodeUIItem),
-    //            new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.AffectsRender));
-
         public void Invalidate()
         {
             if (m_isDirty)
