@@ -37,6 +37,7 @@ namespace CodeAtlasVSIX
         int m_lines = 0;
         public int nCallers = 0;
         public int nCallees = 0;
+        public string m_bodyCode = "";
         Dictionary<string, DoxygenDB.Variant> m_metric = new Dictionary<string, DoxygenDB.Variant>();
 
         // UI appearance
@@ -59,7 +60,7 @@ namespace CodeAtlasVSIX
         Color m_color = new Color();
         bool m_customEdgeMode = false;
         Geometry m_highLightGeometry = new EllipseGeometry();
-        public string m_bodyCode = "";
+        bool m_isInvalidating = false;
 
         public CodeUIItem(string uniqueName, Dictionary<string, object> customData)
         {
@@ -385,13 +386,20 @@ namespace CodeAtlasVSIX
             }
         }
 
+        public bool IsInvalidating()
+        {
+            return m_isInvalidating;
+        }
+
         public void Invalidate()
         {
-            if (m_isDirty)
+            if (m_isDirty && !m_isInvalidating)
             {
+                m_isInvalidating = true;
                 this.Dispatcher.BeginInvoke((ThreadStart)delegate
                 {
                     this._Invalidate();
+                    m_isInvalidating = false;
                 });
             }
         }

@@ -2186,6 +2186,30 @@ namespace CodeAtlasVSIX
         {
             if (m_isInvalidate)
             {
+                bool isInvalidating = false;
+                AcquireLock();
+                foreach (var node in m_itemDict)
+                {
+                    if (node.Value.IsInvalidating())
+                    {
+                        isInvalidating = true;
+                        break;
+                    }
+                }
+                foreach (var item in m_edgeDict)
+                {
+                    if (item.Value.IsInvalidating())
+                    {
+                        isInvalidating = true;
+                        break;
+                    }
+                }
+                ReleaseLock();
+                if (isInvalidating)
+                {
+                    return;
+                }
+
                 AcquireLock();
                 foreach (var node in m_itemDict)
                 {
@@ -2198,9 +2222,7 @@ namespace CodeAtlasVSIX
                 {
                     edge.Value.Invalidate();
                 }
-                ReleaseLock();
 
-                AcquireLock();
                 foreach (var node in m_itemDict)
                 {
                     node.Value.IsDirty = false;

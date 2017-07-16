@@ -47,6 +47,7 @@ namespace CodeAtlasVSIX
         Point m_p0, m_p1, m_p2, m_p3;
         bool m_isPathDirty = false;
         bool m_isCandidate = false;
+        bool m_inValidating = false;
         public string m_file = "";
         public int m_line = 0;
         public int m_column = 0;
@@ -408,16 +409,28 @@ namespace CodeAtlasVSIX
             return -1;
         }
 
+        public bool IsInvalidating()
+        {
+            return m_inValidating;
+        }
+
         public void Invalidate()
         {
+            if (m_inValidating)
+            {
+                return;
+            }
+
             var scene = UIManager.Instance().GetScene();
             var srcNode = scene.GetNode(m_srcUniqueName);
             var tarNode = scene.GetNode(m_tarUniqueName);
             if (IsDirty || srcNode.IsDirty || tarNode.IsDirty)
             {
+                m_inValidating = true;
                 this.Dispatcher.BeginInvoke((ThreadStart)delegate
                 {
                     this._Invalidate();
+                    m_inValidating = false;
                 });
             }
         }
@@ -426,8 +439,10 @@ namespace CodeAtlasVSIX
         {
             InvalidateVisual();
         }
+
         protected override void OnRender(DrawingContext drawingContext)
         {
+            //var beg = System.Environment.TickCount;
             base.OnRender(drawingContext);
 
             var scene = UIManager.Instance().GetScene();
@@ -460,6 +475,9 @@ namespace CodeAtlasVSIX
                 drawingContext.DrawText(formattedText, pos);
             }
             scene.ReleaseLock();
+
+            //var end = System.Environment.TickCount;
+            //Logger.Debug("edge render time:" + (end-beg));
         }
 
 
@@ -467,6 +485,7 @@ namespace CodeAtlasVSIX
         {
             get
             {
+                //int begTime = System.Environment.TickCount;
                 var scene = UIManager.Instance().GetScene();
                 var srcNode = scene.GetNode(m_srcUniqueName);
                 var tarNode = scene.GetNode(m_tarUniqueName);
@@ -490,6 +509,8 @@ namespace CodeAtlasVSIX
                 m_geometry = new PathGeometry();
                 m_geometry.Figures.Add(figure);
 
+                //int endTime = System.Environment.TickCount;
+                //Logger.Debug("edge geometry time:" + (endTime-begTime));
                 return m_geometry;
             }
         }
