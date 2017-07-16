@@ -1,7 +1,7 @@
 # CodeAtlasVsix
-Call graph visualization plugin of Visual Studio 2015
+Call graph visualization plugin of Visual Studio 2010-2015
 
-Code Atlas is a plugin of Visual Studio, which allows one to explore the call graph conveniently. The plugin uses doxygen to perform symbol/reference query task.
+Code Atlas is a plugin of Visual Studio. It allows one to explore the call graph conveniently. The plugin uses doxygen to parse code.
 
 Supported languages(not limited): 
 C/C++(Tested)
