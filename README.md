@@ -79,3 +79,37 @@ Add Comment
 Input your comment for functions/classes/variables in Symbol panel.
 ![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/comment.gif) 
 
+Setup
+--------
+
+1. Download the vsix package or compile one yourself.
+
+![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/setup1.png) 
+
+2. Open and install the package.
+
+![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/setup2.png) 
+
+3. The package is installed.
+
+![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/setup3.png) 
+
+4. Open Visual Studio, you can see a menu named "Code Atlas". Press "Open Code Atlas Window" to show the window.
+
+![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/setup4.png) 
+
+5. Open a solution, then press "Analyse solution" to generate the code database for Code Atlas.
+
+![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/setup5.png) 
+
+6. A command-line window appears, and you can see "Wait..." on the viewport. **You can continue coding during analysis process**.
+
+![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/setup6.png) 
+
+7. When analysis is completed, the code database will be opened automatically. Place the cursor on a variable/function/class and press `Alt+G` , then the symbol will appear in the viewport.
+
+![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/setup7.png) 
+
+8. Next time when you open Visual Studio, you don't have to analyse the solution again, just click "Open Analysis Result" and choose a ".atlas" file. The file with a "solution" postfix is the analysis result (code database) for the whole solution.
+
+![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/setup8.png) 
