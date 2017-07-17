@@ -589,6 +589,7 @@ namespace DoxygenDB
                     currentValue.Add(value);
                 }
             }
+            sr.Close();
         }
 
         public static void _WriteDoxyfile(string path, Dictionary<string, List<string>> metaDict)

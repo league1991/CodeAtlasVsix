@@ -62,6 +62,7 @@ namespace CodeAtlasVSIX
         public bool m_autoFocus = true;
         bool m_autoFocusToggle = true;
         public double m_itemMoveDistance = 0.0;
+        public bool m_waitingItemMove = false;
         public int m_selectTimeStamp = 0;
         public int m_schemeTimeStamp = 0;
 
@@ -133,71 +134,74 @@ namespace CodeAtlasVSIX
             }
 
             mainUI.SetCommandActive(false);
-            JavaScriptSerializer js = new JavaScriptSerializer();
-            var sceneData = js.Deserialize<Dictionary<string, object>>(jsonStr);
-            AcquireLock();
-            Logger.Info("Open File: " + configPath);
-            var t0 = DateTime.Now;
-            var t1 = t0;
-            var beginTime = t0;
+            m_updateThread.SetForceSleepTime(100);
 
-            // Stop item
-            var stopItemData = sceneData["stopItem"] as Dictionary<string, object>;
-            foreach (var item in stopItemData)
-            {
-                m_stopItem[item.Key] = item.Value as string;
-            }
-
-            // Item Data
-            var itemDataDict = sceneData["codeData"] as Dictionary<string, object>;
-            foreach (var itemPair in itemDataDict)
-            {
-                var itemData = itemPair.Value as DataDict;
-                m_itemDataDict[itemPair.Key] = itemData;
-            }
-
-            // edge data
-            var edgeData = sceneData["edgeData"] as ArrayList;
-            foreach (var dataItem in edgeData)
-            {
-                var dataList = dataItem as ArrayList;
-                var edgeKey = new EdgeKey(dataList[0] as string, dataList[1] as string);
-                var edgeDataDict = dataList[2] as DataDict;
-                m_edgeDataDict[edgeKey] = edgeDataDict;
-            }
-            t1 = DateTime.Now;
-            Logger.Debug("--------------Edgedata " + (t1 - t0).TotalMilliseconds.ToString());
-            t0 = t1;
-
-            // scheme
-            var schemeDict = sceneData["scheme"] as Dictionary<string, object>;
-            foreach (var schemeItem in schemeDict)
-            {
-                var name = schemeItem.Key;
-                var schemeData = schemeItem.Value as Dictionary<string, object>;
-                var nodeList = schemeData["node"] as ArrayList;
-                var edgeList = schemeData["edge"] as ArrayList;
-                var schemeObj = new SchemeData();
-                foreach (var node in nodeList)
-                {
-                    schemeObj.m_nodeList.Add(node as string);
-                }
-                foreach (var item in edgeList)
-                {
-                    var edgeItem = item as ArrayList;
-                    schemeObj.m_edgeDict[new EdgeKey(edgeItem[0] as string, edgeItem[1] as string)] =
-                        edgeItem[2] as DataDict;
-                }
-                m_scheme[name] = schemeObj;
-            }
-            t1 = DateTime.Now;
-            Logger.Debug("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
-
-            ReleaseLock();
-
-            // code item
             System.Threading.Thread addingThread = new System.Threading.Thread((ThreadStart)delegate
             {
+                JavaScriptSerializer js = new JavaScriptSerializer();
+                var sceneData = js.Deserialize<Dictionary<string, object>>(jsonStr);
+
+                AcquireLock();
+                Logger.Info("Open File: " + configPath);
+                var t0 = DateTime.Now;
+                var t1 = t0;
+                var beginTime = t0;
+
+                // Stop item
+                var stopItemData = sceneData["stopItem"] as Dictionary<string, object>;
+                foreach (var item in stopItemData)
+                {
+                    m_stopItem[item.Key] = item.Value as string;
+                }
+
+                // Item Data
+                var itemDataDict = sceneData["codeData"] as Dictionary<string, object>;
+                foreach (var itemPair in itemDataDict)
+                {
+                    var itemData = itemPair.Value as DataDict;
+                    m_itemDataDict[itemPair.Key] = itemData;
+                }
+
+                // edge data
+                var edgeData = sceneData["edgeData"] as ArrayList;
+                foreach (var dataItem in edgeData)
+                {
+                    var dataList = dataItem as ArrayList;
+                    var edgeKey = new EdgeKey(dataList[0] as string, dataList[1] as string);
+                    var edgeDataDict = dataList[2] as DataDict;
+                    m_edgeDataDict[edgeKey] = edgeDataDict;
+                }
+                t1 = DateTime.Now;
+                Logger.Debug("--------------Edgedata " + (t1 - t0).TotalMilliseconds.ToString());
+                t0 = t1;
+
+                // scheme
+                var schemeDict = sceneData["scheme"] as Dictionary<string, object>;
+                foreach (var schemeItem in schemeDict)
+                {
+                    var name = schemeItem.Key;
+                    var schemeData = schemeItem.Value as Dictionary<string, object>;
+                    var nodeList = schemeData["node"] as ArrayList;
+                    var edgeList = schemeData["edge"] as ArrayList;
+                    var schemeObj = new SchemeData();
+                    foreach (var node in nodeList)
+                    {
+                        schemeObj.m_nodeList.Add(node as string);
+                    }
+                    foreach (var item in edgeList)
+                    {
+                        var edgeItem = item as ArrayList;
+                        schemeObj.m_edgeDict[new EdgeKey(edgeItem[0] as string, edgeItem[1] as string)] =
+                            edgeItem[2] as DataDict;
+                    }
+                    m_scheme[name] = schemeObj;
+                }
+                t1 = DateTime.Now;
+                Logger.Debug("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
+
+                ReleaseLock();
+
+                // code item
                 var codeItemList = sceneData["codeItem"] as ArrayList;
                 foreach (var item in codeItemList)
                 {
@@ -252,6 +256,7 @@ namespace CodeAtlasVSIX
 
                 // Activeate commands
                 mainUI.SetCommandActive(true);
+                m_updateThread.ClearForceSleepTime();
             });
             addingThread.Name = "Open DB Thread";
             addingThread.Start();
@@ -715,27 +720,19 @@ namespace CodeAtlasVSIX
             {
                 minItem = FindNeighbourForEdge(centerEdge, mainDirection);
             }
-
             t1 = DateTime.Now;
-            Logger.Debug("## FindNeighbour " + (t1 - t0).TotalMilliseconds.ToString());
+            Logger.Debug("## Find Neighbour " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
-
+            
+            if (minItem != null)
+            {
+                bool res = SelectOneItem(minItem);
+                if (res)
+                {
+                    ShowInEditor();
+                }
+            }
             ReleaseLock();
-
-            t1 = DateTime.Now;
-            Logger.Debug("## ReleaseLock " + (t1 - t0).TotalMilliseconds.ToString());
-            t0 = t1;
-
-            if (minItem == null)
-            {
-                return;
-            }
-
-            bool res = SelectOneItem(minItem);
-            if (res)
-            {
-                ShowInEditor();
-            }
 
             t1 = DateTime.Now;
             Logger.Debug("## ShowInEditor " + (t1 - t0).TotalMilliseconds.ToString());
@@ -1085,13 +1082,16 @@ namespace CodeAtlasVSIX
 
         public void MoveItems()
         {
-            if(m_view == null)
+            if(m_view == null || m_waitingItemMove)
             {
                 return;
             }
+            
+            m_waitingItemMove = true;
+
             m_view.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
-                var now = DateTime.Now;
+                var now = System.Environment.TickCount;
                 AcquireLock();
                 m_itemMoveDistance = 0;
                 foreach (var node in m_itemDict)
@@ -1100,6 +1100,8 @@ namespace CodeAtlasVSIX
                     m_itemMoveDistance += item.MoveToTarget(0.05);
                 }
                 ReleaseLock();
+                //Logger.Debug("MoveItems: BeginInvoke:" + (System.Environment.TickCount - now));
+                m_waitingItemMove = false;
             });
         }
 
@@ -2184,17 +2186,42 @@ namespace CodeAtlasVSIX
         {
             if (m_isInvalidate)
             {
+                bool isInvalidating = false;
+                AcquireLock();
+                foreach (var node in m_itemDict)
+                {
+                    if (node.Value.IsInvalidating())
+                    {
+                        isInvalidating = true;
+                        break;
+                    }
+                }
+                foreach (var item in m_edgeDict)
+                {
+                    if (item.Value.IsInvalidating())
+                    {
+                        isInvalidating = true;
+                        break;
+                    }
+                }
+                ReleaseLock();
+                if (isInvalidating)
+                {
+                    return;
+                }
+
                 AcquireLock();
                 foreach (var node in m_itemDict)
                 {
                     node.Value.Invalidate();
                 }
+                ReleaseLock();
 
+                AcquireLock();
                 foreach (var edge in m_edgeDict)
                 {
                     edge.Value.Invalidate();
                 }
-
 
                 foreach (var node in m_itemDict)
                 {

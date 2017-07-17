@@ -37,6 +37,7 @@ namespace CodeAtlasVSIX
         int m_lines = 0;
         public int nCallers = 0;
         public int nCallees = 0;
+        public string m_bodyCode = "";
         Dictionary<string, DoxygenDB.Variant> m_metric = new Dictionary<string, DoxygenDB.Variant>();
 
         // UI appearance
@@ -59,7 +60,7 @@ namespace CodeAtlasVSIX
         Color m_color = new Color();
         bool m_customEdgeMode = false;
         Geometry m_highLightGeometry = new EllipseGeometry();
-        public string m_bodyCode = "";
+        bool m_isInvalidating = false;
 
         public CodeUIItem(string uniqueName, Dictionary<string, object> customData)
         {
@@ -385,34 +386,20 @@ namespace CodeAtlasVSIX
             }
         }
 
-
-    //    public Point LeftPoint
-    //    {
-    //        set { SetValue(LeftPointProperty, value); }
-    //        get { return (Point)GetValue(LeftPointProperty); }
-    //    }
-
-    //    public Point RightPoint
-    //    {
-    //        set { SetValue(RightPointProperty, value); }
-    //        get { return (Point)GetValue(RightPointProperty); }
-    //    }
-
-    //    public static readonly DependencyProperty LeftPointProperty =
-    //DependencyProperty.Register("LeftPoint", typeof(Point), typeof(CodeUIItem),
-    //    new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.AffectsRender));
-
-    //    public static readonly DependencyProperty RightPointProperty =
-    //        DependencyProperty.Register("RightPoint", typeof(Point), typeof(CodeUIItem),
-    //            new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.AffectsRender));
+        public bool IsInvalidating()
+        {
+            return m_isInvalidating;
+        }
 
         public void Invalidate()
         {
-            if (m_isDirty)
+            if (m_isDirty && !m_isInvalidating)
             {
+                m_isInvalidating = true;
                 this.Dispatcher.BeginInvoke((ThreadStart)delegate
                 {
                     this._Invalidate();
+                    m_isInvalidating = false;
                 });
             }
         }
@@ -553,19 +540,14 @@ namespace CodeAtlasVSIX
 
         public double MoveToTarget(double ratio)
         {
-            var offset = m_targetPos - Pos;
-            var offsetLength = Math.Abs(offset.X) + Math.Abs(offset.Y);
+            Vector offset = m_targetPos - Pos;
+            var offsetLength = offset.Length;
             if (offsetLength < 0.1)
             {
                 return 0.0;
             }
 
-            double pntX = Pos.X;
-            double pntY = Pos.Y;
-            pntX = pntX * (1.0 - ratio) + m_targetPos.X * ratio;
-            pntY = pntY * (1.0 - ratio) + m_targetPos.Y * ratio;
-            var tar = new Point(pntX, pntY);
-            Pos = tar;
+            Pos = Pos + offset * ratio;
             return offsetLength * ratio;
         }
 

@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -68,6 +69,10 @@ namespace CodeAtlasVSIX
         public void SetCommandActive(bool isActive)
         {
             m_isCommandEnable = isActive;
+            schemeWindow.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                this.mask.Visibility = isActive ? Visibility.Hidden : Visibility.Visible;
+            });
         }
 
         public bool GetCommandActive()
@@ -103,6 +108,10 @@ namespace CodeAtlasVSIX
 
         public void OnOpen(object sender, RoutedEventArgs e)
         {
+            if (!GetCommandActive())
+            {
+                return;
+            }
             Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
 
             var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
@@ -154,6 +163,10 @@ namespace CodeAtlasVSIX
 
         public void OnClose(object sender, RoutedEventArgs e)
         {
+            if (!GetCommandActive())
+            {
+                return;
+            }
             DBManager.Instance().CloseDB();
             UpdateUI();
             UIManager.Instance().GetScene().m_selectTimeStamp += 1;
@@ -161,15 +174,24 @@ namespace CodeAtlasVSIX
 
         public void UpdateUI()
         {
-            schemeWindow.UpdateScheme();
-            symbolWindow.UpdateForbiddenSymbol();
-            symbolWindow.UpdateSymbol("", "");
-            searchWindow.OnSearch();
+            schemeWindow.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                schemeWindow.UpdateScheme();
+            });
+            symbolWindow.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                symbolWindow.UpdateForbiddenSymbol();
+                symbolWindow.UpdateSymbol("", "");
+            });
+            symbolWindow.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                searchWindow.OnSearch();
+            });
         }
 
         public void OnShowInAtlas(object sender, ExecutedRoutedEventArgs e)
         {
-            if (!m_isCommandEnable)
+            if (!GetCommandActive())
             {
                 return;
             }
@@ -550,8 +572,13 @@ namespace CodeAtlasVSIX
 
         void AnalyseSolution(bool useClang, bool onlySelectedProjects = false)
         {
+            if (!GetCommandActive())
+            {
+                return;
+            }
             try
             {
+                SetCommandActive(false);
                 var traverser = new ProjectFileCollector();
                 if (onlySelectedProjects)
                 {
@@ -563,6 +590,7 @@ namespace CodeAtlasVSIX
 
                 if (dirList.Count == 0 || solutionFolder == "")
                 {
+                    SetCommandActive(true);
                     return;
                 }
                 string doxyFolder = solutionFolder + "/CodeAtlasData";
@@ -584,7 +612,6 @@ namespace CodeAtlasVSIX
                 }
                 postFix = postFix.Replace(" ", "");
 
-                DBManager.Instance().CloseDB();
                 DoxygenDB.DoxygenDBConfig config = new DoxygenDB.DoxygenDBConfig();
                 config.m_configPath = doxyFolder + "/Result" + postFix + ".atlas";
                 config.m_inputFolders = dirList;
@@ -594,15 +621,23 @@ namespace CodeAtlasVSIX
                 config.m_defines = traverser.GetAllDefines();
                 config.m_useClang = useClang;
                 config.m_mainLanguage = traverser.GetMainLanguage();
+                DBManager.Instance().CloseDB();
 
-                DoxygenDB.DoxygenDB.GenerateDB(config);
-                DBManager.Instance().OpenDB(config.m_configPath);
-                UpdateUI();
+                System.Threading.Thread analysisThread = new System.Threading.Thread((ThreadStart)delegate
+                {
+                    DoxygenDB.DoxygenDB.GenerateDB(config);
+                    DBManager.Instance().OpenDB(config.m_configPath);
+                    UpdateUI();
+                    //SetCommandActive(true);
+                });
+                analysisThread.Name = "Analysis Thread";
+                analysisThread.Start();
             }
             catch (Exception)
             {
                 Logger.Warning("Analyse failed. Please try again.");
                 DBManager.Instance().CloseDB();
+                SetCommandActive(true);
             }
         }
 

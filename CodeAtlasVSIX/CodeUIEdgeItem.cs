@@ -29,6 +29,12 @@ namespace CodeAtlasVSIX
 
     public class CodeUIEdgeItem: Shape
     {
+        enum StrokeMode
+        {
+            STROKE_SELECTED = 1,
+            STROKE_CANDIDATE = 2,
+            STROKE_NORMAL = 3
+        };
         public string m_srcUniqueName;
         public string m_tarUniqueName;
         PathGeometry m_geometry = new PathGeometry();
@@ -39,12 +45,15 @@ namespace CodeAtlasVSIX
         public OrderData m_orderData = null;
         public bool m_isConnectedToFocusNode = false;
         Point m_p0, m_p1, m_p2, m_p3;
+        bool m_isPathDirty = false;
         bool m_isCandidate = false;
+        bool m_inValidating = false;
         public string m_file = "";
         public int m_line = 0;
         public int m_column = 0;
         public bool m_customEdge = false;
         public int m_selectTimeStamp = 0;
+        StrokeMode m_strokeMode = StrokeMode.STROKE_NORMAL;
         List<Color> m_schemeColorList = new List<Color>();
 
         public CodeUIEdgeItem(string srcName, string tarName, DataDict edgeData)
@@ -91,6 +100,7 @@ namespace CodeAtlasVSIX
             SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(100, 150,150,150));
             this.Fill = Brushes.Transparent;
             this.Stroke = brush;
+            this.StrokeThickness = 2.0;
             BuildGeometry();
 
             Canvas.SetZIndex(this, -1);
@@ -178,6 +188,20 @@ namespace CodeAtlasVSIX
 
         public double FindCurveYPos(double x)
         {
+            var scene = UIManager.Instance().GetScene();
+            var srcNode = scene.GetNode(m_srcUniqueName);
+            var tarNode = scene.GetNode(m_tarUniqueName);
+            var p0 = srcNode.GetRightSlotPos();
+            var p3 = tarNode.GetLeftSlotPos();
+            if (p0 != m_p0 || p3 != m_p3)
+            {
+                m_isPathDirty = true;
+            }
+            m_p0 = p0;
+            m_p3 = p3;
+            m_p1 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p0.Y);
+            m_p2 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p3.Y);
+
             var sign = 1.0;
             if (m_p3.X < m_p0.X)
             {
@@ -248,27 +272,48 @@ namespace CodeAtlasVSIX
 
         public void UpdateStroke()
         {
-            this.Dispatcher.BeginInvoke((ThreadStart)delegate
+            StrokeMode newMode = StrokeMode.STROKE_NORMAL;
+
+            if (m_isSelected || m_isMouseHover)
             {
-                if (m_isSelected || m_isMouseHover)
+                newMode = StrokeMode.STROKE_SELECTED;
+            }
+            else if (m_isCandidate)
+            {
+                newMode = StrokeMode.STROKE_CANDIDATE;
+            }
+            else
+            {
+                newMode = StrokeMode.STROKE_NORMAL;
+            }
+
+            if (newMode != m_strokeMode)
+            {
+                m_strokeMode = newMode;
+
+                this.Dispatcher.BeginInvoke((ThreadStart)delegate
                 {
-                    StrokeThickness = 5.5;
-                    this.Stroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
-                    Canvas.SetZIndex(this, -1);
-                }
-                else if (m_isCandidate)
-                {
-                    StrokeThickness = 5.5;
-                    this.Stroke = new SolidColorBrush(Color.FromArgb(255, 169, 111, 42));
-                    Canvas.SetZIndex(this, -2);
-                }
-                else
-                {
-                    StrokeThickness = 2.0;
-                    this.Stroke = new SolidColorBrush(Color.FromArgb(100, 150,150,150));
-                    Canvas.SetZIndex(this, -2);
-                }
-            });
+                    switch (m_strokeMode)
+                    {
+                        case StrokeMode.STROKE_SELECTED:
+                            StrokeThickness = 5.5;
+                            this.Stroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
+                            Canvas.SetZIndex(this, -1);
+                            break;
+                        case StrokeMode.STROKE_CANDIDATE:
+                            StrokeThickness = 5.5;
+                            this.Stroke = new SolidColorBrush(Color.FromArgb(255, 169, 111, 42));
+                            Canvas.SetZIndex(this, -2);
+                            break;
+                        case StrokeMode.STROKE_NORMAL:
+                        default:
+                            StrokeThickness = 2.0;
+                            this.Stroke = new SolidColorBrush(Color.FromArgb(100, 150, 150, 150));
+                            Canvas.SetZIndex(this, -2);
+                            break;
+                    }
+                });
+            }
         }
         //public Point StartPoint
         //{
@@ -364,16 +409,28 @@ namespace CodeAtlasVSIX
             return -1;
         }
 
+        public bool IsInvalidating()
+        {
+            return m_inValidating;
+        }
+
         public void Invalidate()
         {
+            if (m_inValidating)
+            {
+                return;
+            }
+
             var scene = UIManager.Instance().GetScene();
             var srcNode = scene.GetNode(m_srcUniqueName);
             var tarNode = scene.GetNode(m_tarUniqueName);
             if (IsDirty || srcNode.IsDirty || tarNode.IsDirty)
             {
+                m_inValidating = true;
                 this.Dispatcher.BeginInvoke((ThreadStart)delegate
                 {
                     this._Invalidate();
+                    m_inValidating = false;
                 });
             }
         }
@@ -382,8 +439,10 @@ namespace CodeAtlasVSIX
         {
             InvalidateVisual();
         }
+
         protected override void OnRender(DrawingContext drawingContext)
         {
+            //var beg = System.Environment.TickCount;
             base.OnRender(drawingContext);
 
             var scene = UIManager.Instance().GetScene();
@@ -416,6 +475,9 @@ namespace CodeAtlasVSIX
                 drawingContext.DrawText(formattedText, pos);
             }
             scene.ReleaseLock();
+
+            //var end = System.Environment.TickCount;
+            //Logger.Debug("edge render time:" + (end-beg));
         }
 
 
@@ -423,20 +485,18 @@ namespace CodeAtlasVSIX
         {
             get
             {
-                //EllipseGeometry circle0 = new EllipseGeometry(srcCtrlPnt, 20.0, 20.0);
-                //EllipseGeometry circle1 = new EllipseGeometry(tarCtrlPnt, 20.0, 20.0);
-
-                //var group = new GeometryGroup();
-                //group.Children.Add(circle0);
-                //group.Children.Add(circle1);
-                //group.Children.Add(geometry);
-                //return group;
-
+                //int begTime = System.Environment.TickCount;
                 var scene = UIManager.Instance().GetScene();
                 var srcNode = scene.GetNode(m_srcUniqueName);
                 var tarNode = scene.GetNode(m_tarUniqueName);
-                m_p0 = srcNode.GetRightSlotPos();
-                m_p3 = tarNode.GetLeftSlotPos();
+                var p0 = srcNode.GetRightSlotPos();
+                var p3 = tarNode.GetLeftSlotPos();
+                if (p0 == m_p0 && p3 == m_p3 && m_geometry != null && !m_isPathDirty)
+                {
+                    return m_geometry;
+                }
+                m_p0 = p0;
+                m_p3 = p3;
                 m_p1 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p0.Y);
                 m_p2 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p3.Y);
 
@@ -449,6 +509,8 @@ namespace CodeAtlasVSIX
                 m_geometry = new PathGeometry();
                 m_geometry.Figures.Add(figure);
 
+                //int endTime = System.Environment.TickCount;
+                //Logger.Debug("edge geometry time:" + (endTime-begTime));
                 return m_geometry;
             }
         }

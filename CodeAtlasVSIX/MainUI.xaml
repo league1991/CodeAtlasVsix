@@ -32,9 +32,9 @@
     </Menu>
     <Grid Focusable="True">
         <Grid.RowDefinitions>
-            <RowDefinition Height="50*" />
+            <RowDefinition Height="70*" />
             <RowDefinition Height="5" />
-            <RowDefinition Height="50*" />
+            <RowDefinition Height="30*" />
         </Grid.RowDefinitions>
 
         <TabControl x:Name="tabControl" Grid.Row="2" Margin="0" Style="{DynamicResource TabStyle}">
@@ -56,5 +56,19 @@
         </TabControl>
         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Style="{DynamicResource GridSplitterStyle}"/>
         <local:CodeView Grid.Row="0" x:Name="codeView" Focusable="True" />
+        <Grid x:Name="mask" Visibility="Hidden">
+            <Canvas Grid.Row="0">
+                <Canvas.Background>
+                    <RadialGradientBrush RadiusX="0.7" RadiusY="0.7">
+                        <GradientStop Color="Black" Offset="1"/>
+                        <GradientStop Color="#7F000000"/>
+                        <GradientStop Color="#AF000000" Offset="0.365"/>
+                    </RadialGradientBrush>
+                </Canvas.Background>
+            </Canvas>
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="42" FontFamily="Microsoft YaHei Light" Text="Wait..." Margin="95,70,89,66"/>
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FFE0E0E0" FontSize="42" FontFamily="Microsoft YaHei Light" Text="Wait..."/>
+
+        </Grid>
     </Grid>
 </DockPanel>

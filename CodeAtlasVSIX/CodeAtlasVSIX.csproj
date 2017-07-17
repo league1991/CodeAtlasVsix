@@ -96,6 +96,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\logo.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <VSCTCompile Include="CodeAtlasPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
       <SubType>Designer</SubType>
