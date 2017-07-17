@@ -550,7 +550,7 @@ namespace CodeAtlasVSIX
                 }
             }
 
-            RemoveItemLRU();
+            //RemoveItemLRU();
 
             // Update Comment
             var itemName = "";

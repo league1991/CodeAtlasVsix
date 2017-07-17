@@ -56,6 +56,7 @@ namespace CodeAtlasVSIX
         FormattedText m_displayText = null;
         FormattedText m_commentText = null;
         public bool m_isConnectedToFocusNode = false;
+        public double m_accumulateMoveDist = 0.0;
         Dictionary<string, Variant> m_customData;
         Color m_color = new Color();
         bool m_customEdgeMode = false;
@@ -542,13 +543,32 @@ namespace CodeAtlasVSIX
         {
             Vector offset = m_targetPos - Pos;
             var offsetLength = offset.Length;
-            if (offsetLength < 0.1)
+            offset.Normalize();
+            if (offsetLength < 0.5)
             {
                 return 0.0;
             }
 
-            Pos = Pos + offset * ratio;
-            return offsetLength * ratio;
+            if (offsetLength < 3)
+            {
+                ratio = 1.0;
+            }
+
+            var moveDist = Math.Min(Math.Max(offsetLength * ratio, 2), offsetLength);
+            Pos = Pos + offset * moveDist;
+            return moveDist;
+
+            //if (m_accumulateMoveDist < 1)
+            //{
+            //    m_accumulateMoveDist += offsetLength * ratio;
+            //    return 0.0;
+            //}
+            //else
+            //{
+            //    Pos = Pos + offset * Math.Min(m_accumulateMoveDist, offsetLength);
+            //    m_accumulateMoveDist = 0.0;
+            //    return offsetLength * ratio;
+            //}
         }
 
         public DoxygenDB.EntKind GetKind()
