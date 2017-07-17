@@ -1,4 +1,5 @@
 ﻿using Microsoft.Msagl.Drawing;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
@@ -6,6 +7,7 @@ using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace CodeAtlasVSIX
 {
@@ -17,7 +19,7 @@ namespace CodeAtlasVSIX
     {
         public double scaleValue = 1.0;
         public double m_lastMoveOffset = 0.0;
-        public bool m_isViewMoving = false;
+        DispatcherOperation m_moveState;
 
         public CodeView()
         {
@@ -58,9 +60,8 @@ namespace CodeAtlasVSIX
             //{
             //    return;
             //}
-
-            m_isViewMoving = true;
-            Dispatcher.BeginInvoke((ThreadStart)delegate
+            
+            m_moveState = Dispatcher.BeginInvoke((ThreadStart)delegate
             {
                 var transform = this.canvas.RenderTransform as MatrixTransform;
                 var matrix = transform.Matrix;
@@ -68,13 +69,21 @@ namespace CodeAtlasVSIX
                 var centerPnt = new Point(ActualWidth * 0.5, ActualHeight * 0.5);
                 var currentPnt = matrix.Transform(center);
 
-                var offset = (centerPnt - currentPnt) * 0.1;
-                m_lastMoveOffset = offset.Length;
+                var dist = centerPnt - currentPnt;
+                var distLength = dist.Length;
+                if (distLength < 1.0)
+                {
+                    return;
+                }
+
+                dist.Normalize();
+                var offsetLength = Math.Min(Math.Max(distLength * 0.1, 1.0), distLength);
+                m_lastMoveOffset = offsetLength;
+                var offset = offsetLength * dist;
 
                 matrix.TranslatePrepend(offset.X, offset.Y);
                 transform.Matrix = matrix;
-                m_isViewMoving = false;
-            });
+            }, DispatcherPriority.Loaded);
         }
 
         private void background_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

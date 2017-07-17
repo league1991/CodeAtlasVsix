@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace CodeAtlasVSIX
 {
@@ -549,12 +550,7 @@ namespace CodeAtlasVSIX
                 return 0.0;
             }
 
-            if (offsetLength < 3)
-            {
-                ratio = 1.0;
-            }
-
-            var moveDist = Math.Min(Math.Max(offsetLength * ratio, 2), offsetLength);
+            var moveDist = Math.Min(Math.Max(offsetLength * ratio, 3.0), offsetLength);
             Pos = Pos + offset * moveDist;
             return moveDist;
 
