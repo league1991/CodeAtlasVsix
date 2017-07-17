@@ -693,7 +693,7 @@ namespace CodeAtlasVSIX
                 var cosRadian = Math.Cos(20.0 / 180.0 * Math.PI);
                 var sinRadian = Math.Sin(20.0 / 180.0 * Math.PI);
 
-                var r0 = r + 1.0;
+                var r0 = r;
                 if (m_customData["nCaller"].m_int > 0)
                 {
                     var cr = m_customData["callerR"].m_double;

@@ -61,12 +61,12 @@ namespace CodeAtlasVSIX
             var ms = (now - m_timeStamp);
             m_timeStamp = now;
             return ms;
-            var scene = UIManager.Instance().GetScene();
-            scene.Dispatcher.BeginInvoke((ThreadStart)delegate
-            {
-                Logger.Debug(info + ":" + ms.ToString());
-            });
-            return ms;
+            //var scene = UIManager.Instance().GetScene();
+            //scene.Dispatcher.BeginInvoke((ThreadStart)delegate
+            //{
+            //    Logger.Debug(info + ":" + ms.ToString());
+            //});
+            //return ms;
         }
 
         public void SetForceSleepTime(int t)
@@ -252,7 +252,6 @@ namespace CodeAtlasVSIX
             {
                 var key = item.Key;
                 var edge = item.Value;
-                edge.m_orderData = null;
                 edge.m_isConnectedToFocusNode = false;
             }
 
@@ -268,7 +267,8 @@ namespace CodeAtlasVSIX
             }
 
             var selectedItem = items[0];
-            UpdateCallOrderByItem(selectedItem);
+            var orderEdge = new Dictionary<Tuple<string, string>, OrderData>();
+            UpdateCallOrderByItem(selectedItem, ref orderEdge);
 
             var selectedUIItem = selectedItem as CodeUIItem;
             if (selectedUIItem != null && selectedUIItem.IsFunction())
@@ -286,12 +286,27 @@ namespace CodeAtlasVSIX
                 }
                 if (caller.Count == 1)
                 {
-                    UpdateCallOrderByItem(caller[0]);
+                    UpdateCallOrderByItem(caller[0], ref orderEdge);
+                }
+            }
+
+            foreach (var item in edgeDict)
+            {
+                var key = item.Key;
+                var edge = item.Value;
+                if (orderEdge.ContainsKey(key))
+                {
+                    edge.OrderData = orderEdge[key];
+                }
+                else
+                {
+                    edge.OrderData = null;
                 }
             }
         }
 
-        void UpdateCallOrderByItem(System.Windows.Shapes.Shape item)
+        void UpdateCallOrderByItem(System.Windows.Shapes.Shape item,
+            ref Dictionary<Tuple<string, string>, OrderData> orderEdge)
         {
             var scene = UIManager.Instance().GetScene();
             var itemDict = scene.GetItemDict();
@@ -428,7 +443,9 @@ namespace CodeAtlasVSIX
                     x = basePos + padding;
                 }
                 y = edge.FindCurveYPos(x);
-                edge.m_orderData = new OrderData(i + 1, new Point(x, y));
+                orderEdge[new Tuple<string, string>(edge.m_srcUniqueName, edge.m_tarUniqueName)] =
+                    new OrderData(i + 1, new Point(x, y));
+                //edge.m_orderData = new OrderData(i + 1, new Point(x, y));
             }
         }
     }

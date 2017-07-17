@@ -741,7 +741,7 @@ namespace CodeAtlasVSIX
 
         public Shape FindNeighbourForEdge(CodeUIEdgeItem centerItem, Vector mainDirection)
         {
-            if (m_isSourceCandidate && centerItem.m_orderData != null && Math.Abs(mainDirection.Y) > 0.8)
+            if (m_isSourceCandidate && centerItem.OrderData != null && Math.Abs(mainDirection.Y) > 0.8)
             {
                 var srcItem = m_itemDict[centerItem.m_srcUniqueName];
                 var tarItem = m_itemDict[centerItem.m_tarUniqueName];
@@ -749,10 +749,10 @@ namespace CodeAtlasVSIX
                     //(srcItem.IsFunction()) &&
                     //(tarItem.IsFunction() || tarItem.IsVariable()))
                 {
-                    var tarOrder = centerItem.m_orderData.m_order - 1;
+                    var tarOrder = centerItem.OrderData.m_order - 1;
                     if (mainDirection.Y > 0)
                     {
-                        tarOrder = centerItem.m_orderData.m_order + 1;
+                        tarOrder = centerItem.OrderData.m_order + 1;
                     }
                     foreach (var edgePair in m_candidateEdge)
                     {
@@ -760,7 +760,7 @@ namespace CodeAtlasVSIX
                         {
                             var edge = m_edgeDict[edgePair];
                             if (edge.m_srcUniqueName == centerItem.m_srcUniqueName &&
-                                edge.m_orderData != null && edge.m_orderData.m_order == tarOrder)
+                                edge.OrderData != null && edge.OrderData.m_order == tarOrder)
                             {
                                 return edge;
                             }
@@ -908,7 +908,7 @@ namespace CodeAtlasVSIX
                                 bestTimeStampEdge = edge;
                                 bestTimeStamp = edge.m_selectTimeStamp;
                             }
-                            if (edge.m_orderData != null && edge.m_orderData.m_order == 1)
+                            if (edge.OrderData != null && edge.OrderData.m_order == 1)
                             {
                                 bestEdge = item.Value;
                             }

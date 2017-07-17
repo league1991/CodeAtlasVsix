@@ -42,7 +42,7 @@ namespace CodeAtlasVSIX
         bool m_isSelected = false;
         bool m_isMouseHover = false;
         DateTime m_mouseDownTime = new DateTime();
-        public OrderData m_orderData = null;
+        OrderData m_orderData = null;
         public bool m_isConnectedToFocusNode = false;
         Point m_p0, m_p1, m_p2, m_p3;
         bool m_isPathDirty = false;
@@ -231,6 +231,21 @@ namespace CodeAtlasVSIX
                 }
             }
             return (minPnt.Y + maxPnt.Y) * 0.5;
+        }
+
+        public OrderData OrderData
+        {
+            get { return m_orderData; }
+            set
+            {
+                if ((m_orderData == null && value != null) ||
+                    (m_orderData != null && value == null) ||
+                    (value != null && (m_orderData.m_order != value.m_order || m_orderData.m_point != value.m_point)))
+                {
+                    m_orderData = value;
+                    IsDirty = true;
+                }
+            }
         }
 
         public bool IsDirty
