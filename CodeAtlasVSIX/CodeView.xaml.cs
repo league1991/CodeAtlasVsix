@@ -83,7 +83,7 @@ namespace CodeAtlasVSIX
 
                 matrix.TranslatePrepend(offset.X, offset.Y);
                 transform.Matrix = matrix;
-            }, DispatcherPriority.Loaded);
+            }, DispatcherPriority.Render);
         }
 
         private void background_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
