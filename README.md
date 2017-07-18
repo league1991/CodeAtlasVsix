@@ -20,9 +20,9 @@ https://sourceforge.net/projects/codeatlasvsix/
 
 Overview
 --------
-* **Square** is a class.
-* **Disc** is a function.
-* **Triangle** is a variable.
+* ![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/class.png) is a class.
+* ![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/function.png)  is a function.
+* ![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/variable.png)  is a variable.
 * Colors for these shapes represent different classes, whose name can be seen at the bottom-left corner.
 * Colors for edges represent different graphs, whose name and key short-cut can be seen at the top-left corner.
 
