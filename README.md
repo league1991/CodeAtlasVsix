@@ -33,7 +33,7 @@ Navigate
 
 Move cursor onto function/class/variable name in Visual Studio Text Editor, then press `Alt+G` to show it on Code Atlas.
 
-Press `Alt+Up/Down/Left/Right` in Visual Studio Text Editor to jump to neighbour items.
+Press `Alt+J/K/L/I` in Visual Studio Text Editor to jump to neighbour items.
 ![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/navigate.gif)  
 
 Find Callers/Callees
