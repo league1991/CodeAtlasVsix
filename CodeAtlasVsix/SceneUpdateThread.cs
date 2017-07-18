@@ -106,14 +106,13 @@ namespace CodeAtlasVSIX
                         scene.ReleaseLock();
                     }
 
-                    Thread.Sleep(m_sleepTime / 2);
+                    Thread.Sleep(m_sleepTime);
                     scene.AcquireLock();
                     BeginTimeStamp();
                     MoveItems();
                     int moveTime = EndTimeStamp("Move Items");
                     scene.ReleaseLock();
-
-                    Thread.Sleep(m_sleepTime / 2);
+                    
                     scene.AcquireLock();
                     BeginTimeStamp();
                     UpdateCallOrder();

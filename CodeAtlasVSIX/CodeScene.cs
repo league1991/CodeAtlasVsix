@@ -1082,7 +1082,7 @@ namespace CodeAtlasVSIX
 
         public void MoveItems()
         {
-            if(m_view == null || m_waitingItemMove)
+            if(m_view == null)
             {
                 return;
             }
@@ -1097,12 +1097,12 @@ namespace CodeAtlasVSIX
                 foreach (var node in m_itemDict)
                 {
                     var item = node.Value;
-                    m_itemMoveDistance += item.MoveToTarget(0.05);
+                    m_itemMoveDistance += item.MoveToTarget(0.1);
                 }
                 ReleaseLock();
                 //Logger.Debug("MoveItems: BeginInvoke:" + (System.Environment.TickCount - now));
                 m_waitingItemMove = false;
-            });
+            }, DispatcherPriority.Send);
         }
 
         #region ThreadSync

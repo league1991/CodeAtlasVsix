@@ -77,7 +77,7 @@ namespace CodeAtlasVSIX
                 }
 
                 dist.Normalize();
-                var offsetLength = Math.Min(Math.Max(distLength * 0.1, 1.0), distLength);
+                var offsetLength = Math.Min(Math.Max(distLength * 0.25, 1.0), distLength);
                 m_lastMoveOffset = offsetLength;
                 var offset = offsetLength * dist;
 
