@@ -233,15 +233,15 @@ namespace CodeAtlasVSIX
                         t0 = t1;
                         if (codeElement != null)
                         {
-                            var funcStart = codeElement.GetStartPoint(vsCMPart.vsCMPartBody);
-                            var funcText = UpdateBodyCode(srcItem, codeElement);
-
-                            t1 = DateTime.Now;
-                            Logger.Debug("edge update body code" + (t1 - t0).TotalMilliseconds.ToString());
-                            t0 = t1;
-
                             try
                             {
+                                var funcStart = codeElement.GetStartPoint(vsCMPart.vsCMPartBody);
+                                var funcText = UpdateBodyCode(srcItem, codeElement);
+
+                                t1 = DateTime.Now;
+                                Logger.Debug("edge update body code" + (t1 - t0).TotalMilliseconds.ToString());
+                                t0 = t1;
+
                                 int offset = -1;
                                 if (tarItem.IsFunction())
                                 {
@@ -261,6 +261,7 @@ namespace CodeAtlasVSIX
                             }
                             catch (Exception)
                             {
+                                res = false;
                             }
                         }
                     }

@@ -1097,7 +1097,7 @@ namespace CodeAtlasVSIX
                 foreach (var node in m_itemDict)
                 {
                     var item = node.Value;
-                    m_itemMoveDistance += item.MoveToTarget(0.15);
+                    m_itemMoveDistance += item.MoveToTarget(0.3);
                 }
                 ReleaseLock();
                 //Logger.Debug("MoveItems: BeginInvoke:" + (System.Environment.TickCount - now));

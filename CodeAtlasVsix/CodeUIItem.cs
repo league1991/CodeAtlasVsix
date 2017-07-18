@@ -550,9 +550,9 @@ namespace CodeAtlasVSIX
                 return 0.0;
             }
 
-            var speedLimit = offsetLength * ratio;
+            var speed = Math.Min(offsetLength * ratio, 20);
             var minSpeed = 0.5;
-            var moveDist = Math.Min(Math.Sqrt(minSpeed * minSpeed + speedLimit * speedLimit), offsetLength);
+            var moveDist = Math.Min(Math.Max(minSpeed, speed), offsetLength);
             Pos = Pos + offset * moveDist;
             return moveDist;
 
