@@ -56,11 +56,11 @@ namespace CodeAtlasVSIX
 
         public void MoveView(Point center)
         {
-            //if (m_isViewMoving)
+            //if (m_moveState != null && m_moveState.Status != DispatcherOperationStatus.Completed)
             //{
             //    return;
             //}
-            
+
             m_moveState = Dispatcher.BeginInvoke((ThreadStart)delegate
             {
                 var transform = this.canvas.RenderTransform as MatrixTransform;
@@ -77,13 +77,18 @@ namespace CodeAtlasVSIX
                 }
 
                 dist.Normalize();
-                var offsetLength = Math.Min(Math.Max(distLength * 0.25, 1.0), distLength);
-                m_lastMoveOffset = offsetLength;
+                //var offsetLength = Math.Min(Math.Max(distLength * 0.25, 1.0), distLength);
+                //m_lastMoveOffset = offsetLength;
+
+                var speedLimit = distLength * 0.25;
+                var minSpeed = 1.0;
+                var offsetLength = Math.Min(Math.Sqrt(minSpeed * minSpeed + speedLimit * speedLimit), distLength);
                 var offset = offsetLength * dist;
+                m_lastMoveOffset = offsetLength;
 
                 matrix.TranslatePrepend(offset.X, offset.Y);
                 transform.Matrix = matrix;
-            }, DispatcherPriority.Render);
+            });
         }
 
         private void background_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

@@ -116,6 +116,7 @@ namespace CodeAtlasVSIX
         {
             m_schemeColorList.Add(color);
             UpdateStroke();
+            IsDirty = true;
         }
 
         Point CalculateBezierPoint(double t, Point p1, Point p2, Point p3, Point p4)
