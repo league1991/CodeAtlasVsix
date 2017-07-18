@@ -12,8 +12,11 @@ Using this plugin one can navigate the code easily.
 Here is my blog:
 http://www.cnblogs.com/dydx/p/6299927.html
 
-Here are some introduction videos:
+Here are some videos:
 https://www.youtube.com/watch?v=FScdHyxdNFw&list=PLN16zMWJLkHLgHhTJUIkwp5chgnFz9_NH
+
+You can get the installation package here:
+https://sourceforge.net/projects/codeatlasvsix/
 
 Overview
 --------
