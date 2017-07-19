@@ -625,10 +625,16 @@ namespace CodeAtlasVSIX
 
                 System.Threading.Thread analysisThread = new System.Threading.Thread((ThreadStart)delegate
                 {
-                    DoxygenDB.DoxygenDB.GenerateDB(config);
-                    DBManager.Instance().OpenDB(config.m_configPath);
-                    UpdateUI();
-                    //SetCommandActive(true);
+                    try
+                    {
+                        DoxygenDB.DoxygenDB.GenerateDB(config);
+                        DBManager.Instance().OpenDB(config.m_configPath);
+                        UpdateUI();
+                    }
+                    catch (Exception)
+                    {
+                        SetCommandActive(true);
+                    }
                 });
                 analysisThread.Name = "Analysis Thread";
                 analysisThread.Start();

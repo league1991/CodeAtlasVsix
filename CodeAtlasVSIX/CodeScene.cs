@@ -119,6 +119,7 @@ namespace CodeAtlasVSIX
             var dbPath = dbObj.GetDBPath();
             if (dbPath == null || dbPath == "")
             {
+                mainUI.SetCommandActive(true);
                 return;
             }
 
@@ -130,6 +131,7 @@ namespace CodeAtlasVSIX
             }
             if (jsonStr == "")
             {
+                mainUI.SetCommandActive(true);
                 return;
             }
 
