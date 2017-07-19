@@ -20,6 +20,8 @@ namespace CodeAtlasVSIX
         public double scaleValue = 1.0;
         public double m_lastMoveOffset = 0.0;
         DispatcherOperation m_moveState;
+        Point m_mouseBeginPos = new Point();
+        Point m_centerBeginPos = new Point();
 
         public CodeView()
         {
@@ -28,12 +30,6 @@ namespace CodeAtlasVSIX
             scene.View = this;
 
             ScaleCanvas(0.94, new Point());
-        }
-
-        private void testButton_Click(object sender, RoutedEventArgs e)
-        {
-            //UIManager.Instance().GetScene().OnCloseDB();
-            UIManager.Instance().GetScene().OnOpenDB();
         }
 
         private void canvas_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
@@ -90,10 +86,41 @@ namespace CodeAtlasVSIX
 
         private void background_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            m_mouseBeginPos = e.GetPosition(background);
             var source = e.OriginalSource;
             if (source == this)
             {
                 UIManager.Instance().GetScene().ClearSelection();
+                var element = this.canvas as UIElement;
+                var transform = this.canvas.RenderTransform as MatrixTransform;
+                transform.TryTransform(new Point(), out m_centerBeginPos);
+            }
+        }
+
+        private void background_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var source = e.OriginalSource;
+            if (source == this)
+            {
+            }
+        }
+
+        private void background_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            var source = e.OriginalSource;
+            if (source == this || true)
+            {
+                if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+                {
+                    var element = this.canvas as UIElement;
+                    var point = e.GetPosition(background);
+                    var transform = this.canvas.RenderTransform as MatrixTransform;
+                    var matrix = transform.Matrix;
+                    var offset = (point - m_mouseBeginPos) / matrix.M11;
+                    matrix.TranslatePrepend(offset.X, offset.Y);
+                    transform.Matrix = matrix;
+                    m_mouseBeginPos = point;
+                }
             }
         }
 

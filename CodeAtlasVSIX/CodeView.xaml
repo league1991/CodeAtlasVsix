@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:local="clr-namespace:CodeAtlasVSIX"
         mc:Ignorable="d" 
-        x:Name="background" Background="#FF323232" Margin="0" MouseWheel="canvas_MouseWheel" ClipToBounds="True" MouseDown="background_MouseDown" MouseEnter="background_MouseEnter" MouseLeave="background_MouseLeave" SizeChanged="background_SizeChanged">
+        x:Name="background" Background="#FF323232" Margin="0" MouseWheel="canvas_MouseWheel" ClipToBounds="True" MouseDown="background_MouseDown" MouseUp="background_MouseUp" MouseMove="background_MouseMove" MouseEnter="background_MouseEnter" MouseLeave="background_MouseLeave" SizeChanged="background_SizeChanged">
     <Canvas x:Name="canvas">
         <Canvas.RenderTransform>
             <MatrixTransform/>
