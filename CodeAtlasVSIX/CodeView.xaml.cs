@@ -70,19 +70,16 @@ namespace CodeAtlasVSIX
                 var currentPnt = matrix.Transform(center);
 
                 var dist = centerPnt - currentPnt;
-                var distLength = dist.Length;
-                if (distLength < 1.0)
+                var distLength = dist.Length / transform.Matrix.M11;
+                if (distLength < 2.0)
                 {
                     return;
                 }
 
                 dist.Normalize();
-                //var offsetLength = Math.Min(Math.Max(distLength * 0.25, 1.0), distLength);
-                //m_lastMoveOffset = offsetLength;
-
                 var speedLimit = distLength * 0.25;
                 var minSpeed = 1.0;
-                var offsetLength = Math.Min(Math.Sqrt(minSpeed * minSpeed + speedLimit * speedLimit), distLength);
+                var offsetLength = Math.Min(Math.Max(minSpeed, speedLimit), distLength);
                 var offset = offsetLength * dist;
                 m_lastMoveOffset = offsetLength;
 
