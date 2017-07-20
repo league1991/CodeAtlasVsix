@@ -36,7 +36,14 @@ namespace CodeAtlasVSIX
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
             //this.Content = new CodeView();
-            this.Content = UIManager.Instance().GetMainUI();
+            //this.Content = UIManager.Instance().GetMainUI();
+        }
+
+        public override System.Windows.Forms.IWin32Window Window
+        { get
+            {
+                return (System.Windows.Forms.IWin32Window)UIManager.Instance().GetMainUI();
+            }
         }
 
         protected override void OnClose()

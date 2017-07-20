@@ -1,15 +1,15 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:CodeAtlasVSIX"
-                    xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
+                    xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.9.0"
                     >
 
     <Style TargetType="Menu" x:Key="MenuStyle">
-        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>
+        <!--<Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>-->
     </Style>
 
     <Style TargetType="MenuItem" x:Key="MenuItemStyle">
-        <Setter Property="Panel.Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>
+        <!--<Setter Property="Panel.Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>
         <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>
         <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
@@ -21,12 +21,12 @@
             <Trigger Property="IsHighlighted" Value="true">
                 <Setter Property="Background" Value="Blue" />
             </Trigger>
-        </Style.Triggers>
+        </Style.Triggers>-->
     </Style>
 
     <Style TargetType="TabControl" x:Key="TabStyle">
-        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.FileTabBorderKey}}"/>
+        <!--<Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.FileTabBorderKey}}"/>-->
     </Style>
 
     <!--<Style TargetType="RadioButton">
@@ -35,16 +35,16 @@
     </Style>-->
 
     <Style TargetType="GridSplitter" x:Key="GridSplitterStyle">
-        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>
+        <!--<Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>-->
     </Style>
 
     <Style TargetType="GroupBox" x:Key="GroupBoxStyle">
-        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.ActiveBorderKey}}"/>
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
+        <!--<Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.ActiveBorderKey}}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>-->
     </Style>
 
     <Style TargetType="{x:Type TabItem}" x:Key="TabItemStyle">
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.FileTabTextKey}}"/>
+        <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.FileTabTextKey}}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
@@ -73,7 +73,7 @@
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
-        </Setter>
+        </Setter>-->
     </Style>
 
     <!-- Separator -->
@@ -90,7 +90,7 @@
     </Style>
 
     <Style TargetType="{x:Type MenuItem}">
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}" />
+        <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type MenuItem}">
@@ -118,7 +118,7 @@
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
-        </Setter>
+        </Setter>-->
     </Style>
 
     <!--

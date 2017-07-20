@@ -33,15 +33,15 @@ namespace CodeAtlasVSIX
             }
 
             bool res = false;
-            res |= SetElementStyle(depObj as TextBox, VsResourceKeys.TextBoxStyleKey);
-            res |= SetElementStyle(depObj as Label, VsResourceKeys.ThemedDialogLabelStyleKey);
-            res |= SetElementStyle(depObj as Button, VsResourceKeys.ButtonStyleKey);
+            //res |= SetElementStyle(depObj as TextBox, VsResourceKeys.TextBoxStyleKey);
+            //res |= SetElementStyle(depObj as Label, VsResourceKeys.ThemedDialogLabelStyleKey);
+            //res |= SetElementStyle(depObj as Button, VsResourceKeys.ButtonStyleKey);
             //res |= SetElementStyle(depObj as Menu, VsResourceKeys.ThemedDialogDefaultStylesKey);
             //res |= SetElementStyle(depObj as MenuItem, VsResourceKeys.ThemedDialogDefaultStylesKey);
-            res |= SetElementStyle(depObj as ListView, VsResourceKeys.ThemedDialogListViewStyleKey);
-            res |= SetElementStyle(depObj as ListViewItem, VsResourceKeys.ThemedDialogListViewItemStyleKey);
-            res |= SetElementStyle(depObj as ListBox, VsResourceKeys.ThemedDialogListBoxStyleKey);
-            res |= SetElementStyle(depObj as RadioButton, VsResourceKeys.ThemedDialogRadioButtonStyleKey);
+            //res |= SetElementStyle(depObj as ListView, VsResourceKeys.ThemedDialogListViewStyleKey);
+            //res |= SetElementStyle(depObj as ListViewItem, VsResourceKeys.ThemedDialogListViewItemStyleKey);
+            //res |= SetElementStyle(depObj as ListBox, VsResourceKeys.ThemedDialogListBoxStyleKey);
+            //res |= SetElementStyle(depObj as RadioButton, VsResourceKeys.ThemedDialogRadioButtonStyleKey);
             //res |= SetElementStyle(depObj as TabItem, VsResourceKeys.ButtonStyleKey);
 
             foreach (object logicalChild in LogicalTreeHelper.GetChildren(depObj))
