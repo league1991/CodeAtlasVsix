@@ -1,0 +1,395 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!--  This is the file that defines the actual layout and type of the commands.
+        It is divided in different sections (e.g. command definition, command
+        placement, ...), with each defining a specific set of properties.
+        See the comment before each section for more details about how to
+        use it. -->
+
+  <!--  The VSCT compiler (the tool that translates this file into the binary
+        format that VisualStudio will consume) has the ability to run a preprocessor
+        on the vsct file; this preprocessor is (usually) the C++ preprocessor, so
+        it is possible to define includes and macros with the same syntax used
+        in C++ files. Using this ability of the compiler here, we include some files
+        defining some of the constants that we will use inside the file. -->
+
+  <!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
+  <Extern href="stdidcmd.h" />
+
+  <!--This header contains the command ids for the menus provided by the shell. -->
+  <Extern href="vsshlids.h" />
+
+  <!--The Commands section is where commands, menus, and menu groups are defined.
+      This section uses a Guid to identify the package that provides the command defined inside it. -->
+  <Commands package="guidCodeAtlasPackage">
+    <!-- Inside this section we have different sub-sections: one for the menus, another
+    for the menu groups, one for the buttons (the actual commands), one for the combos
+    and the last one for the bitmaps used. Each element is identified by a command id that
+    is a unique pair of guid and numeric identifier; the guid part of the identifier is usually
+    called "command set" and is used to group different command inside a logically related
+    group; your package should define its own command set in order to avoid collisions
+    with command ids defined by other packages. -->
+
+    <Menus>
+      <Menu guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" priority="0x700" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
+        <Strings>
+          <ButtonText>Code Atlas</ButtonText>
+        </Strings>
+      </Menu>
+    </Menus>
+
+    <Groups>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="DBMenuGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
+    </Groups>
+
+    <!--Buttons section. -->
+    <!--This section defines the elements the user can interact with, like a menu command or a button
+        or combo box in a toolbar. -->
+    <Buttons>
+      <!--To define a menu group you have to specify its ID, the parent menu and its display priority.
+          The command is visible and enabled by default. If you need to change the visibility, status, etc, you can use
+          the CommandFlag node.
+          You can add more than one CommandFlag node e.g.:
+              <CommandFlag>DefaultInvisible</CommandFlag>
+              <CommandFlag>DynamicVisibility</CommandFlag>
+          If you do not want an image next to your command, remove the Icon node /> -->
+      <Button guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasCommandId" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasGroup" />
+        <Strings>
+          <ButtonText>Open Code Atlas Window</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidCodeAtlasPackageCmdSet" id="AnalyseSolutionCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="DBMenuGroup" />
+        <Strings>
+          <ButtonText>Analyse Solution</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidCodeAtlasPackageCmdSet" id="AnalyseSelectedProjectsCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="DBMenuGroup" />
+        <Strings>
+          <ButtonText>Analyse Selected Projects</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidCodeAtlasPackageCmdSet" id="OpenAnalysisResultCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="DBMenuGroup" />
+        <Strings>
+          <ButtonText>Open Analysis Result</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidCodeAtlasPackageCmdSet" id="CloseAnalysisResultCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="DBMenuGroup" />
+        <Strings>
+          <ButtonText>Close Analysis Result</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlas" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" />
+        <Strings>
+          <ButtonText>Show In Atlas</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowDefinitionInAtlas" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" />
+        <Strings>
+          <ButtonText>Show Definition In Atlas</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="FindCallersCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
+        <Strings>
+          <ButtonText>Find Callers</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="FindCalleesCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
+        <Strings>
+          <ButtonText>Find Callees</ButtonText>
+        </Strings>
+      </Button>    
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="FindMembersCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
+        <Strings>
+          <ButtonText>Find Members</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="FindOverridesCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
+        <Strings>
+          <ButtonText>Find Overrides</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="FindBasesCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
+        <Strings>
+          <ButtonText>Find Bases</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="FindUsesCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
+        <Strings>
+          <ButtonText>Find Uses</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="GoUpCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
+        <Strings>
+          <ButtonText>Go Up</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="GoDownCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
+        <Strings>
+          <ButtonText>Go Down</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="GoLeftCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
+        <Strings>
+          <ButtonText>Go Left</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="GoRightCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
+        <Strings>
+          <ButtonText>Go Right</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="DeleteSelectedItemsCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
+        <Strings>
+          <ButtonText>Delete Selected Items</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidCodeAtlasPackageCmdSet" id="IgnoreSelectedItemsCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
+        <Strings>
+          <ButtonText>Ignore Selected Items</ButtonText>
+        </Strings>
+      </Button>
+            
+      <Button guid="guidCodeAtlasPackageCmdSet" id="DeleteNearbyItemsCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
+        <Strings>
+          <ButtonText>Delete Nearby Items</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="AddSimilarItem" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
+        <Strings>
+          <ButtonText>Add Similar Items</ButtonText>
+        </Strings>
+      </Button>
+        
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme1" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
+        <Strings>
+          <ButtonText>Show Scheme 1</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme2" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
+        <Strings>
+          <ButtonText>Show Scheme 2</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme3" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
+        <Strings>
+          <ButtonText>Show Scheme 3</ButtonText>
+        </Strings>
+      </Button>
+          
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme4" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
+        <Strings>
+          <ButtonText>Show Scheme 4</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme5" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
+        <Strings>
+          <ButtonText>Show Scheme 5</ButtonText>
+        </Strings>
+      </Button>
+        
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme1" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
+        <Strings>
+          <ButtonText>Toggle Scheme 1</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme2" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
+        <Strings>
+          <ButtonText>Toggle Scheme 2</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme3" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
+        <Strings>
+          <ButtonText>Toggle Scheme 3</ButtonText>
+        </Strings>
+      </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme4" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
+        <Strings>
+          <ButtonText>Toggle Scheme 4</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme5" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
+        <Strings>
+          <ButtonText>Toggle Scheme 5</ButtonText>
+        </Strings>
+      </Button>
+    
+    </Buttons>
+    <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
+    <Bitmaps>
+      <!--  The bitmap id is defined in a way that is a little bit different from the others:
+            the declaration starts with a guid for the bitmap strip, then there is the resource id of the
+            bitmap strip containing the bitmaps and then there are the numeric ids of the elements used
+            inside a button definition. An important aspect of this declaration is that the element id
+            must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
+      <Bitmap guid="guidImages" href="Resources\CodeAtlasCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
+    </Bitmaps>
+  </Commands>
+
+  <KeyBindings>  
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="FindCallersCommand" key1="C" mod1="ALT" editor="guidVSStd97" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="FindCalleesCommand" key1="V" mod1="ALT" editor="guidVSStd97" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="FindMembersCommand" key1="M" mod1="ALT" editor="guidVSStd97" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="FindOverridesCommand" key1="O" mod1="ALT" editor="guidVSStd97" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="FindBasesCommand" key1="B" mod1="ALT" editor="guidVSStd97" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="FindUsesCommand" key1="U" mod1="ALT" editor="guidVSStd97" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoUpCommand" key1="I" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoDownCommand" key1="K" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoLeftCommand" key1="J" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoRightCommand" key1="L" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="DeleteSelectedItemsCommand" key1="VK_DELETE" mod1="ALT" editor="guidVSStd97" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="IgnoreSelectedItemsCommand" key1="N" mod1="ALT" editor="guidVSStd97" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="DeleteNearbyItemsCommand" key1="D" mod1="ALT" editor="guidVSStd97" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowDefinitionInAtlas" key1="H" mod1="ALT" editor="guidVSStd97" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="AddSimilarItem" key1="S" mod1="ALT" editor="guidVSStd97" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlas" key1="G" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowScheme1" key1="1" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowScheme2" key1="2" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowScheme3" key1="3" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowScheme4" key1="4" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowScheme5" key1="5" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme1" key1="1" mod1="Control" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme2" key1="2" mod1="Control" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme3" key1="3" mod1="Control" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme4" key1="4" mod1="Control" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme5" key1="5" mod1="Control" editor="guidSourceCodeTextEditor" />
+  </KeyBindings>
+  
+  <Symbols>
+    <!-- This is the package guid. -->
+    <GuidSymbol name="guidCodeAtlasPackage" value="{ad6e432c-b58e-4dc8-9893-6e1b412d38c4}" />
+
+    <!-- This is the guid used to group the menu commands together -->
+    <GuidSymbol name="guidCodeAtlasPackageCmdSet" value="{69c47ed5-456c-45d2-8d14-c3dbbce248b3}">
+      <IDSymbol name="CodeAtlasCommandId" value="0x0100" />
+      <IDSymbol name="TopLevelMenu" value="0x0101" />
+      <IDSymbol name="FindCallersCommand" value="0x0103" />
+      <IDSymbol name="FindCalleesCommand" value="0x0104" />
+      <IDSymbol name="FindMembersCommand" value="0x0105" />
+      <IDSymbol name="FindOverridesCommand" value="0x0106" />
+      <IDSymbol name="FindBasesCommand" value="0x0107" />
+      <IDSymbol name="FindUsesCommand" value="0x0108" />
+      <IDSymbol name="GoUpCommand" value="0x0109" />
+      <IDSymbol name="GoDownCommand" value="0x010a" />
+      <IDSymbol name="GoLeftCommand" value="0x010b" />
+      <IDSymbol name="GoRightCommand" value="0x010c" />
+      <IDSymbol name="DeleteSelectedItemsCommand" value="0x010d" />
+      <IDSymbol name="IgnoreSelectedItemsCommand" value="0x010e" />
+      <IDSymbol name="AddSimilarItem" value="0x010f" />
+      <IDSymbol name="ShowInAtlas" value="0x0110" />
+      <IDSymbol name="ShowScheme1" value="0x0111" />
+      <IDSymbol name="ShowScheme2" value="0x0112" />
+      <IDSymbol name="ShowScheme3" value="0x0113" />
+      <IDSymbol name="ShowScheme4" value="0x0114" />
+      <IDSymbol name="ShowScheme5" value="0x0115" />
+      <IDSymbol name="ToggleScheme1" value="0x0116" />
+      <IDSymbol name="ToggleScheme2" value="0x0117" />
+      <IDSymbol name="ToggleScheme3" value="0x0118" />
+      <IDSymbol name="ToggleScheme4" value="0x0119" />
+      <IDSymbol name="ToggleScheme5" value="0x011a" />
+      <IDSymbol name="DeleteNearbyItemsCommand" value="0x011b" />
+      <IDSymbol name="ShowDefinitionInAtlas" value="0x011c" />
+      <IDSymbol name="AnalyseSolutionCommand" value="0x011d" />
+      <IDSymbol name="AnalyseSelectedProjectsCommand" value="0x011e" />
+      <IDSymbol name="CodeAtlasGroup" value="0x0102" />
+      <IDSymbol name="DBMenuGroup" value="0x011f" />
+      <IDSymbol name="ShowInAtlasMenuGroup" value="0x0120" />
+      <IDSymbol name="NavigationMenuGroup" value="0x0121" />
+      <IDSymbol name="SymbolMenuGroup" value="0x0122" />
+      <IDSymbol name="ShowSchemeMenuGroup" value="0x0123" />
+      <IDSymbol name="ToggleSchemeMenuGroup" value="0x0126" />
+      <IDSymbol name="OpenAnalysisResultCommand" value="0x0124" />
+      <IDSymbol name="CloseAnalysisResultCommand" value="0x0125" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidImages" value="{e8b62cf1-f2d4-4924-a788-7d9f6eb6d635}">
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
+
+    <GuidSymbol name ="guidSourceCodeTextWithEncodingEditor" value="{c7747503-0e24-4fbe-be4b-94180c3947d7}" />
+    <GuidSymbol name ="guidSourceCodeTextEditor" value="{8b382828-6202-11d1-8870-0000f87579d2}" />
+  </Symbols>
+</CommandTable>
