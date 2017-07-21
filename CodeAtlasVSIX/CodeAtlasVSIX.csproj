@@ -96,6 +96,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Microsoft.VisualStudio.Shell.14.0.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Microsoft.VisualStudio.Shell.Immutable.14.0.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\logo.png">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
