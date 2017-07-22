@@ -18,6 +18,9 @@ https://www.youtube.com/watch?v=FScdHyxdNFw&list=PLN16zMWJLkHLgHhTJUIkwp5chgnFz9
 You can get the installation package here:
 https://sourceforge.net/projects/codeatlasvsix/
 
+Here is the plugin in visual studio market place:
+https://marketplace.visualstudio.com/items?itemName=YaobinOuyang.CodeAtlas
+
 Overview
 --------
 * ![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/class.png) is a class.
