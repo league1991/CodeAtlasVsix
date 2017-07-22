@@ -21,8 +21,7 @@ namespace CodeAtlasVSIX
         public double m_lastMoveOffset = 0.0;
         DispatcherOperation m_moveState;
         public bool m_isMouseDown = false;
-        Point m_mouseBeginPos = new Point();
-        Point m_centerBeginPos = new Point();
+        Point m_backgroundMovePos = new Point();
         DateTime m_mouseMoveTime = new DateTime();
         public bool m_isMouseInView = true;
 
@@ -91,14 +90,11 @@ namespace CodeAtlasVSIX
         private void background_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             m_isMouseDown = true;
-            m_mouseBeginPos = e.GetPosition(background);
+            m_backgroundMovePos = e.GetPosition(background);
             var source = e.OriginalSource;
             if (source == this)
             {
                 UIManager.Instance().GetScene().ClearSelection();
-                var element = this.canvas as UIElement;
-                var transform = this.canvas.RenderTransform as MatrixTransform;
-                transform.TryTransform(new Point(), out m_centerBeginPos);
             }
         }
 
@@ -114,7 +110,12 @@ namespace CodeAtlasVSIX
             var source = e.OriginalSource;
             if (source == this)
             {
-                m_mouseMoveTime = DateTime.Now;
+                var point = e.GetPosition(background);
+                if (!Point.Equals(point, m_backgroundMovePos))
+                {
+                    m_mouseMoveTime = DateTime.Now;
+                }
+                Logger.Debug("mouse move"+point.X+","+point.Y+"--"+m_backgroundMovePos.X + "," + m_backgroundMovePos.Y);
                 var scene = UIManager.Instance().GetScene();
                 var selectedItems = scene.SelectedItems();
                 if (selectedItems.Count == 0 &&
@@ -122,18 +123,17 @@ namespace CodeAtlasVSIX
                 {
                     CaptureMouse();
                     var element = this.canvas as UIElement;
-                    var point = e.GetPosition(background);
                     var transform = this.canvas.RenderTransform as MatrixTransform;
                     var matrix = transform.Matrix;
-                    var offset = (point - m_mouseBeginPos) / matrix.M11;
+                    var offset = (point - m_backgroundMovePos) / matrix.M11;
                     matrix.TranslatePrepend(offset.X, offset.Y);
                     transform.Matrix = matrix;
-                    m_mouseBeginPos = point;
                 }
                 else
                 {
                     m_isMouseDown = false;
                 }
+                m_backgroundMovePos = point;
             }
         }
 

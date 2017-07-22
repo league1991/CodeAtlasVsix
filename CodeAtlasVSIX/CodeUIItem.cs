@@ -438,34 +438,19 @@ namespace CodeAtlasVSIX
         {
             set
             {
-                //if (this.Dispatcher.CheckAccess())
-                //{
-                //    Canvas.SetLeft(this, value.X);
-                //    Canvas.SetTop(this, value.Y);
-                //}
-                //else
-                //{
-                //    this.Dispatcher.BeginInvoke(() => {
-                //    Canvas.SetLeft(this, value.X);
-                //    Canvas.SetTop(this, value.Y); });
-                //}
                 Canvas.SetLeft(this, value.X);
                 Canvas.SetTop(this, value.Y);
-                //LeftPoint = point;
-                //RightPoint = point;
                 m_position = value;
                 IsDirty = true;
             }
             get
             {
-                //var pnt = this.TranslatePoint(new Point(), (UIElement)this.Parent);
                 return m_position;
             }
         }
 
         public double GetRadius()
         {
-            // TODO: more code
             var r = GetBodyRadius();
             if (IsFunction())
             {
@@ -605,7 +590,10 @@ namespace CodeAtlasVSIX
         {
             var newDownTime = DateTime.Now;
             double duration = (newDownTime - m_mouseDownTime).TotalMilliseconds;
-            m_mouseDownTime = newDownTime;
+            if (args.LeftButton == MouseButtonState.Pressed)
+            {
+                m_mouseDownTime = newDownTime;
+            }
             if (duration > System.Windows.Forms.SystemInformation.DoubleClickTime)
             {
                 MouseClickCallback(sender, args);
