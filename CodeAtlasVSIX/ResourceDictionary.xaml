@@ -8,6 +8,10 @@
         <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>
     </Style>
 
+    <Style TargetType="ContextMenu">
+        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>
+    </Style>
+
     <Style TargetType="MenuItem" x:Key="MenuItemStyle">
         <Setter Property="Panel.Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>
         <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>

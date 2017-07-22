@@ -96,6 +96,7 @@ namespace CodeAtlasVSIX
             this.MouseMove += new MouseEventHandler(MouseMoveCallback);
             this.MouseEnter += new MouseEventHandler(MouseEnterCallback);
             this.MouseLeave += new MouseEventHandler(MouseLeaveCallback);
+            this.Cursor = Cursors.Arrow;
 
             SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(100, 150,150,150));
             this.Fill = Brushes.Transparent;

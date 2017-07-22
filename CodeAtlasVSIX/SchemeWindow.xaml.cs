@@ -66,7 +66,7 @@ namespace CodeAtlasVSIX
             var isAdd = true;
             if (schemeNameList.Contains(schemeName))
             {
-                var result = MessageBox.Show(string.Format("{0} aleardy exists. Replace it?", schemeName), "Add Scheme", MessageBoxButton.OKCancel);
+                var result = MessageBox.Show(string.Format("{0} aleardy exists. Replace it?", schemeName), "Add Graph", MessageBoxButton.OKCancel);
                 if (result == MessageBoxResult.Cancel)
                 {
                     isAdd = false;
@@ -85,7 +85,7 @@ namespace CodeAtlasVSIX
             var item = schemeList.SelectedItem as SchemeItem;
             if (item == null)
             {
-                MessageBox.Show("Please select an item to show.", "Show Scheme");
+                MessageBox.Show("Please select an item to show.", "Show Graph");
                 return;
             }
 
@@ -103,7 +103,7 @@ namespace CodeAtlasVSIX
             var item = schemeList.SelectedItem as SchemeItem;
             if (item == null)
             {
-                MessageBox.Show("Please select an item to delete.", "Delete Scheme");
+                MessageBox.Show("Please select an item to delete.", "Delete Graph");
                 return;
             }
 

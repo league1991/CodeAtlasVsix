@@ -72,6 +72,7 @@ namespace CodeAtlasVSIX
             this.MouseMove += new MouseEventHandler(MouseMoveCallback);
             this.MouseEnter += new MouseEventHandler(MouseEnterCallback);
             this.MouseLeave += new MouseEventHandler(MouseLeaveCallback);
+            this.Cursor = Cursors.Arrow;
             
             var scene = UIManager.Instance().GetScene();
 
@@ -620,12 +621,47 @@ namespace CodeAtlasVSIX
             var scene = UIManager.Instance().GetScene();
             scene.ClearSelection();
             scene.SelectCodeItem(this.m_uniqueName);
-            dragStart = args.GetPosition(this);
+            _BuildContextMenu();
             CaptureMouse();
-            if (args.RightButton == MouseButtonState.Pressed)
+            dragStart = args.GetPosition(this);
+        }
+
+
+        public void OnAddCustomEdge(object sender, ExecutedRoutedEventArgs e)
+        {
+            CaptureMouse();
+            m_customEdgeMode = true;
+        }
+
+        void _AddContextMenuItem(ContextMenu context, string header, ExecutedRoutedEventHandler handler)
+        {
+            MenuItem menuItem = new MenuItem();
+            menuItem.Header = header;
+            menuItem.Click += delegate { handler(null, null); };
+            context.Items.Add(menuItem);
+        }
+
+        void _BuildContextMenu()
+        {
+            var mainUI = UIManager.Instance().GetMainUI();
+            ContextMenu context = new ContextMenu();
+            if (m_kind == DoxygenDB.EntKind.FUNCTION)
             {
-                m_customEdgeMode = true;
+                _AddContextMenuItem(context, "Find Callers", mainUI.OnFindCallers);
+                _AddContextMenuItem(context, "Find Callees", mainUI.OnFindCallees);
+                _AddContextMenuItem(context, "Find Overrides", mainUI.OnFindOverrides);
             }
+            else if(m_kind == DoxygenDB.EntKind.CLASS)
+            {
+                _AddContextMenuItem(context, "Find Bases", mainUI.OnFindBases);
+            }
+            _AddContextMenuItem(context, "Find Usages", mainUI.OnFindUses);
+            _AddContextMenuItem(context, "Delete", mainUI.OnDelectSelectedItems);
+            _AddContextMenuItem(context, "Delete and Ignore", mainUI.OnDeleteSelectedItemsAndAddToStop);
+            _AddContextMenuItem(context, "Delete Nearby Items", mainUI.OnDeleteNearbyItems);
+            _AddContextMenuItem(context, "Add Similar Items", mainUI.OnAddSimilarCodeItem);
+            _AddContextMenuItem(context, "Add Custom Edge", this.OnAddCustomEdge);
+            this.ContextMenu = context;
         }
 
         void MouseDoubleClickCallback(object sender, MouseEventArgs args)

@@ -48,7 +48,7 @@
                     <local:SymbolWindow x:Name="symbolWindow"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Scheme" Style="{DynamicResource TabItemStyle}">
+            <TabItem Header="Graph" Style="{DynamicResource TabItemStyle}">
                 <Grid MinHeight="10">
                     <local:SchemeWindow x:Name="schemeWindow"/>
                 </Grid>

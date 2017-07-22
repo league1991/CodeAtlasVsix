@@ -59,7 +59,6 @@ namespace CodeAtlasVSIX
         bool m_isSourceCandidate = true;
         List<EdgeKey> m_candidateEdge = new List<EdgeKey>();
         bool m_selectEventConnected = true;
-        public bool m_autoFocus = true;
         bool m_autoFocusToggle = true;
         public double m_itemMoveDistance = 0.0;
         public bool m_waitingItemMove = false;
@@ -96,7 +95,7 @@ namespace CodeAtlasVSIX
 
         public bool IsAutoFocus()
         {
-            return m_autoFocus && m_autoFocusToggle;
+            return m_autoFocusToggle;
         }
         
         void AddOrReplaceDict(DataDict dict, string key, object value)
@@ -258,7 +257,15 @@ namespace CodeAtlasVSIX
 
                 // Activeate commands
                 mainUI.SetCommandActive(true);
+                mainUI.UpdateUI();
                 m_updateThread.ClearForceSleepTime();
+                if (m_itemDict.Count == 0)
+                {
+                    Logger.Message("Analysis Result is opened.\n\nYou can place the cursor on a function/class/variable and use \"Show In Atlas\" command to show it on the viewport.");
+                    mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate {
+                        mainUI.OnShowInAtlas(null, null);
+                    });
+                }
             });
             addingThread.Name = "Open DB Thread";
             addingThread.Start();

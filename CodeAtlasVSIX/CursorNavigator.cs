@@ -282,18 +282,18 @@ namespace CodeAtlasVSIX
             {
                 if (File.Exists(fileName))
                 {
-                    OpenFile(fileName);
-                    TextSelection ts = m_dte.ActiveDocument.Selection as TextSelection;
-                    if (ts != null && line > 0)
+                    try
                     {
-                        try
+                        OpenFile(fileName);
+                        TextSelection ts = m_dte.ActiveDocument.Selection as TextSelection;
+                        if (ts != null && line > 0)
                         {
                             ts.GotoLine(line);
                         }
-                        catch (Exception)
-                        {
-                            Logger.Debug("Go to page fail.");
-                        }
+                    }
+                    catch (Exception)
+                    {
+                        Logger.Debug("Go to page fail.");
                     }
                 }
             }
@@ -348,6 +348,10 @@ namespace CodeAtlasVSIX
 
         CodeElement GetCodeElement(CodeUIItem uiItem, Document document)
         {
+            if (document == null)
+            {
+                return null;
+            }
             var t0 = DateTime.Now;
 
             var docModel = GetFileCodeModel(document);

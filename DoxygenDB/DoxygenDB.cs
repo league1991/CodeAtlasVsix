@@ -639,14 +639,15 @@ namespace DoxygenDB
             return pathList;
         }
 
-        public static void GenerateDB(DoxygenDBConfig config)
+        public static bool GenerateDB(DoxygenDBConfig config)
         {
             string configPath = config.m_configPath;
             string projectName = config.m_projectName;
             List<string> inputFolders = config.m_inputFolders;
             string outputDirectory = config.m_outputDirectory;
 
-            _GenerateConfigureFile(configPath);
+            if (!_GenerateConfigureFile(configPath))
+                return false;
             var metaDict = new Dictionary<string, List<string>>();
             _ReadDoxyfile(configPath, metaDict);
 
@@ -685,7 +686,7 @@ namespace DoxygenDB
             // metaDict["INPUT_ENCODING"] = new List<string> { "iso-8859-1" };
 
             _WriteDoxyfile(configPath, metaDict);
-            _AnalyseDoxyfile(configPath);
+            return _AnalyseDoxyfile(configPath);
         }
 
 

@@ -198,6 +198,10 @@ namespace CodeAtlasVSIX
 
             var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
             Document doc = dte.ActiveDocument;
+            if (doc == null)
+            {
+                return;
+            }
             EnvDTE.TextSelection ts = doc.Selection as EnvDTE.TextSelection;
             int lineOffset = ts.AnchorPoint.LineCharOffset;
             int lineNum = ts.AnchorPoint.Line;
@@ -570,11 +574,11 @@ namespace CodeAtlasVSIX
             return this.symbolWindow;
         }
 
-        void AnalyseSolution(bool useClang, bool onlySelectedProjects = false)
+        bool _AnalyseSolution(bool useClang, bool onlySelectedProjects = false)
         {
             if (!GetCommandActive())
             {
-                return;
+                return false;
             }
             try
             {
@@ -591,7 +595,7 @@ namespace CodeAtlasVSIX
                 if (dirList.Count == 0 || solutionFolder == "")
                 {
                     SetCommandActive(true);
-                    return;
+                    return false;
                 }
                 string doxyFolder = solutionFolder + "/CodeAtlasData";
                 CheckOrCreateFolder(doxyFolder);
@@ -627,9 +631,14 @@ namespace CodeAtlasVSIX
                 {
                     try
                     {
-                        DoxygenDB.DoxygenDB.GenerateDB(config);
-                        DBManager.Instance().OpenDB(config.m_configPath);
-                        UpdateUI();
+                        if(DoxygenDB.DoxygenDB.GenerateDB(config))
+                        {
+                            DBManager.Instance().OpenDB(config.m_configPath);
+                        }
+                        else
+                        {
+                            SetCommandActive(true);
+                        }
                     }
                     catch (Exception)
                     {
@@ -645,21 +654,22 @@ namespace CodeAtlasVSIX
                 DBManager.Instance().CloseDB();
                 SetCommandActive(true);
             }
+            return true;
         }
 
         void AnalyseSolutionButton_Click(object sender, RoutedEventArgs e)
         {
-            AnalyseSolution(true);
+            _AnalyseSolution(true);
         }
 
         public void OnFastAnalyseSolutionButton(object sender, RoutedEventArgs e)
         {
-            AnalyseSolution(false);
+            _AnalyseSolution(false);
         }
 
         public void OnFastAnalyseProjectsButton(object sender, RoutedEventArgs e)
         {
-            AnalyseSolution(false, true);
+            _AnalyseSolution(false, true);
         }
 
         private void dynamicNavigationButton_Click(object sender, RoutedEventArgs e)

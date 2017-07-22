@@ -58,6 +58,12 @@ namespace CodeAtlasVSIX
             Output(content);
         }
 
+        public static void Message(string content)
+        {
+            Output(content);
+            MessageBox.Show(content, "Info");
+        }
+
         public static void Debug(string content)
         {
 #if DEBUG

@@ -20,8 +20,11 @@ namespace CodeAtlasVSIX
         public double scaleValue = 1.0;
         public double m_lastMoveOffset = 0.0;
         DispatcherOperation m_moveState;
+        public bool m_isMouseDown = false;
         Point m_mouseBeginPos = new Point();
         Point m_centerBeginPos = new Point();
+        DateTime m_mouseMoveTime = new DateTime();
+        public bool m_isMouseInView = true;
 
         public CodeView()
         {
@@ -52,10 +55,11 @@ namespace CodeAtlasVSIX
 
         public void MoveView(Point center)
         {
-            //if (m_moveState != null && m_moveState.Status != DispatcherOperationStatus.Completed)
-            //{
-            //    return;
-            //}
+            bool shouldMove = !m_isMouseInView || (DateTime.Now - m_mouseMoveTime).TotalSeconds > 3;
+            if (!shouldMove)
+            {
+                return;
+            }
 
             m_moveState = Dispatcher.BeginInvoke((ThreadStart)delegate
             {
@@ -86,6 +90,7 @@ namespace CodeAtlasVSIX
 
         private void background_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            m_isMouseDown = true;
             m_mouseBeginPos = e.GetPosition(background);
             var source = e.OriginalSource;
             if (source == this)
@@ -100,18 +105,22 @@ namespace CodeAtlasVSIX
         private void background_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var source = e.OriginalSource;
-            if (source == this)
-            {
-            }
+            m_isMouseDown = false;
+            ReleaseMouseCapture();
         }
 
         private void background_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var source = e.OriginalSource;
-            if (source == this || true)
+            if (source == this)
             {
-                if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+                m_mouseMoveTime = DateTime.Now;
+                var scene = UIManager.Instance().GetScene();
+                var selectedItems = scene.SelectedItems();
+                if (selectedItems.Count == 0 &&
+                    e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
                 {
+                    CaptureMouse();
                     var element = this.canvas as UIElement;
                     var point = e.GetPosition(background);
                     var transform = this.canvas.RenderTransform as MatrixTransform;
@@ -121,19 +130,23 @@ namespace CodeAtlasVSIX
                     transform.Matrix = matrix;
                     m_mouseBeginPos = point;
                 }
+                else
+                {
+                    m_isMouseDown = false;
+                }
             }
         }
 
         private void background_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();
-            scene.m_autoFocus = false;
+            m_isMouseInView = true;
         }
 
         private void background_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();
-            scene.m_autoFocus = true;
+            m_isMouseInView= false;
         }
 
         public void InvalidateLegend()

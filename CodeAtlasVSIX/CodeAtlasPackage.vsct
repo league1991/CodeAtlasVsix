@@ -225,70 +225,70 @@
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme1" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
-          <ButtonText>Show Scheme 1</ButtonText>
+          <ButtonText>Show Graph 1</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme2" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
-          <ButtonText>Show Scheme 2</ButtonText>
+          <ButtonText>Show Graph 2</ButtonText>
         </Strings>
       </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme3" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
-          <ButtonText>Show Scheme 3</ButtonText>
+          <ButtonText>Show Graph 3</ButtonText>
         </Strings>
       </Button>
           
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme4" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
-          <ButtonText>Show Scheme 4</ButtonText>
+          <ButtonText>Show Graph 4</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme5" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
-          <ButtonText>Show Scheme 5</ButtonText>
+          <ButtonText>Show Graph 5</ButtonText>
         </Strings>
       </Button>
         
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme1" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Strings>
-          <ButtonText>Toggle Scheme 1</ButtonText>
+          <ButtonText>Toggle Graph 1</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme2" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Strings>
-          <ButtonText>Toggle Scheme 2</ButtonText>
+          <ButtonText>Toggle Graph 2</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme3" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Strings>
-          <ButtonText>Toggle Scheme 3</ButtonText>
+          <ButtonText>Toggle Graph 3</ButtonText>
         </Strings>
       </Button>
     
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme4" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Strings>
-          <ButtonText>Toggle Scheme 4</ButtonText>
+          <ButtonText>Toggle Graph 4</ButtonText>
         </Strings>
       </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme5" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Strings>
-          <ButtonText>Toggle Scheme 5</ButtonText>
+          <ButtonText>Toggle Graph 5</ButtonText>
         </Strings>
       </Button>
     
