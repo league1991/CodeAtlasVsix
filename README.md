@@ -9,16 +9,16 @@ Python,Java,C#(Not Tested yet)
 
 Using this plugin one can navigate the code easily.
 
-Here is my blog:
+* My blog:
 http://www.cnblogs.com/dydx/p/6299927.html
 
-Here are some videos:
+* Some videos:
 https://www.youtube.com/watch?v=FScdHyxdNFw&list=PLN16zMWJLkHLgHhTJUIkwp5chgnFz9_NH
 
-You can get the installation package here:
+* Installation package:
 https://sourceforge.net/projects/codeatlasvsix/
 
-Here is the plugin in visual studio market place:
+* Visual studio Marketplace:
 https://marketplace.visualstudio.com/items?itemName=YaobinOuyang.CodeAtlas
 
 Overview
