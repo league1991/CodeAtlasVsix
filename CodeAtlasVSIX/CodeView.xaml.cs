@@ -115,7 +115,7 @@ namespace CodeAtlasVSIX
                 {
                     m_mouseMoveTime = DateTime.Now;
                 }
-                Logger.Debug("mouse move"+point.X+","+point.Y+"--"+m_backgroundMovePos.X + "," + m_backgroundMovePos.Y);
+                
                 var scene = UIManager.Instance().GetScene();
                 var selectedItems = scene.SelectedItems();
                 if (selectedItems.Count == 0 &&
