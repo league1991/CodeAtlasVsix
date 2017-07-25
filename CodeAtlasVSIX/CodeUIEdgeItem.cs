@@ -111,6 +111,7 @@ namespace CodeAtlasVSIX
         {
             m_schemeColorList.Clear();
             UpdateStroke();
+            IsDirty = true;
         }
 
         public void AddSchemeColor(Color color)
