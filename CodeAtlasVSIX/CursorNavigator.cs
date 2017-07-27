@@ -396,6 +396,7 @@ namespace CodeAtlasVSIX
             var elements = docModel.CodeElements;
             // TraverseCodeElement(elements, 1);
             var elementsList = new List<CodeElements> { docModel.CodeElements };
+            var nameMatchList = new List<CodeElement>();
             while (elementsList.Count > 0)
             {
                 var curElements = elementsList[0];
@@ -408,6 +409,7 @@ namespace CodeAtlasVSIX
                     try
                     {
                         var eleName = element.Name;
+                        var eleFullName = element.FullName;
                         //var start = element.GetStartPoint(vsCMPart.vsCMPartBody);
                         //var end = element.GetEndPoint(vsCMPart.vsCMPartBody);
                         //var vcElement = element as VCCodeElement;
@@ -424,10 +426,13 @@ namespace CodeAtlasVSIX
                         //var docPath = document.Name;
                         //Logger.WriteLine(indentStr + string.Format("element:{0} {1} {2}", eleName, itemPath, startLine));
                         //Logger.WriteLine("-----" + eleName);
-                    
-                        if (eleName  == uiItem.GetName())
+                        if (eleFullName != null && uiItem.GetLongName().Contains(eleFullName))
                         {
                             return element;
+                        }
+                        if (eleName  == uiItem.GetName())
+                        {
+                            nameMatchList.Add(element);
                         }
 
                         var children = element.Children;
@@ -440,6 +445,10 @@ namespace CodeAtlasVSIX
                     {
                     }
                 }
+            }
+            if (nameMatchList.Count > 0)
+            {
+                return nameMatchList[0];
             }
             return null;
         }

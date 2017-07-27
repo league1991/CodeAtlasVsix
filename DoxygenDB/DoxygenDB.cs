@@ -1441,10 +1441,43 @@ namespace DoxygenDB
                     }
                 }
 
-                if (longName.IndexOf(type) == 0)
+                if (kind.Contains("function"))
                 {
-                    longName = longName.Substring(type.Length).Trim();
+                    // Ignore return type for function
+                    var spaceIdx = longName.IndexOf(" ");
+                    if (spaceIdx != -1)
+                    {
+                        longName = longName.Substring(spaceIdx);
+                    }
+
+                    // Ignore anonymous_namespace{***} for function
+                    int beginIdx = 0;
+                    int findIdx;
+                    string result = "";
+                    while ((findIdx = longName.IndexOf("anonymous_namespace{", beginIdx)) != -1)
+                    {
+                        result += longName.Substring(beginIdx, findIdx - beginIdx);
+                        beginIdx = longName.IndexOf("}::", findIdx);
+                        if (beginIdx == -1)
+                        {
+                            break;
+                        }
+                        beginIdx += 3;
+                    }
+                    if (beginIdx > 0 && beginIdx < longName.Length)
+                    {
+                        result += longName.Substring(beginIdx);
+                    }
+                    if (result != "")
+                    {
+                        longName = result;
+                    }
+                    longName = longName.Trim();
                 }
+                //if (longName.IndexOf(type) == 0)
+                //{
+                //    longName = longName.Substring(type.Length).Trim();
+                //}
                 return new Entity(id, name, longName, kind, metric);
             }
             else
