@@ -1783,7 +1783,7 @@ namespace CodeAtlasVSIX
                         m_itemDataDict[nodeItem.GetUniqueName()] = itemData;
                     }
                     AddOrReplaceDict(itemData,"comment",comment);
-                    nodeItem.BuildCommentSize(comment);
+                    nodeItem.UpdateComment(comment);
                 }
                 else if (edgeItem != null)
                 {

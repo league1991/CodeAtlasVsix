@@ -81,7 +81,7 @@ namespace CodeAtlasVSIX
             this.ToolTip = m_longName;
             BuildDisplayName(m_name);
             var comment = scene.GetComment(m_uniqueName);
-            BuildCommentSize(comment);
+            UpdateComment(comment);
             m_kindName = (string)customData["kindName"];
             m_metric = (Dictionary<string, DoxygenDB.Variant>)customData["metric"];
             if (m_metric.ContainsKey("CountLine"))
@@ -260,7 +260,7 @@ namespace CodeAtlasVSIX
             m_displayText = formattedText;
         }
 
-        public void BuildCommentSize(string comment)
+        public void UpdateComment(string comment)
         {
             if (comment == "")
             {
@@ -277,6 +277,7 @@ namespace CodeAtlasVSIX
             formattedText.MaxTextWidth = 100;
             m_commentText = formattedText;
             m_commentSize = new Size(100, (formattedText.Height));
+            IsDirty = true;
         }
 
         public bool IsFunction()
