@@ -25,10 +25,6 @@ namespace CodeAtlasVSIX
     using EnvDTE80;
     using System.Windows.Threading;
 
-    //public class DataDict: Dictionary<string, object>
-    //{
-    //}
-
     public class SchemeData
     {
         public List<string> m_nodeList = new List<string>();
@@ -64,6 +60,7 @@ namespace CodeAtlasVSIX
         public bool m_waitingItemMove = false;
         public int m_selectTimeStamp = 0;
         public int m_schemeTimeStamp = 0;
+        public string m_customEdgeSource = "";
 
         // LRU
         List<string> m_itemLruQueue = new List<string>();
@@ -505,6 +502,20 @@ namespace CodeAtlasVSIX
             ClearSelection();
             m_selectTimeStamp += 1;
             edge.IsSelected = true;
+            return true;
+        }
+
+        public bool SelectEdges(List<EdgeKey> keys)
+        {
+            ClearSelection();
+            foreach (var key in keys)
+            {
+                if (m_edgeDict.ContainsKey(key))
+                {
+                    m_edgeDict[key].IsSelected = true;
+                }
+                m_selectTimeStamp += 1;
+            }
             return true;
         }
 
@@ -1457,16 +1468,16 @@ namespace CodeAtlasVSIX
                 var customData = entItem.GetCustomData("hasDef");
                 if (customData != null && customData.m_int == 0)
                 {
-                    AddCustomEdge(entUname, uname);
+                    DoAddCustomEdge(entUname, uname);
                 }
                 else
                 {
-                    AddCustomEdge(uname, entUname);
+                    DoAddCustomEdge(uname, entUname);
                 }
             }
         }
 
-        public bool AddCustomEdge(string srcName, string tarName, DataDict edgeData = null)
+        public bool DoAddCustomEdge(string srcName, string tarName, DataDict edgeData = null)
         {
             if (!m_itemDict.ContainsKey(srcName) || !m_itemDict.ContainsKey(tarName) || m_edgeDict.ContainsKey(new EdgeKey(srcName, tarName)))
             {
@@ -1480,6 +1491,64 @@ namespace CodeAtlasVSIX
 
             AcquireLock();
             _DoAddCodeEdgeItem(srcName, tarName, edgeData);
+            ReleaseLock();
+            return true;
+        }
+
+        public bool BeginAddCustomEdge()
+        {
+            AcquireLock();
+            var selectedNodes = SelectedNodes();
+            if (selectedNodes.Count == 1)
+            {
+                // Clear other items
+                string oldSource = "";
+                foreach (var item in m_itemDict)
+                {
+                    if (item.Value.GetCustomEdgeSourceMode())
+                    {
+                        oldSource = item.Value.GetUniqueName();
+                    }
+                    item.Value.SetCustomEdgeSourceMode(false);
+                }
+                // Toggle selected node as custom edge source
+                var srcNode = selectedNodes[0];
+                if (oldSource == srcNode.GetUniqueName())
+                {
+                    srcNode.SetCustomEdgeSourceMode(false);
+                    m_customEdgeSource = "";
+                }
+                else
+                {
+                    srcNode.SetCustomEdgeSourceMode(true);
+                    m_customEdgeSource = srcNode.GetUniqueName();
+                }
+            }
+            ReleaseLock();
+            return true;
+        }
+
+        public bool EndAddCustomEdge()
+        {
+            AcquireLock();
+            if (m_itemDict.ContainsKey(m_customEdgeSource))
+            {
+                var selectedNodes = SelectedNodes();
+                foreach (var item in selectedNodes)
+                {
+                    DoAddCustomEdge(m_customEdgeSource, item.GetUniqueName());
+                }
+                var srcItem = m_itemDict[m_customEdgeSource];
+                srcItem.SetCustomEdgeSourceMode(false);
+
+                var edgesToSelect = new List<EdgeKey>();
+                foreach (var item in selectedNodes)
+                {
+                    edgesToSelect.Add(new EdgeKey(m_customEdgeSource, item.GetUniqueName()));
+                }
+                SelectEdges(edgesToSelect);
+                m_customEdgeSource = "";
+            }
             ReleaseLock();
             return true;
         }

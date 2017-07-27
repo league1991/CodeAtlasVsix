@@ -62,6 +62,9 @@
       <Group guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" priority="0x0600">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
       </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="CustomEdgeMenuGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
     </Groups>
 
     <!--Buttons section. -->
@@ -292,6 +295,19 @@
         </Strings>
       </Button>
     
+      <Button guid="guidCodeAtlasPackageCmdSet" id="CustomSourceCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="CustomEdgeMenuGroup" />
+        <Strings>
+          <ButtonText>Mark As Custom Edge Source</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="CustomTargetCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="CustomEdgeMenuGroup" />
+        <Strings>
+          <ButtonText>Connect Custom Edge From Source</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
     <Bitmaps>
@@ -331,6 +347,8 @@
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme3" key1="3" mod1="Control" editor="guidSourceCodeTextEditor" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme4" key1="4" mod1="Control" editor="guidSourceCodeTextEditor" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme5" key1="5" mod1="Control" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="CustomSourceCommand" key1="W" mod1="ALT" editor="guidVSStd97" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="CustomTargetCommand" key1="E" mod1="ALT" editor="guidVSStd97" />
   </KeyBindings>
   
   <Symbols>
@@ -378,6 +396,9 @@
       <IDSymbol name="ToggleSchemeMenuGroup" value="0x0126" />
       <IDSymbol name="OpenAnalysisResultCommand" value="0x0124" />
       <IDSymbol name="CloseAnalysisResultCommand" value="0x0125" />
+      <IDSymbol name="CustomEdgeMenuGroup" value="0x0127" />
+      <IDSymbol name="CustomSourceCommand" value="0x0128" />
+      <IDSymbol name="CustomTargetCommand" value="0x0129" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{e8b62cf1-f2d4-4924-a788-7d9f6eb6d635}">

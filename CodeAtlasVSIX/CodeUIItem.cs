@@ -26,7 +26,6 @@ namespace CodeAtlasVSIX
             public int m_int;
             public double m_double;
         }
-        
 
         string m_uniqueName = "";
         bool m_isDirty = false;
@@ -536,7 +535,7 @@ namespace CodeAtlasVSIX
                 return 0.0;
             }
 
-            var speed = Math.Min(offsetLength * ratio, 30);
+            var speed = Math.Min(offsetLength * ratio, 40);
             var minSpeed = 0.5;
             var moveDist = Math.Min(Math.Max(minSpeed, speed), offsetLength);
             Pos = Pos + offset * moveDist;
@@ -614,11 +613,26 @@ namespace CodeAtlasVSIX
             dragStart = args.GetPosition(this);
         }
 
+        public void SetCustomEdgeSourceMode(bool isCustomSource)
+        {
+            if (m_customEdgeMode != isCustomSource)
+            {
+                m_customEdgeMode = isCustomSource;
+                IsDirty = true;
+            }
+        }
+
+        public bool GetCustomEdgeSourceMode()
+        {
+            return m_customEdgeMode;
+        }
 
         public void OnAddCustomEdge(object sender, ExecutedRoutedEventArgs e)
         {
             CaptureMouse();
-            m_customEdgeMode = true;
+            SetCustomEdgeSourceMode(true);
+            var scene = UIManager.Instance().GetScene();
+            scene.m_customEdgeSource = m_uniqueName;
         }
 
         void _AddContextMenuItem(ContextMenu context, string header, ExecutedRoutedEventHandler handler)
@@ -648,7 +662,9 @@ namespace CodeAtlasVSIX
             _AddContextMenuItem(context, "Delete and Ignore", mainUI.OnDeleteSelectedItemsAndAddToStop);
             _AddContextMenuItem(context, "Delete Nearby Items", mainUI.OnDeleteNearbyItems);
             _AddContextMenuItem(context, "Add Similar Items", mainUI.OnAddSimilarCodeItem);
-            _AddContextMenuItem(context, "Add Custom Edge", this.OnAddCustomEdge);
+            //_AddContextMenuItem(context, "Add Custom Edge", this.OnAddCustomEdge);
+            _AddContextMenuItem(context, "Mark As Custom Edge Source", mainUI.OnBeginCustomEdge);
+            _AddContextMenuItem(context, "Connect Custom Edge From Source", mainUI.OnEndCustomEdge);
             this.ContextMenu = context;
         }
 
@@ -668,12 +684,9 @@ namespace CodeAtlasVSIX
                 var p2 = args.GetPosition(canvas);
                 Pos = new Point(p2.X - dragStart.Value.X, p2.Y - dragStart.Value.Y);
                 SetTargetPos(Pos);
-                //Canvas.SetLeft(this, p2.X - dragStart.Value.X);
-                //Canvas.SetTop(this, p2.Y - dragStart.Value.Y);
             }
             if (m_customEdgeMode)
             {
-                //this.InvalidateVisual();
                 IsDirty = true;
             }
         }
@@ -683,18 +696,17 @@ namespace CodeAtlasVSIX
             dragStart = null;
             ReleaseMouseCapture();
 
-            var scene = UIManager.Instance().GetScene();
-            if (m_customEdgeMode)
-            {
-                // create custom edge
-                var uiItem = Mouse.DirectlyOver as CodeUIItem;
-                if (uiItem != null && uiItem != this)
-                {
-                    scene.AddCustomEdge(this.m_uniqueName, uiItem.GetUniqueName());
-                }
-                m_customEdgeMode = false;
-                IsDirty = true;
-            }
+            //var scene = UIManager.Instance().GetScene();
+            //if (m_customEdgeMode)
+            //{
+            //    // create custom edge
+            //    var uiItem = Mouse.DirectlyOver as CodeUIItem;
+            //    if (uiItem != null && uiItem != this)
+            //    {
+            //        scene.DoAddCustomEdge(this.m_uniqueName, uiItem.GetUniqueName());
+            //    }
+            //    SetCustomEdgeSourceMode(false);
+            //}
         }
 
         void MouseEnterCallback(object sender, MouseEventArgs e)
@@ -819,6 +831,13 @@ namespace CodeAtlasVSIX
         protected override void OnRender(DrawingContext drawingContext)
         {
             // Draw highlight first
+            if (m_customEdgeMode)
+            {
+                var circumference = GetRadius() * 2.0 * Math.PI;
+                var edgeStroke = new SolidColorBrush(Color.FromArgb(130, 255, 157, 38));
+                var edgePen = new Pen(edgeStroke, 30.0);
+                drawingContext.DrawGeometry(edgeStroke, edgePen, m_highLightGeometry);
+            }
             if (m_highLightGeometry != null && (m_isSelected || m_isHover))
             {
                 var edgeStroke = new SolidColorBrush(Color.FromRgb(255, 157, 38));
@@ -842,65 +861,28 @@ namespace CodeAtlasVSIX
             if (m_commentText != null)
             {
                 baseY += m_displayText.Height;
-                //m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(50, 50, 50)));
-                //drawingContext.DrawText(m_commentText, new Point(1, baseY+1));
                 m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(197,236,79)));
                 drawingContext.DrawText(m_commentText, new Point(baseX, baseY));
             }
-            if (m_customEdgeMode)
-            {
-                var p0 = new Point(GetRightSlotOffset(), 0);
-                var p3 = Mouse.GetPosition(this);
-                var p1 = new Point(p0.X * 0.5 + p3.X * 0.5, p0.Y);
-                var p2 = new Point(p0.X * 0.5 + p3.X * 0.5, p3.Y);
+            //if (m_customEdgeMode)
+            //{
+            //    var p0 = new Point(GetRightSlotOffset(), 0);
+            //    var p3 = Mouse.GetPosition(this);
+            //    var p1 = new Point(p0.X * 0.5 + p3.X * 0.5, p0.Y);
+            //    var p2 = new Point(p0.X * 0.5 + p3.X * 0.5, p3.Y);
 
-                var segment = new BezierSegment(p1, p2, p3, true);
-                var figure = new PathFigure();
-                figure.StartPoint = p0;
-                figure.Segments.Add(segment);
-                figure.IsClosed = false;
+            //    var segment = new BezierSegment(p1, p2, p3, true);
+            //    var figure = new PathFigure();
+            //    figure.StartPoint = p0;
+            //    figure.Segments.Add(segment);
+            //    figure.IsClosed = false;
 
-                var pathGeo = new PathGeometry();
-                pathGeo.Figures.Add(figure);
+            //    var pathGeo = new PathGeometry();
+            //    pathGeo.Figures.Add(figure);
 
-                var pen = new Pen(new SolidColorBrush(Color.FromArgb(100, 255, 255, 255)), 2);
-                drawingContext.DrawGeometry(Brushes.Transparent, pen, pathGeo);
-            }
-            //string testString = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor";
-
-            //// Create the initial formatted text string.
-            //FormattedText formattedText = new FormattedText(
-            //    m_displayName,
-            //    CultureInfo.CurrentCulture,
-            //    FlowDirection.LeftToRight,
-            //    new Typeface("Tahoma"),
-            //    32,
-            //    Brushes.White);
-
-            // Set a maximum width and height. If the text overflows these values, an ellipsis "..." appears.
-            //formattedText.MaxTextWidth = 300;
-            //formattedText.MaxTextHeight = 240;
-
-            // Use a larger font size beginning at the first (zero-based) character and continuing for 5 characters.
-            // The font size is calculated in terms of points -- not as device-independent pixels.
-            //formattedText.SetFontSize(36 * (96.0 / 72.0), 0, 5);
-
-            // Use a Bold font weight beginning at the 6th character and continuing for 11 characters.
-            //formattedText.SetFontWeight(FontWeights.Bold, 6, 11);
-
-            // Use a linear gradient brush beginning at the 6th character and continuing for 11 characters.
-            //formattedText.SetForegroundBrush(
-            //                        new LinearGradientBrush(
-            //                        Colors.Orange,
-            //                        Colors.Teal,
-            //                        90.0),
-            //                        6, 11);
-
-            // Use an Italic font style beginning at the 28th character and continuing for 28 characters.
-            //formattedText.SetFontStyle(FontStyles.Italic, 28, 28);
-
-            // Draw the formatted text string to the DrawingContext of the control.
-            //drawingContext.DrawText(formattedText, new Point(0, 0));
+            //    var pen = new Pen(new SolidColorBrush(Color.FromArgb(100, 255, 255, 255)), 2);
+            //    drawingContext.DrawGeometry(Brushes.Transparent, pen, pathGeo);
+            //}
         }
     }
 }

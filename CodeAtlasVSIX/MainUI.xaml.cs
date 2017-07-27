@@ -304,7 +304,7 @@ namespace CodeAtlasVSIX
                 scene.AcquireLock();
                 scene.AddCodeItem(srcBestEntity.m_id);
                 scene.AddCodeItem(tarBestEntity.m_id);
-                scene.AddCustomEdge(srcBestEntity.m_id, tarBestEntity.m_id);
+                scene.DoAddCustomEdge(srcBestEntity.m_id, tarBestEntity.m_id);
                 scene.ClearSelection();
                 scene.SelectCodeItem(tarBestEntity.m_id);
                 scene.ReleaseLock();
@@ -566,6 +566,20 @@ namespace CodeAtlasVSIX
         public void OnShowScheme5(object sender, ExecutedRoutedEventArgs e)
         {
             ShowScheme(4);
+        }
+        #endregion
+
+        #region Custom Edge
+        public void OnBeginCustomEdge(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.BeginAddCustomEdge();
+        }
+
+        public void OnEndCustomEdge(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.EndAddCustomEdge();
         }
         #endregion
 
