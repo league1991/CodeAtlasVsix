@@ -1440,11 +1440,11 @@ namespace DoxygenDB
                         type = elementChild.Value;
                     }
                 }
-
+                
                 if (kind.Contains("function"))
                 {
                     // Ignore return type for function
-                    var spaceIdx = longName.IndexOf(" ");
+                    var spaceIdx = longName.LastIndexOf(" ");
                     if (spaceIdx != -1)
                     {
                         longName = longName.Substring(spaceIdx);

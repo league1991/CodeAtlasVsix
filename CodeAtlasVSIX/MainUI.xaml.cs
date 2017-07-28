@@ -72,6 +72,11 @@ namespace CodeAtlasVSIX
             schemeWindow.Dispatcher.Invoke((ThreadStart)delegate
             {
                 this.mask.Visibility = isActive ? Visibility.Hidden : Visibility.Visible;
+                this.searchWindow.IsEnabled = isActive;
+                this.symbolWindow.IsEnabled = isActive;
+                this.schemeWindow.IsEnabled = isActive;
+                this.tabControl.IsEnabled = isActive;
+                this.menu.IsEnabled = isActive;
             });
         }
 

@@ -54,7 +54,7 @@ namespace CodeAtlasVSIX
 
         public void MoveView(Point center)
         {
-            bool shouldMove = !m_isMouseInView || (DateTime.Now - m_mouseMoveTime).TotalSeconds > 3;
+            bool shouldMove = !m_isMouseInView || (DateTime.Now - m_mouseMoveTime).TotalSeconds > 5;
             if (!shouldMove)
             {
                 return;

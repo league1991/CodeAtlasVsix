@@ -426,7 +426,8 @@ namespace CodeAtlasVSIX
                         //var docPath = document.Name;
                         //Logger.WriteLine(indentStr + string.Format("element:{0} {1} {2}", eleName, itemPath, startLine));
                         //Logger.WriteLine("-----" + eleName);
-                        if (eleFullName != null && uiItem.GetLongName().Contains(eleFullName))
+                        if (eleFullName != null && uiItem.GetLongName().Contains(eleFullName) &&
+                            IsMatchPair(uiItem.GetKind(), element.Kind))
                         {
                             return element;
                         }
