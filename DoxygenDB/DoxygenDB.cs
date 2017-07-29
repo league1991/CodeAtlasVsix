@@ -1879,7 +1879,7 @@ namespace DoxygenDB
                         line = dstMetric["declLine"].m_int;
                         column = dstMetric["declColumn"].m_int;
                     }
-                    else if (refKind == RefKind.USE && refObj.m_kind == RefKind.UNKNOWN)
+                    else if (refKind == RefKind.USE && (refObj.m_kind == RefKind.UNKNOWN || refObj.m_kind == RefKind.USE))
                     {
                         if (srcItem.m_kind == EntKind.FUNCTION && dstItem.m_kind == EntKind.VARIABLE)
                         {
