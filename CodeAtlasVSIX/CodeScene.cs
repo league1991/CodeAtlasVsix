@@ -1363,10 +1363,6 @@ namespace CodeAtlasVSIX
                 var srcNode = m_itemDict[srcUniqueName];
                 var tarNode = m_itemDict[tarUniqueName];
                 var edgeItem = new CodeUIEdgeItem(srcUniqueName, tarUniqueName, data);
-                //var srcBinding = new Binding("RightPoint") { Source = srcNode };
-                //var tarBinding = new Binding("LeftPoint") { Source = tarNode };
-                //BindingOperations.SetBinding(edgeItem, CodeUIEdgeItem.StartPointProperty, srcBinding);
-                //BindingOperations.SetBinding(edgeItem, CodeUIEdgeItem.EndPointProperty, tarBinding);
                 m_edgeDict.Add(key, edgeItem);
                 if (data != null && data.ContainsKey("customEdge"))
                 {
