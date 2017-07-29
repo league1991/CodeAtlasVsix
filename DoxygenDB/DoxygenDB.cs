@@ -153,6 +153,8 @@ namespace DoxygenDB
             {"derive"          , new Tuple<RefKind, bool>(RefKind.DERIVE,   false)},
             {"use"             , new Tuple<RefKind, bool>(RefKind.USE,      false)},
             {"useby"           , new Tuple<RefKind, bool>(RefKind.USE,      true)},
+            {"include"         , new Tuple<RefKind, bool>(RefKind.USE,      false)},
+            {"includedby"      , new Tuple<RefKind, bool>(RefKind.USE,      true)},
             {"member"          , new Tuple<RefKind, bool>(RefKind.MEMBER,   false)},
             {"memberin"        , new Tuple<RefKind, bool>(RefKind.MEMBER,   true)},
             {"declare"         , new Tuple<RefKind, bool>(RefKind.DECLARE,  false)},
@@ -1157,7 +1159,7 @@ namespace DoxygenDB
                 return;
             }
 
-            var xmlDocItem = _GetXmlDocumentItem(compoundFileId);
+            //var xmlDocItem = _GetXmlDocumentItem(compoundFileId);
 
             // Parse compound if necessary
             if (!compoundIndexItem.GetCacheStatus(IndexItem.CacheStatus.REF))
@@ -1204,6 +1206,38 @@ namespace DoxygenDB
                                 _ParseRefLocation(compoundChild, out filePath, out startLine);
                                 var refItem = new IndexRefItem(compoundId, derivedCompoundId, "derive", filePath, startLine);
                                 derivedCompoundItem.AddRefItem(refItem);
+                                compoundItem.AddRefItem(refItem);
+                            }
+                        }
+
+                        // find including files
+                        if (compoundChild.Name == "includes")
+                        {
+                            var includedId = compoundChild.GetAttribute("refid", "");
+                            if (m_idInfoDict.ContainsKey(includedId))
+                            {
+                                var includedItem = m_idInfoDict[includedId];
+                                //_ParseRefLocation(compoundChild, out filePath, out startLine);
+                                filePath = "";
+                                startLine = 0;
+                                var refItem = new IndexRefItem(includedId, compoundId, "include", filePath, startLine);
+                                includedItem.AddRefItem(refItem);
+                                compoundItem.AddRefItem(refItem);
+                            }
+                        }
+
+                        // find included files
+                        if (compoundChild.Name == "includedby")
+                        {
+                            var includingId = compoundChild.GetAttribute("refid", "");
+                            if (m_idInfoDict.ContainsKey(includingId))
+                            {
+                                var includingItem = m_idInfoDict[includingId];
+                                //_ParseRefLocation(compoundChild, out filePath, out startLine);
+                                filePath = "";
+                                startLine = 0;
+                                var refItem = new IndexRefItem(compoundId, includingId, "include", filePath, startLine);
+                                includingItem.AddRefItem(refItem);
                                 compoundItem.AddRefItem(refItem);
                             }
                         }
@@ -1661,7 +1695,7 @@ namespace DoxygenDB
                         }
                     }
 
-                    if (hasSearchFile && searchWordLower.Contains(ent.Name().ToLower()))
+                    if (searchWordLower.Contains(ent.Name().ToLower()))
                     {
                         candidateList.Add(ent);
                         bestEntDist.Add(lineDist);
@@ -1848,6 +1882,10 @@ namespace DoxygenDB
                     else if (refKind == RefKind.USE && refObj.m_kind == RefKind.UNKNOWN)
                     {
                         if (srcItem.m_kind == EntKind.FUNCTION && dstItem.m_kind == EntKind.VARIABLE)
+                        {
+                            isAccepted = true;
+                        }
+                        else if (srcItem.m_kind == EntKind.FILE && dstItem.m_kind == EntKind.FILE)
                         {
                             isAccepted = true;
                         }

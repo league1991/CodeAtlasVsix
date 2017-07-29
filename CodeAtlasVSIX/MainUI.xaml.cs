@@ -233,10 +233,12 @@ namespace CodeAtlasVSIX
                 }
             }
 
+            var searched = false;
             if (token != null)
             {
                 string docPath = doc.FullName;
                 SearchAndAddToScene(token, "", docPath, lineNum);
+                searched = true;
             }
             else
             {
@@ -249,7 +251,13 @@ namespace CodeAtlasVSIX
                 {
                     var kind = VSElementTypeToString(element);
                     SearchAndAddToScene(element.Name, kind, cursorDoc.FullName, lineNum);
+                    searched = true;
                 }
+            }
+            if (!searched)
+            {
+                var fileName = doc.Name;
+                SearchAndAddToScene(fileName, "file", "", 0);
             }
         }
 
@@ -448,8 +456,8 @@ namespace CodeAtlasVSIX
         }
         public void OnFindUses(object sender, ExecutedRoutedEventArgs e)
         {
-            _FindRefs("useby", "function, method, class, struct", false);
-            _FindRefs("use", "variable,object", true);
+            _FindRefs("useby", "function, method, class, struct, file", false);
+            _FindRefs("use", "variable,object,file", true);
         }
         #endregion
 
