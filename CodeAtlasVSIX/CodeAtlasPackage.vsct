@@ -336,7 +336,7 @@
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="DeleteNearbyItemsCommand" key1="D" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowDefinitionInAtlas" key1="H" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="AddSimilarItem" key1="S" mod1="ALT" editor="guidVSStd97" />
-    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlas" key1="G" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlas" key1="F" mod1="ALT" editor="guidSourceCodeTextEditor" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowScheme1" key1="1" mod1="ALT" editor="guidSourceCodeTextEditor" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowScheme2" key1="2" mod1="ALT" editor="guidSourceCodeTextEditor" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowScheme3" key1="3" mod1="ALT" editor="guidSourceCodeTextEditor" />
