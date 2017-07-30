@@ -473,7 +473,11 @@ namespace CodeAtlasVSIX
         public double GetBodyRadius()
         {
             double r = 8.0;
-            if (m_kind != DoxygenDB.EntKind.VARIABLE)
+            if (m_kind == DoxygenDB.EntKind.FILE)
+            {
+                r = Math.Pow((double)(m_lines + 1), 0.2) * 2.5;
+            }
+            else if (m_kind != DoxygenDB.EntKind.VARIABLE)
             {
                 r = Math.Pow((double)(m_lines + 1), 0.3) * 2.5;
             }
@@ -805,6 +809,22 @@ namespace CodeAtlasVSIX
                 var rect = new RectangleGeometry(new Rect(new Point(-r, -r), new Point(r, r)));
                 m_geometry.Children.Add(rect);
                 m_highLightGeometry = rect;
+            }
+            else if (m_kind == DoxygenDB.EntKind.FILE)
+            {
+                var figure = new PathFigure();
+                figure.StartPoint = new Point(r, 0.0);
+                figure.Segments.Add(new LineSegment(new Point(r * 0.5, r * 0.866), true));
+                figure.Segments.Add(new LineSegment(new Point(r * -0.5, r * 0.866), true));
+                figure.Segments.Add(new LineSegment(new Point(r * -1, 0.0), true));
+                figure.Segments.Add(new LineSegment(new Point(r * -0.5, r * -0.866), true));
+                figure.Segments.Add(new LineSegment(new Point(r * 0.5, r * -0.866), true));
+                figure.IsClosed = true;
+                figure.IsFilled = true;
+                var pathGeo = new PathGeometry();
+                pathGeo.Figures.Add(figure);
+                m_geometry.Children.Add(pathGeo);
+                m_highLightGeometry = pathGeo;
             }
             else
             {

@@ -1364,10 +1364,10 @@ namespace DoxygenDB
         Dictionary<string, Variant> _ParseLocationDict(XPathNavigator element)
         {
             var declLineAttr = element.GetAttribute("line", "");
-            var declLine = declLineAttr != "" ? Convert.ToInt32(declLineAttr) : 0;
+            var declLine = declLineAttr != "" ? Convert.ToInt32(declLineAttr) : 1;
 
             var declColumnAttr = element.GetAttribute("column", "");
-            var declColumn = declColumnAttr != "" ? Convert.ToInt32(declColumnAttr): 0;
+            var declColumn = declColumnAttr != "" ? Convert.ToInt32(declColumnAttr): 1;
 
             var declFile = element.GetAttribute("file", "");
             if (declFile != "" && !declFile.Contains(":"))
@@ -1376,7 +1376,7 @@ namespace DoxygenDB
             }
 
             var bodyStartAttr = element.GetAttribute("bodystart", "");
-            var bodyStart = bodyStartAttr != "" ? Convert.ToInt32(bodyStartAttr) : 0;
+            var bodyStart = bodyStartAttr != "" ? Convert.ToInt32(bodyStartAttr) : 1;
 
             var bodyEndAttr = element.GetAttribute("bodyend", "");
             var bodyEnd = bodyEndAttr != "" ? Convert.ToInt32(bodyEndAttr) : -1;
@@ -1418,9 +1418,10 @@ namespace DoxygenDB
                 var name = "";
                 var longName = "";
                 var kind = element.GetAttribute("kind", "");
-                Dictionary<string, Variant> metric = null;
+                Dictionary<string, Variant> metric = new Dictionary<string, Variant>();
                 var id = element.GetAttribute("id", "");
                 var childrenIter = element.SelectChildren(XPathNodeType.Element);
+                int lastLineNo = -1;
                 while (childrenIter.MoveNext())
                 {
                     var elementChild = childrenIter.Current;
@@ -1433,6 +1434,22 @@ namespace DoxygenDB
                     {
                         metric = _ParseLocationDict(elementChild);
                     }
+                    else if (elementChild.Name == "programlisting")
+                    {
+                        var lastLineIter = elementChild.Select("./codeline[last()-1]");
+                        if (lastLineIter.MoveNext())
+                        {
+                            var lineEle = lastLineIter.Current;
+                            var lineNumberAttr = lineEle.GetAttribute("lineno", "");
+                            lastLineNo = Convert.ToInt32(lineNumberAttr);
+                        }
+                    }
+                }
+                if (lastLineNo != -1)
+                {
+                    metric["CountLine"] = new Variant(lastLineNo);
+                    metric["file"] = metric["declFile"];
+                    metric["lineEnd"] = metric["CountLine"];
                 }
                 return new Entity(id, name, longName, kind, metric);
             }

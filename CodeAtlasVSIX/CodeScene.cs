@@ -1242,6 +1242,10 @@ namespace CodeAtlasVSIX
             {
                 kind = DoxygenDB.EntKind.CLASS;
             }
+            else if (kindStr.Contains("file"))
+            {
+                kind = DoxygenDB.EntKind.FILE;
+            }
             customData["kind"] = kind;
 
             customData["color"] = Color.FromRgb(195, 195, 195);
