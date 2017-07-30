@@ -165,7 +165,7 @@
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindUsesCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
-          <ButtonText>Find Uses</ButtonText>
+          <ButtonText>Find Usages / Includes</ButtonText>
         </Strings>
       </Button>
     

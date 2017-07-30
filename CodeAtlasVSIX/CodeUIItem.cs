@@ -662,7 +662,14 @@ namespace CodeAtlasVSIX
             {
                 _AddContextMenuItem(context, "Find Bases", mainUI.OnFindBases);
             }
-            _AddContextMenuItem(context, "Find Usages", mainUI.OnFindUses);
+            if (m_kind == DoxygenDB.EntKind.FILE)
+            {
+                _AddContextMenuItem(context, "Find Includes", mainUI.OnFindUses);
+            }
+            else
+            {
+                _AddContextMenuItem(context, "Find Usages", mainUI.OnFindUses);
+            }
             _AddContextMenuItem(context, "Delete", mainUI.OnDelectSelectedItems);
             _AddContextMenuItem(context, "Delete and Ignore", mainUI.OnDeleteSelectedItemsAndAddToStop);
             _AddContextMenuItem(context, "Delete Nearby Items", mainUI.OnDeleteNearbyItems);
