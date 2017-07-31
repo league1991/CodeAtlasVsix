@@ -29,6 +29,7 @@ namespace CodeAtlasVSIX
     {
         public List<string> m_nodeList = new List<string>();
         public Dictionary<EdgeKey, DataDict> m_edgeDict = new Dictionary<EdgeKey, DataDict>();
+        public bool IsEmpty() { return m_nodeList.Count == 0 && m_edgeDict.Count == 0; }
     }
 
     public class CodeScene: DispatcherObject
@@ -1988,36 +1989,45 @@ namespace CodeAtlasVSIX
                     nodes.Add(item.Value.GetUniqueName());
                 }
             }
-            if (nodes.Count > 0)
+
+            var scheme = new SchemeData();
+            scheme.m_nodeList = nodes;
+            foreach (var itemPair in m_edgeDict)
             {
-                var scheme = new SchemeData();
-                scheme.m_nodeList = nodes;
-                foreach (var itemPair in m_edgeDict)
+                var edgePair = itemPair.Key;
+                var item = itemPair.Value;
+                if (m_itemDict.ContainsKey(item.m_srcUniqueName) &&
+                    m_itemDict.ContainsKey(item.m_tarUniqueName))
                 {
-                    var edgePair = itemPair.Key;
-                    var item = itemPair.Value;
-                    if (m_itemDict.ContainsKey(item.m_srcUniqueName) &&
-                        m_itemDict.ContainsKey(item.m_tarUniqueName))
+                    var srcItem = m_itemDict[item.m_srcUniqueName];
+                    var tarItem = m_itemDict[item.m_tarUniqueName];
+                    
+                    if (item.IsSelected)
                     {
-                        var srcItem = m_itemDict[item.m_srcUniqueName];
-                        var tarItem = m_itemDict[item.m_tarUniqueName];
-                        if (srcItem.IsSelected && tarItem.IsSelected)
+                        if (!srcItem.IsSelected)
                         {
-                            scheme.m_edgeDict.Add(edgePair, new DataDict());
+                            scheme.m_nodeList.Add(srcItem.GetUniqueName());
                         }
+                        if (!tarItem.IsSelected)
+                        {
+                            scheme.m_nodeList.Add(tarItem.GetUniqueName());
+                        }
+                        scheme.m_edgeDict.Add(edgePair, new DataDict());
+                    }
+                    else if (srcItem.IsSelected && tarItem.IsSelected)
+                    {
+                        scheme.m_edgeDict.Add(edgePair, new DataDict());
                     }
                 }
-                if (m_scheme.ContainsKey(name))
-                {
-                    m_scheme[name] = scheme;
-                }
-                else
-                {
-                    m_scheme.Add(name, scheme);
-                }
+            }
+
+            if (!scheme.IsEmpty())
+            {
+                m_scheme[name] = scheme;
                 UpdateCurrentValidScheme();
                 m_schemeTimeStamp++;
             }
+
             ReleaseLock();
         }
 
