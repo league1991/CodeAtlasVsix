@@ -475,10 +475,9 @@ namespace CodeAtlasVSIX
         protected override bool BeforeTraverseProjectItem(ProjectItem item)
         {
             string itemName = item.Name;
-            string itemKind = item.Kind;
+            string itemKind = item.Kind.ToUpper();
             if (itemKind == Constants.vsProjectItemKindPhysicalFolder)
             {
-
             }
             else if (itemKind == Constants.vsProjectItemKindPhysicalFile)
             {

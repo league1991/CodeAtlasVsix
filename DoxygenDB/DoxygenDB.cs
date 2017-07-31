@@ -641,6 +641,17 @@ namespace DoxygenDB
             return pathList;
         }
 
+        static List<string> fromPathList(List<string> list)
+        {
+            var pathList = new List<string>();
+            foreach (var item in list)
+            {
+                string res = item;
+                pathList.Add(item.Trim(new char[] {' ', '\t', '\"', '\r', '\n'}));
+            }
+            return pathList;
+        }
+
         public static bool GenerateDB(DoxygenDBConfig config)
         {
             string configPath = config.m_configPath;
@@ -653,7 +664,7 @@ namespace DoxygenDB
             var metaDict = new Dictionary<string, List<string>>();
             _ReadDoxyfile(configPath, metaDict);
 
-            metaDict["OUTPUT_DIRECTORY"] = new List<string> { outputDirectory };
+            metaDict["OUTPUT_DIRECTORY"] = toPathList(new List<string> { outputDirectory });
             metaDict["PROJECT_NAME"] = new List<string> { projectName };
             metaDict["EXTRACT_ALL"] = new List<string> { "YES" };
             metaDict["EXTRACT_PRIVATE"] = new List<string> { "YES" };
@@ -1549,7 +1560,8 @@ namespace DoxygenDB
             m_doxyFileFolder = m_doxyFileFolder.Replace('\\', '/');
 
             _ReadDoxyfile(fullPath, m_metaDict);
-            m_dbFolder = m_metaDict["OUTPUT_DIRECTORY"][0];
+            var dbFolders = fromPathList(m_metaDict["OUTPUT_DIRECTORY"]);
+            m_dbFolder = dbFolders[0];
             if (m_dbFolder == "")
             {
                 m_dbFolder = m_doxyFileFolder;

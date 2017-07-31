@@ -154,35 +154,36 @@ namespace CodeAtlasVSIX
             int line = 0;
             int column = 0;
             bool res = false;
-            if (codeItem != null)
-            {
-                codeItem.GetDefinitionPosition(out fileName, out line, out column);
 
-                res = ShowItemDefinition(codeItem, fileName);
-            }
-            else if (edgeItem != null)
+            try
             {
-                line = edgeItem.m_line;
-                column = edgeItem.m_column;
-                fileName = edgeItem.m_file;
-                
-                var scene = UIManager.Instance().GetScene();
-                var itemDict = scene.GetItemDict();
-                var srcItem = itemDict[edgeItem.m_srcUniqueName];
-                var tarItem = itemDict[edgeItem.m_tarUniqueName];
-
-                if (srcItem.IsFunction())
+                if (codeItem != null)
                 {
-                    if (File.Exists(fileName))
+                    codeItem.GetDefinitionPosition(out fileName, out line, out column);
+
+                    res = ShowItemDefinition(codeItem, fileName);
+                }
+                else if (edgeItem != null)
+                {
+                    line = edgeItem.m_line;
+                    column = edgeItem.m_column;
+                    fileName = edgeItem.m_file;
+
+                    var scene = UIManager.Instance().GetScene();
+                    var itemDict = scene.GetItemDict();
+                    var srcItem = itemDict[edgeItem.m_srcUniqueName];
+                    var tarItem = itemDict[edgeItem.m_tarUniqueName];
+
+                    if (srcItem.IsFunction())
                     {
-                        OpenFile(fileName);
-                        var document = m_dte.ActiveDocument;
-                        
-                        var codeElement = GetCodeElement(srcItem, document);
-                        
-                        if (codeElement != null)
+                        if (File.Exists(fileName))
                         {
-                            try
+                            OpenFile(fileName);
+                            var document = m_dte.ActiveDocument;
+
+                            var codeElement = GetCodeElement(srcItem, document);
+
+                            if (codeElement != null)
                             {
                                 var funcStart = codeElement.GetStartPoint(vsCMPart.vsCMPartBody);
                                 var funcText = UpdateBodyCode(srcItem, codeElement);
@@ -204,17 +205,18 @@ namespace CodeAtlasVSIX
                                     res = true;
                                 }
                             }
-                            catch (Exception)
-                            {
-                                res = false;
-                            }
+
                         }
                     }
+                    else
+                    {
+                        res = ShowItemDefinition(tarItem, fileName);
+                    }
                 }
-                else
-                {
-                    res = ShowItemDefinition(tarItem, fileName);
-                }
+            }
+            catch (Exception)
+            {
+                res = false;
             }
 
             if (res == false)
