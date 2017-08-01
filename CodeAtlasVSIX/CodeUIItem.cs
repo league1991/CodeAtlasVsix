@@ -270,8 +270,8 @@ namespace CodeAtlasVSIX
             var formattedText = new FormattedText(comment,
                                                     CultureInfo.CurrentUICulture,
                                                     FlowDirection.LeftToRight,
-                                                    new Typeface("tahoma"),
-                                                    12.0,
+                                                    new Typeface("Arial"),
+                                                    10.0,
                                                     Brushes.Black);
             formattedText.Trimming = TextTrimming.None;
             formattedText.MaxTextWidth = 100;
@@ -889,7 +889,7 @@ namespace CodeAtlasVSIX
             if (m_commentText != null)
             {
                 baseY += m_displayText.Height;
-                m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(197,236,79)));
+                m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(176,226,24)));
                 drawingContext.DrawText(m_commentText, new Point(baseX, baseY));
             }
             //if (m_customEdgeMode)
