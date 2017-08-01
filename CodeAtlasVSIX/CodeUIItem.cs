@@ -62,6 +62,7 @@ namespace CodeAtlasVSIX
         bool m_customEdgeMode = false;
         Geometry m_highLightGeometry = new EllipseGeometry();
         bool m_isInvalidating = false;
+        static double s_textGap = 2.0;
 
         public CodeUIItem(string uniqueName, Dictionary<string, object> customData)
         {
@@ -271,7 +272,7 @@ namespace CodeAtlasVSIX
                                                     CultureInfo.CurrentUICulture,
                                                     FlowDirection.LeftToRight,
                                                     new Typeface("Arial"),
-                                                    10.0,
+                                                    11.0,
                                                     Brushes.Black);
             formattedText.Trimming = TextTrimming.None;
             formattedText.MaxTextWidth = 100;
@@ -487,7 +488,7 @@ namespace CodeAtlasVSIX
         public double GetHeight()
         {
             double r = GetRadius();
-            double h = Math.Max(m_fontSize.Height + m_commentSize.Height, r);
+            double h = Math.Max(m_fontSize.Height + m_commentSize.Height + s_textGap, r);
             h += r;
             return h;
         }
@@ -889,8 +890,8 @@ namespace CodeAtlasVSIX
             if (m_commentText != null)
             {
                 baseY += m_displayText.Height;
-                m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(176,226,24)));
-                drawingContext.DrawText(m_commentText, new Point(baseX, baseY));
+                m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(207,239,109)));
+                drawingContext.DrawText(m_commentText, new Point(baseX + 8, baseY + s_textGap));
             }
             //if (m_customEdgeMode)
             //{
