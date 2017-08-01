@@ -333,25 +333,6 @@ namespace CodeAtlasVSIX
                 });
             }
         }
-        //public Point StartPoint
-        //{
-        //    set { SetValue(StartPointProperty, value); }
-        //    get { return (Point)GetValue(StartPointProperty); }
-        //}
-
-        //public Point EndPoint
-        //{
-        //    set { SetValue(EndPointProperty, value); }
-        //    get { return (Point)GetValue(EndPointProperty); }
-        //}
-
-        //public static readonly DependencyProperty StartPointProperty =
-        //    DependencyProperty.Register("StartPoint", typeof(Point), typeof(CodeUIEdgeItem),
-        //        new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.AffectsRender));
-
-        //public static readonly DependencyProperty EndPointProperty =
-        //    DependencyProperty.Register("EndPoint", typeof(Point), typeof(CodeUIEdgeItem),
-        //        new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.AffectsRender));
 
         void MouseDownCallback(object sender, MouseEventArgs args)
         {
@@ -475,6 +456,7 @@ namespace CodeAtlasVSIX
                     var pen = new Pen(new SolidColorBrush(m_schemeColorList[i]), 1.5);
                     pen.DashStyle = new DashStyle(dashPattern, 0.0);
                     pen.DashStyle.Offset = 5.0 * i;
+                    pen.Thickness = 2.0;
                     drawingContext.DrawGeometry(Brushes.Transparent, pen, m_geometry);
                 }
             }
