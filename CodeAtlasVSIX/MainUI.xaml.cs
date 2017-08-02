@@ -465,22 +465,32 @@ namespace CodeAtlasVSIX
         public void OnGoUp(object sender, ExecutedRoutedEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();
-            scene.FindNeighbour(new Vector(0.0, -1.0));
+            scene.FindNeighbour(new Vector(0.0, -1.0), false);
         }
         public void OnGoDown(object sender, ExecutedRoutedEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();
-            scene.FindNeighbour(new Vector(0.0, 1.0));
+            scene.FindNeighbour(new Vector(0.0, 1.0), false);
         }
         public void OnGoLeft(object sender, ExecutedRoutedEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();
-            scene.FindNeighbour(new Vector(-1.0, 0.0));
+            scene.FindNeighbour(new Vector(-1.0, 0.0), true);
         }
         public void OnGoRight(object sender, ExecutedRoutedEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();
-            scene.FindNeighbour(new Vector(1.0, 0.0));
+            scene.FindNeighbour(new Vector(1.0, 0.0), true);
+        }
+        public void OnGoUpInOrder(object sender, ExecutedRoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.FindNeighbour(new Vector(0.0, -1.0), true);
+        }
+        public void OnGoDownInOrder(object sender, ExecutedRoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.FindNeighbour(new Vector(0.0, 1.0), true);
         }
         #endregion
 

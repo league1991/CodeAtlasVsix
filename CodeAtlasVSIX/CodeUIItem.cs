@@ -889,9 +889,12 @@ namespace CodeAtlasVSIX
             }
             if (m_commentText != null)
             {
-                baseY += m_displayText.Height;
+                baseY += m_displayText.Height + s_textGap;
+                baseX += 8;
+                m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(10, 10, 10)));
+                drawingContext.DrawText(m_commentText, new Point(baseX + 0.8, baseY + 0.8));
                 m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(207,239,109)));
-                drawingContext.DrawText(m_commentText, new Point(baseX + 8, baseY + s_textGap));
+                drawingContext.DrawText(m_commentText, new Point(baseX, baseY));
             }
             //if (m_customEdgeMode)
             //{

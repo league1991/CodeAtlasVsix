@@ -713,7 +713,7 @@ namespace CodeAtlasVSIX
             }
         }
 
-        public void FindNeighbour(Vector mainDirection)
+        public void FindNeighbour(Vector mainDirection, bool isInOrder = false)
         {
             // Logger.WriteLine("find neighbour:" + mainDirection.ToString());
             var t0 = DateTime.Now;
@@ -735,11 +735,11 @@ namespace CodeAtlasVSIX
             Shape minItem = null;
             if (centerNode != null)
             {
-                minItem = FindNeighbourForNode(centerNode, mainDirection);
+                minItem = FindNeighbourForNode(centerNode, mainDirection, isInOrder);
             }
             else if (centerEdge != null)
             {
-                minItem = FindNeighbourForEdge(centerEdge, mainDirection);
+                minItem = FindNeighbourForEdge(centerEdge, mainDirection, isInOrder);
             }
             t1 = DateTime.Now;
             Logger.Debug("## Find Neighbour " + (t1 - t0).TotalMilliseconds.ToString());
@@ -760,9 +760,9 @@ namespace CodeAtlasVSIX
             t0 = t1;
         }
 
-        public Shape FindNeighbourForEdge(CodeUIEdgeItem centerItem, Vector mainDirection)
+        public Shape FindNeighbourForEdge(CodeUIEdgeItem centerItem, Vector mainDirection, bool isInOrder)
         {
-            if (m_isSourceCandidate && centerItem.OrderData != null && Math.Abs(mainDirection.Y) > 0.8)
+            if (m_isSourceCandidate && centerItem.OrderData != null && Math.Abs(mainDirection.Y) > 0.8 && isInOrder)
             {
                 var srcItem = m_itemDict[centerItem.m_srcUniqueName];
                 var tarItem = m_itemDict[centerItem.m_tarUniqueName];
@@ -906,7 +906,7 @@ namespace CodeAtlasVSIX
             return minItem;
         }
 
-        public Shape FindNeighbourForNode(CodeUIItem centerItem, Vector mainDirection)
+        public Shape FindNeighbourForNode(CodeUIItem centerItem, Vector mainDirection, bool isInOrder)
         {
             var centerPos = centerItem.Pos;
             var centerUniqueName = centerItem.GetUniqueName();
@@ -929,7 +929,7 @@ namespace CodeAtlasVSIX
                                 bestTimeStampEdge = edge;
                                 bestTimeStamp = edge.m_selectTimeStamp;
                             }
-                            if (edge.OrderData != null && edge.OrderData.m_order == 1)
+                            if (edge.OrderData != null && edge.OrderData.m_order == 1 && isInOrder)
                             {
                                 bestEdge = item.Value;
                             }

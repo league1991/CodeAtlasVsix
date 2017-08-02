@@ -83,7 +83,9 @@ namespace CodeAtlasVSIX
             AddCommand(0x0109, mainUI.OnGoUp);
             AddCommand(0x010a, mainUI.OnGoDown);
             AddCommand(0x010b, mainUI.OnGoLeft);
-            AddCommand(0x010c, mainUI.OnGoRight); 
+            AddCommand(0x010c, mainUI.OnGoRight);
+            AddCommand(0x0130, mainUI.OnGoUpInOrder);
+            AddCommand(0x0131, mainUI.OnGoDownInOrder);
             AddCommand(0x010d, mainUI.OnDelectSelectedItems);
             AddCommand(0x011b, mainUI.OnDeleteNearbyItems);
             AddCommand(0x010e, mainUI.OnDeleteSelectedItemsAndAddToStop);
