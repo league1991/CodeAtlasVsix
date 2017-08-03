@@ -2031,7 +2031,6 @@ namespace CodeAtlasVSIX
             if (!scheme.IsEmpty())
             {
                 m_scheme[name] = scheme;
-                UpdateCurrentValidScheme();
                 m_schemeTimeStamp++;
             }
 
@@ -2054,7 +2053,6 @@ namespace CodeAtlasVSIX
             {
                 m_scheme.Remove(name);
             }
-            UpdateCurrentValidScheme();
             m_schemeTimeStamp++;
         }
 
@@ -2195,6 +2193,7 @@ namespace CodeAtlasVSIX
                 {
                     nodeSet.Add(item.Key);
                 }
+                item.Value.IsFading = false;
             }
             foreach (var edgePair in m_edgeDict)
             {
@@ -2243,6 +2242,15 @@ namespace CodeAtlasVSIX
                 }
             }
 
+            // If no scheme, no item is fading
+            if (schemeNameSet.Count != 0)
+            {
+                foreach (var item in m_itemDict)
+                {
+                    item.Value.IsFading = true;
+                }
+            }
+
             m_curValidScheme = schemeNameSet.ToList();
             m_curValidScheme.Sort((x, y) => x.CompareTo(y));
             m_curValidSchemeColor.Clear();
@@ -2260,6 +2268,13 @@ namespace CodeAtlasVSIX
                     {
                         var edge = m_edgeDict[edgePair];
                         edge.AddSchemeColor(schemeColor);
+                    }
+                }
+                foreach (var item in schemeData.m_nodeList)
+                {
+                    if (m_itemDict.ContainsKey(item))
+                    {
+                        m_itemDict[item].IsFading = false;
                     }
                 }
             }

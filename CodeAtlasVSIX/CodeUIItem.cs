@@ -63,6 +63,7 @@ namespace CodeAtlasVSIX
         Geometry m_highLightGeometry = new EllipseGeometry();
         bool m_isInvalidating = false;
         static double s_textGap = 2.0;
+        bool m_isFade = false;
 
         public CodeUIItem(string uniqueName, Dictionary<string, object> customData)
         {
@@ -387,6 +388,19 @@ namespace CodeAtlasVSIX
                 {
                     UIManager.Instance().GetScene().Invalidate();
                 }
+            }
+        }
+
+        public bool IsFading
+        {
+            get { return m_isFade; }
+            set
+            {
+                if (value != m_isFade)
+                {
+                    IsDirty = true;
+                }
+                m_isFade = value;
             }
         }
 
@@ -857,6 +871,8 @@ namespace CodeAtlasVSIX
 
         protected override void OnRender(DrawingContext drawingContext)
         {
+            byte alpha = (byte)(m_isFade ? 150 : 255);
+            this.Fill.Opacity = (double)alpha / 255.0;
             // Draw highlight first
             if (m_customEdgeMode)
             {
@@ -880,18 +896,18 @@ namespace CodeAtlasVSIX
             }
             if (m_displayText != null)
             {
-                m_displayText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(10,10,10)));
+                m_displayText.SetForegroundBrush(new SolidColorBrush(Color.FromArgb(alpha, 10, 10,10)));
                 drawingContext.DrawText(m_displayText, new Point(baseX+1.0, baseY+1.0));
-                m_displayText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(255, 239, 183)));
+                m_displayText.SetForegroundBrush(new SolidColorBrush(Color.FromArgb(alpha, 255, 239, 183)));
                 drawingContext.DrawText(m_displayText, new Point(baseX, baseY));
             }
             if (m_commentText != null)
             {
                 baseY += m_displayText.Height + s_textGap;
                 baseX += 8;
-                m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(10, 10, 10)));
+                m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromArgb(alpha, 10, 10, 10)));
                 drawingContext.DrawText(m_commentText, new Point(baseX + 0.8, baseY + 0.8));
-                m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromRgb(207,239,109)));
+                m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromArgb(alpha, 207, 239,109)));
                 drawingContext.DrawText(m_commentText, new Point(baseX, baseY));
             }
             //if (m_customEdgeMode)
