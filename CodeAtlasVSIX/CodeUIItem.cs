@@ -492,7 +492,11 @@ namespace CodeAtlasVSIX
             {
                 r = Math.Pow((double)(m_lines + 1), 0.2) * 2.5;
             }
-            else if (m_kind != DoxygenDB.EntKind.VARIABLE)
+            else if (m_kind == DoxygenDB.EntKind.VARIABLE)
+            {
+                r = 5.0;
+            }
+            else
             {
                 r = Math.Pow((double)(m_lines + 1), 0.3) * 2.5;
             }
@@ -502,7 +506,16 @@ namespace CodeAtlasVSIX
         public double GetHeight()
         {
             double r = GetRadius();
-            double h = Math.Max(m_fontSize.Height + m_commentSize.Height + s_textGap, r);
+            double textHeight = m_fontSize.Height + m_commentSize.Height + s_textGap;
+            double h = r;
+            if (m_kind == DoxygenDB.EntKind.VARIABLE)
+            {
+                h = Math.Max(textHeight - 8.0, r);
+            }
+            else
+            {
+                h = Math.Max(textHeight, r);
+            }
             h += r;
             return h;
         }
@@ -684,6 +697,7 @@ namespace CodeAtlasVSIX
             {
                 _AddContextMenuItem(context, "Find Usages", mainUI.OnFindUses);
             }
+            _AddContextMenuItem(context, "Find Members", mainUI.OnFindMembers);
             _AddContextMenuItem(context, "Delete", mainUI.OnDelectSelectedItems);
             _AddContextMenuItem(context, "Delete and Ignore", mainUI.OnDeleteSelectedItemsAndAddToStop);
             _AddContextMenuItem(context, "Delete Nearby Items", mainUI.OnDeleteNearbyItems);
@@ -815,8 +829,8 @@ namespace CodeAtlasVSIX
             {
                 var figure = new PathFigure();
                 figure.StartPoint = new Point(-r, 0.0);
-                figure.Segments.Add(new LineSegment(new Point(0, r * 0.5), true));
-                figure.Segments.Add(new LineSegment(new Point(0, -r * 0.5), true));
+                figure.Segments.Add(new LineSegment(new Point(r * 0.5, r * 0.85), true));
+                figure.Segments.Add(new LineSegment(new Point(r * 0.5, -r * 0.85), true));
                 figure.IsClosed = true;
                 figure.IsFilled = true;
                 var pathGeo = new PathGeometry();
