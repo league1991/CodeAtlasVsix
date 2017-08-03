@@ -2187,13 +2187,14 @@ namespace CodeAtlasVSIX
 
             var edgeSet = new HashSet<EdgeKey>();
             var nodeSet = new HashSet<string>();
+            var isFadingMap = new Dictionary<string, bool>();
             foreach (var item in m_itemDict)
             {
                 if (item.Value.IsSelected)
                 {
                     nodeSet.Add(item.Key);
                 }
-                item.Value.IsFading = false;
+                isFadingMap[item.Key] = false;
             }
             foreach (var edgePair in m_edgeDict)
             {
@@ -2247,7 +2248,7 @@ namespace CodeAtlasVSIX
             {
                 foreach (var item in m_itemDict)
                 {
-                    item.Value.IsFading = true;
+                    isFadingMap[item.Key] = true;
                 }
             }
 
@@ -2274,9 +2275,14 @@ namespace CodeAtlasVSIX
                 {
                     if (m_itemDict.ContainsKey(item))
                     {
-                        m_itemDict[item].IsFading = false;
+                        isFadingMap[item] = false;
                     }
                 }
+            }
+
+            foreach (var fadePair in isFadingMap)
+            {
+                m_itemDict[fadePair.Key].IsFading = fadePair.Value;
             }
             if (m_view != null)
             {

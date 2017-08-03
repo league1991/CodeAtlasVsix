@@ -871,7 +871,7 @@ namespace CodeAtlasVSIX
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            byte alpha = (byte)(m_isFade ? 150 : 255);
+            byte alpha = (byte)(m_isFade ? 120 : 255);
             this.Fill.Opacity = (double)alpha / 255.0;
             // Draw highlight first
             if (m_customEdgeMode)
