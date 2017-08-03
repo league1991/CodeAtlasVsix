@@ -1483,6 +1483,8 @@ namespace DoxygenDB
                 var id = element.GetAttribute("id", "");
                 var elementChildIter = element.SelectChildren(XPathNodeType.Element);
                 var type = "";
+                var refList = new List<string>();
+                var refByList = new List<string>();
                 while (elementChildIter.MoveNext())
                 {
                     var elementChild = elementChildIter.Current;
@@ -1501,6 +1503,16 @@ namespace DoxygenDB
                     else if (elementChild.Name == "type")
                     {
                         type = elementChild.Value;
+                    }
+                    else if (elementChild.Name == "references")
+                    {
+                        var refId = elementChild.GetAttribute("refid","");
+                        refList.Add(refId);
+                    }
+                    else if (elementChild.Name == "referencedby")
+                    {
+                        var refId = elementChild.GetAttribute("refid", "");
+                        refByList.Add(refId);
                     }
                 }
                 
@@ -1536,6 +1548,36 @@ namespace DoxygenDB
                         longName = result;
                     }
                     longName = longName.Trim();
+
+                    // Add caller and callee count
+                    int callerCount = 0;
+                    int calleeCount = 0;
+                    foreach (var item in refList)
+                    {
+                        IndexItem info;
+                        if (!m_idInfoDict.TryGetValue(item, out info))
+                        {
+                            continue;
+                        }
+                        if (info.m_kind == EntKind.FUNCTION)
+                        {
+                            calleeCount++;
+                        }
+                    }
+                    foreach (var item in refByList)
+                    {
+                        IndexItem info;
+                        if (!m_idInfoDict.TryGetValue(item, out info))
+                        {
+                            continue;
+                        }
+                        if (info.m_kind == EntKind.FUNCTION)
+                        {
+                            callerCount++;
+                        }
+                    }
+                    metric["nCaller"] = new Variant(callerCount);
+                    metric["nCallee"] = new Variant(calleeCount);
                 }
                 //if (longName.IndexOf(type) == 0)
                 //{
