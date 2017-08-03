@@ -285,7 +285,7 @@ namespace CodeAtlasVSIX
                 }
                 if (caller.Count == 1)
                 {
-                    UpdateCallOrderByItem(caller[0], ref orderEdge);
+                    UpdateCallOrderByItem(caller[0], ref orderEdge, true);
                 }
             }
 
@@ -305,8 +305,9 @@ namespace CodeAtlasVSIX
         }
 
         void UpdateCallOrderByItem(System.Windows.Shapes.Shape item,
-            ref Dictionary<Tuple<string, string>, OrderData> orderEdge)
+            ref Dictionary<Tuple<string, string>, OrderData> orderEdge, bool onlyMarkRightSide = false)
         {
+            // Select node item
             var scene = UIManager.Instance().GetScene();
             var itemDict = scene.GetItemDict();
             var isEdgeSelected = false;
@@ -326,16 +327,44 @@ namespace CodeAtlasVSIX
             }
 
             var nodeItem = item as CodeUIItem;
-            if (nodeItem == null || !nodeItem.IsFunction())
+            if (nodeItem == null)
             {
                 return;
             }
 
+            // Mark connected edges and nodes
+            var edgeDict = scene.GetEdgeDict();
+            var itemUniqueName = nodeItem.GetUniqueName();
+            foreach (var edgePair in edgeDict)
+            {
+                var key = edgePair.Key;
+                var edge = edgePair.Value;
+                var srcItem = itemDict[key.Item1];
+                var tarItem = itemDict[key.Item2];
+                edge.m_isConnectedToFocusNode = key.Item1 == itemUniqueName || key.Item2 == itemUniqueName;
+
+                if (isEdgeSelected == false)
+                {
+                    if (key.Item1 == itemUniqueName)// && tarItem.IsFunction())
+                    {
+                        tarItem.m_isConnectedToFocusNode = true;
+                    }
+                    if (!onlyMarkRightSide && key.Item2 == itemUniqueName)// && srcItem.IsFunction())
+                    {
+                        srcItem.m_isConnectedToFocusNode = true;
+                    }
+                }
+            }
+
+            if (!nodeItem.IsFunction())
+            {
+                return;
+            }
+
+            // Collect candidate edges
             var edgeList = new List<CodeUIEdgeItem>();
             double minXRange = double.MaxValue;
             double maxXRange = double.MinValue;
-            var itemUniqueName = nodeItem.GetUniqueName();
-            var edgeDict = scene.GetEdgeDict();
             foreach (var edgePair in edgeDict)
             {
                 var key = edgePair.Key;
@@ -349,19 +378,6 @@ namespace CodeAtlasVSIX
                     edge.GetNodePos(out srcPos, out tarPos);
                     minXRange = Math.Min(tarPos.X, minXRange);
                     maxXRange = Math.Max(tarPos.X, maxXRange);
-                }
-                edge.m_isConnectedToFocusNode = key.Item1 == itemUniqueName || key.Item2 == itemUniqueName;
-
-                if (isEdgeSelected == false)
-                {
-                    if (key.Item1 == itemUniqueName)// && tarItem.IsFunction())
-                    {
-                        tarItem.m_isConnectedToFocusNode = true;
-                    }
-                    if (key.Item2 == itemUniqueName)// && srcItem.IsFunction())
-                    {
-                        srcItem.m_isConnectedToFocusNode = true;
-                    }
                 }
             }
 
@@ -384,6 +400,7 @@ namespace CodeAtlasVSIX
                 basePos = maxXRange;
             }
 
+            // Find edge order
             bool isSorted = false;
             string bodyCode = nodeItem.m_bodyCode;
             if (bodyCode != null && bodyCode != "")
@@ -421,11 +438,13 @@ namespace CodeAtlasVSIX
                 isSorted = true;
             }
 
+            // Sort edges
             if (!isSorted)
             {
                 edgeList.Sort((x, y) => x.ComparePos(y));
             }
 
+            // Build call order data
             for (int i = 0; i < edgeList.Count; i++)
             {
                 var edge = edgeList[i];

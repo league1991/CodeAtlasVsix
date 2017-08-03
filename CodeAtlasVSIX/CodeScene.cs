@@ -407,7 +407,13 @@ namespace CodeAtlasVSIX
             return true;
         }
 
-        public void ClearSelection()
+        public void SelectNothing()
+        {
+            _ClearSelection();
+            m_selectTimeStamp += 1;
+        }
+
+        private void _ClearSelection()
         {
             foreach (var item in m_itemDict)
             {
@@ -472,6 +478,7 @@ namespace CodeAtlasVSIX
             {
                 return false;
             }
+            _ClearSelection();
             m_selectTimeStamp += 1;
             m_itemDict[uniqueName].IsSelected = true;
             return true;
@@ -479,7 +486,7 @@ namespace CodeAtlasVSIX
 
         public bool SelectOneItem(Shape item)
         {
-            ClearSelection();
+            _ClearSelection();
             var node = item as CodeUIItem;
             var edge = item as CodeUIEdgeItem;
             if (node != null)
@@ -500,7 +507,7 @@ namespace CodeAtlasVSIX
 
         public bool SelectOneEdge(CodeUIEdgeItem edge)
         {
-            ClearSelection();
+            _ClearSelection();
             m_selectTimeStamp += 1;
             edge.IsSelected = true;
             return true;
@@ -508,7 +515,7 @@ namespace CodeAtlasVSIX
 
         public bool SelectEdges(List<EdgeKey> keys)
         {
-            ClearSelection();
+            _ClearSelection();
             foreach (var key in keys)
             {
                 if (m_edgeDict.ContainsKey(key))
@@ -2086,7 +2093,7 @@ namespace CodeAtlasVSIX
                 AddCodeItem(uname);
             }
 
-            ClearSelection();
+            _ClearSelection();
             foreach (var uname in codeItemList)
             {
                 if (!m_itemDict.ContainsKey(uname))

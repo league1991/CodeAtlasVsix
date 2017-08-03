@@ -94,7 +94,7 @@ namespace CodeAtlasVSIX
             var source = e.OriginalSource;
             if (source == this)
             {
-                UIManager.Instance().GetScene().ClearSelection();
+                UIManager.Instance().GetScene().SelectNothing();
             }
         }
 

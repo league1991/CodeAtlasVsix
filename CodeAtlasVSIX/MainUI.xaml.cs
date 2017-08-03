@@ -318,7 +318,6 @@ namespace CodeAtlasVSIX
                 scene.AddCodeItem(srcBestEntity.m_id);
                 scene.AddCodeItem(tarBestEntity.m_id);
                 scene.DoAddCustomEdge(srcBestEntity.m_id, tarBestEntity.m_id);
-                scene.ClearSelection();
                 scene.SelectCodeItem(tarBestEntity.m_id);
                 scene.ReleaseLock();
             }

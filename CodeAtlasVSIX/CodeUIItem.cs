@@ -612,7 +612,6 @@ namespace CodeAtlasVSIX
         void MouseClickCallback(object sender, MouseEventArgs args)
         {
             var scene = UIManager.Instance().GetScene();
-            scene.ClearSelection();
             scene.SelectCodeItem(this.m_uniqueName);
             _BuildContextMenu();
             CaptureMouse();
@@ -684,7 +683,6 @@ namespace CodeAtlasVSIX
         void MouseDoubleClickCallback(object sender, MouseEventArgs args)
         {
             var scene = UIManager.Instance().GetScene();
-            scene.ClearSelection();
             scene.SelectCodeItem(this.m_uniqueName);
             UIManager.Instance().GetScene().ShowInEditor();
         }
