@@ -73,11 +73,12 @@ namespace DoxygenDB
             {"namespace", EntKind.NAMESPACE},  {"group", EntKind.GROUP},          {"page", EntKind.PAGE},
             {"example", EntKind.EXAMPLE},      {"dir", EntKind.DIR},              {"define", EntKind.DEFINE},
             {"property", EntKind.PROPERTY},    {"event", EntKind.EVENT},          {"variable", EntKind.VARIABLE},
-            {"typedef", EntKind.TYPEDEF},      {"enum", EntKind.ENUM},            {"enumvalue", EntKind.ENUMVALUE},
+            {"type", EntKind.TYPEDEF},         {"enum", EntKind.ENUM},            {"enumvalue", EntKind.ENUMVALUE},
             {"function", EntKind.FUNCTION},    {"signal", EntKind.SIGNAL},        {"prototype", EntKind.PROTOTYPE},
             {"friend", EntKind.FRIEND},        {"dcop", EntKind.DCOP},            {"slot", EntKind.SLOT},
             // extra keywords
-            {"method", EntKind.FUNCTION},      {"object", EntKind.VARIABLE},
+            {"method", EntKind.FUNCTION},      {"object", EntKind.VARIABLE},      {"typedef", EntKind.TYPEDEF},
+            {"service", EntKind.UNKNOWN},      {"singleton", EntKind.UNKNOWN},    {"module", EntKind.UNKNOWN},
         };
 
         public string m_id;
