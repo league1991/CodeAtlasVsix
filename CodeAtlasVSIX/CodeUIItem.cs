@@ -63,7 +63,9 @@ namespace CodeAtlasVSIX
         Geometry m_highLightGeometry = new EllipseGeometry();
         bool m_isInvalidating = false;
         static double s_textGap = 2.0;
-        bool m_isFade = false;
+        public static readonly DependencyProperty m_isFadingProperty =
+            DependencyProperty.Register("IsFading", typeof(bool), typeof(CodeUIItem),
+            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public CodeUIItem(string uniqueName, Dictionary<string, object> customData)
         {
@@ -393,14 +395,9 @@ namespace CodeAtlasVSIX
 
         public bool IsFading
         {
-            get { return m_isFade; }
-            set
-            {
-                if (value != m_isFade)
-                {
-                    IsDirty = true;
-                }
-                m_isFade = value;
+            get { return (bool)GetValue(m_isFadingProperty); }
+            set {
+                SetValue(m_isFadingProperty, value);
             }
         }
 
@@ -416,9 +413,9 @@ namespace CodeAtlasVSIX
                 m_isInvalidating = true;
                 this.Dispatcher.BeginInvoke((ThreadStart)delegate
                 {
-                    this._Invalidate();
+                    InvalidateVisual();
                     m_isInvalidating = false;
-                });
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -885,7 +882,7 @@ namespace CodeAtlasVSIX
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            byte alpha = (byte)(m_isFade ? 120 : 255);
+            byte alpha = (byte)(IsFading ? 120 : 255);
             this.Fill.Opacity = (double)alpha / 255.0;
             // Draw highlight first
             if (m_customEdgeMode)

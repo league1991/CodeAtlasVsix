@@ -321,13 +321,22 @@ namespace CodeAtlasVSIX
                         case StrokeMode.STROKE_CANDIDATE:
                             StrokeThickness = 5.5;
                             this.Stroke = new SolidColorBrush(Color.FromArgb(255, 169, 111, 42));
-                            Canvas.SetZIndex(this, -2);
+                            Canvas.SetZIndex(this, m_schemeColorList.Count > 0 ? -2 : -3);
                             break;
                         case StrokeMode.STROKE_NORMAL:
                         default:
                             StrokeThickness = 2.0;
                             this.Stroke = new SolidColorBrush(Color.FromArgb(100, 150, 150, 150));
-                            Canvas.SetZIndex(this, -2);
+                            int zIdx = -6;
+                            if (m_orderData != null)
+                            {
+                                zIdx = -4;
+                            }
+                            else if (m_schemeColorList.Count > 0)
+                            {
+                                zIdx = -5;
+                            }
+                            Canvas.SetZIndex(this, zIdx);
                             break;
                     }
                 });
