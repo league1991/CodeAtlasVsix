@@ -2280,10 +2280,13 @@ namespace CodeAtlasVSIX
                 }
             }
 
-            foreach (var fadePair in isFadingMap)
+            this.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
-                m_itemDict[fadePair.Key].IsFading = fadePair.Value;
-            }
+                foreach (var fadePair in isFadingMap)
+                {
+                    m_itemDict[fadePair.Key].IsFading = fadePair.Value;
+                }
+            });
             if (m_view != null)
             {
                 m_view.InvalidateScheme();
