@@ -242,7 +242,7 @@ namespace DoxygenDB
             {
                 var lastXmlDoc = s_xmlLRUList.Last.Value;
                 var lastFileInfo = new FileInfo(lastXmlDoc.m_filePath);
-                currentXmlSize -= lastFileInfo.Length;
+                s_currentXmlSize -= lastFileInfo.Length;
                 // remove element reference
                 foreach (var docElement in lastXmlDoc.m_elementCache)
                 {
@@ -1769,7 +1769,6 @@ namespace DoxygenDB
                         if (fileEnt.Longname().Contains(searchFile))
                         {
                             lineDist = Math.Min(lineDist, Math.Abs(line - searchLine));
-                            hasSearchFile = true;
                         }
                     }
 
