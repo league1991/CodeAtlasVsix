@@ -54,14 +54,15 @@ namespace DoxygenDB
 
     public enum RefKind
     {
-        UNKNOWN = 0,
-        MEMBER = 1,
-        CALL = 2,
-        DERIVE = 3,
-        USE = 4,
-        OVERRIDE = 5,
-        DECLARE = 6,
-        DEFINE = 7,
+        UNKNOWN  = 0x0,
+        MEMBER   = 0x1,
+        CALL     = 0x2,
+        DERIVE   = 0x4,
+        USE      = 0x8,
+        OVERRIDE = 0x10,
+        DECLARE  = 0x20,
+        DEFINE   = 0x40,
+        ALL      = 0x3fffffff,
     }
 
     class IndexItem
@@ -1144,7 +1145,7 @@ namespace DoxygenDB
             }
         }
 
-        void _ReadRef(string uniqueName)
+        void _ReadRef(string uniqueName, int refKind = (int)RefKind.ALL)
         {
             // Find symbol index item
             IndexItem indexItem;
@@ -1302,8 +1303,10 @@ namespace DoxygenDB
                 compoundIndexItem.SetCacheStatus(IndexItem.CacheStatus.REF);
             }
 
+            int memberRelation = (int)RefKind.MEMBER | (int)RefKind.DECLARE | (int)RefKind.DEFINE;
+            bool shouldParseMember = (refKind & ~memberRelation) != 0;
             // find member's refs
-            if (isMember)
+            if (isMember && shouldParseMember)
             {
                 var memberIter = doc.Select(string.Format("doxygen/compounddef/sectiondef/memberdef[@id=\'{0}\']", indexItem.m_id));
                 while (memberIter.MoveNext())
@@ -1853,6 +1856,11 @@ namespace DoxygenDB
             {
                 refKindList = new List<Tuple<RefKind, bool>>(IndexRefItem.s_kindDict.Values);
             }
+            int refKindBit = 0;
+            foreach (var item in refKindList)
+            {
+                refKindBit |= (int)item.Item1;
+            }
 
             // parse entKindStr
             var entKindList = new List<EntKind>();
@@ -1880,7 +1888,7 @@ namespace DoxygenDB
                 compoundId = m_idToCompoundDict[uniqueName];
             }
             var t0 = DateTime.Now;
-            _ReadRef(uniqueName);
+            _ReadRef(uniqueName, refKindBit);
             var t1 = DateTime.Now;
             Console.WriteLine("_ReadRef " + (t1 - t0).TotalMilliseconds.ToString());
 
