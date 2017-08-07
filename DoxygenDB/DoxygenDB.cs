@@ -208,7 +208,9 @@ namespace DoxygenDB
 
     class XmlDocItem
     {
-        static int m_maxXmlCount = 500;
+        static int m_maxXmlCount = 1000;
+        static long s_maxXmlSize = 350 * 1024 * 1024; // 400 MB
+        static long s_currentXmlSize = 0;
         // filePath -> xml doc
         static LinkedList<XmlDocItem> s_xmlLRUList = new LinkedList<XmlDocItem>();
         static Dictionary<string, LinkedListNode<XmlDocItem>> s_lruDict = new Dictionary<string, LinkedListNode<XmlDocItem>>();
@@ -236,9 +238,11 @@ namespace DoxygenDB
 
         void _LoadXml()
         {
-            while (s_xmlLRUList.Count >= m_maxXmlCount)
+            while (s_xmlLRUList.Count >= m_maxXmlCount || s_currentXmlSize > s_maxXmlSize)
             {
                 var lastXmlDoc = s_xmlLRUList.Last.Value;
+                var lastFileInfo = new FileInfo(lastXmlDoc.m_filePath);
+                currentXmlSize -= lastFileInfo.Length;
                 // remove element reference
                 foreach (var docElement in lastXmlDoc.m_elementCache)
                 {
@@ -262,7 +266,7 @@ namespace DoxygenDB
                 t0 = t1;
                 m_doc = doc;
             }
-            catch (Exception e1)
+            catch (Exception)
             {
                 // Try to filter out problematic characters
                 try
@@ -289,6 +293,9 @@ namespace DoxygenDB
             }
             var node = s_xmlLRUList.AddFirst(this);
             s_lruDict[m_filePath] = node;
+
+            var fileInfo = new FileInfo(m_filePath);
+            s_currentXmlSize += fileInfo.Length;
         }
 
         public void ClearDocument()
@@ -1748,7 +1755,6 @@ namespace DoxygenDB
 
                     var fileNameSet = new HashSet<string>();
                     var lineDist = int.MaxValue;
-                    var hasSearchFile = false;
                     foreach (var refObj in refs)
                     {
                         if (refObj == null)

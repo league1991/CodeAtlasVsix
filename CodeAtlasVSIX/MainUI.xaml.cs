@@ -202,7 +202,11 @@ namespace CodeAtlasVSIX
             }
 
             var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
-            Document doc = dte.ActiveDocument;
+            Document doc = null;
+            if (dte != null)
+            {
+                doc = dte.ActiveDocument;
+            }
             if (doc == null)
             {
                 return;
