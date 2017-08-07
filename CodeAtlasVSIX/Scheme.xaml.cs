@@ -26,10 +26,10 @@ namespace CodeAtlasVSIX
             new Dictionary<string, Tuple<Color, FormattedText>>();
         double m_margin = 10.0;
         double m_lineHeight = 10.0;
-        double m_lineSpace = 2.0;
+        double m_lineSpace = 4.0;
         //double m_colorTextSpace = 5.0;
         double m_maxTextWidth = 0.0;
-        double m_fontSize = 11.0;
+        double m_fontSize = 12.0;
         double m_rectThickness = 5.0;
         List<FormattedText> m_keyText = new List<FormattedText>();
         double m_formatWidth = 0.0;
@@ -117,7 +117,7 @@ namespace CodeAtlasVSIX
             var parent = this.Parent as Canvas;
             if (parent != null)
             {
-                contentHeight = (m_lineHeight + m_lineSpace) * m_schemeNameDict.Count + m_lineSpace;
+                contentHeight = (m_lineHeight + m_lineSpace) * m_schemeNameDict.Count - m_lineSpace;
                 y = parent.ActualHeight - contentHeight - m_margin;
             }
             var colorSize = new Size(m_lineHeight * 2, 2);
@@ -140,10 +140,10 @@ namespace CodeAtlasVSIX
                 dc.DrawRectangle(new SolidColorBrush(color), new Pen(), new Rect(new Point(x, y+6), colorSize));
                 x += colorSize.Width + m_lineSpace;
 
-                dc.DrawText(m_keyText[i], new Point(x, y));
+                dc.DrawText(m_keyText[i], new Point(x, y-2));
                 x += m_formatWidth;
 
-                dc.DrawText(textObj,      new Point(x, y));
+                dc.DrawText(textObj,      new Point(x, y-2));
                 y += m_lineHeight + m_lineSpace;
                 ++i;
             }

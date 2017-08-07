@@ -535,7 +535,7 @@ namespace CodeAtlasVSIX
             {
                 var dPos = pair.Value.Pos - pos;
                 double dist = dPos.LengthSquared;
-                if (dist < minDist)
+                if (dist < minDist || minItem == null)
                 {
                     minDist = dist;
                     minItem = pair.Value;
@@ -1306,6 +1306,7 @@ namespace CodeAtlasVSIX
                 {
                     SelectOneItem(item);
                 }
+                m_schemeTimeStamp++;
                 ReleaseLock();
             });
             return true;
@@ -1633,7 +1634,7 @@ namespace CodeAtlasVSIX
             AcquireLock();
 
             var itemList = new List<string>();
-            Point lastPos = new Point(Double.NaN, Double.NaN);
+            Point lastPos = new Point();
             foreach (var item in m_itemDict)
             {
                 if (item.Value.IsSelected)
@@ -1717,7 +1718,7 @@ namespace CodeAtlasVSIX
             {
                 res = SelectOneEdge(lastFunction);
             }
-            if (res == false && !double.IsNaN(lastPos.X))
+            if (res == false)
             {
                 res = SelectNearestItem(lastPos);
             }
