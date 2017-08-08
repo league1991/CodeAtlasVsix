@@ -26,10 +26,10 @@ namespace CodeAtlasVSIX
             new Dictionary<string, Tuple<Color, FormattedText>>();
         double m_margin = 10.0;
         double m_lineHeight = 10.0;
-        double m_lineSpace = 2.0;
+        double m_lineSpace = 3.0;
         //double m_colorTextSpace = 5.0;
         double m_maxTextWidth = 0.0;
-        double m_fontSize = 11.0;
+        double m_fontSize = 12.0;
         double m_rectThickness = 5.0;
         List<FormattedText> m_keyText = new List<FormattedText>();
         double m_formatWidth = 0.0;
@@ -137,7 +137,7 @@ namespace CodeAtlasVSIX
 
                 x = m_margin;
 
-                dc.DrawRectangle(new SolidColorBrush(color), new Pen(), new Rect(new Point(x, y+3), colorSize));
+                dc.DrawRectangle(new SolidColorBrush(color), new Pen(), new Rect(new Point(x, y+4), colorSize));
                 x += colorSize.Width + m_lineSpace;
 
                 dc.DrawText(m_keyText[i], new Point(x, y-2));
