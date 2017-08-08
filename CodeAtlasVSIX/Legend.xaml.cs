@@ -57,7 +57,7 @@ namespace CodeAtlasVSIX
                     var formattedText = new FormattedText(cname,
                                                             CultureInfo.CurrentUICulture,
                                                             FlowDirection.LeftToRight,
-                                                            new Typeface("tahoma"),
+                                                            new Typeface("arial"),
                                                             m_fontSize,
                                                             Brushes.Moccasin);
                     m_classNameDict[cname] = new Tuple<Color, FormattedText>(color, formattedText);

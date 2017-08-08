@@ -70,7 +70,7 @@ namespace CodeAtlasVSIX
                 var formattedText = new FormattedText(schemeName,
                                                         CultureInfo.CurrentUICulture,
                                                         FlowDirection.LeftToRight,
-                                                        new Typeface("tahoma"),
+                                                        new Typeface("arial"),
                                                         m_fontSize,
                                                         Brushes.Moccasin);
                 m_schemeNameDict[schemeName] = new Tuple<Color, FormattedText>(schemeColor, formattedText);
