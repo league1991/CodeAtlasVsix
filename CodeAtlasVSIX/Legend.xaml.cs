@@ -26,10 +26,10 @@ namespace CodeAtlasVSIX
             new Dictionary<string, Tuple<Color, FormattedText>>();
         double m_margin = 10.0;
         double m_lineHeight = 10.0;
-        double m_lineSpace = 4.0;
+        double m_lineSpace = 2.0;
         double m_colorTextSpace = 5.0;
         double m_maxTextWidth = 0.0;
-        double m_fontSize = 12.0;
+        double m_fontSize = 11.0;
         double m_rectThickness = 5.0;
 
         public Legend()
@@ -115,7 +115,7 @@ namespace CodeAtlasVSIX
                 var color = item.Value.Item1;
                 var textObj = item.Value.Item2;
                 dc.DrawRectangle(new SolidColorBrush(color), new Pen(), new Rect(new Point(x, y), colorSize));
-                dc.DrawText(textObj, new Point(x + m_lineHeight + m_colorTextSpace, y-2));
+                dc.DrawText(textObj, new Point(x + m_lineHeight + m_colorTextSpace, y));
                 y += m_lineHeight + m_lineSpace;
             }
             scene.ReleaseLock();
