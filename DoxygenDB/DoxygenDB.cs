@@ -1262,6 +1262,23 @@ namespace DoxygenDB
                             }
                         }
 
+                        // find inner members
+                        if (compoundChild.Name == "innerclass" || compoundChild.Name == "innernamespace"
+                            || compoundChild.Name == "innerfile" || compoundChild.Name == "innerdir")
+                        {
+                            var innerId = compoundChild.GetAttribute("refid", "");
+                            if (m_idInfoDict.ContainsKey(innerId))
+                            {
+                                var innerItem = m_idInfoDict[innerId];
+                                //_ParseRefLocation(compoundChild, out filePath, out startLine);
+                                filePath = "";
+                                startLine = 0;
+                                var refItem = new IndexRefItem(compoundId, innerId, "member", filePath, startLine);
+                                innerItem.AddRefItem(refItem);
+                                compoundItem.AddRefItem(refItem);
+                            }
+                        }
+
                         // find member's refs
                         if (compoundChild.Name == "sectiondef")
                         {
@@ -1890,7 +1907,7 @@ namespace DoxygenDB
             var t0 = DateTime.Now;
             _ReadRef(uniqueName, refKindBit);
             var t1 = DateTime.Now;
-            Console.WriteLine("_ReadRef " + (t1 - t0).TotalMilliseconds.ToString());
+            //Console.WriteLine("_ReadRef " + (t1 - t0).TotalMilliseconds.ToString());
 
             // find references
             var refs = thisItem.GetRefItemList();

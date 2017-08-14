@@ -443,9 +443,11 @@ namespace CodeAtlasVSIX
         }
         public void OnFindMembers(object sender, ExecutedRoutedEventArgs e)
         {
+            _FindRefs("declare,define,member", "dir,file,namespace,class", true);
+            _FindRefs("declare,define,member", "class", true, 1);
             _FindRefs("declare,define", "variable, object", true, 1);
             _FindRefs("declare,define", "function", true, 1);
-            _FindRefs("declarein,definein", "function,class", false);
+            _FindRefs("declarein,definein,memberin", "dir,file,namespace,function,class", false);
         }
         public void OnFindOverrides(object sender, ExecutedRoutedEventArgs e)
         {
