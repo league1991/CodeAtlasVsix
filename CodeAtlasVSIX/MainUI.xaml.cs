@@ -131,8 +131,8 @@ namespace CodeAtlasVSIX
                     ofd.InitialDirectory = doxyFolder;
                 }
             }
-            ofd.DefaultExt = ".atlas";
-            ofd.Filter = "Code Atlas Analysis Result|*.atlas";
+            ofd.DefaultExt = ".graph";
+            ofd.Filter = "Code Graph Analysis Result|*.graph";
             if (ofd.ShowDialog() == true)
             {
                 if (DBManager.Instance().GetDB().IsOpen())
@@ -659,7 +659,7 @@ namespace CodeAtlasVSIX
                 postFix = postFix.Replace(" ", "");
 
                 DoxygenDB.DoxygenDBConfig config = new DoxygenDB.DoxygenDBConfig();
-                config.m_configPath = doxyFolder + "/Result" + postFix + ".atlas";
+                config.m_configPath = doxyFolder + "/Result" + postFix + ".graph";
                 config.m_inputFolders = dirList;
                 config.m_outputDirectory = doxyFolder + "/Result" + postFix;
                 config.m_projectName = traverser.GetSolutionName() + postFix;

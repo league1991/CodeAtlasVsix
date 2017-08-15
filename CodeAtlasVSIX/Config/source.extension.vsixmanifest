@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Vsix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
   <Identifier Id="CodeAtlasVSIX.Company.df5456fb-08ea-4256-b5ff-ecdb3a512ad3">
-    <Name>CodeAtlas</Name>
+    <Name>CodeGraph</Name>
     <Author>Yaobin Ouyang</Author>
-    <Version>1.0.1</Version>
-    <Description xml:space="preserve">A tool to show relationship between variables, functions and classes.</Description>
+    <Version>1.0.2</Version>
+    <Description xml:space="preserve">A tool to show call graph, inheritance graph and variable usage graph.</Description>
     <Locale>1033</Locale>
     <License>License.txt</License>
     <Icon>Resources/logo.png</Icon>
+    <PreviewImage>Resources/thumbnail.png</PreviewImage>
     <SupportedProducts>
       <VisualStudio Version="10.0">
         <Edition>Pro</Edition>

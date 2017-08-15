@@ -35,7 +35,7 @@
       <Menu guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" priority="0x700" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
         <Strings>
-          <ButtonText>Code Atlas</ButtonText>
+          <ButtonText>Code Graph</ButtonText>
         </Strings>
       </Menu>
     </Menus>
@@ -81,7 +81,7 @@
       <Button guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasCommandId" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasGroup" />
         <Strings>
-          <ButtonText>Open Code Atlas Window</ButtonText>
+          <ButtonText>Open Code Graph Window</ButtonText>
         </Strings>
       </Button>
 
@@ -116,14 +116,14 @@
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlas" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" />
         <Strings>
-          <ButtonText>Show In Atlas</ButtonText>
+          <ButtonText>Show In Graph</ButtonText>
         </Strings>
       </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowDefinitionInAtlas" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" />
         <Strings>
-          <ButtonText>Show Definition In Atlas</ButtonText>
+          <ButtonText>Show Definition In Graph</ButtonText>
         </Strings>
       </Button>
       
