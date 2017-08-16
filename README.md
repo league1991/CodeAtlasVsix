@@ -21,6 +21,22 @@ https://sourceforge.net/projects/codeatlasvsix/
 * Visual studio Marketplace:
 https://marketplace.visualstudio.com/items?itemName=YaobinOuyang.CodeAtlas
 
+Features
+--------
+* Visualize call graph
+* Visualize class hierarchy
+* Visualize class membership
+* Visualize variable usage
+* Quick navigation
+* Save/Load graph bookmarks
+
+Supported languages
+--------
+* Python
+* C/C++
+* Java
+* PHP
+
 Overview
 --------
 * ![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/class.png) is a class.
