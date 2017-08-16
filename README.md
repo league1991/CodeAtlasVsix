@@ -34,8 +34,8 @@ Supported languages
 --------
 * Python
 * C/C++
-* Java
-* PHP
+* C#
+* PHP (Need to install PHP Tools)
 
 Overview
 --------
