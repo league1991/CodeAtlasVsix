@@ -197,11 +197,11 @@ namespace CodeAtlasVSIX
                 }
                 t1 = DateTime.Now;
                 Logger.Debug("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
-
                 ReleaseLock();
 
                 // code item
                 var codeItemList = sceneData["codeItem"] as ArrayList;
+                var codeItemListUname = new List<string>();
                 foreach (var item in codeItemList)
                 {
                     var uname = item as string;
@@ -211,7 +211,8 @@ namespace CodeAtlasVSIX
                         continue;
                     }
                     //AddCodeItem(item as string);
-                    _DoAddCodeItem(item as string);
+                    _DoAddCodeItem(uname);
+                    codeItemListUname.Add(uname);
                 }
                 t1 = DateTime.Now;
                 Logger.Debug("--------------AddCodeItem " + (t1 - t0).TotalMilliseconds.ToString());
@@ -248,6 +249,8 @@ namespace CodeAtlasVSIX
                         }
                     }
                 }
+                UpdateLRU(codeItemListUname);
+                RemoveItemLRU();
                 t1 = DateTime.Now;
                 Logger.Debug("--------------AddCodeEdgeItem " + (t1 - t0).TotalMilliseconds.ToString());
                 Logger.Info("Open Time: " + (t1 - beginTime).TotalSeconds.ToString() + "s");
@@ -1333,9 +1336,14 @@ namespace CodeAtlasVSIX
                 _DoDeleteCodeEdgeItem(edgeKey);
             }
 
-            m_view.canvas.Children.Remove(m_itemDict[uniqueName]);
-            m_itemDict.Remove(uniqueName);
-            m_isLayoutDirty = true;
+            this.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                AcquireLock();
+                m_view.canvas.Children.Remove(m_itemDict[uniqueName]);
+                m_itemDict.Remove(uniqueName);
+                m_isLayoutDirty = true;
+                ReleaseLock();
+            });
         }
 
         void _DoDeleteCodeEdgeItem(EdgeKey edgeKey)
@@ -1345,9 +1353,14 @@ namespace CodeAtlasVSIX
                 return;
             }
 
-            m_view.canvas.Children.Remove(m_edgeDict[edgeKey]);
-            m_edgeDict.Remove(edgeKey);
-            m_isLayoutDirty = true;
+            this.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                AcquireLock();
+                m_view.canvas.Children.Remove(m_edgeDict[edgeKey]);
+                m_edgeDict.Remove(edgeKey);
+                m_isLayoutDirty = true;
+                ReleaseLock();
+            });
         }
 
         bool _DoAddCodeEdgeItem(string srcUniqueName, string tarUniqueName, DataDict data)
