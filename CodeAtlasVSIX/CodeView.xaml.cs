@@ -172,7 +172,7 @@ namespace CodeAtlasVSIX
         private void background_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var source = e.OriginalSource;
-            if (source == this || true)
+            //if (source == this || true)
             {
                 var point = e.GetPosition(background);
                 if (!Point.Equals(point, m_backgroundMovePos))
