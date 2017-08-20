@@ -42,10 +42,12 @@ namespace CodeAtlasVSIX
 
         // UI appearance
         Nullable<Point> dragStart = null;
+        Point lastMove;
         GeometryGroup m_geometry = null;
         Point m_targetPos = new Point();
         DateTime m_mouseDownTime = new DateTime();
         bool m_isSelected = false;
+        bool m_deselectOnUp = false;
         bool m_isHover = false;
         public int m_selectCounter = 0;
         public double m_selectTimeStamp = 0;
@@ -76,7 +78,7 @@ namespace CodeAtlasVSIX
             this.MouseEnter += new MouseEventHandler(MouseEnterCallback);
             this.MouseLeave += new MouseEventHandler(MouseLeaveCallback);
             this.Cursor = Cursors.Arrow;
-            
+
             var scene = UIManager.Instance().GetScene();
 
             m_name = (string)customData["name"];
@@ -122,9 +124,9 @@ namespace CodeAtlasVSIX
             SolidColorBrush brush = new SolidColorBrush();
             brush.Color = m_color;
             this.Fill = brush;
-            this.Stroke = Brushes.Transparent;
+            this.Stroke = new SolidColorBrush(Color.FromArgb(0, 255, 157, 38));
             BuildGeometry();
-             
+
             Canvas.SetZIndex(this, 0);
             this.StrokeThickness = 0.0;
         }
@@ -377,7 +379,7 @@ namespace CodeAtlasVSIX
             var h = ((hashVal) & 0xffff) / 65535.0;
             var s = ((hashVal >> 16) & 0xff) / 255.0;
             var l = ((hashVal >> 24) & 0xff) / 255.0;
-            return HSLToRGB(h, 0.35+s*0.3, 0.4+l*0.15);
+            return HSLToRGB(h, 0.35 + s * 0.3, 0.4 + l * 0.15);
         }
 
         public bool IsDirty
@@ -434,7 +436,7 @@ namespace CodeAtlasVSIX
                     }
                     else
                     {
-                        this.Stroke = Brushes.Transparent;
+                        this.Stroke = new SolidColorBrush(Color.FromArgb(0, 255, 157, 38));
                     }
                     UIManager.Instance().GetScene().OnSelectItems();
                 }
@@ -545,6 +547,12 @@ namespace CodeAtlasVSIX
             return l;
         }
 
+        public void MoveItem(Vector offset)
+        {
+            m_targetPos += offset;
+            Pos = m_targetPos;
+        }
+
         public void SetTargetPos(Point point)
         {
             m_targetPos = point;
@@ -629,17 +637,34 @@ namespace CodeAtlasVSIX
             }
             else
             {
+                MouseClickCallback(sender, args);
                 MouseDoubleClickCallback(sender, args);
             }
         }
 
         void MouseClickCallback(object sender, MouseEventArgs args)
         {
-            var scene = UIManager.Instance().GetScene();
-            scene.SelectCodeItem(this.m_uniqueName);
-            _BuildContextMenu();
+            if (args.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+            {
+                bool isClean = !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl));
+                var scene = UIManager.Instance().GetScene();
+                if (m_isSelected)
+                {
+                    m_deselectOnUp = true;
+                }
+                else
+                {
+                    scene.SelectCodeItem(this.m_uniqueName, isClean);
+                }
+            }
+            else if (args.RightButton == System.Windows.Input.MouseButtonState.Pressed)
+            {
+                _BuildContextMenu();
+            }
             CaptureMouse();
             dragStart = args.GetPosition(this);
+            var canvas = GetCanvas();
+            lastMove = args.GetPosition(canvas);
         }
 
         public void SetCustomEdgeSourceMode(bool isCustomSource)
@@ -708,7 +733,6 @@ namespace CodeAtlasVSIX
         void MouseDoubleClickCallback(object sender, MouseEventArgs args)
         {
             var scene = UIManager.Instance().GetScene();
-            scene.SelectCodeItem(this.m_uniqueName);
             UIManager.Instance().GetScene().ShowInEditor();
         }
 
@@ -716,10 +740,15 @@ namespace CodeAtlasVSIX
         {
             if (dragStart != null && args.LeftButton == MouseButtonState.Pressed)
             {
+                var scene = UIManager.Instance().GetScene();
                 var canvas = GetCanvas();
                 var p2 = args.GetPosition(canvas);
-                Pos = new Point(p2.X - dragStart.Value.X, p2.Y - dragStart.Value.Y);
-                SetTargetPos(Pos);
+                //Pos = new Point(p2.X - dragStart.Value.X, p2.Y - dragStart.Value.Y);
+                //SetTargetPos(Pos);
+                var offset = p2 - lastMove;
+                scene.MoveSelectedItems(offset);
+                lastMove = p2;
+                m_deselectOnUp = false;
             }
             if (m_customEdgeMode)
             {
@@ -727,8 +756,19 @@ namespace CodeAtlasVSIX
             }
         }
 
-        void MouseUpCallback(object sender, MouseEventArgs e)
+        void MouseUpCallback(object sender, MouseEventArgs args)
         {
+            if (dragStart != null)
+            {
+                if (m_deselectOnUp)
+                {
+                    m_deselectOnUp = false;
+                    // Mouse doesn't move
+                    bool isClean = !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl));
+                    var scene = UIManager.Instance().GetScene();
+                    scene.DeselectCodeItem(this.m_uniqueName, isClean);
+                }
+            }
             dragStart = null;
             ReleaseMouseCapture();
 
@@ -767,7 +807,7 @@ namespace CodeAtlasVSIX
             }
             else
             {
-                Stroke = Brushes.Transparent;
+                Stroke = new SolidColorBrush(Color.FromArgb(0, 255, 157, 38));
             }
             m_isHover = false;
         }
@@ -882,7 +922,7 @@ namespace CodeAtlasVSIX
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            byte alpha = (byte)(IsFading ? 120 : 255);
+            byte alpha = (byte)((IsFading && !IsSelected) ? 120 : 255);
             this.Fill.Opacity = (double)alpha / 255.0;
             // Draw highlight first
             if (m_customEdgeMode)

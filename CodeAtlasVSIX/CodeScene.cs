@@ -475,15 +475,33 @@ namespace CodeAtlasVSIX
             return items;
         }
 
-        public bool SelectCodeItem(string uniqueName)
+        public bool SelectCodeItem(string uniqueName, bool clearFirst = true)
         {
             if (!m_itemDict.ContainsKey(uniqueName))
             {
                 return false;
             }
-            _ClearSelection();
+            if (clearFirst)
+            {
+                _ClearSelection();
+            }
             m_selectTimeStamp += 1;
             m_itemDict[uniqueName].IsSelected = true;
+            return true;
+        }
+
+        public bool DeselectCodeItem(string uniqueName, bool clearFirst = true)
+        {
+            if (!m_itemDict.ContainsKey(uniqueName))
+            {
+                return false;
+            }
+            if (clearFirst)
+            {
+                _ClearSelection();
+            }
+            m_selectTimeStamp += 1;
+            m_itemDict[uniqueName].IsSelected = false;
             return true;
         }
 
@@ -508,17 +526,52 @@ namespace CodeAtlasVSIX
             return false;
         }
 
-        public bool SelectOneEdge(CodeUIEdgeItem edge)
+        public bool SelectOneEdge(CodeUIEdgeItem edge, bool clearFirst = true)
         {
-            _ClearSelection();
+            if (clearFirst)
+            {
+                _ClearSelection();
+            }
             m_selectTimeStamp += 1;
             edge.IsSelected = true;
             return true;
         }
 
-        public bool SelectEdges(List<EdgeKey> keys)
+        public bool DeselectOneEdge(CodeUIEdgeItem edge, bool clearFirst = true)
         {
-            _ClearSelection();
+            if (clearFirst)
+            {
+                _ClearSelection();
+            }
+            m_selectTimeStamp += 1;
+            edge.IsSelected = false;
+            return true;
+        }
+
+        public bool SelectCodeItems(List<string> keys, bool clearFirst= true)
+        {
+            if (clearFirst)
+            {
+                _ClearSelection();
+            }
+            foreach (var uniqueName in keys)
+            {
+                if (!m_itemDict.ContainsKey(uniqueName))
+                {
+                    continue;
+                }
+                m_itemDict[uniqueName].IsSelected = true;
+            }
+            m_selectTimeStamp += 1;
+            return true;
+        }
+
+        public bool SelectEdges(List<EdgeKey> keys, bool clearFirst = true)
+        {
+            if (clearFirst)
+            {
+                _ClearSelection();
+            }
             foreach (var key in keys)
             {
                 if (m_edgeDict.ContainsKey(key))
@@ -1110,6 +1163,18 @@ namespace CodeAtlasVSIX
             return minItem;
         }
         #endregion
+
+        public void MoveSelectedItems(Vector offset)
+        {
+            foreach (var item in m_itemDict)
+            {
+                var codeItem = item.Value;
+                if (codeItem.IsSelected)
+                {
+                    codeItem.MoveItem(offset);
+                }
+            }
+        }
 
         public void MoveItems()
         {

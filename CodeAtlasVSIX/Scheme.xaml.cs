@@ -41,16 +41,25 @@ namespace CodeAtlasVSIX
             ResourceSetter resMgr = new ResourceSetter(this);
             resMgr.SetStyle();
 
-            for (int i = 0; i < 10; i++)
+            CheckAndAddFormattedText(5);
+        }
+
+        void CheckAndAddFormattedText(int idx)
+        {
+            if (idx < m_keyText.Count)
             {
-                var formattedText = new FormattedText( string.Format("[{0}]", i+1),
+                return;
+            }
+
+            for (int i = m_keyText.Count; i <= idx; i++)
+            {
+                var formattedText = new FormattedText(string.Format("[{0}]", i + 1),
                                                         CultureInfo.CurrentUICulture,
                                                         FlowDirection.LeftToRight,
                                                         new Typeface("arial"),
                                                         m_fontSize,
                                                         Brushes.LightSalmon);
                 m_keyText.Add(formattedText);
-
                 m_formatWidth = Math.Max(m_formatWidth, formattedText.Width);
             }
         }
@@ -140,6 +149,7 @@ namespace CodeAtlasVSIX
                 dc.DrawRectangle(new SolidColorBrush(color), new Pen(), new Rect(new Point(x, y+4), colorSize));
                 x += colorSize.Width + m_lineSpace;
 
+                CheckAndAddFormattedText(i);
                 dc.DrawText(m_keyText[i], new Point(x, y-2));
                 x += m_formatWidth;
 

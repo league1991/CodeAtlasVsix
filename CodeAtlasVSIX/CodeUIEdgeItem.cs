@@ -358,10 +358,53 @@ namespace CodeAtlasVSIX
             }
         }
 
+        void _AddContextMenuItem(ContextMenu context, string header, ExecutedRoutedEventHandler handler)
+        {
+            MenuItem menuItem = new MenuItem();
+            menuItem.Header = header;
+            menuItem.Click += delegate { handler(null, null); };
+            context.Items.Add(menuItem);
+        }
+
+
+        void _BuildContextMenu()
+        {
+            var mainUI = UIManager.Instance().GetMainUI();
+            ContextMenu context = new ContextMenu();
+            _AddContextMenuItem(context, "Delete", mainUI.OnDelectSelectedItems);
+            _AddContextMenuItem(context, "Show Bookmark 1", mainUI.OnShowScheme1);
+            _AddContextMenuItem(context, "Show Bookmark 2", mainUI.OnShowScheme2);
+            _AddContextMenuItem(context, "Show Bookmark 3", mainUI.OnShowScheme3);
+            _AddContextMenuItem(context, "Show Bookmark 4", mainUI.OnShowScheme4);
+            _AddContextMenuItem(context, "Show Bookmark 5", mainUI.OnShowScheme5);
+            _AddContextMenuItem(context, "Toggle Bookmark 1", mainUI.OnToggleScheme1);
+            _AddContextMenuItem(context, "Toggle Bookmark 2", mainUI.OnToggleScheme2);
+            _AddContextMenuItem(context, "Toggle Bookmark 3", mainUI.OnToggleScheme3);
+            _AddContextMenuItem(context, "Toggle Bookmark 4", mainUI.OnToggleScheme4);
+            _AddContextMenuItem(context, "Toggle Bookmark 5", mainUI.OnToggleScheme5);
+            this.ContextMenu = context;
+        }
+
         void MouseClickCallback(object sender, MouseEventArgs args)
         {
-            var scene = UIManager.Instance().GetScene();
-            scene.SelectOneEdge(this);
+            if (args.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+            {
+                bool isClean = !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl));
+                var scene = UIManager.Instance().GetScene();
+                if (m_isSelected)
+                {
+                    scene.DeselectOneEdge(this, isClean);
+                }
+                else
+                {
+                    scene.SelectOneEdge(this, isClean);
+                }
+            }
+            else if (args.RightButton == System.Windows.Input.MouseButtonState.Pressed)
+            {
+                _BuildContextMenu();
+                CaptureMouse();
+            }
         }
 
         void MouseDoubleClickCallback(object sender, MouseEventArgs args)
@@ -377,6 +420,7 @@ namespace CodeAtlasVSIX
 
         void MouseUpCallback(object sender, MouseEventArgs e)
         {
+            ReleaseMouseCapture();
         }
 
         void MouseEnterCallback(object sender, MouseEventArgs e)

@@ -22,9 +22,9 @@
         <Label x:Name="label1" Content="Filter" Margin="0" Grid.Row="2"/>
         <TextBox x:Name="nameEdit" TextWrapping="Wrap" Grid.Column="1" Margin="0,4,0,0"/>
         <TextBox x:Name="filterEdit" Grid.ColumnSpan="2" TextWrapping="Wrap" Grid.Row="2" Grid.Column="1" Margin="0,4,0,0" TextChanged="filterEdit_TextChanged"/>
-        <Button x:Name="addSchemeButton" Content="Add/Replace Graph" Grid.Column="2" Margin="0,4,0,0" Click="addSchemeButton_Click" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-        <Button x:Name="showSchemeButton" Grid.ColumnSpan="2" Content="Show Graph" Grid.Row="1" Click="showSchemeButton_Click" Margin="0,4,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-        <Button x:Name="deleteSchemeButton" Content="Delete Graph" Grid.Column="2" Margin="0,4,0,0" Grid.Row="1" Click="deleteSchemeButton_Click" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+        <Button x:Name="addSchemeButton" Content="Add/Replace Bookmark" Grid.Column="2" Margin="0,4,0,0" Click="addSchemeButton_Click" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+        <Button x:Name="showSchemeButton" Grid.ColumnSpan="2" Content="Show Bookmark" Grid.Row="1" Click="showSchemeButton_Click" Margin="0,4,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+        <Button x:Name="deleteSchemeButton" Content="Delete Bookmark" Grid.Column="2" Margin="0,4,0,0" Grid.Row="1" Click="deleteSchemeButton_Click" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
         <ListBox x:Name="schemeList" Margin="0,4,0,0" Grid.Row="3" Grid.ColumnSpan="3" MinHeight ="100" />
 
     </Grid>

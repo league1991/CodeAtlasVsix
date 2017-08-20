@@ -48,7 +48,7 @@
                     <local:SymbolWindow x:Name="symbolWindow"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Graph" Style="{DynamicResource TabItemStyle}">
+            <TabItem Header="Bookmark" Style="{DynamicResource TabItemStyle}">
                 <Grid MinHeight="10">
                     <local:SchemeWindow x:Name="schemeWindow"/>
                 </Grid>
@@ -68,7 +68,6 @@
             </Canvas>
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="42" FontFamily="Microsoft YaHei Light" Text="Wait..." Margin="95,70,89,66"/>
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FFE0E0E0" FontSize="42" FontFamily="Microsoft YaHei Light" Text="Wait..."/>
-
         </Grid>
     </Grid>
 </DockPanel>

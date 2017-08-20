@@ -6,6 +6,7 @@ using System.Threading;
 using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -24,6 +25,10 @@ namespace CodeAtlasVSIX
         Point m_backgroundMovePos = new Point();
         DateTime m_mouseMoveTime = new DateTime();
         public bool m_isMouseInView = true;
+
+        // Frame Selection
+        Point m_rectBeginPos = new Point();
+        bool m_isFrameSelection = false;
 
         public CodeView()
         {
@@ -92,9 +97,23 @@ namespace CodeAtlasVSIX
             m_isMouseDown = true;
             m_backgroundMovePos = e.GetPosition(background);
             var source = e.OriginalSource;
-            if (source == this)
+            if (source == this && e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
             {
-                UIManager.Instance().GetScene().SelectNothing();
+                if (!(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+                {
+                    UIManager.Instance().GetScene().SelectNothing();
+                }
+
+                var canvasTrans = canvas.RenderTransform as MatrixTransform;
+                m_isFrameSelection = true;
+                m_rectBeginPos = e.GetPosition(canvas);
+                selectionRect.Width = 10;
+                selectionRect.Height = 10;
+                selectionRect.StrokeThickness = 1 / canvasTrans.Matrix.M11;
+                Canvas.SetLeft(selectionRect, m_rectBeginPos.X);
+                Canvas.SetTop(selectionRect, m_rectBeginPos.Y);
+                selectionRect.Visibility = Visibility.Visible;
+                selectionRect.CaptureMouse();
             }
         }
 
@@ -103,12 +122,57 @@ namespace CodeAtlasVSIX
             var source = e.OriginalSource;
             m_isMouseDown = false;
             ReleaseMouseCapture();
+            if (m_isFrameSelection)
+            {
+                PerformFrameSelection();
+                m_isFrameSelection = false;
+                selectionRect.ReleaseMouseCapture();
+                selectionRect.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        void PerformFrameSelection()
+        {
+            bool isClean = !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl));
+            var scene = UIManager.Instance().GetScene();
+            var itemDict = scene.GetItemDict();
+            var itemKeyList = new List<string>();
+            var rectGeometry = selectionRect.RenderedGeometry.Clone();
+            var rectTrans = selectionRect.TransformToVisual(canvas) as MatrixTransform;
+            rectGeometry.Transform = rectTrans;
+            foreach (var itemPair in itemDict)
+            {
+                var itemGeo = itemPair.Value.RenderedGeometry.Clone();
+                var itemTrans = itemPair.Value.TransformToVisual(canvas) as MatrixTransform;
+                itemGeo.Transform = itemTrans;
+                var isect = rectGeometry.FillContainsWithDetail(itemGeo);
+                if (isect != IntersectionDetail.Empty && isect != IntersectionDetail.NotCalculated)
+                {
+                    itemKeyList.Add(itemPair.Key);
+                }
+            }
+            scene.SelectCodeItems(itemKeyList, isClean);
+
+            var edgeDict = scene.GetEdgeDict();
+            var edgeKeyList = new List<Tuple<string, string>>();
+            foreach (var itemPair in edgeDict)
+            {
+                var itemGeo = itemPair.Value.RenderedGeometry.Clone();
+                var itemTrans = itemPair.Value.TransformToVisual(canvas) as MatrixTransform;
+                itemGeo.Transform = itemTrans;
+                var isect = rectGeometry.FillContainsWithDetail(itemGeo);
+                if (isect != IntersectionDetail.Empty && isect != IntersectionDetail.NotCalculated)
+                {
+                    edgeKeyList.Add(itemPair.Key);
+                }
+            }
+            scene.SelectEdges(edgeKeyList, false);
         }
 
         private void background_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var source = e.OriginalSource;
-            if (source == this)
+            if (source == this || true)
             {
                 var point = e.GetPosition(background);
                 if (!Point.Equals(point, m_backgroundMovePos))
@@ -118,8 +182,7 @@ namespace CodeAtlasVSIX
                 
                 var scene = UIManager.Instance().GetScene();
                 var selectedItems = scene.SelectedItems();
-                if (selectedItems.Count == 0 &&
-                    e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+                if (e.RightButton == System.Windows.Input.MouseButtonState.Pressed)
                 {
                     CaptureMouse();
                     var element = this.canvas as UIElement;
@@ -134,6 +197,19 @@ namespace CodeAtlasVSIX
                     m_isMouseDown = false;
                 }
                 m_backgroundMovePos = point;
+            }
+            if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed && m_isFrameSelection)
+            {
+                var newPoint = e.GetPosition(canvas);
+                var delta = newPoint - m_rectBeginPos;
+                var rectWidth = Math.Abs(delta.X);
+                var rectHeight = Math.Abs(delta.Y);
+                var topPoint = delta.Y >= 0 ? m_rectBeginPos.Y : m_rectBeginPos.Y + delta.Y;
+                var leftPoint = delta.X >= 0 ? m_rectBeginPos.X : m_rectBeginPos.X + delta.X;
+                selectionRect.Width = rectWidth;
+                selectionRect.Height = rectHeight;
+                Canvas.SetLeft(selectionRect, leftPoint);
+                Canvas.SetTop(selectionRect, topPoint);
             }
         }
 
