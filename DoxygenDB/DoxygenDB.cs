@@ -1854,16 +1854,8 @@ namespace DoxygenDB
             return entity;
         }
 
-        public void _SearchRef(out List<Entity> refEntityList, out List<Reference> refRefList, string uniqueName, string refKindStr = "", string entKindStr = "", bool isUnique = true)
+        List<Tuple<RefKind, bool>> _GetRefKindList(string refKindStr)
         {
-            refEntityList = new List<Entity>();
-            refRefList = new List<Reference>();
-            if (!m_idInfoDict.ContainsKey(uniqueName))
-            {
-                return;
-            }
-            var thisItem = m_idInfoDict[uniqueName];
-
             // parse refKindStr
             var refKindList = new List<Tuple<RefKind, bool>>();
             if (refKindStr != "")
@@ -1886,13 +1878,11 @@ namespace DoxygenDB
             {
                 refKindList = new List<Tuple<RefKind, bool>>(IndexRefItem.s_kindDict.Values);
             }
-            int refKindBit = 0;
-            foreach (var item in refKindList)
-            {
-                refKindBit |= (int)item.Item1;
-            }
+            return refKindList;
+        }
 
-            // parse entKindStr
+        List<EntKind> _GetEntityKindList(string entKindStr)
+        {
             var entKindList = new List<EntKind>();
             if (entKindStr != "")
             {
@@ -1910,6 +1900,29 @@ namespace DoxygenDB
                     entKindList.Add(kind);
                 }
             }
+            return entKindList;
+        }
+
+        void _SearchRef(out List<Entity> refEntityList, out List<Reference> refRefList, string uniqueName, string refKindStr = "", string entKindStr = "", bool isUnique = true)
+        {
+            refEntityList = new List<Entity>();
+            refRefList = new List<Reference>();
+            if (!m_idInfoDict.ContainsKey(uniqueName))
+            {
+                return;
+            }
+            var thisItem = m_idInfoDict[uniqueName];
+
+            // parse refKindStr
+            var refKindList = _GetRefKindList(refKindStr);
+            int refKindBit = 0;
+            foreach (var item in refKindList)
+            {
+                refKindBit |= (int)item.Item1;
+            }
+
+            // parse entKindStr
+            var entKindList = _GetEntityKindList(entKindStr);
 
             // build reference link
             var compoundId = uniqueName;
