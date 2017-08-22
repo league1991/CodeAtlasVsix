@@ -877,12 +877,6 @@ namespace CodeAtlasVSIX
             }
             else if(m_kind == DoxygenDB.EntKind.CLASS)
             {
-                var rect = new RectangleGeometry(new Rect(new Point(-r, -r), new Point(r, r)));
-                m_geometry.Children.Add(rect);
-                m_highLightGeometry = rect;
-            }
-            else if (m_kind == DoxygenDB.EntKind.FILE)
-            {
                 var figure = new PathFigure();
                 figure.StartPoint = new Point(r, 0.0);
                 figure.Segments.Add(new LineSegment(new Point(r * 0.5, r * 0.866), true));
@@ -896,6 +890,12 @@ namespace CodeAtlasVSIX
                 pathGeo.Figures.Add(figure);
                 m_geometry.Children.Add(pathGeo);
                 m_highLightGeometry = pathGeo;
+            }
+            else if (m_kind == DoxygenDB.EntKind.FILE)
+            {
+                var rect = new RectangleGeometry(new Rect(new Point(-r, -r), new Point(r, r)));
+                m_geometry.Children.Add(rect);
+                m_highLightGeometry = rect;
             }
             else
             {
