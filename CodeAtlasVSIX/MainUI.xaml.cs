@@ -261,7 +261,8 @@ namespace CodeAtlasVSIX
             if (!searched)
             {
                 var fileName = doc.Name;
-                SearchAndAddToScene(fileName, "file", "", 0);
+                var fullPath = doc.FullName.Replace("\\","/");
+                SearchAndAddToScene(fileName, "file", fullPath, 0);
             }
         }
 
