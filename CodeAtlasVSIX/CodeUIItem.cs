@@ -879,11 +879,9 @@ namespace CodeAtlasVSIX
             {
                 var figure = new PathFigure();
                 figure.StartPoint = new Point(r, 0.0);
-                figure.Segments.Add(new LineSegment(new Point(r * 0.5, r * 0.866), true));
-                figure.Segments.Add(new LineSegment(new Point(r * -0.5, r * 0.866), true));
-                figure.Segments.Add(new LineSegment(new Point(r * -1, 0.0), true));
-                figure.Segments.Add(new LineSegment(new Point(r * -0.5, r * -0.866), true));
-                figure.Segments.Add(new LineSegment(new Point(r * 0.5, r * -0.866), true));
+                figure.Segments.Add(new LineSegment(new Point(0.0, r), true));
+                figure.Segments.Add(new LineSegment(new Point(-r, 0.0), true));
+                figure.Segments.Add(new LineSegment(new Point(0.0, -r), true));
                 figure.IsClosed = true;
                 figure.IsFilled = true;
                 var pathGeo = new PathGeometry();
@@ -897,18 +895,48 @@ namespace CodeAtlasVSIX
                 m_geometry.Children.Add(rect);
                 m_highLightGeometry = rect;
             }
+            else if (m_kind == DoxygenDB.EntKind.DIR)
+            {
+                var figure = new PathFigure();
+                figure.StartPoint = new Point(r, r);
+                figure.Segments.Add(new LineSegment(new Point(-r, r), true));
+                figure.Segments.Add(new LineSegment(new Point(-r, -r*0.6), true));
+                figure.Segments.Add(new LineSegment(new Point(-r*0.8, -r), true));
+                figure.Segments.Add(new LineSegment(new Point(r*0.2,-r), true));
+                figure.Segments.Add(new LineSegment(new Point(r*0.4,-r*0.6), true));
+                figure.Segments.Add(new LineSegment(new Point(r, -r * 0.6), true));
+                figure.IsClosed = true;
+                figure.IsFilled = true;
+                var pathGeo = new PathGeometry();
+                pathGeo.Figures.Add(figure);
+                m_geometry.Children.Add(pathGeo);
+                m_highLightGeometry = pathGeo;
+            }
             else
             {
                 float w = 3.0f;
-                var rect = new RectangleGeometry(new Rect(new Point(-w, -w), new Point(w, w)));
-                var trans = new MatrixTransform();
-                var mat = new Matrix();
-                mat.RotateAtPrepend(45.0,0.0,0.0);
-                trans.Matrix = mat;
-                rect.Transform = trans;
-                m_geometry.Children.Add(rect);
-                m_highLightGeometry = rect;
-                this.Fill = new SolidColorBrush(Color.FromArgb(150, 255, 255, 255));
+
+                var pathGeo = new PathGeometry();
+                var figure = new PathFigure();
+                figure.StartPoint = new Point(w, w);
+                figure.Segments.Add(new LineSegment(new Point(-w, -w), true));
+                figure.IsClosed = false;
+                figure.IsFilled = false;
+                pathGeo.Figures.Add(figure);
+
+                figure = new PathFigure();
+                figure.StartPoint = new Point(w, -w);
+                figure.Segments.Add(new LineSegment(new Point(-w, w), true));
+                figure.IsClosed = false;
+                figure.IsFilled = false;
+                pathGeo.Figures.Add(figure);
+
+                var outlinePen = new Pen();
+                outlinePen.Thickness = 2.0;
+                outlinePen.LineJoin = PenLineJoin.Round;
+                pathGeo = pathGeo.GetWidenedPathGeometry(outlinePen).GetOutlinedPathGeometry();
+                m_geometry.Children.Add(pathGeo);
+                m_highLightGeometry = pathGeo;
             }
         }
 
