@@ -1292,6 +1292,14 @@ namespace CodeAtlasVSIX
                 var metricLine = metricRes["CountLine"].m_int;
                 customData["lines"] = metricLine;
             }
+            if (metricRes.ContainsKey("nFile"))
+            {
+                customData["nFile"] = metricRes["nFile"].m_int;
+            }
+            if (metricRes.ContainsKey("nDir"))
+            {
+                customData["nDir"] = metricRes["nDir"].m_int;
+            }
 
             var kindStr = entity.KindName().ToLower();
 
@@ -1299,13 +1307,6 @@ namespace CodeAtlasVSIX
             if (kindStr.Contains("function") || kindStr.Contains("method"))
             {
                 kind = DoxygenDB.EntKind.FUNCTION;
-                // Find caller and callee count
-                //var callerList = new List<DoxygenDB.Entity>();
-                //var callerRefList = new List<DoxygenDB.Reference>();
-                //var calleeList = new List<DoxygenDB.Entity>();
-                //var calleeRefList = new List<DoxygenDB.Reference>();
-                //dbObj.SearchRefEntity(out callerList, out callerRefList, srcUniqueName, "callby", "function, method", true);
-                //dbObj.SearchRefEntity(out calleeList, out calleeRefList, srcUniqueName, "call", "function, method", true);
                 customData.Add("nCaller", metricRes["nCaller"].m_int);
                 customData.Add("nCallee", metricRes["nCallee"].m_int);
             }

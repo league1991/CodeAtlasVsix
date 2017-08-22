@@ -372,7 +372,12 @@ namespace DoxygenDB
         {
             m_id = id;
             m_shortName = name;
-            int idx = m_shortName.LastIndexOf(':');
+            int idx = m_shortName.LastIndexOf("::");
+            if (idx != -1 && idx < m_shortName.Length - 1)
+            {
+                m_shortName = m_shortName.Substring(idx + 2);
+            }
+            idx = m_shortName.LastIndexOf("/");
             if (idx != -1 && idx < m_shortName.Length - 1)
             {
                 m_shortName = m_shortName.Substring(idx + 1);
@@ -1461,6 +1466,8 @@ namespace DoxygenDB
                 var id = element.GetAttribute("id", "");
                 var childrenIter = element.SelectChildren(XPathNodeType.Element);
                 int lastLineNo = -1;
+                int nInnerDir = 0;
+                int nInnerFile = 0;
                 while (childrenIter.MoveNext())
                 {
                     var elementChild = childrenIter.Current;
@@ -1472,6 +1479,14 @@ namespace DoxygenDB
                     else if (elementChild.Name == "location")
                     {
                         metric = _ParseLocationDict(elementChild);
+                    }
+                    else if (elementChild.Name == "innerfile")
+                    {
+                        nInnerFile++;
+                    }
+                    else if (elementChild.Name == "innerdir")
+                    {
+                        nInnerDir++;
                     }
                     else if (elementChild.Name == "programlisting")
                     {
@@ -1489,6 +1504,15 @@ namespace DoxygenDB
                     metric["CountLine"] = new Variant(lastLineNo);
                     metric["file"] = metric["declFile"];
                     metric["lineEnd"] = metric["CountLine"];
+                }
+                if (kind == "file")
+                {
+                    longName = metric["declFile"].m_string;
+                }
+                else if (kind == "dir")
+                {
+                    metric["nFile"] = new Variant(nInnerFile);
+                    metric["nDir"] = new Variant(nInnerDir);
                 }
                 return new Entity(id, name, longName, kind, metric);
             }
@@ -1930,14 +1954,30 @@ namespace DoxygenDB
             {
                 compoundId = m_idToCompoundDict[uniqueName];
             }
-            var t0 = DateTime.Now;
             _ReadRef(uniqueName, refKindBit);
-            var t1 = DateTime.Now;
-            //Console.WriteLine("_ReadRef " + (t1 - t0).TotalMilliseconds.ToString());
+
+            var thisEntity = SearchFromUniqueName(uniqueName);
+            if (thisItem.m_kind == EntKind.FILE || thisItem.m_kind == EntKind.DIR)
+            {
+                var location = thisEntity.Longname();
+                var dirIdx = location.LastIndexOf("/");
+                if (dirIdx != -1)
+                {
+                    var dirName = location.Substring(0, dirIdx);
+                    var ents = Search(dirName, "dir");
+                    foreach (var entity in ents)
+                    {
+                        if (entity.m_longName == dirName)
+                        {
+                            _ReadRef(entity.m_id);
+                            break;
+                        }
+                    }
+                }
+            }
 
             // find references
             var refs = thisItem.GetRefItemList();
-            var thisEntity = SearchFromUniqueName(uniqueName);
             foreach (var refObj in refs)
             {
                 var otherId = refObj.m_srcId;

@@ -110,6 +110,11 @@ namespace CodeAtlasVSIX
                 m_customData["callerR"] = new Variant(GetCallerRadius(nCaller));
                 m_customData["calleeR"] = new Variant(GetCallerRadius(nCallee));
             }
+            else if (m_kind == DoxygenDB.EntKind.DIR)
+            {
+                m_customData["nDir"] = new Variant((int)customData["nDir"]);
+                m_customData["nFile"] = new Variant((int)customData["nFile"]);
+            }
 
             m_color = (Color)customData["color"];
             if (m_kind == DoxygenDB.EntKind.FUNCTION || m_kind == DoxygenDB.EntKind.VARIABLE)
@@ -494,6 +499,12 @@ namespace CodeAtlasVSIX
             else if (m_kind == DoxygenDB.EntKind.VARIABLE)
             {
                 r = 5.0;
+            }
+            else if (m_kind == DoxygenDB.EntKind.DIR)
+            {
+                int nDir = m_customData["nDir"].m_int;
+                int nFile = m_customData["nFile"].m_int;
+                r = Math.Pow((double)(nDir * 5 + nFile * 2 + 1), 0.3) * 2.5;
             }
             else
             {
