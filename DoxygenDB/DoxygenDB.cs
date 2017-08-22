@@ -97,10 +97,10 @@ namespace DoxygenDB
         public IndexItem(string name, string kindStr, string id)
         {
             m_name = name;
-            int idx = m_name.LastIndexOf(':');
+            int idx = m_name.LastIndexOf("::");
             if (idx != -1 && idx < m_name.Length - 1)
             {
-                m_name = m_name.Substring(idx + 1);
+                m_name = m_name.Substring(idx + 2);
             }
             m_id = id;
             m_kind = s_kindDict[kindStr];
@@ -1683,6 +1683,19 @@ namespace DoxygenDB
         public void OnOpen()
         {
             // TODO: Add code
+        }
+
+        static public EntKind NameToKind(string name)
+        {
+            var nameLower = name.ToLower();
+            foreach (var item in IndexItem.s_kindDict)
+            {
+                if (item.Key.ToLower().Contains(nameLower))
+                {
+                    return item.Value;
+                }
+            }
+            return EntKind.UNKNOWN;
         }
 
         public List<Entity> Search(string name, string kindString = "")

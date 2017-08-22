@@ -1322,6 +1322,10 @@ namespace CodeAtlasVSIX
             {
                 kind = DoxygenDB.EntKind.FILE;
             }
+            else
+            {
+                kind = DoxygenDB.DoxygenDB.NameToKind(kindStr);
+            }
             customData["kind"] = kind;
 
             customData["color"] = Color.FromRgb(195, 195, 195);
