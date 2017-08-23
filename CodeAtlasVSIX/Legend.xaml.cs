@@ -47,11 +47,7 @@ namespace CodeAtlasVSIX
                 var item = itemPair.Value;
                 if (item.IsSelected || item.m_isConnectedToFocusNode)
                 {
-                    var cname = item.GetClassName();
-                    if (cname == "")
-                    {
-                        cname = "globals";
-                    }
+                    var cname = item.GetLegendName();
                     var color = item.GetColor();
 
                     var formattedText = new FormattedText(cname,

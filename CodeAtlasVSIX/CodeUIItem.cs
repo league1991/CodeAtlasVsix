@@ -100,6 +100,7 @@ namespace CodeAtlasVSIX
 
             // custom data
             m_customData = new Dictionary<string, Variant>();
+            m_color = (Color)customData["color"];
             if (m_kind == DoxygenDB.EntKind.FUNCTION)
             {
                 // Find caller and callee count
@@ -114,9 +115,13 @@ namespace CodeAtlasVSIX
             {
                 m_customData["nDir"] = new Variant((int)customData["nDir"]);
                 m_customData["nFile"] = new Variant((int)customData["nFile"]);
+                m_color = Color.FromRgb(232, 184, 38);
+            }
+            else if(m_kind == DoxygenDB.EntKind.FILE)
+            {
+                m_color = Color.FromRgb(185,220,227);
             }
 
-            m_color = (Color)customData["color"];
             if (m_kind == DoxygenDB.EntKind.FUNCTION || m_kind == DoxygenDB.EntKind.VARIABLE)
             {
                 m_customData["hasDef"] = new Variant((int)customData["hasDef"]);
@@ -210,15 +215,23 @@ namespace CodeAtlasVSIX
             return m_customData[key];
         }
 
-        public string GetClassName()
+        public string GetLegendName()
         {
             if (m_kind == DoxygenDB.EntKind.CLASS)
             {
                 return m_name;
             }
+            if (m_kind == DoxygenDB.EntKind.DIR)
+            {
+                return "[ directory ]";
+            }
+            if (m_kind == DoxygenDB.EntKind.FILE)
+            {
+                return "[ file ]";
+            }
             if (!m_customData.ContainsKey("className"))
             {
-                return "";
+                return "[ globals ]";
             }
             return m_customData["className"].m_string;
         }
