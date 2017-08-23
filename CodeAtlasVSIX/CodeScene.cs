@@ -45,7 +45,8 @@ namespace CodeAtlasVSIX
         List<string> m_curValidScheme = new List<string>();
         List<Color> m_curValidSchemeColor = new List<Color>();
         CodeView m_view = null;
-        
+        Dictionary<string, string> m_customExtension = new Dictionary<string, string>();
+
         // Thread
         SceneUpdateThread m_updateThread = null;
         object m_lockObj = new object();
@@ -199,6 +200,19 @@ namespace CodeAtlasVSIX
                 Logger.Debug("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
                 ReleaseLock();
 
+                // extension
+                if (sceneData.ContainsKey("extension"))
+                {
+                    var extensionList = sceneData["extension"] as ArrayList;
+                    foreach (var extensionPair in extensionList)
+                    {
+                        var extensionPairList = extensionPair as ArrayList;
+                        var ext = extensionPairList[0] as string;
+                        var lang = extensionPairList[1] as string;
+                        m_customExtension[ext] = lang;
+                    }
+                }
+
                 // code item
                 var codeItemList = sceneData["codeItem"] as ArrayList;
                 var uniqueNameList = new List<string>();
@@ -287,6 +301,7 @@ namespace CodeAtlasVSIX
             m_scheme = new Dictionary<string, SchemeData>();
             m_curValidScheme = new List<string>();
             m_curValidSchemeColor = new List<Color>();
+            m_customExtension = new Dictionary<string, string>();
 
             ReleaseLock();
             
@@ -333,6 +348,12 @@ namespace CodeAtlasVSIX
                 };
                 scheme[schemeItem.Key] = schemeData;
             }
+            
+            var extensionList = new List<List<string>>();
+            foreach (var extensionItem in m_customExtension)
+            {
+                extensionList.Add(new List<string> { extensionItem.Key, extensionItem.Value });
+            }
 
             var jsonDict = new Dictionary<string, object> {
                 {"stopItem", m_stopItem},
@@ -340,7 +361,8 @@ namespace CodeAtlasVSIX
                 {"codeData", m_itemDataDict},
                 {"edgeItem", edgeItemList },
                 {"edgeData", edgeDataList },
-                {"scheme", scheme }
+                {"scheme", scheme },
+                {"extension", extensionList},
             };
 
             try
@@ -1200,6 +1222,26 @@ namespace CodeAtlasVSIX
                 m_waitingItemMove = false;
             }, DispatcherPriority.Send);
         }
+
+        #region Custom Extension
+        public void AddCustomExtension(string extension, string language)
+        {
+            m_customExtension[extension] = language;
+        }
+
+        public void DeleteCustomExtension(string extension)
+        {
+            if (m_customExtension.ContainsKey(extension))
+            {
+                m_customExtension.Remove(extension);
+            }
+        }
+
+        public Dictionary<string,string> GetCustomExtensionDict()
+        {
+            return m_customExtension;
+        }
+        #endregion
 
         #region ThreadSync
         public void AcquireLock()

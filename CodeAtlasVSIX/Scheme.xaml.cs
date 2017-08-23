@@ -151,7 +151,7 @@ namespace CodeAtlasVSIX
 
                 CheckAndAddFormattedText(i);
                 dc.DrawText(m_keyText[i], new Point(x, y-2));
-                x += m_formatWidth;
+                x += m_formatWidth + m_lineSpace;
 
                 dc.DrawText(textObj,      new Point(x, y-2));
                 y += m_lineHeight + m_lineSpace;

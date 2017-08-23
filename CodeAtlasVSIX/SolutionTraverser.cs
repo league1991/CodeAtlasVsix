@@ -153,6 +153,19 @@ namespace CodeAtlasVSIX
         {
         }
 
+        public void SetCustomExtension(Dictionary<string, string> extDict)
+        {
+            foreach (var item in extDict)
+            {
+                string ext = item.Key;
+                if (!ext.StartsWith("."))
+                {
+                    ext = "." + ext;
+                }
+                m_extensionList.Add(ext);
+            }
+        }
+
         public void SetToSelectedProjects()
         {
             m_onlySelectedProjects = true;

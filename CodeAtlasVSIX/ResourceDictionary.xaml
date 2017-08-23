@@ -34,10 +34,6 @@
         <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.FileTabBorderKey}}"/>
     </Style>
 
-    <!--<Style TargetType="RadioButton">
-        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
-    </Style>-->
 
     <Style TargetType="GridSplitter" x:Key="GridSplitterStyle">
         <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>
@@ -138,4 +134,11 @@
 
     <Style TargetType="ListBox" x:Key="ListBoxStyle" BasedOn="{StaticResource ResourceKey={x:Static vsfx:VsResourceKeys.ThemedDialogListBoxStyleKey}}">
     </Style>-->
+    <Style TargetType="ComboBox" BasedOn="{StaticResource ResourceKey={x:Static vsfx:VsResourceKeys.ComboBoxStyleKey}}">
+    </Style>
+
+    <Style TargetType="ComboBoxItem">
+        <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.MenuTextKey}}"/>
+    </Style>
 </ResourceDictionary>

@@ -631,6 +631,8 @@ namespace CodeAtlasVSIX
                 {
                     traverser.SetToSelectedProjects();
                 }
+                var scene = UIManager.Instance().GetScene();
+                traverser.SetCustomExtension(scene.GetCustomExtensionDict());
                 traverser.Traverse();
                 var dirList = traverser.GetDirectoryList();
                 var solutionFolder = traverser.GetSolutionFolder();
@@ -668,6 +670,7 @@ namespace CodeAtlasVSIX
                 config.m_defines = traverser.GetAllDefines();
                 config.m_useClang = useClang;
                 config.m_mainLanguage = traverser.GetMainLanguage();
+                config.m_customExt = scene.GetCustomExtensionDict();
                 DBManager.Instance().CloseDB();
 
                 System.Threading.Thread analysisThread = new System.Threading.Thread((ThreadStart)delegate

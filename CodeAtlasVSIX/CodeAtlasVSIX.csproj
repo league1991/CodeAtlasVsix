@@ -51,6 +51,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AnalysisWindow.xaml.cs">
+      <DependentUpon>AnalysisWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CodeAtlas.cs" />
     <Compile Include="CodeAtlasCommand.cs" />
     <Compile Include="CodeAtlasPackage.cs" />
@@ -252,6 +255,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="AnalysisWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

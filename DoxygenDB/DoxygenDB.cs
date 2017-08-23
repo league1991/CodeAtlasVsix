@@ -458,6 +458,7 @@ namespace DoxygenDB
         public List<string> m_defines = new List<string>();
         public bool m_useClang = false;
         public string m_mainLanguage = "";
+        public Dictionary<string, string> m_customExt = new Dictionary<string, string>();
     }
 
     public class CodeBlock
@@ -711,6 +712,22 @@ namespace DoxygenDB
                 metaDict["OPTIMIZE_OUTPUT_JAVA"] = new List<string> { "YES" };
             }
             // metaDict["INPUT_ENCODING"] = new List<string> { "iso-8859-1" };
+
+            var extensionList = new List<string>();
+            List<string> filePattern = new List<string> {
+                "*.c", "*.cc", "*.cxx", "*.cpp", "*.c++", "*.java", "*.ii", "*.ixx",
+                "*.ipp", "*.i++", "*.inl", "*.idl", "*.ddl", "*.odl", "*.h", "*.hh",
+                "*.hxx", "*.hpp", "*.h++", "*.cs", "*.d", "*.php", "*.php4", "*.php5",
+                "*.phtml", "*.inc", "*.m", "*.markdown", "*.md", "*.mm", "*.dox",
+                "*.py", "*.pyw", "*.f90", "*.f95", "*.f03", "*.f08", "*.f",
+                "*.for", "*.tcl", "*.vhd", "*.vhdl", "*.ucf", "*.qsf"};
+            foreach (var item in config.m_customExt)
+            {
+                extensionList.Add(item.Key + "=" + item.Value);
+                filePattern.Add("*." + item.Key);
+            }
+            metaDict["EXTENSION_MAPPING"] = extensionList;
+            metaDict["FILE_PATTERNS"] = filePattern;
 
             _WriteDoxyfile(configPath, metaDict);
             return _AnalyseDoxyfile(configPath);
