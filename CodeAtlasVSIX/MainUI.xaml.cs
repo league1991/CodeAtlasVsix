@@ -192,6 +192,10 @@ namespace CodeAtlasVSIX
             {
                 searchWindow.OnSearch();
             });
+            analysisWindow.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                analysisWindow.UpdateExtensionList();
+            });
         }
 
         public void OnShowInAtlas(object sender, ExecutedRoutedEventArgs e)
