@@ -8,8 +8,8 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50*"/>
-            <RowDefinition Height="50*"/>
+            <RowDefinition Height="40*"/>
+            <RowDefinition Height="60*"/>
         </Grid.RowDefinitions>
         <GroupBox x:Name="groupBox" Header="Symbol Comment" Style="{DynamicResource GroupBoxStyle}" Padding="0" BorderThickness="0">
             <Grid>

@@ -734,5 +734,38 @@ namespace CodeAtlasVSIX
         {
             return dynamicNavigationButton.IsChecked == true;
         }
+
+        private void layoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            bool isVertical = layoutGrid.RowDefinitions.Count != 0;
+            if (isVertical)
+            {
+                layoutGrid.RowDefinitions.Clear();
+                layoutGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(70, GridUnitType.Star) });
+                layoutGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(5.0) });
+                layoutGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(30, GridUnitType.Star) });
+                splitter.Width = 5;
+                splitter.Height = System.Double.NaN;
+                Grid.SetRow(splitter, 0);
+                Grid.SetColumn(splitter, 1);
+
+                Grid.SetRow(tabControl, 0);
+                Grid.SetColumn(tabControl, 2);
+            }
+            else
+            {
+                layoutGrid.ColumnDefinitions.Clear();
+                layoutGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(70, GridUnitType.Star) });
+                layoutGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(5.0) });
+                layoutGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(30, GridUnitType.Star) });
+                splitter.Height = 5;
+                splitter.Width = System.Double.NaN;
+                Grid.SetRow(splitter, 1);
+                Grid.SetColumn(splitter, 0);
+
+                Grid.SetRow(tabControl, 2);
+                Grid.SetColumn(tabControl, 0);
+            }
+        }
     }
 }
