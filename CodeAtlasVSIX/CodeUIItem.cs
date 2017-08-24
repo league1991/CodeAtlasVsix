@@ -774,6 +774,7 @@ namespace CodeAtlasVSIX
         void MouseDoubleClickCallback(object sender, MouseEventArgs args)
         {
             var scene = UIManager.Instance().GetScene();
+            scene.SelectCodeItem(this.m_uniqueName);
             UIManager.Instance().GetScene().ShowInEditor();
         }
 
