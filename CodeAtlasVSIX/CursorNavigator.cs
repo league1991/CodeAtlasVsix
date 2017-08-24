@@ -255,18 +255,7 @@ namespace CodeAtlasVSIX
         void OpenFile(string fileName)
         {
             var filePath = fileName.Replace('/', '\\');
-            //if (m_dte.get_IsOpenFile(EnvDTE.Constants.vsViewKindCode, filePath))     
-            //{
-            //    Document doc = m_dte.Documents.Item(filePath);
-            //    doc.Activate();
-            //}
-            //else
-            //{
-            //    Window win = m_dte.OpenFile(EnvDTE.Constants.vsViewKindCode, filePath);
-            //    win.Visible = true;
-            //    win.SetFocus();
-            //}
-            if (m_dte.ItemOperations.IsFileOpen(fileName))
+            if (m_dte.get_IsOpenFile(EnvDTE.Constants.vsViewKindCode, filePath))
             {
                 Document doc = m_dte.Documents.Item(filePath);
                 doc.Activate();
@@ -278,8 +267,11 @@ namespace CodeAtlasVSIX
             //    win.Close();
 
             var window = m_dte.ItemOperations.OpenFile(fileName, EnvDTE.Constants.vsViewKindCode);
-            window.Visible = true;
-            window.Activate();
+            if (window != null)
+            {
+                window.Visible = true;
+                window.Activate();
+            }
         }
 
         FileCodeModel GetFileCodeModel(Document document)

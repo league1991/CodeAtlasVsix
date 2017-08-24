@@ -22,6 +22,8 @@
             <!--<MenuItem x:Name="AnalyseSolutionButton" Header="Analyse Solution" Click="AnalyseSolutionButton_Click" />-->
             <MenuItem x:Name="FastAnalyseSolutionButton" Header="Analyse Solution" Click="OnFastAnalyseSolutionButton" />
             <MenuItem x:Name="FastAnalyseProjectsButton" Header="Analyse Selected Projects" Click="OnFastAnalyseProjectsButton"/>
+        </MenuItem>
+        <MenuItem x:Name="FileButton" Header="File" >
             <MenuItem x:Name="OpenButton" Header="Open Analysis Result" Click="OnOpen" />
             <MenuItem x:Name="CloseButton" Header="Close Analysis Result" Click="OnClose" />
         </MenuItem>

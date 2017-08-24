@@ -25,8 +25,8 @@
         <Label x:Name="label1" Content="Language" Margin="0" Grid.Column="2" HorizontalAlignment="Left"/>
         <ComboBox x:Name="languageEdit" Margin="0,4,0,0" Grid.Column="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" SelectedIndex="0" >
         </ComboBox>
-        <Button x:Name="addExtensionButton" Content="Add Extension" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,4,0,0" Click="addExtensionButton_Click" />
-        <Button x:Name="deleteExtensionButton" Content="Delete Extension" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="deleteExtensionButton_Click" />
+        <Button x:Name="addExtensionButton" Content="Add Custom Extension" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,4,0,0" Click="addExtensionButton_Click" />
+        <Button x:Name="deleteExtensionButton" Content="Delete Custom Extension" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="deleteExtensionButton_Click" />
         <Button x:Name="analyseSolutionButton" Content="Analyse Solution" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="analyseSolutionButton_Click" />
         <Button x:Name="analyseSelectedProjButton" Content="Analyse Selected Projects" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="analyseSelectedProjButton_Click" />
         <ListBox x:Name="resultList" Margin="0,4,0,0" Grid.Row="3" Grid.ColumnSpan="4" MinHeight="100"/>
