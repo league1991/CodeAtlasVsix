@@ -78,7 +78,7 @@
     </Style>
 
     <!-- Separator -->
-    <Style TargetType="{x:Type Separator}" x:Key="SeparatorStyle">
+    <Style TargetType="{x:Type Separator}">
         <Setter Property="Height" Value="1" />
         <Setter Property="Background" Value="#0f3c5a" />
         <Setter Property="Template">
@@ -134,6 +134,7 @@
 
     <Style TargetType="ListBox" x:Key="ListBoxStyle" BasedOn="{StaticResource ResourceKey={x:Static vsfx:VsResourceKeys.ThemedDialogListBoxStyleKey}}">
     </Style>-->
+
     <Style TargetType="ComboBox" BasedOn="{StaticResource ResourceKey={x:Static vsfx:VsResourceKeys.ComboBoxStyleKey}}">
     </Style>
 

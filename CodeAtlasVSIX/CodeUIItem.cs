@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Microsoft.VisualStudio.Shell;
 
 namespace CodeAtlasVSIX
 {
@@ -62,6 +63,7 @@ namespace CodeAtlasVSIX
         Dictionary<string, Variant> m_customData;
         Color m_color = new Color();
         bool m_customEdgeMode = false;
+        bool m_interCustomEdgeMode = false;
         Geometry m_highLightGeometry = new EllipseGeometry();
         bool m_isInvalidating = false;
         static double s_textGap = 2.0;
@@ -700,17 +702,32 @@ namespace CodeAtlasVSIX
             }
         }
 
+        public void SetInteractiveCustomEdgeSourceMode(bool isCustomSource)
+        {
+            if (m_interCustomEdgeMode != isCustomSource)
+            {
+                m_interCustomEdgeMode = isCustomSource;
+                IsDirty = true;
+            }
+        }
+
         public bool GetCustomEdgeSourceMode()
         {
             return m_customEdgeMode;
         }
 
-        public void OnAddCustomEdge(object sender, ExecutedRoutedEventArgs e)
+        public void OnInteractiveAddCustomEdge(object sender, ExecutedRoutedEventArgs e)
         {
-            CaptureMouse();
-            SetCustomEdgeSourceMode(true);
+            // clear
             var scene = UIManager.Instance().GetScene();
-            scene.m_customEdgeSource = m_uniqueName;
+            var itemDict = scene.GetItemDict();
+            foreach (var item in itemDict)
+            {
+                item.Value.SetInteractiveCustomEdgeSourceMode(false);
+            }
+
+            CaptureMouse();
+            SetInteractiveCustomEdgeSourceMode(true);
         }
 
         void _AddContextMenuItem(ContextMenu context, string header, ExecutedRoutedEventHandler handler)
@@ -748,9 +765,9 @@ namespace CodeAtlasVSIX
             _AddContextMenuItem(context, "Delete and Ignore", mainUI.OnDeleteSelectedItemsAndAddToStop);
             _AddContextMenuItem(context, "Delete Nearby Items", mainUI.OnDeleteNearbyItems);
             _AddContextMenuItem(context, "Add Similar Items", mainUI.OnAddSimilarCodeItem);
-            //_AddContextMenuItem(context, "Add Custom Edge", this.OnAddCustomEdge);
             _AddContextMenuItem(context, "Mark As Custom Edge Source", mainUI.OnBeginCustomEdge);
             _AddContextMenuItem(context, "Connect Custom Edge From Source", mainUI.OnEndCustomEdge);
+            _AddContextMenuItem(context, "Interactive Add Custom Edge", this.OnInteractiveAddCustomEdge);
             this.ContextMenu = context;
         }
 
@@ -774,7 +791,7 @@ namespace CodeAtlasVSIX
                 lastMove = p2;
                 m_deselectOnUp = false;
             }
-            if (m_customEdgeMode)
+            if (m_customEdgeMode || m_interCustomEdgeMode)
             {
                 IsDirty = true;
             }
@@ -782,6 +799,7 @@ namespace CodeAtlasVSIX
 
         void MouseUpCallback(object sender, MouseEventArgs args)
         {
+            var scene = UIManager.Instance().GetScene();
             if (dragStart != null)
             {
                 if (m_deselectOnUp)
@@ -789,24 +807,22 @@ namespace CodeAtlasVSIX
                     m_deselectOnUp = false;
                     // Mouse doesn't move
                     bool isClean = !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl));
-                    var scene = UIManager.Instance().GetScene();
                     scene.DeselectCodeItem(this.m_uniqueName, isClean);
                 }
             }
             dragStart = null;
             ReleaseMouseCapture();
-
-            //var scene = UIManager.Instance().GetScene();
-            //if (m_customEdgeMode)
-            //{
-            //    // create custom edge
-            //    var uiItem = Mouse.DirectlyOver as CodeUIItem;
-            //    if (uiItem != null && uiItem != this)
-            //    {
-            //        scene.DoAddCustomEdge(this.m_uniqueName, uiItem.GetUniqueName());
-            //    }
-            //    SetCustomEdgeSourceMode(false);
-            //}
+            
+            if (m_interCustomEdgeMode)
+            {
+                // create custom edge
+                var uiItem = Mouse.DirectlyOver as CodeUIItem;
+                if (uiItem != null && uiItem != this)
+                {
+                    scene.DoAddCustomEdge(this.m_uniqueName, uiItem.GetUniqueName());
+                }
+                SetInteractiveCustomEdgeSourceMode(false);
+            }
         }
 
         void MouseEnterCallback(object sender, MouseEventArgs e)
@@ -1013,25 +1029,25 @@ namespace CodeAtlasVSIX
                 m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromArgb(alpha, 207, 239,109)));
                 drawingContext.DrawText(m_commentText, new Point(baseX, baseY));
             }
-            //if (m_customEdgeMode)
-            //{
-            //    var p0 = new Point(GetRightSlotOffset(), 0);
-            //    var p3 = Mouse.GetPosition(this);
-            //    var p1 = new Point(p0.X * 0.5 + p3.X * 0.5, p0.Y);
-            //    var p2 = new Point(p0.X * 0.5 + p3.X * 0.5, p3.Y);
+            if (m_interCustomEdgeMode)
+            {
+                var p0 = new Point(GetRightSlotOffset(), 0);
+                var p3 = Mouse.GetPosition(this);
+                var p1 = new Point(p0.X * 0.5 + p3.X * 0.5, p0.Y);
+                var p2 = new Point(p0.X * 0.5 + p3.X * 0.5, p3.Y);
 
-            //    var segment = new BezierSegment(p1, p2, p3, true);
-            //    var figure = new PathFigure();
-            //    figure.StartPoint = p0;
-            //    figure.Segments.Add(segment);
-            //    figure.IsClosed = false;
+                var segment = new BezierSegment(p1, p2, p3, true);
+                var figure = new PathFigure();
+                figure.StartPoint = p0;
+                figure.Segments.Add(segment);
+                figure.IsClosed = false;
 
-            //    var pathGeo = new PathGeometry();
-            //    pathGeo.Figures.Add(figure);
+                var pathGeo = new PathGeometry();
+                pathGeo.Figures.Add(figure);
 
-            //    var pen = new Pen(new SolidColorBrush(Color.FromArgb(100, 255, 255, 255)), 2);
-            //    drawingContext.DrawGeometry(Brushes.Transparent, pen, pathGeo);
-            //}
+                var pen = new Pen(new SolidColorBrush(Color.FromArgb(100, 255, 255, 255)), 2);
+                drawingContext.DrawGeometry(Brushes.Transparent, pen, pathGeo);
+            }
         }
     }
 }

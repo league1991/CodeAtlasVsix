@@ -366,6 +366,12 @@ namespace CodeAtlasVSIX
             context.Items.Add(menuItem);
         }
 
+        void _AddContextSeparator(ContextMenu context)
+        {
+            var menuItem = new Separator();
+            context.Items.Add(menuItem);
+        }
+
 
         void _BuildContextMenu()
         {
