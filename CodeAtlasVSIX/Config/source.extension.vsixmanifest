@@ -4,7 +4,7 @@
     <Name>CodeGraph</Name>
     <Author>Yaobin Ouyang</Author>
     <Version>1.0.2</Version>
-    <Description xml:space="preserve">A tool to show call graph, inheritance graph and variable usage graph.</Description>
+    <Description xml:space="preserve">A tool to show call graph, inheritance graph and variable usage graph for C/C++, C#, Python and Other Languages</Description>
     <Locale>1033</Locale>
     <License>License.txt</License>
     <Icon>Resources/logo.png</Icon>
