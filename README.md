@@ -119,3 +119,11 @@ Setup
 8. Next time when you open Visual Studio, you don't have to analyse the solution again, just click "Open Analysis Result" and choose a ".atlas" file. The file with a "solution" postfix is the analysis result (code database) for the whole solution.
 
 ![](https://github.com/league1991/CodeAtlasVsix/raw/master/githubCache/setup8.png) 
+
+Revision History
+--------
+#### 1.0.3
+* Add multiple selection.
+* Add file and directory search.
+* Add interactive custom edge mode.
+* Add custom file extension support.
