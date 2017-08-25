@@ -127,3 +127,5 @@ Revision History
 * Add file and directory search.
 * Add interactive custom edge mode.
 * Add custom file extension support.
+* Add horizontal/vertical UI layout.
+* Fix some bugs.
