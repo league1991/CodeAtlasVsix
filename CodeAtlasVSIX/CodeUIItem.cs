@@ -663,7 +663,7 @@ namespace CodeAtlasVSIX
             }
             else
             {
-                MouseClickCallback(sender, args);
+                //MouseClickCallback(sender, args);
                 MouseDoubleClickCallback(sender, args);
             }
         }
