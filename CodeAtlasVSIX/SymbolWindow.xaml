@@ -22,7 +22,7 @@
                     <ColumnDefinition Width="30*" MaxWidth="100"/>
                 </Grid.ColumnDefinitions>
                 <Label x:Name="symbolLabel" Content="" Margin="0,0,0,2" Grid.Row="0" Grid.ColumnSpan="2"/>
-                <TextBox x:Name="commentEdit" TextWrapping="Wrap" Margin="0" Grid.Row="1" MinHeight="50"/>
+                <TextBox x:Name="commentEdit" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" TextWrapping="Wrap" Margin="0" Grid.Row="1" MinHeight="50"/>
                 <Button x:Name="updateCommentButton" Content="Update" Margin="0" Grid.Row="1" Click="OnUpdateComment" Grid.Column="1" MinHeight="27" MinWidth="4"/>
             </Grid>
         </GroupBox>
