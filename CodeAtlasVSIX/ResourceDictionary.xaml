@@ -116,6 +116,10 @@
                             <Setter TargetName="bd" Property="Background" 
                                     Value="{DynamicResource {x:Static vsfx:VsBrushes.ButtonHighlightKey}}"/>
                         </Trigger>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Setter TargetName="bd" Property="Background" 
+                                    Value="{DynamicResource {x:Static vsfx:VsBrushes.ButtonHighlightKey}}"/>
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -133,10 +137,10 @@
     </Style>
 
     <Style TargetType="ListBox" x:Key="ListBoxStyle" BasedOn="{StaticResource ResourceKey={x:Static vsfx:VsResourceKeys.ThemedDialogListBoxStyleKey}}">
-    </Style>-->
+    </Style>
 
     <Style TargetType="ComboBox" BasedOn="{StaticResource ResourceKey={x:Static vsfx:VsResourceKeys.ComboBoxStyleKey}}">
-    </Style>
+    </Style>-->
 
     <Style TargetType="ComboBoxItem">
         <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}"/>

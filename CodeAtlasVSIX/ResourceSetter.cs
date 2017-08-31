@@ -42,7 +42,7 @@ namespace CodeAtlasVSIX
             res |= SetElementStyle(depObj as ListViewItem, VsResourceKeys.ThemedDialogListViewItemStyleKey);
             res |= SetElementStyle(depObj as ListBox, VsResourceKeys.ThemedDialogListBoxStyleKey);
             res |= SetElementStyle(depObj as RadioButton, VsResourceKeys.ThemedDialogRadioButtonStyleKey);
-            //res |= SetElementStyle(depObj as TabItem, VsResourceKeys.ButtonStyleKey);
+            res |= SetElementStyle(depObj as ComboBox, VsResourceKeys.ComboBoxStyleKey);
 
             foreach (object logicalChild in LogicalTreeHelper.GetChildren(depObj))
                 WalkDownLogicalTree(logicalChild);

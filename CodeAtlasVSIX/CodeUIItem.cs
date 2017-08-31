@@ -991,7 +991,8 @@ namespace CodeAtlasVSIX
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            byte alpha = (byte)((IsFading && !IsSelected) ? 120 : 255);
+            bool fading = IsFading && !IsSelected;
+            byte alpha = (byte)(fading ? 80 : 255);
             this.Fill.Opacity = (double)alpha / 255.0;
             // Draw highlight first
             if (m_customEdgeMode)
@@ -1027,7 +1028,8 @@ namespace CodeAtlasVSIX
                 baseX += 8;
                 m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromArgb(alpha, 10, 10, 10)));
                 drawingContext.DrawText(m_commentText, new Point(baseX + 0.8, baseY + 0.8));
-                m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromArgb(alpha, 207, 239,109)));
+                var commentColor = fading ? Color.FromArgb(alpha, 183,202,106) : Color.FromArgb(alpha, 207, 239, 109);
+                m_commentText.SetForegroundBrush(new SolidColorBrush(commentColor));
                 drawingContext.DrawText(m_commentText, new Point(baseX, baseY));
             }
             if (m_interCustomEdgeMode)

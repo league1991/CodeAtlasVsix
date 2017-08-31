@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:CodeAtlasVSIX"
              xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" Height="Auto" Focusable="True" >
+             d:DesignHeight="300" d:DesignWidth="400" Height="Auto" Focusable="True" >
 
     <DockPanel.Resources>
         <ResourceDictionary>
@@ -32,6 +32,7 @@
             <RadioButton x:Name="staticNavigationButton" Content="Static Navigation" Click="staticNavigationButton_Click"/>
         </MenuItem>
         <MenuItem x:Name="layoutButton" Header="Horizontal/Vertical" Click="layoutButton_Click" />
+        <MenuItem x:Name="autoFocusButton" Header="Auto Focus" IsCheckable="True" IsChecked="True" Click="autoFocusButton_Click"/>
     </Menu>
     <Grid x:Name="layoutGrid" Focusable="True">
         <Grid.RowDefinitions>

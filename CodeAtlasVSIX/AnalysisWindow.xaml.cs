@@ -37,7 +37,11 @@ namespace CodeAtlasVSIX
         public AnalysisWindow()
         {
             InitializeComponent();
+        }
 
+        public void InitLanguageOption()
+        {
+            languageEdit.Items.Clear();
             var langList = new List<string> {
                 "C++","Java","Javascript","C#",
                 "C","D","PHP","Objective-C","Python",
@@ -47,6 +51,7 @@ namespace CodeAtlasVSIX
             {
                 languageEdit.Items.Add(item);
             }
+
         }
 
         private void addExtensionButton_Click(object sender, RoutedEventArgs e)

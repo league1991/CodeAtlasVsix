@@ -25,6 +25,7 @@ namespace CodeAtlasVSIX
         Point m_backgroundMovePos = new Point();
         DateTime m_mouseMoveTime = new DateTime();
         public bool m_isMouseInView = true;
+        public bool m_isAutoFocus = true;
 
         // Frame Selection
         Point m_rectBeginPos = new Point();
@@ -57,10 +58,15 @@ namespace CodeAtlasVSIX
             transform.Matrix = matrix;
         }
 
+        public void SetAutoFocus(bool isAutoFocus)
+        {
+            m_isAutoFocus = isAutoFocus;
+        }
+
         public void MoveView(Point center)
         {
             bool shouldMove = !m_isMouseInView || (DateTime.Now - m_mouseMoveTime).TotalSeconds > 5;
-            if (!shouldMove)
+            if (!shouldMove || !m_isAutoFocus)
             {
                 return;
             }

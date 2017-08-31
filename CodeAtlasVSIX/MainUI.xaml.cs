@@ -41,6 +41,8 @@ namespace CodeAtlasVSIX
             ResourceSetter resMgr = new ResourceSetter(this);
             resMgr.SetStyle();
 
+            analysisWindow.InitLanguageOption();
+
             AddCommand(OnFindCallers, Key.C);
             AddCommand(OnFindCallees, Key.V);
             AddCommand(OnFindMembers, Key.M);
@@ -766,6 +768,11 @@ namespace CodeAtlasVSIX
                 Grid.SetRow(tabControl, 2);
                 Grid.SetColumn(tabControl, 0);
             }
+        }
+
+        private void autoFocusButton_Click(object sender, RoutedEventArgs e)
+        {
+            codeView.SetAutoFocus(autoFocusButton.IsChecked);
         }
     }
 }
