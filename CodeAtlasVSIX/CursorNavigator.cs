@@ -321,7 +321,7 @@ namespace CodeAtlasVSIX
             }
 
             var vcDocModel = docModel as VCFileCodeModel;
-            if (vcDocModel != null && false)
+            if (vcDocModel != null)
             {
                 var candidates = vcDocModel.CodeElementFromFullName(uiItem.GetLongName());
 
