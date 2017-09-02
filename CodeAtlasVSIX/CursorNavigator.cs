@@ -308,31 +308,49 @@ namespace CodeAtlasVSIX
             Logger.Debug("GetCodeElement:: get file code model " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
 
-            var vcDocModel = docModel as VCFileCodeModel;
-            if (vcDocModel != null)
+            var metric = uiItem.GetMetric();
+            int uiItemLine = -1;
+            var docName = document.Name.ToLower();
+            if (metric.ContainsKey("file") && metric["file"].m_string.ToLower().Contains(docName))
             {
-                t1 = DateTime.Now;
-                Logger.Debug("GetCodeElement:: vc file code model " + (t1 - t0).TotalMilliseconds.ToString());
-                t0 = t1;
+                uiItemLine = metric["line"].m_int;
+            }
+            else if (metric.ContainsKey("declFile") && metric["declFile"].m_string.ToLower().Contains(docName))
+            {
+                uiItemLine = metric["declLine"].m_int;
+            }
 
+            var vcDocModel = docModel as VCFileCodeModel;
+            if (vcDocModel != null && false)
+            {
                 var candidates = vcDocModel.CodeElementFromFullName(uiItem.GetLongName());
-
-                t1 = DateTime.Now;
-                Logger.Debug("GetCodeElement:: CodeElementFromFullName " + (t1 - t0).TotalMilliseconds.ToString());
-                t0 = t1;
 
                 if (candidates != null)
                 {
+                    var candidateList = new List<Tuple<CodeElement, int>>();
                     foreach (var item in candidates)
                     {
                         var candidate = item as CodeElement;
                         if (candidate != null)
                         {
-                            t1 = DateTime.Now;
-                            Logger.Debug("GetCodeElement:: return candidate " + (t1 - t0).TotalMilliseconds.ToString());
-                            t0 = t1;
-                            return candidate;
+                            int lineDist = int.MaxValue;
+                            var startLine = candidate.StartPoint.Line;
+                            var endLine = candidate.EndPoint.Line;
+                            if (uiItemLine != -1)
+                            {
+                                var startDist = Math.Abs(uiItemLine - startLine);
+                                var endDist = Math.Abs(uiItemLine - endLine);
+                                lineDist = startDist + endDist;
+                            }
+
+                            candidateList.Add(new Tuple<CodeElement, int>(candidate, lineDist));
                         }
+                    }
+
+                    candidateList.Sort((x, y) => (x.Item2.CompareTo(y.Item2)));
+                    if (candidateList.Count != 0)
+                    {
+                        return candidateList[0].Item1;
                     }
                 }
             }
@@ -340,7 +358,7 @@ namespace CodeAtlasVSIX
             var elements = docModel.CodeElements;
             // TraverseCodeElement(elements, 1);
             var elementsList = new List<CodeElements> { docModel.CodeElements };
-            var nameMatchList = new List<CodeElement>();
+            var nameMatchList = new List<Tuple<CodeElement, bool, int>>();
             while (elementsList.Count > 0)
             {
                 var curElements = elementsList[0];
@@ -354,6 +372,15 @@ namespace CodeAtlasVSIX
                     {
                         var eleName = element.Name;
                         var eleFullName = element.FullName;
+                        var eleStart = element.StartPoint.Line;
+                        var eleEnd = element.EndPoint.Line;
+                        var lineDist = int.MaxValue;
+                        if (uiItemLine != -1)
+                        {
+                            var startDist = Math.Abs(uiItemLine - eleStart);
+                            var endDist = Math.Abs(uiItemLine - eleEnd);
+                            lineDist = startDist + endDist;
+                        }
                         //var start = element.GetStartPoint(vsCMPart.vsCMPartBody);
                         //var end = element.GetEndPoint(vsCMPart.vsCMPartBody);
                         //var vcElement = element as VCCodeElement;
@@ -373,11 +400,11 @@ namespace CodeAtlasVSIX
                         if (eleFullName != null && uiItem.GetLongName().Contains(eleFullName) &&
                             IsMatchPair(uiItem.GetKind(), element.Kind))
                         {
-                            return element;
+                            nameMatchList.Add(new Tuple<CodeElement, bool, int>(element, true, lineDist));
                         }
-                        if (eleName  == uiItem.GetName())
+                        else if (eleName == uiItem.GetName())
                         {
-                            nameMatchList.Add(element);
+                            nameMatchList.Add(new Tuple<CodeElement, bool, int>(element, false, lineDist));
                         }
 
                         var children = element.Children;
@@ -391,9 +418,12 @@ namespace CodeAtlasVSIX
                     }
                 }
             }
+            nameMatchList.Sort((x, y) => (
+                (x.Item2 == y.Item2) ? (x.Item3.CompareTo(y.Item3)) : (x.Item2 == true ? -1 : 1)
+            ));
             if (nameMatchList.Count > 0)
             {
-                return nameMatchList[0];
+                return nameMatchList[0].Item1;
             }
             return null;
         }

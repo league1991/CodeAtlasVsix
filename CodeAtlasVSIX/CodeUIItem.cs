@@ -148,6 +148,11 @@ namespace CodeAtlasVSIX
             return m_color;
         }
 
+        public Dictionary<string, DoxygenDB.Variant>  GetMetric()
+        {
+            return m_metric;
+        }
+
         public void GetDefinitionPosition(out string fileName, out int line, out int column)
         {
             fileName = "";
