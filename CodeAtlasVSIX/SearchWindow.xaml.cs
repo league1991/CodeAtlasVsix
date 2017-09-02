@@ -60,17 +60,22 @@ namespace CodeAtlasVSIX
             {
                 return;
             }
+            
+            var request = new DoxygenDB.EntitySearchRequest(searchWord, (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD, "", 0, searchKind, searchFile, searchLine);
+            var result = new DoxygenDB.EntitySearchResult();
+            db.SearchAndFilter(request, out result);
+            SetSearchResult(result);
+        }
 
-            List<DoxygenDB.Entity> bestEntList;
-            DoxygenDB.Entity bestEnt;
-            db.SearchAndFilter(searchWord, searchKind, searchFile, searchLine, out bestEntList, out bestEnt, false);
-
+        public void SetSearchResult(DoxygenDB.EntitySearchResult result)
+        {
+            List<DoxygenDB.Entity> bestEntList = result.candidateList;
             ResultItem bestItem = null;
             for (int i = 0; i < bestEntList.Count; i++)
             {
                 var ent = bestEntList[i];
                 var resItem = new ResultItem(ent.Longname(), ent.UniqueName());
-                if (bestEntList.Count > 0 && ent == bestEntList[0])
+                if (ent == result.bestEntity)
                 {
                     bestItem = resItem;
                 }

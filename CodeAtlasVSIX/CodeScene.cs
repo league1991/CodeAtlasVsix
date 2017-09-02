@@ -1557,19 +1557,17 @@ namespace CodeAtlasVSIX
                 return;
             }
 
-            var ents = db.Search(name, "function");
-            if (ents.Count == 0)
+            var srcRequest = new DoxygenDB.EntitySearchRequest(
+                name, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.MATCH_WORD,
+                "", 0,
+                "function", "", -1);
+            var srcResult = new DoxygenDB.EntitySearchResult();
+            db.SearchAndFilter(srcRequest, out srcResult);
+            if (srcResult.candidateList.Count == 0)
             {
                 return;
             }
-            var bestEntList = new List<DoxygenDB.Entity>();
-            foreach (var ent in ents)
-            {
-                if (ent.Name() == name)
-                {
-                    bestEntList.Add(ent);
-                }
-            }
+            var bestEntList = srcResult.candidateList;
 
             foreach (var ent in bestEntList)
             {

@@ -230,24 +230,38 @@ namespace CodeAtlasVSIX
 
             // Report on each match.
             string token = null;
-            foreach (Match match in matches)
+            string longName = null;
+            int lastStartIndex = 0;
+            int lastEndIndex = 0;
+            for(int ithMatch = 0; ithMatch < matches.Count; ++ithMatch)
             {
+                var match = matches[ithMatch];
                 string word = match.Groups["word"].Value;
-                int startIndex = match.Index;
-                int endIndex = startIndex + word.Length - 1;
+                int startIndex = match.Groups["word"].Index;
+                int endIndex = startIndex + word.Length;
                 int lineIndex = lineOffset - 1;
-                if (startIndex <= lineIndex && endIndex + 1 >= lineIndex)
+                if (startIndex <= lineIndex && endIndex >= lineIndex)
                 {
                     token = word;
-                    break;
+                    longName = token;
+                    var midStr = lineText.Substring(lastEndIndex, (startIndex - lastEndIndex));
+                    if (ithMatch > 0 && midStr=="::")
+                    {
+                        longName = lineText.Substring(lastStartIndex, (endIndex - lastStartIndex));
+                        break;
+                    }
                 }
+                lastStartIndex = startIndex;
+                lastEndIndex = endIndex;
             }
 
             var searched = false;
             if (token != null)
             {
                 string docPath = doc.FullName;
-                SearchAndAddToScene(token, "", docPath, lineNum);
+                SearchAndAddToScene(token, (int)DoxygenDB.SearchOption.MATCH_CASE|(int)DoxygenDB.SearchOption.MATCH_WORD,
+                    longName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
+                    "", docPath, lineNum);
                 searched = true;
             }
             else
@@ -260,7 +274,10 @@ namespace CodeAtlasVSIX
                 if (element != null && cursorDoc != null)
                 {
                     var kind = VSElementTypeToString(element);
-                    SearchAndAddToScene(element.Name, kind, cursorDoc.FullName, lineNum);
+                    SearchAndAddToScene(
+                        element.Name, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.MATCH_WORD, 
+                        element.FullName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
+                        kind, cursorDoc.FullName, lineNum);
                     searched = true;
                 }
             }
@@ -268,17 +285,36 @@ namespace CodeAtlasVSIX
             {
                 var fileName = doc.Name;
                 var fullPath = doc.FullName.Replace("\\","/");
-                SearchAndAddToScene(fileName, "file", fullPath, 0);
+                SearchAndAddToScene(fileName, (int)DoxygenDB.SearchOption.MATCH_WORD,
+                    fileName, (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
+                    "file", fullPath, 0);
             }
         }
 
-        void SearchAndAddToScene(string name, string type, string docPath, int lineNum)
+        void SearchAndAddToScene(
+            string name, int nameOption,
+            string longName, int longNameOption,
+            string type, string docPath, int lineNum)
         {
             searchWindow.nameEdit.Text = name;
             searchWindow.typeEdit.Text = type;
             searchWindow.fileEdit.Text = docPath;
             searchWindow.lineEdit.Text = lineNum.ToString();
-            searchWindow.OnSearch();
+
+            searchWindow.resultList.Items.Clear();
+            var db = DBManager.Instance().GetDB();
+            if (db == null)
+            {
+                return;
+            }
+
+            var request = new DoxygenDB.EntitySearchRequest(
+                name, nameOption,
+                longName, longNameOption,
+                type, docPath, lineNum);
+            var result = new DoxygenDB.EntitySearchResult();
+            db.SearchAndFilter(request, out result);
+            searchWindow.SetSearchResult(result);
             searchWindow.OnAddToScene();
         }
 
@@ -310,19 +346,33 @@ namespace CodeAtlasVSIX
             }
 
             var srcName = srcElement.Name;
+            var srcLongName = srcElement.FullName;
             var srcType = VSElementTypeToString(srcElement);
             var srcFile = srcDocument.FullName;
 
             var tarName = tarElement.Name;
+            var tarLongName = tarElement.FullName;
             var tarType = VSElementTypeToString(tarElement);
             var tarFile = tarDocument.FullName;
 
             var db = DBManager.Instance().GetDB();
-            List<DoxygenDB.Entity> srcEntities, tarEntities;
-            DoxygenDB.Entity srcBestEntity, tarBestEntity;
-            db.SearchAndFilter(srcName, srcType, srcFile, srcLine, out srcEntities, out srcBestEntity, true);
-            db.SearchAndFilter(tarName, tarType, tarFile, tarLine, out tarEntities, out tarBestEntity, true);
+            var srcRequest = new DoxygenDB.EntitySearchRequest(
+                srcName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.MATCH_WORD,
+                srcLongName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
+                srcType, srcFile, srcLine);
+            var srcResult = new DoxygenDB.EntitySearchResult();
+            db.SearchAndFilter(srcRequest, out srcResult);
 
+            var tarRequest = new DoxygenDB.EntitySearchRequest(
+                tarName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.MATCH_WORD,
+                tarLongName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
+                tarType, tarFile, tarLine);
+            var tarResult = new DoxygenDB.EntitySearchResult();
+            db.SearchAndFilter(tarRequest, out tarResult);
+
+            DoxygenDB.Entity srcBestEntity, tarBestEntity;
+            srcBestEntity = srcResult.bestEntity;
+            tarBestEntity = tarResult.bestEntity;
             if (srcBestEntity != null && tarBestEntity != null && srcBestEntity.m_id != tarBestEntity.m_id)
             {
                 scene.AcquireLock();
