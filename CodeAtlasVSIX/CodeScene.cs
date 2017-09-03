@@ -901,7 +901,7 @@ namespace CodeAtlasVSIX
             }
             else
             {
-                centerPos.Y = tarNode.GetLeftSlotPos().X - 10.0;
+                centerPos.X = tarNode.GetLeftSlotPos().X - 10.0;
             }
             centerPos.Y = centerItem.FindCurveYPos(centerPos.X);
 
