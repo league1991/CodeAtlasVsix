@@ -258,14 +258,21 @@ namespace CodeAtlasVSIX
             var searched = false;
             if (token != null)
             {
+                // Search token under cursor
                 string docPath = doc.FullName;
-                SearchAndAddToScene(token, (int)DoxygenDB.SearchOption.MATCH_CASE|(int)DoxygenDB.SearchOption.MATCH_WORD,
+                searched = SearchAndAddToScene(token, (int)DoxygenDB.SearchOption.MATCH_CASE|(int)DoxygenDB.SearchOption.MATCH_WORD,
                     longName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
                     "", docPath, lineNum);
-                searched = true;
+                if (!searched)
+                {
+                    searched = SearchAndAddToScene(token, (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
+                        longName, (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
+                        "", docPath, lineNum);
+                }
             }
             else
             {
+                // Search parent scope
                 var navigator = new CursorNavigator();
                 Document cursorDoc;
                 CodeElement element;
@@ -274,13 +281,13 @@ namespace CodeAtlasVSIX
                 if (element != null && cursorDoc != null)
                 {
                     var kind = VSElementTypeToString(element);
-                    SearchAndAddToScene(
+                    searched = SearchAndAddToScene(
                         element.Name, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.MATCH_WORD, 
                         element.FullName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
                         kind, cursorDoc.FullName, lineNum);
-                    searched = true;
                 }
             }
+            // Search the whole document
             if (!searched)
             {
                 var fileName = doc.Name;
@@ -291,7 +298,7 @@ namespace CodeAtlasVSIX
             }
         }
 
-        void SearchAndAddToScene(
+        bool SearchAndAddToScene(
             string name, int nameOption,
             string longName, int longNameOption,
             string type, string docPath, int lineNum)
@@ -305,7 +312,7 @@ namespace CodeAtlasVSIX
             var db = DBManager.Instance().GetDB();
             if (db == null)
             {
-                return;
+                return false;
             }
 
             var request = new DoxygenDB.EntitySearchRequest(
@@ -316,6 +323,7 @@ namespace CodeAtlasVSIX
             db.SearchAndFilter(request, out result);
             searchWindow.SetSearchResult(result);
             searchWindow.OnAddToScene();
+            return result.candidateList.Count != 0;
         }
 
         public void OnShowDefinitionInAtlas(object sender, ExecutedRoutedEventArgs e)
