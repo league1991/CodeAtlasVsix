@@ -847,7 +847,8 @@ namespace CodeAtlasVSIX
 
         public Shape FindNeighbourForEdge(CodeUIEdgeItem centerItem, Vector mainDirection, bool isInOrder)
         {
-            if (m_isSourceCandidate && centerItem.OrderData != null && Math.Abs(mainDirection.Y) > 0.8 && isInOrder)
+            if (m_isSourceCandidate && centerItem.OrderData != null &&
+                Math.Abs(mainDirection.Y) > 0.8 && isInOrder)
             {
                 var srcItem = m_itemDict[centerItem.m_srcUniqueName];
                 var tarItem = m_itemDict[centerItem.m_tarUniqueName];
@@ -893,15 +894,16 @@ namespace CodeAtlasVSIX
             }
 
             double percent = 0.5;
+            Point centerPos = new Point();
             if (m_isSourceCandidate)
             {
-                percent = 0.3;
+                centerPos.X = srcNode.GetRightSlotPos().X + 10.0;
             }
             else
             {
-                percent = 0.7;
+                centerPos.Y = tarNode.GetLeftSlotPos().X - 10.0;
             }
-            var centerPos = centerItem.PointAtPercent(percent);
+            centerPos.Y = centerItem.FindCurveYPos(centerPos.X);
 
             Point srcPos, tarPos;
             centerItem.GetNodePos(out srcPos, out tarPos);
@@ -962,33 +964,7 @@ namespace CodeAtlasVSIX
                     minEdge = item;
                 }
             }
-
-            if (minEdge != null)
-            {
-                return minEdge;
-            }
-
-            // Find nearest node
-            var minNodeValConnected = 1e12;
-            CodeUIItem minNodeConnected = null;
-            var minNodeVal = 1e12;
-            CodeUIItem minNode = null;
-            minEdgeVal *= 3;
-            minNodeVal *= 2;
-
-            var valList = new List<double> { minEdgeVal, minNodeVal, minNodeValConnected };
-            var itemList = new List<Shape> { minEdge, minNode, minNodeConnected };
-            Shape minItem = null;
-            var minItemVal = 1e12;
-            for (int i = 0; i < valList.Count; i++)
-            {
-                if (valList[i] < minItemVal)
-                {
-                    minItemVal = valList[i];
-                    minItem = itemList[i];
-                }
-            }
-            return minItem;
+            return minEdge;
         }
 
         public Shape FindNeighbourForNode(CodeUIItem centerItem, Vector mainDirection, bool isInOrder)
