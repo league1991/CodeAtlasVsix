@@ -154,14 +154,15 @@ namespace CodeAtlasVSIX
             int line = 0;
             int column = 0;
             bool res = false;
+            string searchToken = "";
 
             try
             {
                 if (codeItem != null)
                 {
                     codeItem.GetDefinitionPosition(out fileName, out line, out column);
-
                     res = ShowItemDefinition(codeItem, fileName);
+                    searchToken = codeItem.GetName();
                 }
                 else if (edgeItem != null)
                 {
@@ -173,6 +174,7 @@ namespace CodeAtlasVSIX
                     var itemDict = scene.GetItemDict();
                     var srcItem = itemDict[edgeItem.m_srcUniqueName];
                     var tarItem = itemDict[edgeItem.m_tarUniqueName];
+                    searchToken = tarItem.GetName();
 
                     if (srcItem.IsFunction())
                     {
@@ -229,7 +231,44 @@ namespace CodeAtlasVSIX
                         TextSelection ts = m_dte.ActiveDocument.Selection as TextSelection;
                         if (ts != null && line > 0)
                         {
-                            ts.GotoLine(line);
+                            var formatStr = string.Format(@"\b{0}\b", searchToken);
+                            ts.EndOfDocument();
+                            int endLine = ts.CurrentLine;
+                            for (int lineOffset = 0; lineOffset < 30; lineOffset++)
+                            {
+                                int upperLine = line - lineOffset;
+                                if (upperLine > 0)
+                                {
+                                    ts.GotoLine(upperLine);
+                                    ts.SelectLine();
+                                    var match = Regex.Match(ts.Text, formatStr, RegexOptions.ExplicitCapture);
+                                    if (match.Success)
+                                    {
+                                        ts.MoveTo(upperLine, match.Index + 1);
+                                        res = true;
+                                        break;
+                                    }
+                                }
+
+                                int lowerLine = line + lineOffset;
+                                if (lowerLine <= endLine)
+                                {
+                                    ts.GotoLine(lowerLine);
+                                    ts.SelectLine();
+                                    var match = Regex.Match(ts.Text, formatStr, RegexOptions.ExplicitCapture);
+                                    if (match.Success)
+                                    {
+                                        ts.MoveTo(lowerLine, match.Index + 1);
+                                        res = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (res == false)
+                            {
+                                ts.GotoLine(line);
+                            }
                         }
                     }
                     catch (Exception)
