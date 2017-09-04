@@ -503,6 +503,44 @@ namespace DoxygenDB
         }
     }
 
+    public enum SearchOption
+    {
+        MATCH_CASE = 0x1,       // case sensitive
+
+        MATCH_WORD       = 0x2, // match the whole word
+        WORD_CONTAINS_DB = 0x4, // search word contains the db word
+        DB_CONTAINS_WORD = 0x8, // db word contains search word
+    }
+
+    public class EntitySearchRequest
+    {
+        public EntitySearchRequest() { }
+        public EntitySearchRequest(string shortName, int shortNameOption, string longName, int longNameOption,
+            string kindName, string filePath, int line)
+        {
+            m_shortName = shortName;
+            m_longName = longName;
+            m_shortNameOption = shortNameOption;
+            m_longNameOption = longNameOption;
+            m_kindName = kindName;
+            m_filePath = filePath;
+            m_line = line;
+        }
+        public string m_shortName = "";
+        public string m_longName = "";
+        public int m_shortNameOption = (int)SearchOption.MATCH_CASE | (int)SearchOption.MATCH_WORD;
+        public int m_longNameOption = (int)SearchOption.MATCH_CASE;
+        public string m_kindName = "";
+        public string m_filePath = "";
+        public int m_line = -1;
+    }
+
+    public class EntitySearchResult
+    {
+        public List<Entity> candidateList = new List<Entity>();
+        public Entity bestEntity = null;
+    }
+
     public class DoxygenDB
     {
         string m_dbFolder = "";
@@ -1742,7 +1780,7 @@ namespace DoxygenDB
             return EntKind.UNKNOWN;
         }
 
-        public List<Entity> Search(string name, string kindString = "")
+        List<Entity> Search(string name, string kindString, int nameOption, string longName, int longNameOption)
         {
             var res = new List<Entity>();
             if (name == null || name == "")
@@ -1751,134 +1789,208 @@ namespace DoxygenDB
             }
 
             var kindStr = kindString.ToLower();
-            var kind = EntKind.UNKNOWN;
-            if (IndexItem.s_kindDict.ContainsKey(kindStr))
+            var kindList = _GetEntityKindList(kindString);
+
+            if ((nameOption & (int)SearchOption.MATCH_CASE) == 0)
             {
-                kind = IndexItem.s_kindDict[kindStr];
+                name = name.ToLower();
             }
-            var nameLower = name.ToLower();
+            if ((longNameOption & (int)SearchOption.MATCH_CASE) == 0)
+            {
+                longName = longName.ToLower();
+            }
             foreach (var item in m_idInfoDict)
             {
-                if (kind != EntKind.UNKNOWN && item.Value.m_kind != kind)
+                // Match kind
+                if (kindList.Count != 0 && !kindList.Contains(item.Value.m_kind))
                 {
                     continue;
                 }
-                if (item.Value.m_name.ToLower().Contains(nameLower))
+
+                // Match name
+                var itemShortName = item.Value.m_name;
+                if ((nameOption & (int)SearchOption.MATCH_CASE) == 0)
                 {
-                    var xmlElement = _GetXmlElement(item.Key);
-                    if (xmlElement == null)
+                    itemShortName = itemShortName.ToLower();
+                }
+
+                var isNameMatch = false;
+                if ((nameOption & (int)SearchOption.WORD_CONTAINS_DB) != 0)
+                {
+                    isNameMatch = name.Contains(itemShortName);
+                }
+                else if ((nameOption & (int)SearchOption.DB_CONTAINS_WORD) != 0)
+                {
+                    isNameMatch = itemShortName.Contains(name);
+                }
+                else
+                {
+                    isNameMatch = (itemShortName == name);
+                }
+
+                if (!isNameMatch)
+                {
+                    continue;
+                }
+
+                var xmlElement = _GetXmlElement(item.Key);
+                if (xmlElement == null)
+                {
+                    continue;
+                }
+                var entity = _ParseEntity(xmlElement);
+                bool isLongNameMatch = true;
+                if (longName.Length != 0)
+                {
+                    string entLongName = entity.m_longName;
+                    if ((longNameOption & (int)SearchOption.MATCH_CASE) == 0)
                     {
-                        continue;
+                        entLongName = entLongName.ToLower();
                     }
-                    var entity = _ParseEntity(xmlElement);
+
+                    if ((longNameOption & (int)SearchOption.WORD_CONTAINS_DB) != 0)
+                    {
+                        isLongNameMatch = longName.Contains(entLongName);
+                    }
+                    else if ((longNameOption & (int)SearchOption.DB_CONTAINS_WORD) != 0)
+                    {
+                        isLongNameMatch = entLongName.Contains(longName);
+                    }
+                    else
+                    {
+                        isLongNameMatch = (entLongName == longName);
+                    }
+                }
+                if (isLongNameMatch)
+                {
                     res.Add(entity);
                 }
             }
             return res;
         }
 
-        public void SearchAndFilter(string searchWord, string searchKind, string searchFile, int searchLine, 
-            out List<Entity> candidateList, out Entity bestEntity, bool exactMatch)
+        class SearchCandidate
         {
-            bestEntity = null;
-            candidateList = new List<Entity>();
+            public Entity m_entity;
+            public bool m_matchFileName = false;
+            public int m_lineDist = int.MaxValue;
 
-            var ents = Search(searchWord, searchKind);
+            // "Smaller" is better
+            public int CompareTo(SearchCandidate other)
+            {
+                if (m_matchFileName != other.m_matchFileName)
+                {
+                    return m_matchFileName ? -1 : 1;
+                }
+                if (m_lineDist != other.m_lineDist)
+                {
+                    return m_lineDist < other.m_lineDist ? -1 : 1;
+                }
+                return 0;
+            }
+        }
+
+        void _MatchFileAndLine(SearchCandidate candidate, string searchFileName, int searchLine)
+        {
+            candidate.m_lineDist = searchLine > 0 ? int.MaxValue : 0;
+            var metric = candidate.m_entity.Metric();
+            if (metric.ContainsKey("file"))
+            {
+                var metricFile = metric["file"].m_string.ToLower();
+                if (metricFile.Contains(searchFileName))
+                {
+                    candidate.m_matchFileName = true;
+                    candidate.m_lineDist = Math.Abs(metric["line"].m_int - searchLine);
+                }
+            }
+            if (metric.ContainsKey("declFile"))
+            {
+                var metricFile = metric["declFile"].m_string.ToLower();
+                if (metricFile.Contains(searchFileName))
+                {
+                    candidate.m_matchFileName = true;
+                    candidate.m_lineDist = Math.Min(Math.Abs(metric["declLine"].m_int - searchLine), candidate.m_lineDist);
+                }
+            }
+
+            var refs = SearchRef(candidate.m_entity.UniqueName());
+            if (refs.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var refObj in refs)
+            {
+                if (refObj == null)
+                {
+                    continue;
+                }
+
+                var fileEnt = refObj.File();
+                var line = refObj.Line();
+                var column = refObj.Column();
+                if (fileEnt.Longname().ToLower().Contains(searchFileName))
+                {
+                    candidate.m_matchFileName = true;
+                    candidate.m_lineDist = Math.Min(Math.Abs(line - searchLine), candidate.m_lineDist);
+                }
+            }
+        }
+
+        public void SearchAndFilter(EntitySearchRequest request, out EntitySearchResult result)
+        {
+            string searchWord = request.m_shortName;
+            string searchKind = request.m_kindName;
+            string searchFile = request.m_filePath;
+            int searchLine = request.m_line;
+
+            result = new EntitySearchResult();
+
+            var ents = Search(searchWord, searchKind, request.m_shortNameOption, request.m_longName, request.m_longNameOption);
             if (ents.Count == 0)
             {
                 return;
             }
             if (ents.Count == 1)
             {
-                bestEntity = ents[0];
-                candidateList.Add(bestEntity);
+                result.bestEntity = ents[0];
+                result.candidateList.Add(ents[0]);
                 return;
-            }
-
-            // Filter name
-            foreach (var entity in ents)
-            {
-                if (exactMatch)
-                {
-                    if (entity.Name() == searchWord)
-                    {
-                        candidateList.Add(entity);
-                    }
-                }
-                else
-                {
-                    if (entity.Longname().Contains(searchWord))
-                    {
-                        candidateList.Add(entity);
-                    }
-                }
             }
 
             if (searchFile != "")
             {
-                searchFile = searchFile.Replace("\\","/");
-                var entList = candidateList;
-                candidateList = new List<Entity>();
-                var bestEntDist = new List<int>();
-                var searchWordLower = searchWord.ToLower();
-
-                foreach (var ent in entList)
+                // Get search file path and file name
+                searchFile = searchFile.Replace("\\", "/").ToLower();
+                var searchFileName = searchFile;
+                int lastIdx = searchFile.LastIndexOf("/");
+                if (lastIdx != -1 && lastIdx != searchFile.Length - 1)
                 {
-                    var refs = SearchRef(ent.UniqueName());
-                    if (refs.Count == 0)
-                    {
-                        continue;
-                    }
-
-                    var fileNameSet = new HashSet<string>();
-                    var lineDist = int.MaxValue;
-                    foreach (var refObj in refs)
-                    {
-                        if (refObj == null)
-                        {
-                            continue;
-                        }
-
-                        var fileEnt = refObj.File();
-                        var line = refObj.Line();
-                        var column = refObj.Column();
-                        fileNameSet.Add(fileEnt.Longname());
-                        if (fileEnt.Longname().Contains(searchFile))
-                        {
-                            lineDist = Math.Min(lineDist, Math.Abs(line - searchLine));
-                        }
-                    }
-
-                    if (searchWordLower.Contains(ent.Name().ToLower()))
-                    {
-                        candidateList.Add(ent);
-                        bestEntDist.Add(lineDist);
-                    }
+                    searchFileName = searchFile.Substring(lastIdx + 1);
                 }
 
-                if (searchLine > -1)
+                // Match file and line
+                var candidateDataList = new List<SearchCandidate>();
+                foreach (var ent in ents)
                 {
-                    var minDist = int.MaxValue;
-                    Entity bestEnt = null;
-                    for (int i = 0; i < candidateList.Count; i++)
-                    {
-                        if (bestEntDist[i] < minDist)
-                        {
-                            minDist = bestEntDist[i];
-                            bestEnt = candidateList[i];
-                        }
-                    }
-                    if (bestEnt != null)
-                    {
-                        bestEntity = bestEnt;
-                    }
+                    var candidate = new SearchCandidate();
+                    candidate.m_entity = ent;
+                    _MatchFileAndLine(candidate, searchFileName, searchLine);
+                    candidateDataList.Add(candidate);
                 }
+
+                // Sort candidates
+                candidateDataList.Sort((x, y) => x.CompareTo(y));
+                foreach (var candidate in candidateDataList)
+                {
+                    result.candidateList.Add(candidate.m_entity);
+                }
+                result.bestEntity = candidateDataList[0].m_entity;
             }
-
-            // The only possible choice
-            if (bestEntity == null && candidateList.Count == 1)
+            else
             {
-                bestEntity = candidateList[0];
+                result.candidateList = ents;
+                result.bestEntity = null;
             }
         }
 
@@ -1940,8 +2052,11 @@ namespace DoxygenDB
 
                 foreach (Match nextMatch in matches)
                 {
-                    var kind = IndexItem.s_kindDict[nextMatch.Value];
-                    entKindList.Add(kind);
+                    if (IndexItem.s_kindDict.ContainsKey(nextMatch.Value))
+                    {
+                        var kind = IndexItem.s_kindDict[nextMatch.Value];
+                        entKindList.Add(kind);
+                    }
                 }
             }
             return entKindList;
@@ -1984,14 +2099,10 @@ namespace DoxygenDB
                 if (dirIdx != -1)
                 {
                     var dirName = location.Substring(0, dirIdx);
-                    var ents = Search(dirName, "dir");
+                    var ents = Search(dirName, "dir", (int)SearchOption.WORD_CONTAINS_DB, dirName, (int)SearchOption.MATCH_WORD);
                     foreach (var entity in ents)
                     {
-                        if (entity.m_longName == dirName)
-                        {
-                            _ReadRef(entity.m_id);
-                            break;
-                        }
+                        _ReadRef(entity.m_id);
                     }
                 }
             }
