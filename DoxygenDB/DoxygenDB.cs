@@ -296,7 +296,10 @@ namespace DoxygenDB
             s_lruDict[m_filePath] = node;
 
             var fileInfo = new FileInfo(m_filePath);
-            s_currentXmlSize += fileInfo.Length;
+            if (fileInfo.Exists)
+            {
+                s_currentXmlSize += fileInfo.Length;
+            }
         }
 
         public void ClearDocument()
