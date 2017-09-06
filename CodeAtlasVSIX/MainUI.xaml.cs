@@ -200,6 +200,56 @@ namespace CodeAtlasVSIX
             });
         }
 
+        void GetCursorWord(EnvDTE.TextSelection ts, out string name, out string longName, out int lineNum)
+        {
+            name = null;
+            longName = null;
+            lineNum = ts.AnchorPoint.Line;
+            int lineOffset = ts.AnchorPoint.LineCharOffset;
+
+            // If a line of text is selected, used as search word.
+            var cursorStr = ts.Text.Trim();
+            if (cursorStr.Length != 0 && cursorStr.IndexOf('\n') == -1)
+            {
+                name = cursorStr;
+                longName = cursorStr;
+                return;
+            }
+
+            // Otherwise, use the word under the cursor.
+            ts.SelectLine();
+            string lineText = ts.Text;
+            ts.MoveToLineAndOffset(lineNum, lineOffset);
+
+            Regex rx = new Regex(@"\b(?<word>\w+)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            MatchCollection matches = rx.Matches(lineText);
+
+            // Report on each match
+            int lastStartIndex = 0;
+            int lastEndIndex = 0;
+            for (int ithMatch = 0; ithMatch < matches.Count; ++ithMatch)
+            {
+                var match = matches[ithMatch];
+                string word = match.Groups["word"].Value;
+                int startIndex = match.Groups["word"].Index;
+                int endIndex = startIndex + word.Length;
+                int lineIndex = lineOffset - 1;
+                if (startIndex <= lineIndex && endIndex >= lineIndex)
+                {
+                    name = word;
+                    longName = word;
+                    var midStr = lineText.Substring(lastEndIndex, (startIndex - lastEndIndex));
+                    if (ithMatch > 0 && midStr == "::")
+                    {
+                        longName = lineText.Substring(lastStartIndex, (endIndex - lastStartIndex));
+                        break;
+                    }
+                }
+                lastStartIndex = startIndex;
+                lastEndIndex = endIndex;
+            }
+        }
+
         public void OnShowInAtlas(object sender, ExecutedRoutedEventArgs e)
         {
             if (!GetCommandActive())
@@ -217,43 +267,11 @@ namespace CodeAtlasVSIX
             {
                 return;
             }
-            EnvDTE.TextSelection ts = doc.Selection as EnvDTE.TextSelection;
-            int lineOffset = ts.AnchorPoint.LineCharOffset;
-            int lineNum = ts.AnchorPoint.Line;
-
-            ts.SelectLine();
-            string lineText = ts.Text;
-            ts.MoveToLineAndOffset(lineNum, lineOffset);
-
-            Regex rx = new Regex(@"\b(?<word>\w+)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            MatchCollection matches = rx.Matches(lineText);
-
-            // Report on each match.
             string token = null;
             string longName = null;
-            int lastStartIndex = 0;
-            int lastEndIndex = 0;
-            for(int ithMatch = 0; ithMatch < matches.Count; ++ithMatch)
-            {
-                var match = matches[ithMatch];
-                string word = match.Groups["word"].Value;
-                int startIndex = match.Groups["word"].Index;
-                int endIndex = startIndex + word.Length;
-                int lineIndex = lineOffset - 1;
-                if (startIndex <= lineIndex && endIndex >= lineIndex)
-                {
-                    token = word;
-                    longName = token;
-                    var midStr = lineText.Substring(lastEndIndex, (startIndex - lastEndIndex));
-                    if (ithMatch > 0 && midStr=="::")
-                    {
-                        longName = lineText.Substring(lastStartIndex, (endIndex - lastStartIndex));
-                        break;
-                    }
-                }
-                lastStartIndex = startIndex;
-                lastEndIndex = endIndex;
-            }
+            int lineNum = 0;
+            EnvDTE.TextSelection ts = doc.Selection as EnvDTE.TextSelection;
+            GetCursorWord(ts, out token, out longName, out lineNum);
 
             var searched = false;
             if (token != null)
@@ -265,7 +283,7 @@ namespace CodeAtlasVSIX
                     "", docPath, lineNum);
                 if (!searched)
                 {
-                    searched = SearchAndAddToScene(token, (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
+                    searched = SearchAndAddToScene(token, (int)DoxygenDB.SearchOption.MATCH_WORD,
                         longName, (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
                         "", docPath, lineNum);
                 }
@@ -288,7 +306,7 @@ namespace CodeAtlasVSIX
                 }
             }
             // Search the whole document
-            if (!searched)
+            if (!searched && token == null)
             {
                 var fileName = doc.Name;
                 var fullPath = doc.FullName.Replace("\\","/");
