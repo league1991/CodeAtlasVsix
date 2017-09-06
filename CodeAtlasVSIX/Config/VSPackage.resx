@@ -118,10 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="110" xml:space="preserve">
-    <value>CodeAtlas Extension</value>
+    <value>CodeGraph</value>
   </data>
   <data name="112" xml:space="preserve">
-    <value>CodeAtlas Visual Studio Extension Detailed Info</value>
+    <value>A tool to show call graph, inheritance graph and variable usage graph for C/C++, C#, Python and other languages</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
