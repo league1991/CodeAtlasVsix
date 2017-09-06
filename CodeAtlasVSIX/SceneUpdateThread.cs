@@ -450,7 +450,7 @@ namespace CodeAtlasVSIX
                 var edge = edgeList[i];
                 Point srcPos, tarPos;
                 edge.GetNodePos(out srcPos, out tarPos);
-                double padding = srcPos.X < tarPos.X ? -8.0 : 8.0;
+                double padding = srcPos.X < tarPos.X ? -12.0 : 12.0;
                 double x, y;
                 if (double.IsNaN(basePos))
                 {
