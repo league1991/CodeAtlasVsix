@@ -812,8 +812,8 @@ namespace CodeAtlasVSIX
                 {
                     m_deselectOnUp = false;
                     // Mouse doesn't move
-                    bool isClean = !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl));
-                    scene.DeselectCodeItem(this.m_uniqueName, isClean);
+                    // bool isClean = !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl));
+                    // scene.DeselectCodeItem(this.m_uniqueName, isClean);
                 }
             }
             dragStart = null;
