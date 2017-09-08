@@ -121,7 +121,7 @@ namespace CodeAtlasVSIX
             }
             else if(m_kind == DoxygenDB.EntKind.FILE)
             {
-                m_color = Color.FromRgb(185,220,227);
+                m_color = Color.FromRgb(125,215,249);
             }
 
             if (m_kind == DoxygenDB.EntKind.FUNCTION || m_kind == DoxygenDB.EntKind.VARIABLE)
@@ -524,7 +524,7 @@ namespace CodeAtlasVSIX
             {
                 int nDir = m_customData["nDir"].m_int;
                 int nFile = m_customData["nFile"].m_int;
-                r = Math.Pow((double)(nDir * 5 + nFile * 2 + 1), 0.3) * 2.5;
+                r = Math.Pow((double)(nDir * 5 + nFile * 2 + 1), 0.4) * 2.5 + 2;
             }
             else
             {
