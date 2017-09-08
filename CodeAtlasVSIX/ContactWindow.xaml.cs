@@ -45,5 +45,10 @@ namespace CodeAtlasVSIX
             string url = "http://service.weibo.com/share/share.php?url=http://sina.lt/fcaX&title=这个visual studio插件可以查看C%2B%2B、C%23、Python的代码关系图，用来看代码挺方便的，快去试试吧，它是免费的哦~&pic=https://yaobinouyang.gallerycdn.vsassets.io/extensions/yaobinouyang/codeatlas/1.0.4/1504837533015/273052/1/main.png";
             System.Diagnostics.Process.Start(url);
         }
+
+        private void goToGithub_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/league1991/CodeAtlasVsix");
+        }
     }
 }
