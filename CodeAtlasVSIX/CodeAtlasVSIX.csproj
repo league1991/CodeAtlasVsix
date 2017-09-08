@@ -63,6 +63,9 @@
     <Compile Include="CodeView.xaml.cs">
       <DependentUpon>CodeView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ContactWindow.xaml.cs">
+      <DependentUpon>ContactWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CursorNavigator.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ResourceSetter.cs" />
@@ -105,10 +108,16 @@
     <Content Include="Microsoft.VisualStudio.Shell.Immutable.14.0.dll">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\facebook.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\logo.png">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\thumbnail.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\twitter.png">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <VSCTCompile Include="CodeAtlasPackage.vsct">
@@ -120,7 +129,9 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\CodeAtlasCommand.png" />
-    <Content Include="Resources\CodeAtlasPackage.ico" />
+    <Content Include="Resources\CodeAtlasPackage.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Config\stylesheet.css" />
   </ItemGroup>
   <ItemGroup>
@@ -260,6 +271,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ContactWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

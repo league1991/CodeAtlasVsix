@@ -53,17 +53,24 @@
                     <local:SearchWindow x:Name="searchWindow"/>
                 </Grid>
             </TabItem>
+            
             <TabItem Header="Symbol" Style="{DynamicResource TabItemStyle}">
                 <Grid MinHeight="10">
                     <local:SymbolWindow x:Name="symbolWindow"/>
                 </Grid>
             </TabItem>
+            
             <TabItem Header="Bookmark" Style="{DynamicResource TabItemStyle}">
                 <Grid MinHeight="10">
                     <local:SchemeWindow x:Name="schemeWindow"/>
                 </Grid>
             </TabItem>
 
+            <TabItem Header="Contact Me" Style="{DynamicResource TabItemStyle}">
+                <Grid MinHeight="10">
+                    <local:ContactWindow x:Name="contactWindow"/>
+                </Grid>
+            </TabItem>
         </TabControl>
         <GridSplitter x:Name="splitter" Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Style="{DynamicResource GridSplitterStyle}"/>
 
