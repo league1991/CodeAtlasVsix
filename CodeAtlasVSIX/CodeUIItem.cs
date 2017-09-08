@@ -526,6 +526,10 @@ namespace CodeAtlasVSIX
                 int nFile = m_customData["nFile"].m_int;
                 r = Math.Pow((double)(nDir * 5 + nFile * 2 + 1), 0.4) * 2.5 + 2;
             }
+            else if (m_kind == DoxygenDB.EntKind.CLASS)
+            {
+                r = Math.Pow((double)(m_lines + 1), 0.3) * 3.0 + 2;
+            }
             else
             {
                 r = Math.Pow((double)(m_lines + 1), 0.3) * 2.5;
@@ -780,7 +784,20 @@ namespace CodeAtlasVSIX
         {
             var scene = UIManager.Instance().GetScene();
             scene.SelectCodeItem(this.m_uniqueName);
-            UIManager.Instance().GetScene().ShowInEditor();
+            if (m_kind == DoxygenDB.EntKind.DIR)
+            {
+                try
+                {
+                    System.Diagnostics.Process.Start(m_longName);
+                }
+                catch (Exception)
+                {
+                }
+            }
+            else
+            {
+                UIManager.Instance().GetScene().ShowInEditor();
+            }
         }
 
         void MouseMoveCallback(object sender, MouseEventArgs args)
