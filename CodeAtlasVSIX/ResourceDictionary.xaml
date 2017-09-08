@@ -54,13 +54,13 @@
                             Name="TabItemBorder"
                             Margin="0,0,0,0"
                             Background="{DynamicResource {x:Static vsfx:VsBrushes.FileTabInactiveDocumentBorderBackgroundKey}}"
-                            BorderThickness="1,1,1,1">
+                            BorderThickness="0,0,0,0">
                             <ContentPresenter
                                 x:Name="TabItemContentSite"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
                                 ContentSource="Header"
-                                Margin="10,2,10,2"
+                                Margin="8,2,8,2"
                                 RecognizesAccessKey="True"
                                 />
                         </Border>
