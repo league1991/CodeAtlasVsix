@@ -37,7 +37,7 @@ namespace CodeAtlasVSIX
             var scene = UIManager.Instance().GetScene();
             scene.View = this;
 
-            ScaleCanvas(0.94, new Point());
+            ScaleCanvas(1.0, new Point());
         }
 
         private void canvas_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
