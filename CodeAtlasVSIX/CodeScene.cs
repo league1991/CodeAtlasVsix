@@ -1648,7 +1648,7 @@ namespace CodeAtlasVSIX
                     DoAddCustomEdge(m_customEdgeSource, item.GetUniqueName());
                 }
                 var srcItem = m_itemDict[m_customEdgeSource];
-                srcItem.SetCustomEdgeSourceMode(false);
+                //srcItem.SetCustomEdgeSourceMode(false);
 
                 var edgesToSelect = new List<EdgeKey>();
                 foreach (var item in selectedNodes)
@@ -1656,7 +1656,7 @@ namespace CodeAtlasVSIX
                     edgesToSelect.Add(new EdgeKey(m_customEdgeSource, item.GetUniqueName()));
                 }
                 SelectEdges(edgesToSelect);
-                m_customEdgeSource = "";
+                //m_customEdgeSource = "";
             }
             ReleaseLock();
             return true;
