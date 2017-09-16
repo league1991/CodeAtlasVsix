@@ -161,6 +161,7 @@ namespace CodeAtlasVSIX
                 if (codeItem != null)
                 {
                     codeItem.GetDefinitionPosition(out fileName, out line, out column);
+
                     res = ShowItemDefinition(codeItem, fileName);
                     searchToken = codeItem.GetName();
                 }
@@ -229,40 +230,50 @@ namespace CodeAtlasVSIX
                     {
                         OpenFile(fileName);
                         TextSelection ts = m_dte.ActiveDocument.Selection as TextSelection;
-                        if (ts != null && line > 0)
+                        TextDocument textDoc = ts.Parent;
+                        if (ts != null && line > 0 && textDoc != null)
                         {
                             var formatStr = string.Format(@"\b{0}\b", searchToken);
-                            ts.EndOfDocument();
-                            int endLine = ts.CurrentLine;
-                            for (int lineOffset = 0; lineOffset < 30; lineOffset++)
+                            int beginLine = Math.Max(1, line - 30);
+                            int endLine = line + 31;
+                            int endOffset = 1;
+                            if (endLine > textDoc.EndPoint.Line)
                             {
-                                int upperLine = line - lineOffset;
-                                if (upperLine > 0)
+                                endLine = textDoc.EndPoint.Line;
+                                endOffset = textDoc.EndPoint.LineLength+1;
+                            }
+                            ts.MoveToLineAndOffset(beginLine, 1, false);
+                            ts.MoveToLineAndOffset(endLine, endOffset, true);
+                            string searchText = ts.Text.Replace("\r\n", "\n");
+                            int lineBeginIdx = 0;
+                            int bestLine = int.MaxValue, bestColumn = -1;
+                            for (int currentLine = beginLine; ;currentLine++)
+                            {
+                                int lineEndIdx = searchText.IndexOf("\n", lineBeginIdx);
+                                if (lineEndIdx == -1)
                                 {
-                                    ts.GotoLine(upperLine);
-                                    ts.SelectLine();
-                                    var match = Regex.Match(ts.Text, formatStr, RegexOptions.ExplicitCapture);
-                                    if (match.Success)
+                                    lineEndIdx = searchText.Length;
+                                }
+                                string lineStr = searchText.Substring(lineBeginIdx, lineEndIdx - lineBeginIdx);
+                                var matches = Regex.Matches(lineStr, formatStr, RegexOptions.ExplicitCapture);
+                                foreach (Match nextMatch in matches)
+                                {
+                                    if (Math.Abs(currentLine-line) < Math.Abs(bestLine-line))
                                     {
-                                        ts.MoveTo(upperLine, match.Index + 1);
-                                        res = true;
-                                        break;
+                                        bestLine = currentLine;
+                                        bestColumn = nextMatch.Index + 1;
                                     }
                                 }
-
-                                int lowerLine = line + lineOffset;
-                                if (lowerLine <= endLine)
+                                if (lineEndIdx == -1 || lineEndIdx >= searchText.Length-1)
                                 {
-                                    ts.GotoLine(lowerLine);
-                                    ts.SelectLine();
-                                    var match = Regex.Match(ts.Text, formatStr, RegexOptions.ExplicitCapture);
-                                    if (match.Success)
-                                    {
-                                        ts.MoveTo(lowerLine, match.Index + 1);
-                                        res = true;
-                                        break;
-                                    }
+                                    break;
                                 }
+                                lineBeginIdx = lineEndIdx + 1;
+                            }
+                            if (bestColumn != -1)
+                            {
+                                ts.MoveTo(bestLine, bestColumn);
+                                res = true;
                             }
 
                             if (res == false)
