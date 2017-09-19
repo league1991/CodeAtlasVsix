@@ -1047,10 +1047,10 @@ namespace CodeAtlasVSIX
             if (m_commentText != null)
             {
                 baseY += m_displayText.Height + s_textGap;
-                baseX += 8;
+                baseX += 12;
                 m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromArgb(alpha, 10, 10, 10)));
                 drawingContext.DrawText(m_commentText, new Point(baseX + 0.8, baseY + 0.8));
-                var commentColor = fading ? Color.FromArgb(alpha, 254, 198, 114) : Color.FromArgb(alpha,254,198,114);
+                var commentColor = fading ? Color.FromArgb(alpha, 208,167,111) : Color.FromArgb(alpha,254,181,114);
                 m_commentText.SetForegroundBrush(new SolidColorBrush(commentColor));
                 drawingContext.DrawText(m_commentText, new Point(baseX, baseY));
             }
