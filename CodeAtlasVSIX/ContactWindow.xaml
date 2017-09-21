@@ -21,15 +21,15 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Label Content="Do you like CodeGraph?" Grid.Row="0" HorizontalAlignment="Left"/>
+        <Label Content="Like CodeGraph?" Grid.Row="0" HorizontalAlignment="Left"/>
         <Button x:Name="goToMarketPlaceButton" Content="Give Ratings and Reviews" Grid.Row="0" Grid.Column="1" Margin="0,4,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="goToMarketPlaceButton_Click" Grid.ColumnSpan="3"/>
 
-        <Label Content="Yes, let me tell others!" Grid.Row="1" HorizontalAlignment="Left"/>
+        <Label Content="Go to tell others!" Grid.Row="1" HorizontalAlignment="Left"/>
         <Button x:Name="shareToFacebook" Content="Facebook" Margin="0,4,0,0" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.ColumnSpan="1" Click="shareToFacebook_Click" />
         <Button x:Name="shareToTwitter" Content="Twitter" Margin="0,4,0,0" Grid.Row="1" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.ColumnSpan="1" Click="shareToTwitter_Click"/>
         <Button x:Name="shareToWeibo" Content="Weibo" Margin="0,4,0,0" Grid.Row="1" Grid.Column="3" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.ColumnSpan="1" Click="shareToWeibo_Click" />
 
-        <Label Content="I'm a developer..." Grid.Row="2" HorizontalAlignment="Left"/>
+        <Label Content="As a developer..." Grid.Row="2" HorizontalAlignment="Left"/>
         <Button x:Name="goToGithub" Content="Contribute Code" Grid.Row="2" Grid.Column="1" Margin="0,4,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.ColumnSpan="3" Click="goToGithub_Click"/>
     </Grid>
 </UserControl>
