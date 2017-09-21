@@ -31,9 +31,12 @@
             <RadioButton x:Name="dynamicNavigationButton" Content="Dynamic Navigation" IsChecked="True" Click="dynamicNavigationButton_Click" />
             <RadioButton x:Name="staticNavigationButton" Content="Static Navigation" Click="staticNavigationButton_Click"/>
         </MenuItem>
-        <MenuItem x:Name="layoutButton" Header="Horizontal/Vertical" Click="layoutButton_Click" />
-        <MenuItem x:Name="autoFocusButton" Header="Auto Focus" IsCheckable="True" IsChecked="True" Click="autoFocusButton_Click"/>
+        <MenuItem Header="UI">
+            <MenuItem x:Name="layoutButton" Header="Horizontal/Vertical" Click="layoutButton_Click" />
+            <MenuItem x:Name="autoFocusButton" Header="Auto Focus" IsCheckable="True" IsChecked="True" Click="autoFocusButton_Click"/>
+        </MenuItem>
     </Menu>
+    
     <Grid x:Name="layoutGrid" Focusable="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="70*" />
@@ -86,8 +89,8 @@
                         </RadialGradientBrush>
                     </Canvas.Background>
                 </Canvas>
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="42" FontFamily="Microsoft YaHei Light" Text="Wait..." Margin="95,70,89,66"/>
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FFE0E0E0" FontSize="42" FontFamily="Microsoft YaHei Light" Text="Wait..."/>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="42" FontFamily="Microsoft YaHei" Text="Wait..." Margin="95,70,89,66"/>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FFE0E0E0" FontSize="42" FontFamily="Microsoft YaHei" Text="Wait..."/>
             </Grid>
         </Grid>
     </Grid>

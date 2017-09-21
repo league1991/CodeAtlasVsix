@@ -311,6 +311,15 @@ namespace CodeAtlasVSIX
             IsDirty = true;
         }
 
+        public string GetCommentText()
+        {
+            if (m_commentText == null || m_commentText.Text == null)
+            {
+                return "";
+            }
+            return m_commentText.Text;
+        }
+
         public bool IsFunction()
         {
             return m_kind == DoxygenDB.EntKind.FUNCTION;

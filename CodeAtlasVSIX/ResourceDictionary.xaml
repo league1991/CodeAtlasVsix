@@ -60,7 +60,7 @@
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
                                 ContentSource="Header"
-                                Margin="8,2,8,2"
+                                Margin="5,2,5,2"
                                 RecognizesAccessKey="True"
                                 />
                         </Border>
