@@ -3,7 +3,7 @@
   <Identifier Id="CodeAtlasVSIX.Company.df5456fb-08ea-4256-b5ff-ecdb3a512ad3">
     <Name>CodeGraph</Name>
     <Author>Yaobin Ouyang</Author>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
     <Description xml:space="preserve">A tool to show call graph, inheritance graph and variable usage graph for C/C++, C#, Python and other languages</Description>
     <Locale>1033</Locale>
     <License>License.txt</License>

@@ -42,7 +42,7 @@ namespace CodeAtlasVSIX
 
         private void shareToWeibo_Click(object sender, RoutedEventArgs e)
         {
-            string url = "http://service.weibo.com/share/share.php?url=http://t.cn/RKF6cf8&title=这个visual studio插件可以查看C%2B%2B、C%23、Python的代码关系图，用来看代码挺方便的，快去试试吧，它是免费的哦~&pic=https://yaobinouyang.gallerycdn.vsassets.io/extensions/yaobinouyang/codeatlas/1.0.4/1504837533015/273037/1/navigate.gif";
+            string url = "http://service.weibo.com/share/share.php?url=http://t.cn/RKF6cf8&title=这个visual studio插件可以查看C%2B%2B、C%23、Python的代码关系图，用来看代码挺方便的，快去试试吧，它是免费的哦~&pic=https://raw.githubusercontent.com/league1991/CodeAtlasVsix/master/githubCache/main.png";
             System.Diagnostics.Process.Start(url);
         }
 
