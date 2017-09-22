@@ -128,7 +128,7 @@ namespace CodeAtlasVSIX
                 var solutionFile = solution.FileName;
                 if (solutionFile != "")
                 {
-                    var doxyFolder = System.IO.Path.GetDirectoryName(solutionFile) + "\\CodeAtlasData";
+                    var doxyFolder = System.IO.Path.GetDirectoryName(solutionFile) + "\\CodeGraphData";
                     CheckOrCreateFolder(doxyFolder);
                     ofd.InitialDirectory = doxyFolder;
                 }
