@@ -724,7 +724,7 @@ namespace CodeAtlasVSIX
                     SetCommandActive(true);
                     return false;
                 }
-                string doxyFolder = solutionFolder + "/CodeAtlasData";
+                string doxyFolder = solutionFolder + "/CodeGraphData";
                 CheckOrCreateFolder(doxyFolder);
 
                 // Use selected projects as postfix
