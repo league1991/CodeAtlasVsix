@@ -28,6 +28,8 @@ namespace CodeAtlasVSIX
         bool m_abort = false;
         int m_timeStamp = 0;
 
+        DateTime m_lastCheckRefTime = DateTime.Now;
+
         public SceneUpdateThread(CodeScene scene)
         {
             m_thread = new Thread(new ThreadStart(Run));
@@ -81,9 +83,10 @@ namespace CodeAtlasVSIX
 
         void Run()
         {
-            var scene = UIManager.Instance().GetScene();
             while (true)
             {
+                var scene = UIManager.Instance().GetScene();
+                var mainUI = UIManager.Instance().GetMainUI();
                 if (m_abort)
                 {
                     break;
@@ -144,6 +147,15 @@ namespace CodeAtlasVSIX
                     scene.ReleaseLock();
 
                     scene.ClearInvalidate();
+
+                    var currentTick = DateTime.Now;
+                    if ((currentTick - m_lastCheckRefTime).TotalMilliseconds > 2000)
+                    {
+                        mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate {
+                            mainUI.CheckFindSymbolWindow(null, null);
+                        });
+                        m_lastCheckRefTime = currentTick;
+                    }               
                 }
                 else
                 {

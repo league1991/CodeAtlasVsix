@@ -111,6 +111,8 @@ namespace CodeAtlasVSIX
 
             AddCommand(0x0128, mainUI.OnBeginCustomEdge);
             AddCommand(0x0129, mainUI.OnEndCustomEdge);
+
+            UIManager.Instance().GetScene().StartThread();
         }
 
         void AddCommand(int commandID, ExecutedRoutedEventHandler handler)

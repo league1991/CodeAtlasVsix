@@ -72,6 +72,10 @@ namespace CodeAtlasVSIX
         public CodeScene()
         {
             m_updateThread = new SceneUpdateThread(this);
+        }
+
+        public void StartThread()
+        {
             m_updateThread.Start();
         }
 
@@ -892,8 +896,7 @@ namespace CodeAtlasVSIX
                     nCommonOut++;
                 }
             }
-
-            double percent = 0.5;
+            
             Point centerPos = new Point();
             if (m_isSourceCandidate)
             {

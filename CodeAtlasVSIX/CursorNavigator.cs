@@ -54,7 +54,7 @@ namespace CodeAtlasVSIX
             m_dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
 
             var t1 = DateTime.Now;
-            Logger.Debug("---CursorNavigator::CursorNavigator" + (t1 - t0).TotalMilliseconds.ToString());
+            //Logger.Debug("---CursorNavigator::CursorNavigator" + (t1 - t0).TotalMilliseconds.ToString());
         }
 
         static bool IsMatchPair(DoxygenDB.EntKind doxyKind, vsCMElement vsKind)

@@ -1815,17 +1815,21 @@ namespace DoxygenDB
                 }
 
                 var isNameMatch = false;
-                if ((nameOption & (int)SearchOption.WORD_CONTAINS_DB) != 0)
+                if ((nameOption & (int)SearchOption.MATCH_WORD) != 0 || 
+                    (nameOption & ((int)SearchOption.MATCH_WORD | (int)SearchOption.DB_CONTAINS_WORD | (int)SearchOption.WORD_CONTAINS_DB)) == 0)
                 {
-                    isNameMatch = name.Contains(itemShortName);
-                }
-                else if ((nameOption & (int)SearchOption.DB_CONTAINS_WORD) != 0)
-                {
-                    isNameMatch = itemShortName.Contains(name);
+                    isNameMatch = (itemShortName == name);
                 }
                 else
                 {
-                    isNameMatch = (itemShortName == name);
+                    if ((nameOption & (int)SearchOption.WORD_CONTAINS_DB) != 0)
+                    {
+                        isNameMatch = name.Contains(itemShortName);
+                    }
+                    if ((nameOption & (int)SearchOption.DB_CONTAINS_WORD) != 0)
+                    {
+                        isNameMatch = itemShortName.Contains(name);
+                    }
                 }
 
                 if (!isNameMatch)
@@ -1848,17 +1852,21 @@ namespace DoxygenDB
                         entLongName = entLongName.ToLower();
                     }
 
-                    if ((longNameOption & (int)SearchOption.WORD_CONTAINS_DB) != 0)
+                    if ((longNameOption & (int)SearchOption.MATCH_WORD) != 0 ||
+                        (longNameOption & ((int)SearchOption.MATCH_WORD | (int)SearchOption.DB_CONTAINS_WORD | (int)SearchOption.WORD_CONTAINS_DB)) == 0)
                     {
-                        isLongNameMatch = longName.Contains(entLongName);
-                    }
-                    else if ((longNameOption & (int)SearchOption.DB_CONTAINS_WORD) != 0)
-                    {
-                        isLongNameMatch = entLongName.Contains(longName);
+                        isLongNameMatch = (entLongName == longName);
                     }
                     else
                     {
-                        isLongNameMatch = (entLongName == longName);
+                        if ((longNameOption & (int)SearchOption.WORD_CONTAINS_DB) != 0)
+                        {
+                            isLongNameMatch = longName.Contains(entLongName);
+                        }
+                        if ((longNameOption & (int)SearchOption.DB_CONTAINS_WORD) != 0)
+                        {
+                            isLongNameMatch = entLongName.Contains(longName);
+                        }
                     }
                 }
                 if (isLongNameMatch)
