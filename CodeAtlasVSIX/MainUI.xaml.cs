@@ -666,14 +666,16 @@ namespace CodeAtlasVSIX
                             //int res = objectList.GetExpandedList(i, out canRecurse, out treeList2);
 
                             //object variant;
-                            //objectList.GetProperty(i, (int)_VSOBJLISTELEMPROPID.VSOBJLISTELEMPROPID_SUPPORTSCALLSTO, out variant);
+                            //objectList.GetProperty(i, (int)_VSOBJLISTELEMPROPID.VSOBJLISTELEMPROPID_COMPONENTPATH, out variant);
                             //if (variant != null)
                             //{
                             //    Logger.Debug("xxxx:" + variant.ToString());
                             //}
 
                             IVsNavInfoNode funNavInfo;
+                            VSOBNAVIGATIONINFO3[] funNavInfo3 = new VSOBNAVIGATIONINFO3[1];
                             objectList.GetNavInfoNode(i, out funNavInfo);
+                            objectList.GetNavigationInfo2(i, funNavInfo3);
                             funNavInfo.get_Name(out text);
                             string toolTipText;
                             if (text == null)
@@ -704,11 +706,11 @@ namespace CodeAtlasVSIX
                                 //subList.GetListChanges(nChange, changeList);
                                 for (uint j = 0; j < list2ItemCount; j++)
                                 {
-                                    subList.GetTipText(j, VSTREETOOLTIPTYPE.TIPTYPE_STATEICON, out toolTipText);
-                                    if (toolTipText == null)
-                                    {
-                                        toolTipText = "*";
-                                    }
+                                    //subList.GetTipText(j, VSTREETOOLTIPTYPE.TIPTYPE_STATEICON, out toolTipText);
+                                    //if (toolTipText == null)
+                                    //{
+                                    //    toolTipText = "*";
+                                    //}
 
                                     IVsNavInfoNode navInfoNode;
                                     subList.GetNavInfoNode(j, out navInfoNode);
