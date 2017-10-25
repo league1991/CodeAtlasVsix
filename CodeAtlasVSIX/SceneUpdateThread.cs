@@ -149,7 +149,7 @@ namespace CodeAtlasVSIX
                     scene.ClearInvalidate();
 
                     var currentTick = DateTime.Now;
-                    if ((currentTick - m_lastCheckRefTime).TotalMilliseconds > 2000)
+                    if ((currentTick - m_lastCheckRefTime).TotalMilliseconds > 500)
                     {
                         mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate {
                             mainUI.CheckFindSymbolWindow(null, null);
