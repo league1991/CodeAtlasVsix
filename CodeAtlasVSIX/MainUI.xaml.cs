@@ -35,20 +35,14 @@ namespace CodeAtlasVSIX
         // Switch for all commands
         bool m_isCommandEnable = true;
 
-        // Data for find reference
-        IVsObjectList m_searchResultList;
-        Dictionary<string, string> m_referenceDict = new Dictionary<string, string>(); // Ref -> Unique Name
-        DoxygenDB.Entity m_srcEntity = null;
-        string m_srcDocumentPath = "";
-        int m_srcLine = 0;
-        int m_srcColumn = 0;
-        bool m_isFindingReference = false;
+        ReferenceSearcher m_refSearcher;
 
         public MainUI()
         {
             InitializeComponent();
 
             ResourceSetter resMgr = new ResourceSetter(this);
+            m_refSearcher = new ReferenceSearcher();
             resMgr.SetStyle();
 
             analysisWindow.InitLanguageOption();
@@ -120,6 +114,10 @@ namespace CodeAtlasVSIX
         public void SetPackage(Package package)
         {
             m_package = package;
+            if (m_refSearcher != null)
+            {
+                m_refSearcher.SetPackage(package);
+            }
         }
 
         public void AddCommand(ExecutedRoutedEventHandler callback, Key key, ModifierKeys modifier = ModifierKeys.Alt)
@@ -218,57 +216,7 @@ namespace CodeAtlasVSIX
             {
                 analysisWindow.UpdateExtensionList();
             });
-        }
-
-        void GetCursorWord(EnvDTE.TextSelection ts, out string name, out string longName, out int lineNum)
-        {
-            name = null;
-            longName = null;
-            lineNum = ts.AnchorPoint.Line;
-            int lineOffset = ts.AnchorPoint.LineCharOffset;
-
-            // If a line of text is selected, used as search word.
-            var cursorStr = ts.Text.Trim();
-            if (cursorStr.Length != 0 && cursorStr.IndexOf('\n') == -1)
-            {
-                name = cursorStr;
-                longName = cursorStr;
-                return;
-            }
-
-            // Otherwise, use the word under the cursor.
-            ts.SelectLine();
-            string lineText = ts.Text;
-            ts.MoveToLineAndOffset(lineNum, lineOffset);
-
-            Regex rx = new Regex(@"\b(?<word>\w+)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            MatchCollection matches = rx.Matches(lineText);
-
-            // Report on each match
-            int lastStartIndex = 0;
-            int lastEndIndex = 0;
-            for (int ithMatch = 0; ithMatch < matches.Count; ++ithMatch)
-            {
-                var match = matches[ithMatch];
-                string word = match.Groups["word"].Value;
-                int startIndex = match.Groups["word"].Index;
-                int endIndex = startIndex + word.Length;
-                int lineIndex = lineOffset - 1;
-                if (startIndex <= lineIndex && endIndex >= lineIndex)
-                {
-                    name = word;
-                    longName = word;
-                    var midStr = lineText.Substring(lastEndIndex, (startIndex - lastEndIndex));
-                    if (ithMatch > 0 && midStr == "::")
-                    {
-                        longName = lineText.Substring(lastStartIndex, (endIndex - lastStartIndex));
-                        break;
-                    }
-                }
-                lastStartIndex = startIndex;
-                lastEndIndex = endIndex;
-            }
-        }
+        }        
 
         public void OnShowInAtlas(object sender, ExecutedRoutedEventArgs e)
         {
@@ -296,7 +244,7 @@ namespace CodeAtlasVSIX
             string longName = null;
             int lineNum = 0;
             EnvDTE.TextSelection ts = doc.Selection as EnvDTE.TextSelection;
-            GetCursorWord(ts, out token, out longName, out lineNum);
+            CursorNavigator.GetCursorWord(ts, out token, out longName, out lineNum);
             DoxygenDB.EntitySearchResult result = new DoxygenDB.EntitySearchResult();
 
             var searched = false;
@@ -320,14 +268,13 @@ namespace CodeAtlasVSIX
             else
             {
                 // Search parent scope
-                var navigator = new CursorNavigator();
                 Document cursorDoc;
                 CodeElement element;
                 int line;
-                navigator.GetCursorElement(out cursorDoc, out element, out line);
+                CursorNavigator.GetCursorElement(out cursorDoc, out element, out line);
                 if (element != null && cursorDoc != null)
                 {
-                    var kind = VSElementTypeToString(element);
+                    var kind = CursorNavigator.VSElementTypeToString(element);
                     result = SearchAndAddToScene(
                         element.Name, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.MATCH_WORD, 
                         element.FullName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
@@ -382,8 +329,7 @@ namespace CodeAtlasVSIX
             CodeElement srcElement, tarElement;
             Document srcDocument, tarDocument;
             int srcLine, tarLine;
-            var navigator = new CursorNavigator();
-            navigator.GetCursorElement(out srcDocument, out srcElement, out srcLine);
+            CursorNavigator.GetCursorElement(out srcDocument, out srcElement, out srcLine);
 
             Guid cmdGroup = VSConstants.GUID_VSStandardCommandSet97;
             var commandTarget = ((System.IServiceProvider)m_package).GetService(typeof(SUIHostCommandDispatcher)) as IOleCommandTarget;
@@ -396,7 +342,7 @@ namespace CodeAtlasVSIX
 
             }
 
-            navigator.GetCursorElement(out tarDocument, out tarElement, out tarLine);
+            CursorNavigator.GetCursorElement(out tarDocument, out tarElement, out tarLine);
             if (srcElement == null || tarElement == null || srcElement == tarElement)
             {
                 return;
@@ -404,12 +350,12 @@ namespace CodeAtlasVSIX
 
             var srcName = srcElement.Name;
             var srcLongName = srcElement.FullName;
-            var srcType = VSElementTypeToString(srcElement);
+            var srcType = CursorNavigator.VSElementTypeToString(srcElement);
             var srcFile = srcDocument.FullName;
 
             var tarName = tarElement.Name;
             var tarLongName = tarElement.FullName;
-            var tarType = VSElementTypeToString(tarElement);
+            var tarType = CursorNavigator.VSElementTypeToString(tarElement);
             var tarFile = tarDocument.FullName;
 
             var db = DBManager.Instance().GetDB();
@@ -441,104 +387,6 @@ namespace CodeAtlasVSIX
             }
         }
 
-        string VSElementTypeToString(CodeElement element)
-        {
-            string typeStr = "";
-            var type = element.Kind;
-            switch (type)
-            {
-                case vsCMElement.vsCMElementOther:
-                    break;
-                case vsCMElement.vsCMElementClass:
-                    typeStr = "class";
-                    break;
-                case vsCMElement.vsCMElementFunction:
-                    typeStr = "function";
-                    break;
-                case vsCMElement.vsCMElementVariable:
-                    typeStr = "variable";
-                    break;
-                case vsCMElement.vsCMElementProperty:
-                    break;
-                case vsCMElement.vsCMElementNamespace:
-                    typeStr = "namespace";
-                    break;
-                case vsCMElement.vsCMElementParameter:
-                    break;
-                case vsCMElement.vsCMElementAttribute:
-                    break;
-                case vsCMElement.vsCMElementInterface:
-                    typeStr = "function";
-                    break;
-                case vsCMElement.vsCMElementDelegate:
-                    break;
-                case vsCMElement.vsCMElementEnum:
-                    break;
-                case vsCMElement.vsCMElementStruct:
-                    typeStr = "struct";
-                    break;
-                case vsCMElement.vsCMElementUnion:
-                    break;
-                case vsCMElement.vsCMElementLocalDeclStmt:
-                    break;
-                case vsCMElement.vsCMElementFunctionInvokeStmt:
-                    break;
-                case vsCMElement.vsCMElementPropertySetStmt:
-                    break;
-                case vsCMElement.vsCMElementAssignmentStmt:
-                    break;
-                case vsCMElement.vsCMElementInheritsStmt:
-                    break;
-                case vsCMElement.vsCMElementImplementsStmt:
-                    break;
-                case vsCMElement.vsCMElementOptionStmt:
-                    break;
-                case vsCMElement.vsCMElementVBAttributeStmt:
-                    break;
-                case vsCMElement.vsCMElementVBAttributeGroup:
-                    break;
-                case vsCMElement.vsCMElementEventsDeclaration:
-                    break;
-                case vsCMElement.vsCMElementUDTDecl:
-                    break;
-                case vsCMElement.vsCMElementDeclareDecl:
-                    break;
-                case vsCMElement.vsCMElementDefineStmt:
-                    break;
-                case vsCMElement.vsCMElementTypeDef:
-                    break;
-                case vsCMElement.vsCMElementIncludeStmt:
-                    break;
-                case vsCMElement.vsCMElementUsingStmt:
-                    break;
-                case vsCMElement.vsCMElementMacro:
-                    break;
-                case vsCMElement.vsCMElementMap:
-                    break;
-                case vsCMElement.vsCMElementIDLImport:
-                    break;
-                case vsCMElement.vsCMElementIDLImportLib:
-                    break;
-                case vsCMElement.vsCMElementIDLCoClass:
-                    break;
-                case vsCMElement.vsCMElementIDLLibrary:
-                    break;
-                case vsCMElement.vsCMElementImportStmt:
-                    break;
-                case vsCMElement.vsCMElementMapEntry:
-                    break;
-                case vsCMElement.vsCMElementVCBase:
-                    break;
-                case vsCMElement.vsCMElementEvent:
-                    break;
-                case vsCMElement.vsCMElementModule:
-                    break;
-                default:
-                    break;
-            }
-            return typeStr;
-        }
-
         #region Find References
         void _FindRefs(string refStr, string entStr, bool inverseEdge = false, int maxCount = -1)
         {
@@ -550,10 +398,12 @@ namespace CodeAtlasVSIX
         public void OnFindCallers(object sender, ExecutedRoutedEventArgs e)
         {
             _FindRefs("callby", "function, method");
+            _FindRefs("useby", "function, method, class, struct, file", false);
         }
         public void OnFindCallees(object sender, ExecutedRoutedEventArgs e)
         {
             _FindRefs("call", "function, method", true);
+            _FindRefs("use", "variable,object,file", true);
         }
         public void OnFindMembers(object sender, ExecutedRoutedEventArgs e)
         {
@@ -575,288 +425,17 @@ namespace CodeAtlasVSIX
         }
         public void OnFindUses(object sender, ExecutedRoutedEventArgs e)
         {
-            //_FindRefs("useby", "function, method, class, struct, file", false);
-            //_FindRefs("use", "variable,object,file", true);
             OnFindReferences(sender, e);
         }
         public void OnFindReferences(object sender, ExecutedRoutedEventArgs e)
         {
-            var scene = UIManager.Instance().GetScene();
-            
-            var dte = Package.GetGlobalService(typeof(DTE)) as DTE;
-            Document srcDocument = dte.ActiveDocument;
-            if (srcDocument == null)
-            {
-                return;
-            }
-            m_srcDocumentPath = srcDocument.FullName;
-            var srcSelection = srcDocument.Selection as EnvDTE.TextSelection;
-            m_srcLine = srcSelection.CurrentLine;
-            m_srcColumn = srcSelection.CurrentColumn;
-
-            string searchName = "";
-            var searchResult = DoShowInAtlas();
-            if (searchResult != null && searchResult.bestEntity != null)
-            {
-                m_srcEntity = searchResult.bestEntity;
-                searchName = m_srcEntity.m_shortName;
-            }
-            else
-            {
-                return;
-            }
-
-            if (searchName == "")
-            {
-                return;
-            }
-
-            IVsObjectSearch objectSearch = ((System.IServiceProvider)m_package).GetService(typeof(SVsObjectSearch)) as IVsObjectSearch;
-            if (objectSearch != null)
-            {
-                const __VSOBSEARCHFLAGS flags = __VSOBSEARCHFLAGS.VSOSF_EXPANDREFS;
-
-                VSOBSEARCHCRITERIA[] pobSrch = new VSOBSEARCHCRITERIA[1];
-                pobSrch[0].grfOptions = (uint)(_VSOBSEARCHOPTIONS.VSOBSO_CASESENSITIVE | _VSOBSEARCHOPTIONS.VSOBSO_LOOKINREFS);
-                pobSrch[0].eSrchType = VSOBSEARCHTYPE.SO_ENTIREWORD;
-                pobSrch[0].szName = searchName;
-
-                try
-                {
-                    //string text = "";
-                    ErrorHandler.ThrowOnFailure(objectSearch.Find((uint)flags, pobSrch, out m_searchResultList));
-                    m_referenceDict.Clear();
-                }
-                catch (InvalidCastException)
-                {
-                    // fixed in VS2010
-                    // VSBug : trying to cast IVsObjectList2 to IVsObjectList, shows 'Find Results' pane, but pplist is null
-                }
-            }
+            m_refSearcher.BeginNewSearch();
         }
         #endregion
         
         public void CheckFindSymbolWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            if (m_srcEntity == null || m_isFindingReference || m_searchResultList == null)
-            {
-                return;
-            }
-            m_isFindingReference = true;
-            try
-            {
-                Logger.Debug(">>>>>> CheckFindSymbolWindow Begin >>>>>>");
-                var db = DBManager.Instance().GetDB();
-                string text="";
-                var objectList = m_searchResultList as IVsObjectList2;
-                if (objectList != null)
-                {
-                    uint pCount;
-                    var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
-                    bool hasPleaseWait = false;
-                    bool hasProgress = false;
-                    List<DoxygenDB.Entity> targetEntityList = new List<DoxygenDB.Entity>();
-
-                    if (objectList.GetItemCount(out pCount) == VSConstants.S_OK)
-                    {
-                        for (uint i = 0; i < pCount; i++)
-                        {
-                            //int canRecurse;
-                            //IVsLiteTreeList treeList2;
-                            //int res = objectList.GetExpandedList(i, out canRecurse, out treeList2);
-
-                            //object variant;
-                            //objectList.GetProperty(i, (int)_VSOBJLISTELEMPROPID.VSOBJLISTELEMPROPID_COMPONENTPATH, out variant);
-                            //if (variant != null)
-                            //{
-                            //    Logger.Debug("xxxx:" + variant.ToString());
-                            //}
-
-                            IVsNavInfoNode funNavInfo;
-                            VSOBNAVIGATIONINFO3[] funNavInfo3 = new VSOBNAVIGATIONINFO3[1];
-                            objectList.GetNavInfoNode(i, out funNavInfo);
-                            objectList.GetNavigationInfo2(i, funNavInfo3);
-                            funNavInfo.get_Name(out text);
-                            string toolTipText;
-                            if (text == null)
-                            {
-                                text = "";
-                            }
-                            if (text != null)
-                            {
-                                Logger.Debug("+++++++"+text);
-                            }
-                            hasPleaseWait |= text.Contains("Please Wait...");
-                            hasProgress |= text.Contains("% of items left to process");
-
-                            if (hasPleaseWait || hasProgress)
-                            {
-                                continue;
-                            }
-                            IVsObjectList2 subList;
-                            if (objectList.GetList2(i, (uint)_LIB_LISTTYPE.LLT_REFERENCES, (uint)(_LIB_LISTFLAGS.LLF_NONE), new VSOBSEARCHCRITERIA2[0], out subList) == VSConstants.S_OK)
-                            {
-                                // Switch to using our "safe" PInvoke interface for IVsObjectList2 to avoid potential memory management issues
-                                // when receiving strings as out params.
-                                uint list2ItemCount = 0;
-                                subList.GetItemCount(out list2ItemCount);
-
-                                //uint nChange = 20;
-                                //VSTREELISTITEMCHANGE[] changeList = new VSTREELISTITEMCHANGE[nChange];
-                                //subList.GetListChanges(nChange, changeList);
-                                for (uint j = 0; j < list2ItemCount; j++)
-                                {
-                                    //subList.GetTipText(j, VSTREETOOLTIPTYPE.TIPTYPE_STATEICON, out toolTipText);
-                                    //if (toolTipText == null)
-                                    //{
-                                    //    toolTipText = "*";
-                                    //}
-
-                                    IVsNavInfoNode navInfoNode;
-                                    subList.GetNavInfoNode(j, out navInfoNode);
-                                    navInfoNode.get_Name(out text);
-                                    uint itemType = 0;
-                                    //navInfoNode.get_Type(out itemType);
-                                    subList.GetCategoryField2(j, (int)LIB_CATEGORY.LC_LISTTYPE, out itemType);
-                                    VSTREEDISPLAYDATA[] displayData = new VSTREEDISPLAYDATA[1];
-                                    subList.GetDisplayData(j, displayData);
-                                    if (text == null)
-                                    {
-                                        text = "";
-                                    }
-                                    hasPleaseWait |= text.Contains("Please Wait...");
-                                    hasProgress |= text.Contains("% of items left to process");
-                                    if (hasPleaseWait || hasProgress)
-                                    {
-                                        continue;
-                                    }
-
-                                    if (m_referenceDict.ContainsKey(text))
-                                    {
-                                        continue;
-                                    }
-
-                                    Logger.Debug("Type:" + displayData[0].Image + ": " + text);
-                                    
-                                    if (displayData[0].Image != 10)
-                                    {
-                                        continue;
-                                    }
-
-                                    int isOK;
-                                    int res = subList.CanGoToSource(j, VSOBJGOTOSRCTYPE.GS_REFERENCE, out isOK);
-                                    if (res != VSConstants.S_OK || isOK == 0)
-                                    {
-                                        continue;
-                                    }
-
-                                    if(subList.GoToSource(j, VSOBJGOTOSRCTYPE.GS_REFERENCE) == VSConstants.S_OK)
-                                    {
-                                        Document doc = null;
-                                        if (dte != null)
-                                        {
-                                            doc = dte.ActiveDocument;
-                                            if (doc != null)
-                                            {
-                                                EnvDTE.TextSelection ts = doc.Selection as EnvDTE.TextSelection;
-                                                int lineNum = ts.AnchorPoint.Line;
-                                                int lineOffset = ts.AnchorPoint.LineCharOffset;
-                                                ts.MoveToLineAndOffset(lineNum, lineOffset);
-                                            }
-                                        }
-
-                                        CodeElement tarElement;
-                                        Document tarDocument;
-                                        int tarLine;
-                                        var navigator = new CursorNavigator();
-                                        navigator.GetCursorElement(out tarDocument, out tarElement, out tarLine);
-                                        if (tarElement != null)
-                                        {
-                                            var tarName = tarElement.Name;
-                                            var tarLongName = "";// tarElement.FullName;
-                                            var tarType = VSElementTypeToString(tarElement);
-                                            var tarFile = tarDocument.FullName;
-
-                                            var tarRequest = new DoxygenDB.EntitySearchRequest(
-                                                tarName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.MATCH_WORD,
-                                                tarLongName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.WORD_CONTAINS_DB | (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
-                                                tarType, tarFile, tarLine);
-                                            var tarResult = new DoxygenDB.EntitySearchResult();
-                                            db.SearchAndFilter(tarRequest, out tarResult);
-
-                                            if (tarResult.bestEntity != null)
-                                            {
-                                                targetEntityList.Add(tarResult.bestEntity);
-                                            }
-                                        }
-                                        //var tarResult = DoShowInAtlas();
-                                        //if (tarResult != null && tarResult.bestEntity != null)
-                                        //{
-                                        //    targetEntityList.Add(tarResult.bestEntity);
-                                        //}
-
-                                        m_referenceDict[text] = "";
-                                    }
-                                    else
-                                    {
-                                        Logger.Debug("Go to source failed. " + text);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    var scene = UIManager.Instance().GetScene();
-                    scene.AcquireLock();
-                    scene.AddCodeItem(m_srcEntity.m_id);
-                    foreach (var targetEntity in targetEntityList)
-                    {
-                        scene.AddCodeItem(targetEntity.m_id);
-                        scene.DoAddCustomEdge(targetEntity.m_id, m_srcEntity.m_id);
-                    }
-                    scene.SelectCodeItem(m_srcEntity.m_id);
-                    scene.ReleaseLock();                    
-
-                    Document srcDocument = null;
-                    if (dte.get_IsOpenFile(EnvDTE.Constants.vsViewKindCode, m_srcDocumentPath))
-                    {
-                        srcDocument = dte.Documents.Item(m_srcDocumentPath);
-                        srcDocument.Activate();
-                    }
-                    else
-                    {
-                        var window = dte.ItemOperations.OpenFile(m_srcDocumentPath, EnvDTE.Constants.vsViewKindCode);
-                        if (window != null)
-                        {
-                            window.Visible = true;
-                            window.Activate();
-                            srcDocument = window.Document;
-                        }
-                    }
-                    if (srcDocument != null)
-                    {
-                        var srcSelection = srcDocument.Selection as EnvDTE.TextSelection;
-                        if (srcSelection != null)
-                        {
-                            srcSelection.MoveToDisplayColumn(m_srcLine, m_srcColumn);
-                        }
-                    }
-
-                    if (!hasPleaseWait && !hasProgress)
-                    {
-                        m_searchResultList = null;
-                    }
-                    Logger.Debug("=========================================");
-                }
-
-                Logger.Debug("<<<<<< CheckFindSymbolWindow  End <<<<<<");
-            }
-            catch (InvalidCastException)
-            {
-                // fixed in VS2010
-                // VSBug : trying to cast IVsObjectList2 to IVsObjectList, shows 'Find Results' pane, but pplist is null
-            }
-            m_isFindingReference = false;
+            m_refSearcher.UpdateResult();
         }
 
         #region Navigation

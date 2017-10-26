@@ -12,6 +12,8 @@ using Microsoft.VisualStudio.VCCodeModel;
 
 namespace CodeAtlasVSIX
 {
+    // This class is used to find the cursor using the given CodeUIItem, or 
+    // find the CodeUIItem using the given cursor.
     class CursorNavigator
     {
         struct KindPair
@@ -26,7 +28,6 @@ namespace CodeAtlasVSIX
         };
 
         DTE2 m_dte;
-        bool m_useCodeModel = true;
 
         static List<KindPair> s_typeMap =
             new List<KindPair>
@@ -48,13 +49,17 @@ namespace CodeAtlasVSIX
         public CursorNavigator()
         {
             var t0 = DateTime.Now;
-            m_useCodeModel = !DBManager.Instance().IsBigSolution() && 
-                UIManager.Instance().GetMainUI().IsDynamicNavigation();
 
             m_dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
 
             var t1 = DateTime.Now;
             //Logger.Debug("---CursorNavigator::CursorNavigator" + (t1 - t0).TotalMilliseconds.ToString());
+        }
+
+        static bool UseCodeModel()
+        {
+            return !DBManager.Instance().IsBigSolution() &&
+                UIManager.Instance().GetMainUI().IsDynamicNavigation();
         }
 
         static bool IsMatchPair(DoxygenDB.EntKind doxyKind, vsCMElement vsKind)
@@ -324,9 +329,9 @@ namespace CodeAtlasVSIX
             }
         }
 
-        FileCodeModel GetFileCodeModel(Document document)
+        static FileCodeModel GetFileCodeModel(Document document)
         {
-            if (m_useCodeModel == false)
+            if (UseCodeModel() == false)
             {
                 return null;
             }
@@ -478,7 +483,7 @@ namespace CodeAtlasVSIX
             return null;
         }
 
-        public void GetCursorElement(out Document document, out CodeElement element, out int line)
+        static public void GetCursorElement(out Document document, out CodeElement element, out int line)
         {
             document = null;
             element = null;
@@ -504,7 +509,154 @@ namespace CodeAtlasVSIX
             }
             return;
         }
+        
+        static public string VSElementTypeToString(CodeElement element)
+        {
+            string typeStr = "";
+            var type = element.Kind;
+            switch (type)
+            {
+                case vsCMElement.vsCMElementOther:
+                    break;
+                case vsCMElement.vsCMElementClass:
+                    typeStr = "class";
+                    break;
+                case vsCMElement.vsCMElementFunction:
+                    typeStr = "function";
+                    break;
+                case vsCMElement.vsCMElementVariable:
+                    typeStr = "variable";
+                    break;
+                case vsCMElement.vsCMElementProperty:
+                    break;
+                case vsCMElement.vsCMElementNamespace:
+                    typeStr = "namespace";
+                    break;
+                case vsCMElement.vsCMElementParameter:
+                    break;
+                case vsCMElement.vsCMElementAttribute:
+                    break;
+                case vsCMElement.vsCMElementInterface:
+                    typeStr = "function";
+                    break;
+                case vsCMElement.vsCMElementDelegate:
+                    break;
+                case vsCMElement.vsCMElementEnum:
+                    break;
+                case vsCMElement.vsCMElementStruct:
+                    typeStr = "struct";
+                    break;
+                case vsCMElement.vsCMElementUnion:
+                    break;
+                case vsCMElement.vsCMElementLocalDeclStmt:
+                    break;
+                case vsCMElement.vsCMElementFunctionInvokeStmt:
+                    break;
+                case vsCMElement.vsCMElementPropertySetStmt:
+                    break;
+                case vsCMElement.vsCMElementAssignmentStmt:
+                    break;
+                case vsCMElement.vsCMElementInheritsStmt:
+                    break;
+                case vsCMElement.vsCMElementImplementsStmt:
+                    break;
+                case vsCMElement.vsCMElementOptionStmt:
+                    break;
+                case vsCMElement.vsCMElementVBAttributeStmt:
+                    break;
+                case vsCMElement.vsCMElementVBAttributeGroup:
+                    break;
+                case vsCMElement.vsCMElementEventsDeclaration:
+                    break;
+                case vsCMElement.vsCMElementUDTDecl:
+                    break;
+                case vsCMElement.vsCMElementDeclareDecl:
+                    break;
+                case vsCMElement.vsCMElementDefineStmt:
+                    break;
+                case vsCMElement.vsCMElementTypeDef:
+                    break;
+                case vsCMElement.vsCMElementIncludeStmt:
+                    break;
+                case vsCMElement.vsCMElementUsingStmt:
+                    break;
+                case vsCMElement.vsCMElementMacro:
+                    break;
+                case vsCMElement.vsCMElementMap:
+                    break;
+                case vsCMElement.vsCMElementIDLImport:
+                    break;
+                case vsCMElement.vsCMElementIDLImportLib:
+                    break;
+                case vsCMElement.vsCMElementIDLCoClass:
+                    break;
+                case vsCMElement.vsCMElementIDLLibrary:
+                    break;
+                case vsCMElement.vsCMElementImportStmt:
+                    break;
+                case vsCMElement.vsCMElementMapEntry:
+                    break;
+                case vsCMElement.vsCMElementVCBase:
+                    break;
+                case vsCMElement.vsCMElementEvent:
+                    break;
+                case vsCMElement.vsCMElementModule:
+                    break;
+                default:
+                    break;
+            }
+            return typeStr;
+        }
 
+        static public void GetCursorWord(EnvDTE.TextSelection ts, out string name, out string longName, out int lineNum)
+        {
+            name = null;
+            longName = null;
+            lineNum = ts.AnchorPoint.Line;
+            int lineOffset = ts.AnchorPoint.LineCharOffset;
+
+            // If a line of text is selected, used as search word.
+            var cursorStr = ts.Text.Trim();
+            if (cursorStr.Length != 0 && cursorStr.IndexOf('\n') == -1)
+            {
+                name = cursorStr;
+                longName = cursorStr;
+                return;
+            }
+
+            // Otherwise, use the word under the cursor.
+            ts.SelectLine();
+            string lineText = ts.Text;
+            ts.MoveToLineAndOffset(lineNum, lineOffset);
+
+            Regex rx = new Regex(@"\b(?<word>\w+)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            MatchCollection matches = rx.Matches(lineText);
+
+            // Report on each match
+            int lastStartIndex = 0;
+            int lastEndIndex = 0;
+            for (int ithMatch = 0; ithMatch < matches.Count; ++ithMatch)
+            {
+                var match = matches[ithMatch];
+                string word = match.Groups["word"].Value;
+                int startIndex = match.Groups["word"].Index;
+                int endIndex = startIndex + word.Length;
+                int lineIndex = lineOffset - 1;
+                if (startIndex <= lineIndex && endIndex >= lineIndex)
+                {
+                    name = word;
+                    longName = word;
+                    var midStr = lineText.Substring(lastEndIndex, (startIndex - lastEndIndex));
+                    if (ithMatch > 0 && midStr == "::")
+                    {
+                        longName = lineText.Substring(lastStartIndex, (endIndex - lastStartIndex));
+                        break;
+                    }
+                }
+                lastStartIndex = startIndex;
+                lastEndIndex = endIndex;
+            }
+        }
         void TraverseCodeElement(CodeElements elements, int indent)
         {
             var elementIter = elements.GetEnumerator();

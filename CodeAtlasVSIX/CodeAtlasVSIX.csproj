@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="CursorNavigator.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="ReferenceSearcher.cs" />
     <Compile Include="ResourceSetter.cs" />
     <Compile Include="SolutionTraverser.cs" />
     <Compile Include="VSMenuCommand.cs" />
