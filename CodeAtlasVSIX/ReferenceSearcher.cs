@@ -364,7 +364,7 @@ namespace CodeAtlasVSIX
             }
             else
             {
-                var window = dte.ItemOperations.OpenFile(m_srcDocumentPath, EnvDTE.Constants.vsViewKindCode);
+                var window = dte.ItemOperations.OpenFile(path, EnvDTE.Constants.vsViewKindCode);
                 if (window != null)
                 {
                     window.Visible = true;
