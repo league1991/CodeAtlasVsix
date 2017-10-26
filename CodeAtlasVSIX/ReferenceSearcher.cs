@@ -95,6 +95,17 @@ namespace CodeAtlasVSIX
                 {
                     return false;
                 }
+                if (resultCount > 0)
+                {
+                    string text;
+                    ushort img;
+                    bool isProcessing;
+                    GetListItemInfo(objectList, 0, out text, out img, out isProcessing);
+                    if (text == "Search found no results")
+                    {
+                        return false;
+                    }
+                }
             }
             catch (InvalidCastException)
             {
@@ -155,7 +166,7 @@ namespace CodeAtlasVSIX
 
                         for (uint j = 0; j < list2ItemCount; j++)
                         {
-                            GetListItemInfo(objectList, j, out text, out img, out isDoing);
+                            GetListItemInfo(subList, j, out text, out img, out isDoing);
                             isProcessing |= isDoing;
                             if (isDoing || m_referenceDict.ContainsKey(text))
                             {
