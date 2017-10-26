@@ -177,7 +177,7 @@ namespace CodeAtlasVSIX
 
                             // Ignore several reference types
                             // 12: comment
-                            if (img == 12)
+                            if (img == 12 || img == 5 || img == 8)
                             {
                                 continue;
                             }
@@ -199,7 +199,7 @@ namespace CodeAtlasVSIX
                             ConnectTargetToSource();
                             m_referenceDict[text] = "";
 
-                            var duration = (DateTime.Now - beginTime).Milliseconds;
+                            var duration = (DateTime.Now - beginTime).TotalMilliseconds;
                             if (duration > 1000)
                             {
                                 isProcessing = true;

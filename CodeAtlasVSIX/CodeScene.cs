@@ -815,7 +815,7 @@ namespace CodeAtlasVSIX
             AcquireLock();
 
             t1 = DateTime.Now;
-            Logger.Debug("## AcquireLock " + (t1 - t0).TotalMilliseconds.ToString());
+            // Logger.Debug("## AcquireLock " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
 
             var centerItem = itemList[0];
@@ -831,7 +831,7 @@ namespace CodeAtlasVSIX
                 minItem = FindNeighbourForEdge(centerEdge, mainDirection, isInOrder);
             }
             t1 = DateTime.Now;
-            Logger.Debug("## Find Neighbour " + (t1 - t0).TotalMilliseconds.ToString());
+            //Logger.Debug("## Find Neighbour " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
             
             if (minItem != null)
@@ -845,7 +845,7 @@ namespace CodeAtlasVSIX
             ReleaseLock();
 
             t1 = DateTime.Now;
-            Logger.Debug("## ShowInEditor " + (t1 - t0).TotalMilliseconds.ToString());
+            //Logger.Debug("## ShowInEditor " + (t1 - t0).TotalMilliseconds.ToString());
             t0 = t1;
         }
 
