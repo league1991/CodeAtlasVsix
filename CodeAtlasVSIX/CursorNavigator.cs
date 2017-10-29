@@ -492,11 +492,11 @@ namespace CodeAtlasVSIX
             if (dte != null)
             {
                 document = dte.ActiveDocument;
-                var docItem = document.ProjectItem;
-                if (docItem == null)
-                {
-                    return;
-                }
+                //var docItem = document.ProjectItem;
+                //if (docItem == null)
+                //{
+                //    return;
+                //}
                 var docModel = GetFileCodeModel(document);
                 if (docModel == null)
                 {

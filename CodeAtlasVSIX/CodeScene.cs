@@ -1595,6 +1595,10 @@ namespace CodeAtlasVSIX
             {
                 return false;
             }
+            if (srcName == tarName)
+            {
+                return false;
+            }
             if (edgeData == null)
             {
                 edgeData = new DataDict();
