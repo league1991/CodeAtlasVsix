@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace CodeAtlasVSIX
 {
@@ -27,8 +28,6 @@ namespace CodeAtlasVSIX
         //int m_edgeNum = 0;
         bool m_abort = false;
         int m_timeStamp = 0;
-
-        DateTime m_lastCheckRefTime = DateTime.Now;
 
         public SceneUpdateThread(CodeScene scene)
         {
@@ -148,16 +147,10 @@ namespace CodeAtlasVSIX
 
                     scene.ClearInvalidate();
 
-                    var currentTick = DateTime.Now;
-                    if ((currentTick - m_lastCheckRefTime).TotalMilliseconds > 1000)
+                    mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate
                     {
-                        //mainUI.CheckFindSymbolWindow(null, null);
-                        mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate
-                        {
-                            mainUI.CheckFindSymbolWindow(null, null);
-                        });
-                        m_lastCheckRefTime = currentTick;
-                    }               
+                        mainUI.CheckFindSymbolWindow(null, null);
+                    }, DispatcherPriority.Loaded);
                 }
                 else
                 {

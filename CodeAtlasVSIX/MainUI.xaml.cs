@@ -36,6 +36,7 @@ namespace CodeAtlasVSIX
         bool m_isCommandEnable = true;
 
         ReferenceSearcher m_refSearcher;
+        DateTime m_lastCheckRefTime = DateTime.Now;
 
         public MainUI()
         {
@@ -435,7 +436,11 @@ namespace CodeAtlasVSIX
         
         public void CheckFindSymbolWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            m_refSearcher.UpdateResult();
+            if ((DateTime.Now - m_lastCheckRefTime).TotalMilliseconds > 2000)
+            {
+                m_refSearcher.UpdateResult();
+                m_lastCheckRefTime = DateTime.Now;
+            }
         }
 
         #region Navigation

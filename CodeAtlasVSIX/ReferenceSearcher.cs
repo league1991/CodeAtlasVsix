@@ -170,7 +170,7 @@ namespace CodeAtlasVSIX
                         longNameMatched = true;
                     }
                 }
-
+                
                 for (uint i = 0; i < pCount; i++)
                 {
                     GetListItemInfo(objectList, i, out itemText, out img, out isDoing);
@@ -249,7 +249,7 @@ namespace CodeAtlasVSIX
                             refItem.m_isCheck = true;
 
                             var duration = (DateTime.Now - beginTime).TotalMilliseconds;
-                            if (duration > 500)
+                            if (duration > 800)
                             {
                                 isItemProcessing = true;
                                 return;
