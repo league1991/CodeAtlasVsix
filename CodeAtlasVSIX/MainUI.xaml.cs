@@ -71,7 +71,7 @@ namespace CodeAtlasVSIX
             AddCommand(OnShowScheme4, Key.D4, ModifierKeys.Alt);
             AddCommand(OnShowScheme5, Key.D5, ModifierKeys.Alt);
 
-            RegisterCallback();
+            //RegisterCallback();
         }
         private void RegisterCallback()
         {

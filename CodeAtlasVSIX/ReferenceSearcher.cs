@@ -479,6 +479,10 @@ namespace CodeAtlasVSIX
             isProcessing |= text.Contains("% of items left to process");
 
             image = displayData[0].Image;
+            if (image == 8 || image == 7)
+            {
+                isProcessing = true;
+            }
         }
         
         bool GoToDocument(string path, int line, int column)

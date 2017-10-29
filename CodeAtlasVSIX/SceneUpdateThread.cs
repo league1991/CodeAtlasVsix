@@ -151,7 +151,9 @@ namespace CodeAtlasVSIX
                     var currentTick = DateTime.Now;
                     if ((currentTick - m_lastCheckRefTime).TotalMilliseconds > 1000)
                     {
-                        mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate {
+                        //mainUI.CheckFindSymbolWindow(null, null);
+                        mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate
+                        {
                             mainUI.CheckFindSymbolWindow(null, null);
                         });
                         m_lastCheckRefTime = currentTick;
