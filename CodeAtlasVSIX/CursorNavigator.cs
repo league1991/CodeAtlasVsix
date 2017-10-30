@@ -283,7 +283,8 @@ namespace CodeAtlasVSIX
 
                             if (res == false)
                             {
-                                ts.GotoLine(line);
+                                ts.MoveTo(line, column);
+                                //ts.GotoLine(line);
                             }
                         }
                     }

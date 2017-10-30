@@ -1281,6 +1281,59 @@ namespace CodeAtlasVSIX
         #endregion
         
         #region Add/Delete Item and Edge
+        public string GetBookmarkUniqueName(string path, int line, int column)
+        {
+            return string.Format("{0} ({1},{2})", path, line, column);
+        }
+
+        bool _DoAddBookmarkItem(string path, string file, int line, int column)
+        {
+            string srcUniqueName = GetBookmarkUniqueName(path, line, column);
+            if (m_itemDict.ContainsKey(srcUniqueName))
+            {
+                return false;
+            }
+            if (m_stopItem.ContainsKey(srcUniqueName))
+            {
+                return false;
+            }
+            var dbObj = DBManager.Instance().GetDB();
+
+            // Build custom data
+            var customData = new Dictionary<string, object>();
+            customData["name"] = string.Format("{0} ({1},{2})", file, line, column);
+            customData["longName"] = srcUniqueName;
+            customData["comment"] = GetComment(srcUniqueName);
+            customData["kindName"] = "page";
+            var metricRes = new Dictionary<string, DoxygenDB.Variant>();
+            metricRes["file"] = new DoxygenDB.Variant(path);
+            metricRes["line"] = new DoxygenDB.Variant(line);
+            metricRes["column"] = new DoxygenDB.Variant(column);
+            customData["metric"] = metricRes;
+            DoxygenDB.EntKind kind = DoxygenDB.EntKind.PAGE;
+            customData["kind"] = kind;
+            customData["color"] = Color.FromRgb(40,196,146);
+            // Add CodeUIItem
+            this.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                AcquireLock();
+                var item = new CodeUIItem(srcUniqueName, customData);
+                m_itemDict[srcUniqueName] = item;
+                m_view.canvas.Children.Add(item);
+                Point center;
+                GetSelectedCenter(out center);
+                item.Pos = center;
+                item.SetTargetPos(center);
+                m_isLayoutDirty = true;
+                if (m_itemDict.Count == 1)
+                {
+                    SelectOneItem(item);
+                }
+                m_schemeTimeStamp++;
+                ReleaseLock();
+            });
+            return true;
+        }
         bool _DoAddCodeItem(string srcUniqueName)
         {
             // Logger.WriteLine("Add Code Item:" + srcUniqueName);
@@ -1509,7 +1562,17 @@ namespace CodeAtlasVSIX
         {
             AcquireLock();
             _DoAddCodeItem(srcUniqueName);
-            UpdateLRU(new List<string> { srcUniqueName});
+            UpdateLRU(new List<string> { srcUniqueName });
+            RemoveItemLRU();
+            ReleaseLock();
+        }
+
+        public void AddBookmarkItem(string path, string file, int line, int column)
+        {
+            AcquireLock();
+            _DoAddBookmarkItem(path, file, line, column);
+            var uniqueName = GetBookmarkUniqueName(path, line, column);
+            UpdateLRU(new List<string> { uniqueName });
             RemoveItemLRU();
             ReleaseLock();
         }

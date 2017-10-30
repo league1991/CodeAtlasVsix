@@ -436,7 +436,7 @@ namespace CodeAtlasVSIX
         
         public void CheckFindSymbolWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            if ((DateTime.Now - m_lastCheckRefTime).TotalMilliseconds > 2000)
+            if ((DateTime.Now - m_lastCheckRefTime).TotalMilliseconds > 300)
             {
                 m_refSearcher.UpdateResult();
                 m_lastCheckRefTime = DateTime.Now;
