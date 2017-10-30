@@ -484,6 +484,21 @@ namespace CodeAtlasVSIX
             return null;
         }
 
+        static public void MoveToLindEnd()
+        {
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            if (dte != null)
+            {
+                var document = dte.ActiveDocument;
+                if (document == null)
+                {
+                    return;
+                }
+
+                EnvDTE.TextSelection ts = document.Selection as EnvDTE.TextSelection;
+                ts.EndOfLine();
+            }
+        }
         static public void GetCursorElement(out Document document, out CodeElement element, out int line)
         {
             document = null;

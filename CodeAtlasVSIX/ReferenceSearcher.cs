@@ -228,7 +228,7 @@ namespace CodeAtlasVSIX
                                 continue;
                             }
 
-                            int isOK;
+                            //int isOK;
                             //int res = subList.CanGoToSource(j, VSOBJGOTOSRCTYPE.GS_REFERENCE, out isOK);
                             //if (res != VSConstants.S_OK || isOK == 0)
                             //{
@@ -302,7 +302,6 @@ namespace CodeAtlasVSIX
             // Process
             bool isComplete;
             ProcessReferenceList(out isComplete);
-            bool isFileComplete;
             int count = CheckFiles();
             if (isComplete && count == 0)
             {

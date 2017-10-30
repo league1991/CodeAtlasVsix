@@ -426,11 +426,16 @@ namespace CodeAtlasVSIX
         }
         public void OnFindUses(object sender, ExecutedRoutedEventArgs e)
         {
-            OnFindReferences(sender, e);
-        }
-        public void OnFindReferences(object sender, ExecutedRoutedEventArgs e)
-        {
-            m_refSearcher.BeginNewSearch();
+            var scene = UIManager.Instance().GetScene();
+            var selectedItem = scene.SelectedNodes();
+            if (selectedItem.Count == 1 && selectedItem[0].GetKind() == DoxygenDB.EntKind.PAGE)
+            {
+                scene.ReplaceBookmarkItem(selectedItem[0].GetUniqueName());
+            }
+            else
+            {
+                m_refSearcher.BeginNewSearch();
+            }
         }
         #endregion
         
