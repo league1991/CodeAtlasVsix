@@ -230,15 +230,19 @@ namespace CodeAtlasVSIX
             }
             if (m_kind == DoxygenDB.EntKind.DIR)
             {
-                return "[ directory ]";
+                return "[ Directory ]";
             }
             if (m_kind == DoxygenDB.EntKind.FILE)
             {
-                return "[ file ]";
+                return "[ File ]";
+            }
+            if (m_kind == DoxygenDB.EntKind.PAGE)
+            {
+                return "[ Code Position ]";
             }
             if (!m_customData.ContainsKey("className"))
             {
-                return "[ globals ]";
+                return "[ Global Symbol ]";
             }
             return m_customData["className"].m_string;
         }

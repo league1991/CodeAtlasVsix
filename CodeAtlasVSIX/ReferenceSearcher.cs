@@ -389,11 +389,11 @@ namespace CodeAtlasVSIX
                 }
                 count++;
 
-                //var duration = (DateTime.Now - beginTime).TotalMilliseconds;
-                //if (duration > 500)
-                //{
-                //    break;
-                //}
+                var duration = (DateTime.Now - beginTime).TotalMilliseconds;
+                if (duration > 500)
+                {
+                    break;
+                }
             }
             return count;
         }
