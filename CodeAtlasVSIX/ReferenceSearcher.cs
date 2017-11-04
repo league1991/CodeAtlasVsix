@@ -45,7 +45,7 @@ namespace CodeAtlasVSIX
         bool m_isFindingReference = false;
         Package m_package;
         int m_count = 0;
-        int m_maxCount = 30;
+        int m_maxCount = 10;
 
         string m_srcUniqueName = "";
         string m_srcLongName = "";
@@ -390,7 +390,7 @@ namespace CodeAtlasVSIX
                 count++;
 
                 var duration = (DateTime.Now - beginTime).TotalMilliseconds;
-                if (duration > 500)
+                if (duration > 100)
                 {
                     break;
                 }

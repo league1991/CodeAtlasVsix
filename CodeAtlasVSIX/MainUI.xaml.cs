@@ -404,7 +404,7 @@ namespace CodeAtlasVSIX
         public void OnFindCallees(object sender, ExecutedRoutedEventArgs e)
         {
             _FindRefs("call", "function, method", true);
-            _FindRefs("use", "variable,object,file", true);
+            _FindRefs("use", "variable,object,file", true, 1);
         }
         public void OnFindMembers(object sender, ExecutedRoutedEventArgs e)
         {
