@@ -1321,7 +1321,7 @@ namespace CodeAtlasVSIX
 
             // Build custom data
             var customData = new Dictionary<string, object>();
-            customData["name"] = string.Format("{0} ({1},{2})", file, line, column);
+            customData["name"] = string.Format("{0}({1})", file, line);
             customData["longName"] = srcUniqueName;
             customData["comment"] = GetComment(srcUniqueName);
             customData["kindName"] = "page";
