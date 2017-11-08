@@ -66,7 +66,7 @@ namespace CodeAtlasVSIX
 
         // LRU
         List<string> m_itemLruQueue = new List<string>();
-        int m_lruMaxLength = 100;
+        int m_lruMaxLength = 50;
         #endregion
 
         public CodeScene()
