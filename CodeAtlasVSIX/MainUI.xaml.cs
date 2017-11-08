@@ -441,7 +441,7 @@ namespace CodeAtlasVSIX
         
         public void CheckFindSymbolWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            if ((DateTime.Now - m_lastCheckRefTime).TotalMilliseconds > 500)
+            if ((DateTime.Now - m_lastCheckRefTime).TotalMilliseconds > 1000)
             {
                 m_refSearcher.UpdateResult();
                 m_lastCheckRefTime = DateTime.Now;
@@ -748,6 +748,36 @@ namespace CodeAtlasVSIX
         private void autoFocusButton_Click(object sender, RoutedEventArgs e)
         {
             codeView.SetAutoFocus(autoFocusButton.IsChecked);
+        }
+
+        private void lru10Button_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetLRULimit(10);
+        }
+
+        private void lru20Button_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetLRULimit(20);
+        }
+
+        private void lru50Button_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetLRULimit(50);
+        }
+
+        private void lru100Button_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetLRULimit(100);
+        }
+
+        private void lru200Button_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetLRULimit(200);
         }
     }
 }

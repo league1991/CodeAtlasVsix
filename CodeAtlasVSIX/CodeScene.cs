@@ -1290,6 +1290,14 @@ namespace CodeAtlasVSIX
             }
             m_selectEventConnected = true;
         }
+
+        public void SetLRULimit(int count)
+        {
+            AcquireLock();
+            m_lruMaxLength = count;
+            RemoveItemLRU();
+            ReleaseLock();
+        }
         #endregion
         
         #region Add/Delete Item and Edge
