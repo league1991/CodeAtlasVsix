@@ -189,6 +189,12 @@ namespace CodeAtlasVSIX
 
                     IVsObjectList2 subList;
                     bool isItemProcessing = false;
+                    uint flags; 
+                    objectList.GetFlags(out flags);// _VSTREEFLAGS
+                    uint counter, changes; 
+                    objectList.UpdateCounter(out counter, out changes); // _VSTREEITEMCHANGESMASK
+                    uint cap;
+                    objectList.GetCapabilities2(out cap);// _LIB_LISTCAPABILITIES
                     if (objectList.GetList2(i, (uint)_LIB_LISTTYPE.LLT_REFERENCES, (uint)(_LIB_LISTFLAGS.LLF_NONE), new VSOBSEARCHCRITERIA2[0], out subList) == VSConstants.S_OK &&
                         subList != null)
                     {
