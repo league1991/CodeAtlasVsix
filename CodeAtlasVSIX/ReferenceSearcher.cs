@@ -62,17 +62,21 @@ namespace CodeAtlasVSIX
             m_package = package;
         }
 
-        public bool BeginNewSearch()
+        void Clear()
         {
-            var scene = UIManager.Instance().GetScene();
-            var dte = Package.GetGlobalService(typeof(DTE)) as DTE;
             m_searchResultList = null;
             m_referenceDict.Clear();
             m_itemDict.Clear();
             m_subList.Clear();
             m_srcUniqueName = "";
             m_srcLongName = "";
+            m_count = 0;
+        }
 
+        public bool BeginNewRefSearch()
+        {
+            Clear();
+            var scene = UIManager.Instance().GetScene();
             var selectedNodes = scene.SelectedNodes();
             if (selectedNodes.Count == 0)
             {
@@ -80,19 +84,76 @@ namespace CodeAtlasVSIX
             }
 
             CodeUIItem node = selectedNodes[0];
-            m_srcUniqueName = node.GetUniqueName();
-            m_srcLongName = node.GetLongName();
-
-            bool res = LaunchSearch(node.GetLongName());
+            bool res = LaunchRefSearch(node.GetLongName());
             if (!res)
             {
-                res = LaunchSearch(node.GetName());
+                res = LaunchRefSearch(node.GetName());
             }
-            m_count = 0;
             return res;
         }
 
-        bool LaunchSearch(string name)
+        public bool BeginNewNormalSearch()
+        {
+            Clear();
+            var scene = UIManager.Instance().GetScene();
+            var selectedNodes = scene.SelectedNodes();
+            if (selectedNodes.Count == 0)
+            {
+                return false;
+            }
+
+            CodeUIItem node = selectedNodes[0];
+            bool res = LaunchNormalSearch(node.GetLongName());
+            if (!res)
+            {
+                res = LaunchNormalSearch(node.GetName());
+            }
+            return res;
+        }
+
+        bool LaunchNormalSearch(string name)
+        {
+            IVsObjectSearch objectSearch = ((System.IServiceProvider)m_package).GetService(typeof(SVsObjectSearch)) as IVsObjectSearch;
+            if (objectSearch == null)
+            {
+                return false;
+            }
+
+            const __VSOBSEARCHFLAGS flags = __VSOBSEARCHFLAGS.VSOSF_EXPANDREFS;
+            VSOBSEARCHCRITERIA[] pobSrch = new VSOBSEARCHCRITERIA[1];
+            pobSrch[0].grfOptions = (uint)(_VSOBSEARCHOPTIONS.VSOBSO_CASESENSITIVE);
+            pobSrch[0].eSrchType = VSOBSEARCHTYPE.SO_ENTIREWORD;
+            pobSrch[0].szName = name;
+
+            try
+            {
+                ErrorHandler.ThrowOnFailure(objectSearch.Find((uint)flags, pobSrch, out m_searchResultList));
+                var objectList = m_searchResultList as IVsObjectList2;
+                uint resultCount = 0;
+                if (objectList.GetItemCount(out resultCount) != VSConstants.S_OK || resultCount <= 0)
+                {
+                    return false;
+                }
+                //if (resultCount > 0)
+                //{
+                //    string text;
+                //    ushort img;
+                //    bool isProcessing;
+                //    GetListItemInfo(objectList, 0, out text, out img, out isProcessing);
+                //    if (text == "Search found no results")
+                //    {
+                //        return false;
+                //    }
+                //}
+            }
+            catch (InvalidCastException)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        bool LaunchRefSearch(string name)
         {
             IVsObjectSearch objectSearch = ((System.IServiceProvider)m_package).GetService(typeof(SVsObjectSearch)) as IVsObjectSearch;
             if (objectSearch == null)

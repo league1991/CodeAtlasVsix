@@ -429,7 +429,7 @@ namespace CodeAtlasVSIX
         }
         public void OnFindReferences(object sender, ExecutedRoutedEventArgs e)
         {
-            m_refSearcher.BeginNewSearch();
+            m_refSearcher.BeginNewRefSearch();
         }
         #endregion
         
