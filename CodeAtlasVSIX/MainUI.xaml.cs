@@ -434,7 +434,7 @@ namespace CodeAtlasVSIX
             }
             else
             {
-                m_refSearcher.BeginNewSearch();
+                m_refSearcher.BeginNewRefSearch();
             }
         }
 
