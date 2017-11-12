@@ -66,7 +66,7 @@ namespace CodeAtlasVSIX
 
         // LRU
         List<string> m_itemLruQueue = new List<string>();
-        int m_lruMaxLength = 100;
+        int m_lruMaxLength = 50;
         #endregion
 
         public CodeScene()
@@ -223,13 +223,25 @@ namespace CodeAtlasVSIX
                 foreach (var item in codeItemList)
                 {
                     var uname = item as string;
-                    var entity = dbObj.SearchFromUniqueName(uname);
-                    if (entity == null)
+                    if (m_itemDataDict.ContainsKey(uname) && m_itemDataDict[uname].ContainsKey("bookmark"))
                     {
-                        continue;
+                        var bookmarkItemData = m_itemDataDict[uname];
+                        var path = bookmarkItemData["path"] as string;
+                        var file = bookmarkItemData["file"] as string;
+                        int line = (int)bookmarkItemData["line"];
+                        int column = (int)bookmarkItemData["column"];
+                        _DoAddBookmarkItem(path, file, line, column);
                     }
-                    //AddCodeItem(item as string);
-                    _DoAddCodeItem(uname);
+                    else
+                    {
+                        var entity = dbObj.SearchFromUniqueName(uname);
+                        if (entity == null)
+                        {
+                            continue;
+                        }
+                        //AddCodeItem(item as string);
+                        _DoAddCodeItem(uname);
+                    }
                     uniqueNameList.Add(uname);
                 }
                 t1 = DateTime.Now;
@@ -1278,9 +1290,84 @@ namespace CodeAtlasVSIX
             }
             m_selectEventConnected = true;
         }
+
+        public void SetLRULimit(int count)
+        {
+            AcquireLock();
+            m_lruMaxLength = count;
+            RemoveItemLRU();
+            ReleaseLock();
+        }
         #endregion
         
         #region Add/Delete Item and Edge
+        public string GetBookmarkUniqueName(string path, int line, int column)
+        {
+            return string.Format("{0} ({1},{2})", path, line, column);
+        }
+
+        bool _DoAddBookmarkItem(string path, string file, int line, int column)
+        {
+            string srcUniqueName = GetBookmarkUniqueName(path, line, column);
+            if (m_itemDict.ContainsKey(srcUniqueName))
+            {
+                return false;
+            }
+            if (m_stopItem.ContainsKey(srcUniqueName))
+            {
+                return false;
+            }
+            var dbObj = DBManager.Instance().GetDB();
+
+            // Build custom data
+            var customData = new Dictionary<string, object>();
+            customData["name"] = string.Format("{0}({1})", file, line);
+            customData["longName"] = srcUniqueName;
+            customData["comment"] = GetComment(srcUniqueName);
+            customData["kindName"] = "page";
+            var metricRes = new Dictionary<string, DoxygenDB.Variant>();
+            metricRes["file"] = new DoxygenDB.Variant(path);
+            metricRes["line"] = new DoxygenDB.Variant(line);
+            metricRes["column"] = new DoxygenDB.Variant(column);
+            customData["metric"] = metricRes;
+            DoxygenDB.EntKind kind = DoxygenDB.EntKind.PAGE;
+            customData["kind"] = kind;
+            customData["color"] = Color.FromRgb(201,154,228);
+
+            DataDict itemData;
+            m_itemDataDict.TryGetValue(srcUniqueName, out itemData);
+            if (itemData == null)
+            {
+                itemData = new DataDict();
+                m_itemDataDict[srcUniqueName] = itemData;
+            }
+            AddOrReplaceDict(itemData, "bookmark", true);
+            AddOrReplaceDict(itemData, "path", path);
+            AddOrReplaceDict(itemData, "file", file);
+            AddOrReplaceDict(itemData, "line", line);
+            AddOrReplaceDict(itemData, "column", column);
+
+            // Add CodeUIItem
+            this.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                AcquireLock();
+                var item = new CodeUIItem(srcUniqueName, customData);
+                m_itemDict[srcUniqueName] = item;
+                m_view.canvas.Children.Add(item);
+                Point center;
+                GetSelectedCenter(out center);
+                item.Pos = center;
+                item.SetTargetPos(center);
+                m_isLayoutDirty = true;
+                if (m_itemDict.Count == 1)
+                {
+                    SelectOneItem(item);
+                }
+                m_schemeTimeStamp++;
+                ReleaseLock();
+            });
+            return true;
+        }
         bool _DoAddCodeItem(string srcUniqueName)
         {
             // Logger.WriteLine("Add Code Item:" + srcUniqueName);
@@ -1509,7 +1596,17 @@ namespace CodeAtlasVSIX
         {
             AcquireLock();
             _DoAddCodeItem(srcUniqueName);
-            UpdateLRU(new List<string> { srcUniqueName});
+            UpdateLRU(new List<string> { srcUniqueName });
+            RemoveItemLRU();
+            ReleaseLock();
+        }
+
+        public void AddBookmarkItem(string path, string file, int line, int column)
+        {
+            AcquireLock();
+            _DoAddBookmarkItem(path, file, line, column);
+            var uniqueName = GetBookmarkUniqueName(path, line, column);
+            UpdateLRU(new List<string> { uniqueName });
             RemoveItemLRU();
             ReleaseLock();
         }
@@ -1608,6 +1705,54 @@ namespace CodeAtlasVSIX
             AcquireLock();
             _DoAddCodeEdgeItem(srcName, tarName, edgeData);
             ReleaseLock();
+            return true;
+        }
+
+        public bool ReplaceBookmarkItem(string uniqueName)
+        {
+            if (!m_itemDict.ContainsKey(uniqueName))
+            {
+                return false;
+            }
+
+            var bookmarkItem = m_itemDict[uniqueName];
+            if (bookmarkItem.GetKind() != DoxygenDB.EntKind.PAGE)
+            {
+                return false;
+            }
+
+            var targetEntities = new List<string>();
+            foreach (var edgePair in m_edgeDict)
+            {
+                if (uniqueName != edgePair.Key.Item1)
+                {
+                    continue;
+                }
+                targetEntities.Add(edgePair.Key.Item2);
+            }
+
+
+            var navigator = new CursorNavigator();
+            navigator.Navigate(bookmarkItem);
+            CursorNavigator.MoveToLindEnd();
+
+            var mainUI = UIManager.Instance().GetMainUI();
+            mainUI.OnShowInAtlas(null, null);
+
+            var selectedItem = SelectedNodes();
+            if (selectedItem.Count != 1 || selectedItem[0].GetUniqueName() == uniqueName)
+            {
+                return false;
+            }
+
+            var newItem = selectedItem[0];
+            var newUname = newItem.GetUniqueName();
+            foreach (var target in targetEntities)
+            {
+                DoAddCustomEdge(newUname, target);
+            }
+
+            DeleteCodeItem(uniqueName);
             return true;
         }
 

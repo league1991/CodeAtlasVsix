@@ -36,6 +36,7 @@ namespace CodeAtlasVSIX
         bool m_isCommandEnable = true;
 
         ReferenceSearcher m_refSearcher;
+        DateTime m_lastCheckRefTime = DateTime.Now;
 
         public MainUI()
         {
@@ -403,7 +404,7 @@ namespace CodeAtlasVSIX
         public void OnFindCallees(object sender, ExecutedRoutedEventArgs e)
         {
             _FindRefs("call", "function, method", true);
-            _FindRefs("use", "variable,object,file", true);
+            _FindRefs("use", "variable,object,file", true, 1);
         }
         public void OnFindMembers(object sender, ExecutedRoutedEventArgs e)
         {
@@ -425,8 +426,18 @@ namespace CodeAtlasVSIX
         }
         public void OnFindUses(object sender, ExecutedRoutedEventArgs e)
         {
-            OnFindReferences(sender, e);
+            var scene = UIManager.Instance().GetScene();
+            var selectedItem = scene.SelectedNodes();
+            if (selectedItem.Count == 1 && selectedItem[0].GetKind() == DoxygenDB.EntKind.PAGE)
+            {
+                scene.ReplaceBookmarkItem(selectedItem[0].GetUniqueName());
+            }
+            else
+            {
+                m_refSearcher.BeginNewSearch();
+            }
         }
+
         public void OnFindReferences(object sender, ExecutedRoutedEventArgs e)
         {
             m_refSearcher.BeginNewRefSearch();
@@ -435,7 +446,11 @@ namespace CodeAtlasVSIX
         
         public void CheckFindSymbolWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            m_refSearcher.UpdateResult();
+            if ((DateTime.Now - m_lastCheckRefTime).TotalMilliseconds > 1000)
+            {
+                m_refSearcher.UpdateResult();
+                m_lastCheckRefTime = DateTime.Now;
+            }
         }
 
         #region Navigation
@@ -738,6 +753,36 @@ namespace CodeAtlasVSIX
         private void autoFocusButton_Click(object sender, RoutedEventArgs e)
         {
             codeView.SetAutoFocus(autoFocusButton.IsChecked);
+        }
+
+        private void lru10Button_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetLRULimit(10);
+        }
+
+        private void lru20Button_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetLRULimit(20);
+        }
+
+        private void lru50Button_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetLRULimit(50);
+        }
+
+        private void lru100Button_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetLRULimit(100);
+        }
+
+        private void lru200Button_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetLRULimit(200);
         }
     }
 }

@@ -34,6 +34,11 @@
         <MenuItem Header="UI">
             <MenuItem x:Name="layoutButton" Header="Horizontal/Vertical" Click="layoutButton_Click" />
             <MenuItem x:Name="autoFocusButton" Header="Auto Focus" IsCheckable="True" IsChecked="True" Click="autoFocusButton_Click"/>
+            <RadioButton x:Name="lru10Button" Content="Show 10 Items" Checked="lru10Button_Checked"/>
+            <RadioButton x:Name="lru20Button" Content="Show 20 Items" Checked="lru20Button_Checked"/>
+            <RadioButton x:Name="lru50Button" Content="Show 50 Items" IsChecked="True" Checked="lru50Button_Checked"/>
+            <RadioButton x:Name="lru100Button" Content="Show 100 Items" Checked="lru100Button_Checked"/>
+            <RadioButton x:Name="lru200Button" Content="Show 200 Items" Checked="lru200Button_Checked"/>
         </MenuItem>
     </Menu>
     

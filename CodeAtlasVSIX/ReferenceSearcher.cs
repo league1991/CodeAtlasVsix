@@ -42,13 +42,10 @@ namespace CodeAtlasVSIX
         Dictionary<string, RefStatus> m_referenceDict = new Dictionary<string, RefStatus>(); // Ref
         Dictionary<string, string> m_itemDict = new Dictionary<string, string>(); // ItemName
         Dictionary<uint, IVsObjectList2> m_subList = new Dictionary<uint, IVsObjectList2>();
-        string m_srcDocumentPath = "";
-        int m_srcLine = 0;
-        int m_srcColumn = 0;
         bool m_isFindingReference = false;
         Package m_package;
         int m_count = 0;
-        int m_maxCount = 20;
+        int m_maxCount = 10;
 
         string m_srcUniqueName = "";
         string m_srcLongName = "";
@@ -231,7 +228,7 @@ namespace CodeAtlasVSIX
                         longNameMatched = true;
                     }
                 }
-
+                
                 for (uint i = 0; i < pCount; i++)
                 {
                     GetListItemInfo(objectList, i, out itemText, out img, out isDoing);
@@ -253,6 +250,12 @@ namespace CodeAtlasVSIX
 
                     IVsObjectList2 subList;
                     bool isItemProcessing = false;
+                    uint flags; 
+                    objectList.GetFlags(out flags);// _VSTREEFLAGS
+                    uint counter, changes; 
+                    objectList.UpdateCounter(out counter, out changes); // _VSTREEITEMCHANGESMASK
+                    uint cap;
+                    objectList.GetCapabilities2(out cap);// _LIB_LISTCAPABILITIES
                     if (objectList.GetList2(i, (uint)_LIB_LISTTYPE.LLT_REFERENCES, (uint)(_LIB_LISTFLAGS.LLF_NONE), new VSOBSEARCHCRITERIA2[0], out subList) == VSConstants.S_OK &&
                         subList != null)
                     {
@@ -265,7 +268,6 @@ namespace CodeAtlasVSIX
                             continue;
                         }
                         //Logger.Debug("    sublist: " + i + " count: " + list2ItemCount);
-
                         for (uint j = 0; j < list2ItemCount; j++)
                         {
                             string text;
@@ -278,7 +280,7 @@ namespace CodeAtlasVSIX
 
                             // Ignore several reference types
                             // 12: comment
-                            bool isIgnored = (img == 12 || img == 7 || img == 17 || img == 6);
+                            bool isIgnored = (img == 12 || img == 17);
                             Logger.Debug("Type:" + img + ": " + !isIgnored + ": " + text);
                             if (isIgnored)
                             {
@@ -293,28 +295,27 @@ namespace CodeAtlasVSIX
                                 continue;
                             }
 
-                            int isOK;
-                            int res = subList.CanGoToSource(j, VSOBJGOTOSRCTYPE.GS_REFERENCE, out isOK);
-                            if (res != VSConstants.S_OK || isOK == 0)
-                            {
-                                isItemProcessing = true;
-                                continue;
-                            }
-                            if (subList.GoToSource(j, VSOBJGOTOSRCTYPE.GS_REFERENCE) != VSConstants.S_OK)
-                            {
-                                Logger.Debug("Go to source failed. " + text);
-                                isItemProcessing = true;
-                                continue;
-                            }
-                            ConnectTargetToSource();
-                            refItem.m_isCheck = true;
+                            //int isOK;
+                            //int res = subList.CanGoToSource(j, VSOBJGOTOSRCTYPE.GS_REFERENCE, out isOK);
+                            //if (res != VSConstants.S_OK || isOK == 0)
+                            //{
+                            //    isItemProcessing = true;
+                            //    continue;
+                            //}
+                            //if (subList.GoToSource(j, VSOBJGOTOSRCTYPE.GS_REFERENCE) != VSConstants.S_OK)
+                            //{
+                            //    Logger.Debug("Go to source failed. " + text);
+                            //    isItemProcessing = true;
+                            //    continue;
+                            //}
+                            //refItem.m_isCheck = ConnectTargetToSource();
 
                             var duration = (DateTime.Now - beginTime).TotalMilliseconds;
-                            if (duration > 500)
-                            {
-                                isItemProcessing = true;
-                                return;
-                            }
+                            //if (duration > 500)
+                            //{
+                            //    isItemProcessing = true;
+                            //    return;
+                            //}
                         }
                     }
                     if (!isItemProcessing)
@@ -368,7 +369,6 @@ namespace CodeAtlasVSIX
             // Process
             bool isComplete;
             ProcessReferenceList(out isComplete);
-            bool isFileComplete;
             int count = CheckFiles();
             if (isComplete && count == 0)
             {
@@ -396,6 +396,7 @@ namespace CodeAtlasVSIX
         int CheckFiles()
         {
             var db = DBManager.Instance().GetDB();
+            var scene = UIManager.Instance().GetScene();
             var beginTime = DateTime.Now;
             int count = 0;
 
@@ -420,14 +421,14 @@ namespace CodeAtlasVSIX
                 {
                     continue;
                 }
-                string path = itemInfo.Substring(0, pathSplitPos);
-                request.m_shortName = path;
+                string fileName = itemInfo.Substring(0, pathSplitPos);
+                request.m_shortName = fileName;
                 db.SearchAndFilter(request, out result);
                 if (result.bestEntity == null)
                 {
                     continue;
                 }
-                path = result.bestEntity.Longname();
+                string path = result.bestEntity.Longname();
                 int commaSplitPos = itemInfo.IndexOf(", ", pathSplitPos);
                 if (commaSplitPos == -1)
                 {
@@ -443,21 +444,27 @@ namespace CodeAtlasVSIX
                 int column;
                 if (int.TryParse(lineStr, out line) && int.TryParse(columnStr, out column))
                 {
-                    if (!GoToDocument(path, line, column))
-                        continue;
-                    ConnectTargetToSource();
+                    //if (!GoToDocument(path, line, column))
+                    //    continue;
+                    //ConnectTargetToSource();
+                    var uname = scene.GetBookmarkUniqueName(path, line, column);
+                    scene.AddBookmarkItem(path, fileName, line, column);
+                    scene.AddCodeItem(m_srcUniqueName);
+                    scene.AcquireLock();
+                    scene.DoAddCustomEdge(uname, m_srcUniqueName);
+                    scene.ReleaseLock();
                 }
                 count++;
 
                 var duration = (DateTime.Now - beginTime).TotalMilliseconds;
-                if (duration > 500)
+                if (duration > 100)
                 {
                     break;
                 }
             }
             return count;
         }
-        void ConnectTargetToSource()
+        bool ConnectTargetToSource()
         {
             // Get code element under cursor
             //Document doc = null;
@@ -478,7 +485,7 @@ namespace CodeAtlasVSIX
             if (tarElement == null)
             {
                 Logger.Debug("   Go to source fail. No target element.");
-                return;
+                return false;
             }
 
             // Search entity
@@ -502,6 +509,7 @@ namespace CodeAtlasVSIX
             }
 
             // Connect custom edge
+            bool res = false;
             if (tarResult.bestEntity != null)
             {
                 var scene = UIManager.Instance().GetScene();
@@ -509,7 +517,7 @@ namespace CodeAtlasVSIX
                 scene.AcquireLock();
                 scene.AddCodeItem(targetEntity.m_id);
                 scene.AddCodeItem(m_srcUniqueName);
-                bool res = scene.DoAddCustomEdge(targetEntity.m_id, m_srcUniqueName);
+                res = scene.DoAddCustomEdge(targetEntity.m_id, m_srcUniqueName);
                 scene.ReleaseLock();
                 Logger.Debug("   Add edge:" + res);
             }
@@ -518,6 +526,7 @@ namespace CodeAtlasVSIX
             //{
             //    targetEntityList.Add(tarResult.bestEntity);
             //}
+            return res;
         }
 
         void GetListItemInfo(IVsObjectList2 subList, uint j, out string text, out ushort image, out bool isProcessing)
