@@ -1,38 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Vsix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
-  <Identifier Id="CodeAtlasVSIX.Company.df5456fb-08ea-4256-b5ff-ecdb3a512ad3">
-    <Name>CodeGraph</Name>
-    <Author>Yaobin Ouyang</Author>
-    <Version>1.0.5</Version>
-    <Description xml:space="preserve">A tool to show call graph, inheritance graph and variable usage graph for C/C++, C#, Python and other languages</Description>
-    <Locale>1033</Locale>
-    <License>License.txt</License>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="CodeAtlasVSIX.Company.df5456fb-08ea-4256-b5ff-ecdb3a512ad3" Version="1.0.6" Language="en-US" Publisher="Yaobin Ouyang" />
+    <DisplayName>CodeGraph</DisplayName>
+    <Description>Show call graph, inheritance graph and variable usage graph for C/C++, C#, Python and other languages</Description>
+    <License>LICENSE.txt</License>
     <Icon>Resources/logo.png</Icon>
     <PreviewImage>Resources/thumbnail.png</PreviewImage>
-    <SupportedProducts>
-      <VisualStudio Version="10.0">
-        <Edition>Pro</Edition>
-      </VisualStudio>
-      <VisualStudio Version="11.0">
-        <Edition>Pro</Edition>
-      </VisualStudio>
-      <VisualStudio Version="12.0">
-        <Edition>Pro</Edition>
-      </VisualStudio>
-      <VisualStudio Version="13.0">
-        <Edition>Pro</Edition>
-      </VisualStudio>
-      <VisualStudio Version="14.0">
-        <Edition>Pro</Edition>
-      </VisualStudio>
-      <VisualStudio Version="15.0">
-        <Edition>Pro</Edition>
-      </VisualStudio>
-    </SupportedProducts>
-    <SupportedFrameworkRuntimeEdition MinVersion="4.0" />
-  </Identifier>
-  <Content>
-    <VsPackage>|%CurrentProject%;PkgdefProjectOutputGroup|</VsPackage>
-    <MefComponent>|%CurrentProject%|</MefComponent>
-  </Content>
-</Vsix>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Version="[11.0,15.0]" Id="Microsoft.VisualStudio.Community" />
+    <InstallationTarget Version="[11.0,15.0]" Id="Microsoft.VisualStudio.Pro" />
+    <InstallationTarget Version="[11.0,15.0]" Id="Microsoft.VisualStudio.Enterprise" />
+    <InstallationTarget Version="[11.0,15.0]" Id="Microsoft.VisualStudio.IntegratedShell" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.0,)" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    <Asset Type="Microsoft.VisualStudio.ToolboxControl" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+  </Assets>
+  <Prerequisites>
+     <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0.25904.2,16.0)" DisplayName="Visual Studio core editor" />
+  </Prerequisites>
+</PackageManifest>
