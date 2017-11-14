@@ -784,7 +784,7 @@ namespace CodeAtlasVSIX
             }
             else
             {
-                _AddContextMenuItem(context, "Find Usages", mainUI.OnFindUses);
+                _AddContextMenuItem(context, "Find References", mainUI.OnFindUses);
             }
             _AddContextMenuItem(context, "Find Members", mainUI.OnFindMembers);
             _AddContextMenuItem(context, "Delete", mainUI.OnDelectSelectedItems);

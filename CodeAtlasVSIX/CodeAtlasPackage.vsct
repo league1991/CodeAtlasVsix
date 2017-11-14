@@ -130,14 +130,14 @@
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindCallersCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
-          <ButtonText>Find Callers</ButtonText>
+          <ButtonText>Find Callers / Usages / Includes</ButtonText>
         </Strings>
       </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindCalleesCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
-          <ButtonText>Find Callees</ButtonText>
+          <ButtonText>Find Callees / Usages</ButtonText>
         </Strings>
       </Button>    
       
@@ -165,7 +165,7 @@
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindUsesCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
-          <ButtonText>Find Usages / Includes</ButtonText>
+          <ButtonText>Find References</ButtonText>
         </Strings>
       </Button>
     
