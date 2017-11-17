@@ -49,6 +49,10 @@ namespace CodeAtlasVSIX
 
         string m_srcUniqueName = "";
         string m_srcLongName = "";
+        string m_srcName = "";
+
+        // Find done callback
+        _dispFindEvents_FindDoneEventHandler m_findDoneCallback;
 
         public ReferenceSearcher()
         {
@@ -67,6 +71,7 @@ namespace CodeAtlasVSIX
             m_subList.Clear();
             m_srcUniqueName = "";
             m_srcLongName = "";
+            m_srcName = "";
             m_count = 0;
         }
 
@@ -81,6 +86,9 @@ namespace CodeAtlasVSIX
             }
 
             CodeUIItem node = selectedNodes[0];
+            m_srcUniqueName = node.GetUniqueName();
+            m_srcLongName = node.GetLongName();
+            m_srcName = node.GetName();
             bool res = LaunchRefSearch(node.GetLongName());
             if (!res)
             {
@@ -100,54 +108,128 @@ namespace CodeAtlasVSIX
             }
 
             CodeUIItem node = selectedNodes[0];
-            bool res = LaunchNormalSearch(node.GetLongName());
-            if (!res)
+            m_srcUniqueName = node.GetUniqueName();
+            m_srcLongName = node.GetLongName();
+            m_srcName = node.GetName();
+            bool res = LaunchNormalSearch(node.GetName());
+            if (res == false)
             {
-                res = LaunchNormalSearch(node.GetName());
+                Clear();
             }
+
             return res;
         }
 
         bool LaunchNormalSearch(string name)
         {
-            IVsObjectSearch objectSearch = ((System.IServiceProvider)m_package).GetService(typeof(SVsObjectSearch)) as IVsObjectSearch;
-            if (objectSearch == null)
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            if (dte == null)
             {
                 return false;
             }
-
-            const __VSOBSEARCHFLAGS flags = __VSOBSEARCHFLAGS.VSOSF_EXPANDREFS;
-            VSOBSEARCHCRITERIA[] pobSrch = new VSOBSEARCHCRITERIA[1];
-            pobSrch[0].grfOptions = (uint)(_VSOBSEARCHOPTIONS.VSOBSO_CASESENSITIVE);
-            pobSrch[0].eSrchType = VSOBSEARCHTYPE.SO_ENTIREWORD;
-            pobSrch[0].szName = name;
-
-            try
+            if (m_findDoneCallback == null)
             {
-                ErrorHandler.ThrowOnFailure(objectSearch.Find((uint)flags, pobSrch, out m_searchResultList));
-                var objectList = m_searchResultList as IVsObjectList2;
-                uint resultCount = 0;
-                if (objectList.GetItemCount(out resultCount) != VSConstants.S_OK || resultCount <= 0)
+                m_findDoneCallback = new _dispFindEvents_FindDoneEventHandler(OnFindDone);
+                dte.Events.FindEvents.FindDone += m_findDoneCallback;
+            }
+
+            dte.Find.Action = vsFindAction.vsFindActionFindAll;
+            dte.Find.FindWhat = name;
+            dte.Find.MatchCase = true;
+            dte.Find.MatchWholeWord = true;
+            dte.Find.ResultsLocation = vsFindResultsLocation.vsFindResults1;
+            dte.Find.Target = vsFindTarget.vsFindTargetSolution;
+            var result = dte.Find.Execute();
+            return result == vsFindResult.vsFindResultFound;
+        }
+
+        private void OnFindDone(vsFindResult findRes, bool cancelled)
+        {
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            if (dte == null || m_srcUniqueName == "")
+            {
+                return;
+            }
+
+            var request = new DoxygenDB.EntitySearchRequest(
+                "", (int)DoxygenDB.SearchOption.MATCH_WORD,
+                "", (int)DoxygenDB.SearchOption.MATCH_WORD,
+                "file", "", 0);
+            var result = new DoxygenDB.EntitySearchResult();
+
+            var win = dte.Windows.Item(EnvDTE.Constants.vsWindowKindFindResults1);
+            var selection = win.Selection as EnvDTE.TextSelection;
+            selection.SelectAll();
+            var selectionText = selection.Text;
+            var scene = UIManager.Instance().GetScene();
+            var db = DBManager.Instance().GetDB();
+
+            StringReader reader = new StringReader(selectionText);
+            string strReadline;
+            for (int ithLine = 0; (strReadline = reader.ReadLine()) != null; ++ithLine)
+            {
+                if (ithLine == 0)
                 {
-                    return false;
+                    continue;
                 }
-                //if (resultCount > 0)
-                //{
-                //    string text;
-                //    ushort img;
-                //    bool isProcessing;
-                //    GetListItemInfo(objectList, 0, out text, out img, out isProcessing);
-                //    if (text == "Search found no results")
-                //    {
-                //        return false;
-                //    }
-                //}
+                int colon1Idx = strReadline.IndexOf(':');
+                if (colon1Idx == -1)
+                {
+                    continue;
+                }
+                int colon2Idx = strReadline.IndexOf(':', colon1Idx + 1);
+                if (colon2Idx == -1)
+                {
+                    continue;
+                }
+                var pathLineColumn = strReadline.Substring(0, colon2Idx).Trim();
+                int lineBegin = pathLineColumn.LastIndexOf('(');
+                int lineEnd = pathLineColumn.LastIndexOf(')');
+                if (lineBegin == -1 || lineEnd == -1)
+                {
+                    continue;
+                }
+                var path = pathLineColumn.Substring(0, lineBegin);
+                path = path.Replace('\\','/');
+                int fileNameBegin = path.LastIndexOf('/');
+                if (fileNameBegin == -1)
+                {
+                    continue;
+                }
+                var fileName = path.Substring(fileNameBegin + 1);
+                var lineStr = pathLineColumn.Substring(lineBegin + 1, lineEnd - lineBegin - 1);
+                int line;
+                if(!int.TryParse(lineStr, out line))
+                {
+                    continue;
+                }
+                int column = strReadline.LastIndexOf(m_srcName);
+                if (column == -1)
+                {
+                    column = 0;
+                }
+                else
+                {
+                    column -= colon2Idx;
+                }
+
+                request.m_shortName = fileName;
+                request.m_longName = path;
+                db.SearchAndFilter(request, out result);
+                if (result.bestEntity == null)
+                {
+                    continue;
+                }
+
+                var uname = scene.GetBookmarkUniqueName(path, line, column);
+                scene.AcquireLock();
+                scene.AddBookmarkItem(path, fileName, line, column);
+                scene.AddCodeItem(m_srcUniqueName);
+                scene.DoAddCustomEdge(uname, m_srcUniqueName);
+                scene.ReleaseLock();
             }
-            catch (InvalidCastException)
-            {
-                return false;
-            }
-            return true;
+            reader.Close();
+            Clear();
         }
 
         bool LaunchRefSearch(string name)

@@ -147,10 +147,10 @@ namespace CodeAtlasVSIX
 
                     scene.ClearInvalidate();
 
-                    mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate
-                    {
-                        mainUI.CheckFindSymbolWindow(null, null);
-                    }, DispatcherPriority.Loaded);
+                    //mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate
+                    //{
+                    //    mainUI.CheckFindSymbolWindow(null, null);
+                    //}, DispatcherPriority.Loaded);
                 }
                 else
                 {
