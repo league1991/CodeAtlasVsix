@@ -127,11 +127,7 @@ namespace CodeAtlasVSIX
             {
                 return false;
             }
-            if (m_findDoneCallback == null)
-            {
-                m_findDoneCallback = new _dispFindEvents_FindDoneEventHandler(OnFindDone);
-                dte.Events.FindEvents.FindDone += m_findDoneCallback;
-            }
+            dte.Events.FindEvents.FindDone += new _dispFindEvents_FindDoneEventHandler(OnFindDone);
 
             dte.Find.Action = vsFindAction.vsFindActionFindAll;
             dte.Find.FindWhat = name;
@@ -146,6 +142,7 @@ namespace CodeAtlasVSIX
         private void OnFindDone(vsFindResult findRes, bool cancelled)
         {
             var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            dte.Events.FindEvents.FindDone -= new _dispFindEvents_FindDoneEventHandler(OnFindDone);
             if (dte == null || m_srcUniqueName == "")
             {
                 return;
@@ -216,16 +213,22 @@ namespace CodeAtlasVSIX
                 request.m_shortName = fileName;
                 request.m_longName = path;
                 db.SearchAndFilter(request, out result);
-                if (result.bestEntity == null)
-                {
-                    continue;
-                }
+                //if (result.bestEntity == null)
+                //{
+                //    continue;
+                //}
 
                 var uname = scene.GetBookmarkUniqueName(path, line, column);
                 scene.AcquireLock();
                 scene.AddBookmarkItem(path, fileName, line, column);
                 scene.AddCodeItem(m_srcUniqueName);
                 scene.DoAddCustomEdge(uname, m_srcUniqueName);
+                if (result.bestEntity != null)
+                {
+                    var fileUname = result.bestEntity.UniqueName();
+                    scene.AddCodeItem(fileUname);
+                    scene.DoAddCustomEdge(fileUname, uname);
+                }
                 scene.ReleaseLock();
             }
             reader.Close();

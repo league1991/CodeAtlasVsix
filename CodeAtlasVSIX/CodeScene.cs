@@ -1722,15 +1722,18 @@ namespace CodeAtlasVSIX
             }
 
             var targetEntities = new List<string>();
+            var sourceEntities = new List<string>();
             foreach (var edgePair in m_edgeDict)
             {
-                if (uniqueName != edgePair.Key.Item1)
+                if (uniqueName == edgePair.Key.Item1)
                 {
-                    continue;
+                    targetEntities.Add(edgePair.Key.Item2);
                 }
-                targetEntities.Add(edgePair.Key.Item2);
+                else if (uniqueName == edgePair.Key.Item2)
+                {
+                    sourceEntities.Add(edgePair.Key.Item1);
+                }
             }
-
 
             var navigator = new CursorNavigator();
             navigator.Navigate(bookmarkItem);
@@ -1750,6 +1753,10 @@ namespace CodeAtlasVSIX
             foreach (var target in targetEntities)
             {
                 DoAddCustomEdge(newUname, target);
+            }
+            foreach (var source in sourceEntities)
+            {
+                DoAddCustomEdge(source, newUname);
             }
 
             DeleteCodeItem(uniqueName);
