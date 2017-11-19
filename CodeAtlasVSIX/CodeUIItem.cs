@@ -260,16 +260,21 @@ namespace CodeAtlasVSIX
 
             if (m_kind == DoxygenDB.EntKind.PAGE)
             {
-                int subLen = Math.Min(name.Length, 9);
+                string fileNameStr = name;
                 int dotIdx = name.LastIndexOf('.');
-                string tail = "";
+                string extStr = "";
                 if (dotIdx != -1)
                 {
-                    tail += name.Substring(dotIdx);
+                    extStr = name.Substring(dotIdx);
+                    fileNameStr = name.Substring(0, dotIdx);
+                }
+                if (fileNameStr.Length > 8)
+                {
+                    fileNameStr = fileNameStr.Substring(0, 8) + "..";
                 }
                 int line = m_metric["line"].m_int;
-                tail += string.Format("({0})", line);
-                m_displayName = name.Substring(0, subLen) + ".." + tail;
+                string lineStr = string.Format("({0})", line);
+                m_displayName = fileNameStr + extStr + lineStr;
             }
             else
             {
