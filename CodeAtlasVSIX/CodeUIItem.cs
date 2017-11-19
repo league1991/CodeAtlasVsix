@@ -86,12 +86,12 @@ namespace CodeAtlasVSIX
             m_name = (string)customData["name"];
             m_longName = (string)customData["longName"];
             m_kind = (DoxygenDB.EntKind)customData["kind"];
-            this.ToolTip = m_longName;
+            ToolTip = m_longName;
+            m_metric = (Dictionary<string, DoxygenDB.Variant>)customData["metric"];
             BuildDisplayName(m_name);
             var comment = scene.GetComment(m_uniqueName);
             UpdateComment(comment);
             m_kindName = (string)customData["kindName"];
-            m_metric = (Dictionary<string, DoxygenDB.Variant>)customData["metric"];
             if (m_metric.ContainsKey("CountLine"))
             {
                 var metricLine = m_metric["CountLine"].m_int;
@@ -249,6 +249,8 @@ namespace CodeAtlasVSIX
 
         void BuildDisplayName(string name)
         {
+            m_displayName = "";
+
             string pattern = @"[A-Z]*[a-z0-9]*_*";
             var nameList = Regex.Matches(
                 name,
@@ -256,31 +258,46 @@ namespace CodeAtlasVSIX
                 RegexOptions.ExplicitCapture
                 );
 
-            var partLength = 0;
-            m_displayName = "";
-
-            int index = 0;
-            int length = 0;
-            foreach (Match nextMatch in nameList)
+            if (m_kind == DoxygenDB.EntKind.PAGE)
             {
-                string newPart = "";
-                int beg = index + length;
-                if (beg < nextMatch.Index)
+                int subLen = Math.Min(name.Length, 9);
+                int dotIdx = name.LastIndexOf('.');
+                string tail = "";
+                if (dotIdx != -1)
                 {
-                    newPart = name.Substring(beg, nextMatch.Index - beg);
+                    tail += name.Substring(dotIdx);
                 }
-                newPart += nextMatch.Value;
-
-                m_displayName += newPart;
-                partLength += newPart.Length;
-                if (partLength > 13)
-                {
-                    m_displayName += "\n";
-                    partLength = 0;
-                }
-                index = nextMatch.Index;
-                length = nextMatch.Length;
+                int line = m_metric["line"].m_int;
+                tail += string.Format("({0})", line);
+                m_displayName = name.Substring(0, subLen) + ".." + tail;
             }
+            else
+            {
+                var partLength = 0;
+                int index = 0;
+                int length = 0;
+                foreach (Match nextMatch in nameList)
+                {
+                    string newPart = "";
+                    int beg = index + length;
+                    if (beg < nextMatch.Index)
+                    {
+                        newPart = name.Substring(beg, nextMatch.Index - beg);
+                    }
+                    newPart += nextMatch.Value;
+
+                    m_displayName += newPart;
+                    partLength += newPart.Length;
+                    if (partLength > 13)
+                    {
+                        m_displayName += "\n";
+                        partLength = 0;
+                    }
+                    index = nextMatch.Index;
+                    length = nextMatch.Length;
+                }
+            }
+
             m_displayName = m_displayName.Trim();
             int nLine = m_displayName.Count(f => f == '\n') + 1;
 
