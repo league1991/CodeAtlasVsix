@@ -63,6 +63,7 @@ namespace CodeAtlasVSIX
 
         public void SetPackage(Package package)
         {
+            m_package = package;
             var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
             if (dte != null)
             {
