@@ -43,16 +43,19 @@ namespace CodeAtlasVSIX
         Dictionary<string, string> m_itemDict = new Dictionary<string, string>(); // ItemName
         Dictionary<uint, IVsObjectList2> m_subList = new Dictionary<uint, IVsObjectList2>();
         bool m_isFindingReference = false;
+        // Data for find in files
+        HashSet<string> m_processedLine = new HashSet<string>();
+
         Package m_package;
         int m_count = 0;
         int m_maxCount = 10;
 
         string m_srcUniqueName = "";
         string m_srcLongName = "";
-        string m_srcName = "";
+        string m_srcName = "";        
 
         // Find done callback
-        _dispFindEvents_FindDoneEventHandler m_findDoneCallback;
+        //_dispFindEvents_FindDoneEventHandler m_findDoneCallback;
 
         public ReferenceSearcher()
         {
@@ -60,7 +63,11 @@ namespace CodeAtlasVSIX
 
         public void SetPackage(Package package)
         {
-            m_package = package;
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            if (dte != null)
+            {
+                dte.Events.FindEvents.FindDone += new _dispFindEvents_FindDoneEventHandler(OnFindDone);
+            }
         }
 
         void Clear()
@@ -69,6 +76,7 @@ namespace CodeAtlasVSIX
             m_referenceDict.Clear();
             m_itemDict.Clear();
             m_subList.Clear();
+            m_processedLine.Clear();
             m_srcUniqueName = "";
             m_srcLongName = "";
             m_srcName = "";
@@ -135,14 +143,39 @@ namespace CodeAtlasVSIX
             dte.Find.MatchWholeWord = true;
             dte.Find.ResultsLocation = vsFindResultsLocation.vsFindResults1;
             dte.Find.Target = vsFindTarget.vsFindTargetSolution;
+            dte.Find.PatternSyntax = vsFindPatternSyntax.vsFindPatternSyntaxLiteral;
             var result = dte.Find.Execute();
             return result == vsFindResult.vsFindResultFound;
         }
-
         private void OnFindDone(vsFindResult findRes, bool cancelled)
         {
+            CheckFindResultWindow();
+            Clear();
+        }
+
+        public void UpdateNormalResult()
+        {
+            if (m_srcUniqueName == "" || m_isFindingReference || m_count > m_maxCount)
+            {
+                return;
+            }
+            m_isFindingReference = true;
+            CheckFindResultWindow();
+            m_count++;
+            m_isFindingReference = false;
+        }
+
+        void CheckFindResultWindow()
+        {
+            //var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            //var win = dte.Windows.Item(EnvDTE.Constants.vsWindowKindFindResults1);
+            //var selection = win.Selection as EnvDTE.TextSelection;
+            //selection.SelectAll();
+            //var selectionText = selection.Text;
+            //Logger.Debug("=======================");
+            //Logger.Debug(selectionText);
             var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
-            dte.Events.FindEvents.FindDone -= new _dispFindEvents_FindDoneEventHandler(OnFindDone);
+
             if (dte == null || m_srcUniqueName == "")
             {
                 return;
@@ -169,6 +202,11 @@ namespace CodeAtlasVSIX
                 {
                     continue;
                 }
+                if (m_processedLine.Contains(strReadline))
+                {
+                    continue;
+                }
+                m_processedLine.Add(strReadline);
                 int colon1Idx = strReadline.IndexOf(':');
                 if (colon1Idx == -1)
                 {
@@ -232,7 +270,6 @@ namespace CodeAtlasVSIX
                 scene.ReleaseLock();
             }
             reader.Close();
-            Clear();
         }
 
         bool LaunchRefSearch(string name)
@@ -423,7 +460,7 @@ namespace CodeAtlasVSIX
             }
         }
 
-        public void UpdateResult()
+        public void UpdateRefResult()
         {
             if (m_srcUniqueName == "" || m_isFindingReference || m_searchResultList == null || m_count > m_maxCount)
             {

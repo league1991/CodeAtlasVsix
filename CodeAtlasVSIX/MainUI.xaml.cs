@@ -449,7 +449,8 @@ namespace CodeAtlasVSIX
         {
             if ((DateTime.Now - m_lastCheckRefTime).TotalMilliseconds > 1000)
             {
-                m_refSearcher.UpdateResult();
+                //m_refSearcher.UpdateRefResult();
+                m_refSearcher.UpdateNormalResult();
                 m_lastCheckRefTime = DateTime.Now;
             }
         }

@@ -147,10 +147,10 @@ namespace CodeAtlasVSIX
 
                     scene.ClearInvalidate();
 
-                    //mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate
-                    //{
-                    //    mainUI.CheckFindSymbolWindow(null, null);
-                    //}, DispatcherPriority.Loaded);
+                    mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate
+                    {
+                        mainUI.CheckFindSymbolWindow(null, null);
+                    }, DispatcherPriority.Loaded);
                 }
                 else
                 {
@@ -198,7 +198,7 @@ namespace CodeAtlasVSIX
             if (layerSetting != null)
             {
                 layerSetting.LayerSeparation = 120;
-                layerSetting.NodeSeparation = 5;
+                layerSetting.NodeSeparation = 4;
             }
             foreach (var msaglNode in graph.GeometryGraph.Nodes)
             {

@@ -311,7 +311,7 @@ namespace CodeAtlasVSIX
             formattedText.Trimming = TextTrimming.None;
             formattedText.MaxTextWidth = 100;
             m_commentText = formattedText;
-            m_commentSize = new Size(100, (formattedText.Height));
+            m_commentSize = new Size(formattedText.Width, formattedText.Height);
             IsDirty = true;
         }
 
@@ -519,6 +519,7 @@ namespace CodeAtlasVSIX
             {
                 r += m_customData["callerR"].m_double + m_customData["calleeR"].m_double;
             }
+            //r += m_fontSize.Width;
             return r;
         }
 
@@ -559,7 +560,7 @@ namespace CodeAtlasVSIX
             double r = GetRadius();
             double textHeight = m_fontSize.Height + m_commentSize.Height + s_textGap;
             double h = r;
-            if (m_kind == DoxygenDB.EntKind.VARIABLE)
+            if (m_kind == DoxygenDB.EntKind.VARIABLE || m_kind == DoxygenDB.EntKind.PAGE)
             {
                 h = Math.Max(textHeight - 8.0, r);
             }
@@ -1065,7 +1066,7 @@ namespace CodeAtlasVSIX
             base.OnRender(drawingContext);
             double baseX = 4;
             double baseY = 0;
-            if (this.m_kind == DoxygenDB.EntKind.VARIABLE)
+            if (this.m_kind == DoxygenDB.EntKind.VARIABLE || m_kind == DoxygenDB.EntKind.PAGE)
             {
                 baseY -= 8;
             }
