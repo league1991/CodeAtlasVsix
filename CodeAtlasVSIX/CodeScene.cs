@@ -53,6 +53,7 @@ namespace CodeAtlasVSIX
         
         // Layout/UI Status
         public bool m_isLayoutDirty = false;
+        public bool m_isAutoLayout = true;
         public bool m_isInvalidate = false;
         bool m_isSourceCandidate = true;
         List<EdgeKey> m_candidateEdge = new List<EdgeKey>();
@@ -1481,6 +1482,11 @@ namespace CodeAtlasVSIX
                 m_view.canvas.Children.Add(item);
                 Point center;
                 GetSelectedCenter(out center);
+                if (!m_isAutoLayout)
+                {
+                    Random rand = new Random(123);
+                    center = center + new Vector((rand.NextDouble() - 0.5) * 100, (rand.NextDouble() - 0.5) * 100);
+                }
                 item.Pos = center;
                 item.SetTargetPos(center);
                 m_isLayoutDirty = true;

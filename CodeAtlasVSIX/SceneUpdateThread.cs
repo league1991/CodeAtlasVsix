@@ -98,7 +98,7 @@ namespace CodeAtlasVSIX
 
                     m_timeStamp = System.Environment.TickCount;
                     int layoutTime = 0;
-                    if (scene.m_isLayoutDirty)
+                    if (scene.m_isLayoutDirty && scene.m_isAutoLayout)
                     {
                         scene.AcquireLock();
                         BeginTimeStamp();

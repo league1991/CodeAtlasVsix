@@ -166,7 +166,11 @@ namespace CodeAtlasVSIX
                 if (codeItem != null)
                 {
                     codeItem.GetDefinitionPosition(out fileName, out line, out column);
-
+                    if (codeItem.GetKind() == DoxygenDB.EntKind.PAGE)
+                    {
+                        MoveTo(fileName, line, column);
+                        return;
+                    }
                     res = ShowItemDefinition(codeItem, fileName);
                     searchToken = codeItem.GetName();
                 }
@@ -215,6 +219,12 @@ namespace CodeAtlasVSIX
                             }
 
                         }
+                    }
+                    else if (srcItem.GetKind() == DoxygenDB.EntKind.PAGE)
+                    {
+                        srcItem.GetDefinitionPosition(out fileName, out line, out column);
+                        MoveTo(fileName, line, column);
+                        return;
                     }
                     else
                     {
@@ -292,6 +302,32 @@ namespace CodeAtlasVSIX
                     {
                         Logger.Debug("Go to page fail.");
                     }
+                }
+            }
+        }
+
+        void MoveTo(string fileName, int line, int column)
+        {
+            if (File.Exists(fileName))
+            {
+                try
+                {
+                    OpenFile(fileName);
+                    TextSelection ts = m_dte.ActiveDocument.Selection as TextSelection;
+                    TextDocument textDoc = ts.Parent;
+                    if (line > textDoc.EndPoint.Line)
+                    {
+                        line = textDoc.EndPoint.Line;
+                        column = 1;
+                    }
+                    if (ts != null && line > 0 && textDoc != null)
+                    {
+                        ts.MoveTo(line, column);
+                    }
+                }
+                catch (Exception)
+                {
+                    Logger.Debug("Go to page fail.");
                 }
             }
         }

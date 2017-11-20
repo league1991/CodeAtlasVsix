@@ -757,6 +757,12 @@ namespace CodeAtlasVSIX
             codeView.SetAutoFocus(autoFocusButton.IsChecked);
         }
 
+        private void autoLayoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.m_isAutoLayout = autoLayoutButton.IsChecked;
+        }
+
         private void lru10Button_Checked(object sender, RoutedEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();

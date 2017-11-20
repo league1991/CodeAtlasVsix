@@ -3,7 +3,7 @@
     <Metadata>
         <Identity Id="CodeAtlasVSIX.Company.df5456fb-08ea-4256-b5ff-ecdb3a512ad3" Version="1.0.7" Language="en-US" Publisher="Yaobin Ouyang" />
         <DisplayName>CodeGraph</DisplayName>
-        <Description>Show call graph, inheritance graph and variable usage graph for C/C++, C#, Python and other languages</Description>
+        <Description xml:space="preserve">Visualize call graph, inheritance graph and variable usage graph for C/C++, C#, Python and other languages.</Description>
         <License>LICENSE.txt</License>
         <Icon>Resources/logo.png</Icon>
         <PreviewImage>Resources/thumbnail.png</PreviewImage>
