@@ -1484,8 +1484,10 @@ namespace CodeAtlasVSIX
                 GetSelectedCenter(out center);
                 if (!m_isAutoLayout)
                 {
-                    Random rand = new Random(123);
-                    center = center + new Vector((rand.NextDouble() - 0.5) * 100, (rand.NextDouble() - 0.5) * 100);
+                    Random rand = new Random(srcUniqueName.GetHashCode());
+                    double r = rand.NextDouble() * 50 + 100;
+                    double angle = rand.NextDouble() * 6.28;
+                    center = center + new Vector(Math.Cos(angle), Math.Sin(angle)) * r;
                 }
                 item.Pos = center;
                 item.SetTargetPos(center);
