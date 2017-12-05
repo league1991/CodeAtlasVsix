@@ -32,6 +32,15 @@ namespace CodeAtlasVSIX
         public bool IsEmpty() { return m_nodeList.Count == 0 && m_edgeDict.Count == 0; }
     }
 
+    public class SelectionRecord
+    {
+        public List<string> m_nodeList = new List<string>();
+        public List<EdgeKey> m_edgeList = new List<EdgeKey>();
+        public SelectionRecord() { }
+        public SelectionRecord(string nodeKey) { m_nodeList.Add(nodeKey); }
+        public SelectionRecord(EdgeKey edgeKey) { m_edgeList.Add(edgeKey); }
+    }
+
     public class CodeScene: DispatcherObject
     {
         #region Data Member
@@ -65,6 +74,12 @@ namespace CodeAtlasVSIX
         public int m_schemeTimeStamp = 0;
         public string m_customEdgeSource = "";
 
+        // Selection Stack
+        List<SelectionRecord> m_selectionStack = new List<SelectionRecord>();
+        int m_selectionBegin = 0;
+        int m_selectionLength = 0;
+        int m_curSelectionOffset = 0;
+
         // LRU
         List<string> m_itemLruQueue = new List<string>();
         int m_lruMaxLength = 50;
@@ -73,6 +88,10 @@ namespace CodeAtlasVSIX
         public CodeScene()
         {
             m_updateThread = new SceneUpdateThread(this);
+            for (int i = 0; i < 50; i++)
+            {
+                m_selectionStack.Add(null);
+            }
         }
 
         public void StartThread()
@@ -113,6 +132,58 @@ namespace CodeAtlasVSIX
                 dict.Add(key, value);
             }
         }
+
+        #region Selection Stack
+        void ClearSelectionStack()
+        {
+            m_selectionBegin = m_selectionLength = m_curSelectionOffset = 0;
+        }
+
+        void AddSelection(SelectionRecord record)
+        {
+            // Move end pointer to current pointer
+            if (m_selectionLength > 0)
+            {
+                m_selectionLength = m_curSelectionOffset + 1;
+            }
+            int end = (m_selectionBegin + m_selectionLength) % m_selectionStack.Count;
+            m_selectionStack[end] = record;
+            if (m_selectionLength < m_selectionStack.Count)
+            {
+                m_selectionLength++;
+            }
+            else
+            {
+                m_selectionBegin++;
+            }
+            m_curSelectionOffset = m_selectionLength - 1;
+        }
+
+        SelectionRecord LastSelection()
+        {
+            if (m_curSelectionOffset <= 0)
+            {
+                return null;
+            }
+            m_curSelectionOffset--;
+            return m_selectionStack[(m_selectionBegin + m_curSelectionOffset) % m_selectionStack.Count];
+        }
+
+        SelectionRecord NextSelection()
+        {
+            if (m_curSelectionOffset >= m_selectionLength-1)
+            {
+                return null;
+            }
+            m_curSelectionOffset++;
+            return m_selectionStack[(m_selectionBegin + m_curSelectionOffset) % m_selectionStack.Count];
+        }
+
+        bool IsSelectionStackEmpty()
+        {
+            return m_selectionLength == 0;
+        }
+        #endregion
 
         #region Read/Write Data
         public void OnOpenDB()
@@ -319,7 +390,7 @@ namespace CodeAtlasVSIX
             m_curValidScheme = new List<string>();
             m_curValidSchemeColor = new List<Color>();
             m_customExtension = new Dictionary<string, string>();
-
+            m_selectionStack = new List<SelectionRecord>(50);
             ReleaseLock();
             
         }
@@ -526,6 +597,7 @@ namespace CodeAtlasVSIX
             }
             m_selectTimeStamp += 1;
             m_itemDict[uniqueName].IsSelected = true;
+            AddSelection(new SelectionRecord(uniqueName));
             return true;
         }
 
@@ -554,12 +626,14 @@ namespace CodeAtlasVSIX
                 Logger.Debug("Select Node:" + node.GetUniqueName());
                 m_selectTimeStamp += 1;
                 node.IsSelected = true;
+                AddSelection(new SelectionRecord(node.GetUniqueName()));
                 return true;
             }
             else if (edge != null)
             {
                 m_selectTimeStamp += 1;
                 edge.IsSelected = true;
+                AddSelection(new SelectionRecord(new EdgeKey(edge.m_srcUniqueName, edge.m_tarUniqueName)));
                 return true;
             }
             return false;
@@ -573,6 +647,7 @@ namespace CodeAtlasVSIX
             }
             m_selectTimeStamp += 1;
             edge.IsSelected = true;
+            AddSelection(new SelectionRecord(new EdgeKey(edge.m_srcUniqueName, edge.m_tarUniqueName)));
             return true;
         }
 
@@ -593,15 +668,17 @@ namespace CodeAtlasVSIX
             {
                 _ClearSelection();
             }
+            var record = new SelectionRecord();
             foreach (var uniqueName in keys)
             {
-                if (!m_itemDict.ContainsKey(uniqueName))
+                if (m_itemDict.ContainsKey(uniqueName))
                 {
-                    continue;
+                    m_itemDict[uniqueName].IsSelected = true;
+                    record.m_nodeList.Add(uniqueName);
                 }
-                m_itemDict[uniqueName].IsSelected = true;
             }
             m_selectTimeStamp += 1;
+            AddSelection(record);
             return true;
         }
 
@@ -611,15 +688,118 @@ namespace CodeAtlasVSIX
             {
                 _ClearSelection();
             }
+            var record = new SelectionRecord();
             foreach (var key in keys)
             {
                 if (m_edgeDict.ContainsKey(key))
                 {
                     m_edgeDict[key].IsSelected = true;
+                    record.m_edgeList.Add(key);
                 }
-                m_selectTimeStamp += 1;
             }
+            m_selectTimeStamp += 1;
+            AddSelection(record);
             return true;
+        }
+
+        public bool SelectItemsAndEdges(List<string> keys, List<EdgeKey> edgeKeys, bool clearFirst = true)
+        {
+            if (clearFirst)
+            {
+                _ClearSelection();
+            }
+            var record = new SelectionRecord();
+            foreach (var uniqueName in keys)
+            {
+                if (m_itemDict.ContainsKey(uniqueName))
+                {
+                    m_itemDict[uniqueName].IsSelected = true;
+                    record.m_nodeList.Add(uniqueName);
+                }
+            }
+            foreach (var key in edgeKeys)
+            {
+                if (m_edgeDict.ContainsKey(key))
+                {
+                    m_edgeDict[key].IsSelected = true;
+                    record.m_edgeList.Add(key);
+                }
+            }
+            m_selectTimeStamp += 1;
+            AddSelection(record);
+            return true;
+        }
+
+        public bool SelectLast()
+        {
+            SelectionRecord last;
+            while(true)
+            {
+                last = LastSelection();
+                if (last == null)
+                {
+                    return false;
+                }
+                _ClearSelection();
+                int count = 0;
+                foreach (var uniqueName in last.m_nodeList)
+                {
+                    if (m_itemDict.ContainsKey(uniqueName))
+                    {
+                        m_itemDict[uniqueName].IsSelected = true;
+                        count++;
+                    }
+                }
+                foreach (var key in last.m_edgeList)
+                {
+                    if (m_edgeDict.ContainsKey(key))
+                    {
+                        m_edgeDict[key].IsSelected = true;
+                        count++;
+                    }
+                }
+                if (count > 0)
+                {
+                    m_selectTimeStamp += 1;
+                    return true;
+                }
+            }            
+        }
+
+        public bool SelectNext()
+        {
+            SelectionRecord next;
+            while (true)
+            {
+                next = NextSelection();
+                if (next == null)
+                {
+                    return false;
+                }
+                _ClearSelection();
+                int count = 0;
+                foreach (var uniqueName in next.m_nodeList)
+                {
+                    if (m_itemDict.ContainsKey(uniqueName))
+                    {
+                        m_itemDict[uniqueName].IsSelected = true;
+                        count++;
+                    }
+                }
+                foreach (var key in next.m_edgeList)
+                {
+                    if (m_edgeDict.ContainsKey(key))
+                    {
+                        m_edgeDict[key].IsSelected = true;
+                        count++;
+                    }
+                }
+                if (count > 0)
+                {
+                    m_selectTimeStamp += 1;
+                    return true;
+                }
+            }
         }
 
         public bool SelectNearestItem(Point pos)
@@ -1307,7 +1487,7 @@ namespace CodeAtlasVSIX
             return string.Format("{0} ({1},{2})", path, line, column);
         }
 
-        bool _DoAddBookmarkItem(string path, string file, int line, int column)
+        bool _DoAddBookmarkItem(string path, string file, int line, int column, DataDict data = null)
         {
             string srcUniqueName = GetBookmarkUniqueName(path, line, column);
             if (m_itemDict.ContainsKey(srcUniqueName))
@@ -1319,6 +1499,10 @@ namespace CodeAtlasVSIX
                 return false;
             }
             var dbObj = DBManager.Instance().GetDB();
+            if (data == null)
+            {
+                data = new DataDict();
+            }
 
             // Build custom data
             var customData = new Dictionary<string, object>();
@@ -1358,8 +1542,13 @@ namespace CodeAtlasVSIX
                 m_view.canvas.Children.Add(item);
                 Point center;
                 GetSelectedCenter(out center);
+                Point target = center;
                 item.Pos = center;
-                item.SetTargetPos(center);
+                if (data.ContainsKey("targetPos"))
+                {
+                    target = (Point)data["targetPos"];
+                }
+                item.SetTargetPos(target);
                 m_isLayoutDirty = true;
                 if (m_itemDict.Count == 1)
                 {
@@ -1370,7 +1559,7 @@ namespace CodeAtlasVSIX
             });
             return true;
         }
-        bool _DoAddCodeItem(string srcUniqueName)
+        bool _DoAddCodeItem(string srcUniqueName, DataDict data = null)
         {
             // Logger.WriteLine("Add Code Item:" + srcUniqueName);
             if (m_itemDict.ContainsKey(srcUniqueName))
@@ -1387,6 +1576,10 @@ namespace CodeAtlasVSIX
             if (entity == null)
             {
                 return false;
+            }
+            if (data == null)
+            {
+                data = new DataDict();
             }
 
             // Build custom data
@@ -1482,15 +1675,13 @@ namespace CodeAtlasVSIX
                 m_view.canvas.Children.Add(item);
                 Point center;
                 GetSelectedCenter(out center);
-                if (!m_isAutoLayout)
+                Point targetCenter = center;
+                if (!m_isAutoLayout && data.ContainsKey("targetPos"))
                 {
-                    Random rand = new Random(srcUniqueName.GetHashCode());
-                    double r = rand.NextDouble() * 50 + 100;
-                    double angle = rand.NextDouble() * 6.28;
-                    center = center + new Vector(Math.Cos(angle), Math.Sin(angle)) * r;
+                    targetCenter = (Point)data["targetPos"];
                 }
                 item.Pos = center;
-                item.SetTargetPos(center);
+                item.SetTargetPos(targetCenter);
                 m_isLayoutDirty = true;
                 if (m_itemDict.Count == 1)
                 {
@@ -1601,19 +1792,19 @@ namespace CodeAtlasVSIX
             return true;
         }
 
-        public void AddCodeItem(string srcUniqueName)
+        public void AddCodeItem(string srcUniqueName, DataDict data = null)
         {
             AcquireLock();
-            _DoAddCodeItem(srcUniqueName);
+            _DoAddCodeItem(srcUniqueName, data);
             UpdateLRU(new List<string> { srcUniqueName });
             RemoveItemLRU();
             ReleaseLock();
         }
 
-        public void AddBookmarkItem(string path, string file, int line, int column)
+        public void AddBookmarkItem(string path, string file, int line, int column, DataDict data = null)
         {
             AcquireLock();
-            _DoAddBookmarkItem(path, file, line, column);
+            _DoAddBookmarkItem(path, file, line, column, data);
             var uniqueName = GetBookmarkUniqueName(path, line, column);
             UpdateLRU(new List<string> { uniqueName });
             RemoveItemLRU();
@@ -2093,9 +2284,11 @@ namespace CodeAtlasVSIX
             var itemList = SelectedNodes();
 
             var refNameList = new List<string>();
+            var rand = new Random(entStr.GetHashCode());
             foreach (var item in itemList)
             {
                 var uniqueName = item.GetUniqueName();
+                var itemPos = item.Pos;
                 var entList = new List<DoxygenDB.Entity>();
                 var refList = new List<DoxygenDB.Reference>();
                 dbObj.SearchRefEntity(out entList, out refList, uniqueName, refStr, entStr);
@@ -2135,7 +2328,8 @@ namespace CodeAtlasVSIX
                     var canEntName = candidate.Item1;
                     var canRefObj = candidate.Item2;
 
-                    bool res = _DoAddCodeItem(canEntName);
+                    var targetPos = new Point(itemPos.X + (inverseEdge? 150:-150), itemPos.Y + (rand.NextDouble()-0.5) * 200);
+                    bool res = _DoAddCodeItem(canEntName, new DataDict { { "targetPos", targetPos } });
                     if (res)
                     {
                         addedList.Add(canEntName);

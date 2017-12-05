@@ -195,6 +195,10 @@ namespace CodeAtlasVSIX
             var scene = UIManager.Instance().GetScene();
             var db = DBManager.Instance().GetDB();
 
+            Point center;
+            scene.GetSelectedCenter(out center);
+            var rand = new Random(m_srcUniqueName.GetHashCode());
+
             StringReader reader = new StringReader(selectionText);
             string strReadline;
             for (int ithLine = 0; (strReadline = reader.ReadLine()) != null; ++ithLine)
@@ -257,15 +261,18 @@ namespace CodeAtlasVSIX
                 //    continue;
                 //}
 
+                var bookmarkPos = new Point(center.X -150, center.Y + (rand.NextDouble() - 0.5) * 200);
+                var filePos = new Point(center.X - 300, center.Y + (rand.NextDouble() - 0.5) * 200);
+
                 var uname = scene.GetBookmarkUniqueName(path, line, column);
                 scene.AcquireLock();
-                scene.AddBookmarkItem(path, fileName, line, column);
-                scene.AddCodeItem(m_srcUniqueName);
+                scene.AddBookmarkItem(path, fileName, line, column, new Dictionary<string, object> { { "targetPos", bookmarkPos } });
+                scene.AddCodeItem(m_srcUniqueName, new Dictionary<string, object> { { "targetPos", center } });
                 scene.DoAddCustomEdge(uname, m_srcUniqueName);
                 if (result.bestEntity != null)
                 {
                     var fileUname = result.bestEntity.UniqueName();
-                    scene.AddCodeItem(fileUname);
+                    scene.AddCodeItem(fileUname, new Dictionary<string, object> { { "targetPos", filePos } });
                     scene.DoAddCustomEdge(fileUname, uname);
                 }
                 scene.ReleaseLock();

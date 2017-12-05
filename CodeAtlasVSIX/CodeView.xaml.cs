@@ -157,7 +157,6 @@ namespace CodeAtlasVSIX
                     itemKeyList.Add(itemPair.Key);
                 }
             }
-            scene.SelectCodeItems(itemKeyList, isClean);
 
             var edgeDict = scene.GetEdgeDict();
             var edgeKeyList = new List<Tuple<string, string>>();
@@ -172,7 +171,7 @@ namespace CodeAtlasVSIX
                     edgeKeyList.Add(itemPair.Key);
                 }
             }
-            scene.SelectEdges(edgeKeyList, false);
+            scene.SelectItemsAndEdges(itemKeyList, edgeKeyList, isClean);
         }
 
         private void background_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
