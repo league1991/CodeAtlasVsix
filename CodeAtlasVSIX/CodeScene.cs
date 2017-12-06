@@ -41,6 +41,13 @@ namespace CodeAtlasVSIX
         public SelectionRecord(EdgeKey edgeKey) { m_edgeList.Add(edgeKey); }
     }
 
+    public enum LayoutType
+    {
+        LAYOUT_NONE = 0,
+        LAYOUT_GRAPH = 1,
+        LAYOUT_FORCE = 2,
+    };
+
     public class CodeScene: DispatcherObject
     {
         #region Data Member
@@ -62,7 +69,7 @@ namespace CodeAtlasVSIX
         
         // Layout/UI Status
         public bool m_isLayoutDirty = false;
-        public bool m_isAutoLayout = true;
+        public LayoutType m_layoutType = LayoutType.LAYOUT_GRAPH;
         public bool m_isInvalidate = false;
         bool m_isSourceCandidate = true;
         List<EdgeKey> m_candidateEdge = new List<EdgeKey>();
@@ -1714,7 +1721,7 @@ namespace CodeAtlasVSIX
                 Point center;
                 GetSelectedCenter(out center);
                 Point targetCenter = center;
-                if (!m_isAutoLayout && data.ContainsKey("targetPos"))
+                if ( m_layoutType != LayoutType.LAYOUT_GRAPH && data.ContainsKey("targetPos"))
                 {
                     targetCenter = (Point)data["targetPos"];
                 }

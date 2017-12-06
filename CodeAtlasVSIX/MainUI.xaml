@@ -31,7 +31,11 @@
             <MenuItem Header="Settings">
                 <MenuItem x:Name="layoutButton" Header="Horizontal/Vertical" Click="layoutButton_Click" />
                 <MenuItem x:Name="autoFocusButton" Header="Auto Focus" IsCheckable="True" IsChecked="True" Click="autoFocusButton_Click"/>
-                <MenuItem x:Name="autoLayoutButton" Header="Auto Layout" IsCheckable="True" IsChecked="True" Click="autoLayoutButton_Click"/>
+                <MenuItem Header="Layout">
+                    <RadioButton x:Name="graphLayoutButton" Content="Graph Layout" IsChecked="True" Checked="graphLayoutButton_Checked"/>
+                    <RadioButton x:Name="forceLayoutButton" Content="Force Layout" Checked="forceLayoutButton_Checked"/>
+                    <RadioButton x:Name="noLayoutButton" Content="No Layout" Checked="noLayoutButton_Checked"/>
+                </MenuItem>                
                 <MenuItem Header="Navigation" >
                     <RadioButton x:Name="dynamicNavigationButton" Content="Dynamic Navigation" IsChecked="True" Click="dynamicNavigationButton_Click" />
                     <RadioButton x:Name="staticNavigationButton" Content="Static Navigation" Click="staticNavigationButton_Click"/>

@@ -98,12 +98,21 @@ namespace CodeAtlasVSIX
 
                     m_timeStamp = System.Environment.TickCount;
                     int layoutTime = 0;
-                    if (scene.m_isLayoutDirty && scene.m_isAutoLayout)
+                    if (scene.m_isLayoutDirty)
                     {
                         scene.AcquireLock();
                         BeginTimeStamp();
-                        UpdateLayeredLayoutWithComp();
-                        scene.m_isLayoutDirty = false;
+                        if (scene.m_layoutType == LayoutType.LAYOUT_GRAPH)
+                        {
+                            UpdateLayeredLayoutWithComp();
+                            scene.m_isLayoutDirty = false;
+                        }
+                        else if(scene.m_layoutType == LayoutType.LAYOUT_FORCE)
+                        {
+                            var dist = UpdateForceDirectedLayout();
+                            scene.m_isLayoutDirty = (dist > 0.5);
+                        }
+
                         layoutTime = EndTimeStamp("Layout");
                         scene.ReleaseLock();
                     }
@@ -173,6 +182,50 @@ namespace CodeAtlasVSIX
                 }
                 //m_sleepTime = 2000;
             }
+        }
+
+        double UpdateForceDirectedLayout()
+        {
+            var scene = UIManager.Instance().GetScene();
+            var itemDict = scene.GetItemDict();
+            var edgeDict = scene.GetEdgeDict();
+
+            double totalDist = 0;
+            foreach (var pairA in itemDict)
+            {
+                foreach (var pairB in itemDict)
+                {
+                    if (pairA.Key == pairB.Key)
+                    {
+                        continue;
+                    }
+                    var itemA = pairA.Value;
+                    var itemB = pairB.Value;
+                    Size sizeA = new Size(itemA.GetWidth(), itemA.GetHeight());
+                    Size sizeB = new Size(itemB.GetWidth(), itemB.GetHeight());
+                    Point positionA = itemA.GetTargetPos();
+                    Point positionB = itemB.GetTargetPos();
+                    double xOverlap = (sizeA.Width  + sizeB.Width)  * 0.5 + 120 - Math.Abs(positionB.X - positionA.X);
+                    double yOverlap = (sizeA.Height + sizeB.Height) * 0.5 + 4 - Math.Abs(positionB.Y - positionA.Y);
+                    if (xOverlap > 0 && yOverlap > 0)
+                    {
+                        double xOffset = (positionB.X > positionA.X) ? -xOverlap : xOverlap;
+                        const double xFactor = 0.001;
+                        //positionA.X += xOffset * 0.5 * xFactor;
+                        //positionB.X += -xOffset * 0.5 * xFactor;
+                        //totalDist += xOverlap * xFactor;
+
+                        double yOffset = (positionB.Y > positionA.Y) ? -yOverlap : yOverlap;
+                        const double yFactor = 1.1;
+                        positionA.Y += yOffset * 0.5 * yFactor;
+                        positionB.Y += -yOffset * 0.5 * yFactor;
+                        totalDist += yOverlap * yFactor;
+                    }
+                    itemA.SetTargetPos(positionA);
+                    itemB.SetTargetPos(positionB);
+                }
+            }
+            return totalDist;
         }
 
         void UpdateLayeredLayoutWithComp()

@@ -633,6 +633,11 @@ namespace CodeAtlasVSIX
             m_targetPos = point;
         }
 
+        public Point GetTargetPos()
+        {
+            return m_targetPos;
+        }
+
         public Vector DispToTarget()
         {
             return m_targetPos - Pos;

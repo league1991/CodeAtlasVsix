@@ -757,12 +757,6 @@ namespace CodeAtlasVSIX
             codeView.SetAutoFocus(autoFocusButton.IsChecked);
         }
 
-        private void autoLayoutButton_Click(object sender, RoutedEventArgs e)
-        {
-            var scene = UIManager.Instance().GetScene();
-            scene.m_isAutoLayout = autoLayoutButton.IsChecked;
-        }
-
         private void lru10Button_Checked(object sender, RoutedEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();
@@ -818,6 +812,26 @@ namespace CodeAtlasVSIX
                 var scene = UIManager.Instance().GetScene();
                 scene.SelectByName(text);
             }
+        }
+
+        private void graphLayoutButton_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.m_layoutType = LayoutType.LAYOUT_GRAPH;
+            scene.m_isLayoutDirty = true;
+        }
+
+        private void forceLayoutButton_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.m_layoutType = LayoutType.LAYOUT_FORCE;
+            scene.m_isLayoutDirty = true;
+        }
+
+        private void noLayoutButton_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.m_layoutType = LayoutType.LAYOUT_NONE;
         }
     }
 }
