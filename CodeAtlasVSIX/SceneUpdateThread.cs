@@ -209,8 +209,8 @@ namespace CodeAtlasVSIX
                     double yOverlap = (sizeA.Height + sizeB.Height) * 0.5 + 4 - Math.Abs(positionB.Y - positionA.Y);
                     if (xOverlap > 0 && yOverlap > 0)
                     {
-                        double xOffset = (positionB.X > positionA.X) ? -xOverlap : xOverlap;
-                        const double xFactor = 0.001;
+                        //double xOffset = (positionB.X > positionA.X) ? -xOverlap : xOverlap;
+                        //const double xFactor = 0.001;
                         //positionA.X += xOffset * 0.5 * xFactor;
                         //positionB.X += -xOffset * 0.5 * xFactor;
                         //totalDist += xOverlap * xFactor;
