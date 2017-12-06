@@ -804,5 +804,20 @@ namespace CodeAtlasVSIX
             var scene = UIManager.Instance().GetScene();
             scene.SelectNext();
         }
+
+        private void searchBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                var text = searchBox.Text;
+                if (text == null || text == "")
+                {
+                    return;
+                }
+
+                var scene = UIManager.Instance().GetScene();
+                scene.SelectByName(text);
+            }
+        }
     }
 }

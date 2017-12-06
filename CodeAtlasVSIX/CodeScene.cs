@@ -136,6 +136,10 @@ namespace CodeAtlasVSIX
         #region Selection Stack
         void ClearSelectionStack()
         {
+            for (int i = 0; i < m_selectionStack.Count; i++)
+            {
+                m_selectionStack[i] = null;
+            }
             m_selectionBegin = m_selectionLength = m_curSelectionOffset = 0;
         }
 
@@ -390,7 +394,7 @@ namespace CodeAtlasVSIX
             m_curValidScheme = new List<string>();
             m_curValidSchemeColor = new List<Color>();
             m_customExtension = new Dictionary<string, string>();
-            m_selectionStack = new List<SelectionRecord>(50);
+            ClearSelectionStack();
             ReleaseLock();
             
         }
@@ -614,6 +618,40 @@ namespace CodeAtlasVSIX
             m_selectTimeStamp += 1;
             m_itemDict[uniqueName].IsSelected = false;
             return true;
+        }
+
+        public void SelectByName(string text)
+        {
+            text = text.ToLower();
+            
+            var items = GetItemDict();
+            var keyList = new List<string>(items.Keys);
+            var selectedList = SelectedNodes();
+            int startIdx = 0;
+            int count = keyList.Count;
+            if (selectedList.Count > 0)
+            {
+                var firstUname = selectedList[0].GetUniqueName();
+                int firstIdx = keyList.IndexOf(firstUname);
+                if (firstIdx != -1)
+                {
+                    startIdx = firstIdx + 1;
+                    count = keyList.Count - 1;
+                }
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                int idx = (startIdx + i) % keyList.Count;
+                var itemUname = keyList[idx];
+                var item = items[itemUname];
+                if (item.GetName().ToLower().Contains(text) ||
+                    item.GetCommentText().ToLower().Contains(text))
+                {
+                    SelectCodeItem(itemUname);
+                    break;
+                }
+            }
         }
 
         public bool SelectOneItem(Shape item)

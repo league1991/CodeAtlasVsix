@@ -99,25 +99,77 @@
                             CornerRadius="0" BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}" BorderThickness="1">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIconColumnGroup"/>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="MenuTextColumnGroup"/>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="MenumItemArrow"/>
                             </Grid.ColumnDefinitions>
-                            <ContentPresenter Margin="6,1,6,1" ContentSource="Header" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                            <Popup x:Name="pop" Margin="0" IsOpen="{TemplateBinding IsSubmenuOpen}" AllowsTransparency="True" Placement="Bottom">
-                                <Border Margin="0" CornerRadius="0" BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.ActiveBorderKey}}" BorderThickness="0">
-                                    <StackPanel IsItemsHost="True">
-                                    </StackPanel>
+                            
+                            <Grid Grid.Column="0" Visibility="Hidden" Margin="4,0,6,0" x:Name="GlyphPanel" VerticalAlignment="Center">
+                                <Path x:Name="GlyphPanelpath" VerticalAlignment="Center" Fill="{TemplateBinding Foreground}" 
+                                          Data="M0,2 L0,4.8 L2.5,7.4 L7.1,2.8 L7.1,0 L2.5,4.6 z" FlowDirection="LeftToRight"/>
+                            </Grid>
+                            
+                            <ContentPresenter x:Name="ContentCtrl" Margin="6,1,6,1" ContentSource="Header" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+
+                            <Grid Grid.Column="2" Margin="4,1,4,1" x:Name="ArrowPanel" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                <Path x:Name="ArrowPanelPath" HorizontalAlignment="Right" VerticalAlignment="Center" 
+                                          Fill="{TemplateBinding Foreground}" Data="M0,0 L0,8 L4,4 z" />
+                            </Grid>
+
+                            <Popup x:Name="SubMenuPopup" AllowsTransparency="true" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" 
+                                        Placement="Left"  Focusable="false" VerticalOffset="0"
+                                   PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}">
+                                <Border Background="{TemplateBinding Background}"  CornerRadius="0" Margin="5" 
+                                                BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.ActiveBorderKey}}" BorderThickness="{TemplateBinding BorderThickness}">
+                                    <Grid x:Name="SubMenu" Grid.IsSharedSizeScope="True" >
+                                        <StackPanel Margin="0" IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                                    </Grid>
                                 </Border>
                             </Popup>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <!-- Role = TopLevelHeader : this is the root menu item in a menu; the Popup expands down -->
+                        <Trigger Property="Role" Value="TopLevelHeader">
+                            <Setter Property="Placement" Value="Bottom" TargetName="SubMenuPopup"/>
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="GlyphPanel"/>
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPanel"/>
+                        </Trigger>
+
+                        <!-- Role = TopLevelItem :  this is a child menu item from the top level without any child items-->
+                        <Trigger Property="Role" Value="TopLevelItem">
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="GlyphPanel"/>
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPanel"/>
+                        </Trigger>
+
+                        <!-- Role = SubMenuHeader : this is a child menu item which has children -->
+                        <Trigger Property="Role" Value="SubmenuHeader">
+                            <Setter Property="DockPanel.Dock" Value="Top"/>
+                            <Setter Property="Placement" Value="Right" TargetName="SubMenuPopup"/>
+                        </Trigger>
+
+                        <!-- Role = SubMenuItem : this is a child menu item which hasn't children-->
+                        <Trigger Property="Role" Value="SubmenuItem">
+                            <Setter Property="DockPanel.Dock" Value="Top"/>
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPanel"/>
+                        </Trigger>
+                        
+                        <Trigger Property="IsSuspendingPopupAnimation" Value="true">
+                            <Setter Property="PopupAnimation" Value="None" TargetName="SubMenuPopup"/>
+                        </Trigger>
+
+                        <!-- The GlyphPanel contains the CheckMark -->
+                        <Trigger Property="IsChecked" Value="true">
+                            <Setter Property="Visibility" Value="Visible" TargetName="GlyphPanel"/>
+                        </Trigger>
+                        
                         <Trigger Property="IsMouseOver" Value="true">
                             <Setter TargetName="bd" Property="Background" 
                                     Value="{DynamicResource {x:Static vsfx:VsBrushes.ButtonHighlightKey}}"/>
                         </Trigger>
+                        
                         <Trigger Property="IsChecked" Value="true">
-                            <Setter TargetName="bd" Property="Background" 
-                                    Value="{DynamicResource {x:Static vsfx:VsBrushes.ButtonHighlightKey}}"/>
+                            <Setter TargetName="GlyphPanel" Property="Visibility" Value="Visible"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

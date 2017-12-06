@@ -16,35 +16,40 @@
         </ResourceDictionary>
     </DockPanel.Resources>
 
-    <Menu x:Name="menu" Height="20" DockPanel.Dock="Top" Style="{DynamicResource MenuStyle}">
-        <!--<MenuItem x:Name="TestButton" Header="Test" Click="TestButton_Click" />-->
-        <MenuItem x:Name="FileButton" Header="File" >
-            <MenuItem x:Name="OpenButton" Header="Open Analysis Result" Click="OnOpen" />
-            <MenuItem x:Name="CloseButton" Header="Close Analysis Result" Click="OnClose" />
-        </MenuItem>
-        <MenuItem x:Name="AnalyseButton" Header="Analyse" >
-            <!--<MenuItem x:Name="AnalyseSolutionButton" Header="Analyse Solution" Click="AnalyseSolutionButton_Click" />-->
-            <MenuItem x:Name="FastAnalyseSolutionButton" Header="Analyse Solution" Click="OnFastAnalyseSolutionButton" />
-            <MenuItem x:Name="FastAnalyseProjectsButton" Header="Analyse Selected Projects" Click="OnFastAnalyseProjectsButton"/>
-        </MenuItem>
-        <MenuItem Header="Navigation" >
-            <RadioButton x:Name="dynamicNavigationButton" Content="Dynamic Navigation" IsChecked="True" Click="dynamicNavigationButton_Click" />
-            <RadioButton x:Name="staticNavigationButton" Content="Static Navigation" Click="staticNavigationButton_Click"/>
-        </MenuItem>
-        <MenuItem Header="Settings">
-            <MenuItem x:Name="layoutButton" Header="Horizontal/Vertical" Click="layoutButton_Click" />
-            <MenuItem x:Name="autoFocusButton" Header="Auto Focus" IsCheckable="True" IsChecked="True" Click="autoFocusButton_Click"/>
-            <MenuItem x:Name="autoLayoutButton" Header="Auto Layout" IsCheckable="True" IsChecked="True" Click="autoLayoutButton_Click"/>
-            <RadioButton x:Name="lru10Button" Content="Show 10 Items" Checked="lru10Button_Checked"/>
-            <RadioButton x:Name="lru20Button" Content="Show 20 Items" Checked="lru20Button_Checked"/>
-            <RadioButton x:Name="lru50Button" Content="Show 50 Items" IsChecked="True" Checked="lru50Button_Checked"/>
-            <RadioButton x:Name="lru100Button" Content="Show 100 Items" Checked="lru100Button_Checked"/>
-            <RadioButton x:Name="lru200Button" Content="Show 200 Items" Checked="lru200Button_Checked"/>
-        </MenuItem>
-        <MenuItem x:Name="PrevButton" Header="Last" Click="PrevButton_Click"/>
-        <MenuItem x:Name="NextButton" Header="Next" Click="NextButton_Click"/>
-    </Menu>
-    
+    <Grid DockPanel.Dock="Top" >
+        <Menu x:Name="menu" Height="20" Style="{DynamicResource MenuStyle}">
+            <!--<MenuItem x:Name="TestButton" Header="Test" Click="TestButton_Click" />-->
+            <MenuItem x:Name="FileButton" Header="File" >
+                <MenuItem x:Name="OpenButton" Header="Open Analysis Result" Click="OnOpen" />
+                <MenuItem x:Name="CloseButton" Header="Close Analysis Result" Click="OnClose" />
+            </MenuItem>
+            <MenuItem x:Name="AnalyseButton" Header="Analyse" >
+                <!--<MenuItem x:Name="AnalyseSolutionButton" Header="Analyse Solution" Click="AnalyseSolutionButton_Click" />-->
+                <MenuItem x:Name="FastAnalyseSolutionButton" Header="Analyse Solution" Click="OnFastAnalyseSolutionButton" />
+                <MenuItem x:Name="FastAnalyseProjectsButton" Header="Analyse Selected Projects" Click="OnFastAnalyseProjectsButton"/>
+            </MenuItem>
+            <MenuItem Header="Settings">
+                <MenuItem x:Name="layoutButton" Header="Horizontal/Vertical" Click="layoutButton_Click" />
+                <MenuItem x:Name="autoFocusButton" Header="Auto Focus" IsCheckable="True" IsChecked="True" Click="autoFocusButton_Click"/>
+                <MenuItem x:Name="autoLayoutButton" Header="Auto Layout" IsCheckable="True" IsChecked="True" Click="autoLayoutButton_Click"/>
+                <MenuItem Header="Navigation" >
+                    <RadioButton x:Name="dynamicNavigationButton" Content="Dynamic Navigation" IsChecked="True" Click="dynamicNavigationButton_Click" />
+                    <RadioButton x:Name="staticNavigationButton" Content="Static Navigation" Click="staticNavigationButton_Click"/>
+                </MenuItem>
+                <MenuItem Header="Max Item Count">
+                    <RadioButton x:Name="lru10Button" Content="Show 10 Items" Checked="lru10Button_Checked"/>
+                    <RadioButton x:Name="lru20Button" Content="Show 20 Items" Checked="lru20Button_Checked"/>
+                    <RadioButton x:Name="lru50Button" Content="Show 50 Items" IsChecked="True" Checked="lru50Button_Checked"/>
+                    <RadioButton x:Name="lru100Button" Content="Show 100 Items" Checked="lru100Button_Checked"/>
+                    <RadioButton x:Name="lru200Button" Content="Show 200 Items" Checked="lru200Button_Checked"/>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem x:Name="PrevButton" Header="Last" Click="PrevButton_Click"/>
+            <MenuItem x:Name="NextButton" Header="Next" Click="NextButton_Click"/>
+        </Menu>
+        <TextBox HorizontalAlignment="Right" Margin="0" x:Name="searchBox" Width="100" KeyDown="searchBox_KeyDown" ForceCursor="True"/>
+    </Grid>
+
     <Grid x:Name="layoutGrid" Focusable="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="70*" />
