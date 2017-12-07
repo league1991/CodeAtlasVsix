@@ -306,6 +306,42 @@ namespace CodeAtlasVSIX
             }
         }
 
+        bool TryToMoveTo(string fileName, int line, string searchToken)
+        {
+            if (!File.Exists(fileName))
+                return false;
+
+            try
+            {
+                OpenFile(fileName);
+                TextSelection ts = m_dte.ActiveDocument.Selection as TextSelection;
+                TextDocument textDoc = ts.Parent;
+                if (ts != null && textDoc != null && line >= textDoc.StartPoint.Line && line <= textDoc.EndPoint.Line)
+                {
+                    ts.GotoLine(line, true);
+                    var lineStr = ts.Text;
+                    var formatStr = string.Format(@"\b{0}\b", searchToken);
+                    var matches = Regex.Matches(lineStr, formatStr, RegexOptions.ExplicitCapture);
+                    int column = -1;
+                    foreach (Match nextMatch in matches)
+                    {
+                        column = nextMatch.Index + 1;
+                        break;
+                    }
+                    if (column == -1)
+                    {
+                        return false;
+                    }
+                    ts.MoveToLineAndOffset(line, column, false);
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            return true;
+        }
+
         void MoveTo(string fileName, int line, int column)
         {
             if (File.Exists(fileName))

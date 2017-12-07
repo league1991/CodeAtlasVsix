@@ -50,5 +50,10 @@ namespace CodeAtlasVSIX
         {
             System.Diagnostics.Process.Start("https://github.com/league1991/CodeAtlasVsix");
         }
+
+        private void tutorialButton_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://marketplace.visualstudio.com/items?itemName=YaobinOuyang.CodeAtlas");
+        }
     }
 }

@@ -86,7 +86,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Contact Me" Style="{DynamicResource TabItemStyle}">
+            <TabItem Header="Help" Style="{DynamicResource TabItemStyle}">
                 <Grid MinHeight="10">
                     <local:ContactWindow x:Name="contactWindow"/>
                 </Grid>
