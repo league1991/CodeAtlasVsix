@@ -23,7 +23,7 @@ namespace CodeAtlasVSIX
             if (s_outWindow != null)
             {
                 //Guid generalPaneGuid = VSConstants.GUID_OutWindowGeneralPane; // P.S. There's also the GUID_OutWindowDebugPane available.
-                s_outWindow.CreatePane(s_customGuid, "Code Atlas", 1, 1);
+                s_outWindow.CreatePane(s_customGuid, "Code Graph", 1, 1);
                 s_outWindow.GetPane(ref s_customGuid, out s_outputPane);
             }
         }
