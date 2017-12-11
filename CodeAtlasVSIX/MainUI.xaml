@@ -21,6 +21,7 @@
             <!--<MenuItem x:Name="TestButton" Header="Test" Click="TestButton_Click" />-->
             <MenuItem x:Name="FileButton" Header="File" >
                 <MenuItem x:Name="OpenButton" Header="Open Analysis Result" Click="OnOpen" />
+                <MenuItem x:Name="OpenDefaultButton" Header="Open Default Analysis Result" Click="OnOpenDefault" />
                 <MenuItem x:Name="CloseButton" Header="Close Analysis Result" Click="OnClose" />
             </MenuItem>
             <MenuItem x:Name="AnalyseButton" Header="Analyse" >

@@ -175,6 +175,40 @@ namespace CodeAtlasVSIX
             }
         }
 
+        public void OnOpenDefault(object sender, RoutedEventArgs e)
+        {
+            if (!GetCommandActive())
+            {
+                return;
+            }
+
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            if (dte != null)
+            {
+                Solution solution = dte.Solution;
+                var solutionFile = solution.FileName;
+                if (solutionFile != "")
+                {
+                    var doxyFolder = System.IO.Path.GetDirectoryName(solutionFile) + "\\CodeGraphData";
+                    CheckOrCreateFolder(doxyFolder);
+                    var doxyPath = doxyFolder + "\\Result_solution.graph";
+                    if (File.Exists(doxyPath))
+                    {
+                        if (DBManager.Instance().GetDB().IsOpen())
+                        {
+                            DBManager.Instance().CloseDB();
+                        }
+                        DBManager.Instance().OpenDB(doxyPath);
+                        UpdateUI();
+                    }
+                    else
+                    {
+                        Logger.Warning(doxyPath + " doesn't exist.");
+                    }
+                }
+            }
+        }
+
         void CheckOrCreateFolder(string path)
         {
             if (!Directory.Exists(path))
