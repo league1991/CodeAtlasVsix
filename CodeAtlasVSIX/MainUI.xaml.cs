@@ -48,19 +48,25 @@ namespace CodeAtlasVSIX
 
             analysisWindow.InitLanguageOption();
 
-            AddCommand(OnFindCallers, Key.C);
-            AddCommand(OnFindCallees, Key.V);
-            AddCommand(OnFindMembers, Key.M);
-            AddCommand(OnFindOverrides, Key.O);
-            AddCommand(OnFindBases, Key.B);
-            AddCommand(OnFindUses, Key.U);
-            AddCommand(OnGoUp, Key.Up);
-            AddCommand(OnGoDown, Key.Down);
-            AddCommand(OnGoLeft, Key.Left);
-            AddCommand(OnGoRight, Key.Right);
+            AddCommand(OnFindCallers, Key.C, ModifierKeys.Alt);
+            AddCommand(OnFindCallees, Key.V, ModifierKeys.Alt);
+            AddCommand(OnFindMembers, Key.M, ModifierKeys.Alt);
+            AddCommand(OnFindOverrides, Key.O, ModifierKeys.Alt);
+            AddCommand(OnFindBases, Key.B, ModifierKeys.Alt);
+            AddCommand(OnFindUses, Key.U, ModifierKeys.Alt);
+            AddCommand(OnGoUp, Key.I, ModifierKeys.Alt);
+            AddCommand(OnGoDown, Key.K, ModifierKeys.Alt);
+            AddCommand(OnGoLeft, Key.J, ModifierKeys.Alt);
+            AddCommand(OnGoRight, Key.L, ModifierKeys.Alt);
+            AddCommand(OnGoUp, Key.Up, ModifierKeys.None);
+            AddCommand(OnGoDown, Key.Down, ModifierKeys.None);
+            AddCommand(OnGoLeft, Key.Left, ModifierKeys.None);
+            AddCommand(OnGoRight, Key.Right, ModifierKeys.None);
+            AddCommand(OnDelectSelectedItems, Key.Delete, ModifierKeys.None);
             AddCommand(OnDelectSelectedItems, Key.Delete, ModifierKeys.Alt);
-            AddCommand(OnDeleteSelectedItemsAndAddToStop, Key.I);
-            AddCommand(OnAddSimilarCodeItem, Key.S);
+            AddCommand(OnDeleteNearbyItems, Key.D, ModifierKeys.Alt);
+            AddCommand(OnDeleteSelectedItemsAndAddToStop, Key.N, ModifierKeys.Alt);
+            AddCommand(OnAddSimilarCodeItem, Key.S, ModifierKeys.Alt);
             AddCommand(OnToggleScheme1, Key.D1, ModifierKeys.Control);
             AddCommand(OnToggleScheme2, Key.D2, ModifierKeys.Control);
             AddCommand(OnToggleScheme3, Key.D3, ModifierKeys.Control);
@@ -71,6 +77,8 @@ namespace CodeAtlasVSIX
             AddCommand(OnShowScheme3, Key.D3, ModifierKeys.Alt);
             AddCommand(OnShowScheme4, Key.D4, ModifierKeys.Alt);
             AddCommand(OnShowScheme5, Key.D5, ModifierKeys.Alt);
+            AddCommand(OnBeginCustomEdge, Key.W, ModifierKeys.Alt);
+            AddCommand(OnEndCustomEdge, Key.E, ModifierKeys.Alt);
 
             //RegisterCallback();
         }
@@ -121,7 +129,7 @@ namespace CodeAtlasVSIX
             }
         }
 
-        public void AddCommand(ExecutedRoutedEventHandler callback, Key key, ModifierKeys modifier = ModifierKeys.Alt)
+        public void AddCommand(ExecutedRoutedEventHandler callback, Key key, ModifierKeys modifier)
         {
             CommandBinding cmd = new CommandBinding();
             cmd.Command = new RoutedUICommand();
