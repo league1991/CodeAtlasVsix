@@ -203,7 +203,7 @@ namespace CodeAtlasVSIX
                     }
                     else
                     {
-                        Logger.Warning(doxyPath + " doesn't exist.");
+                        Logger.Warning(doxyPath + " doesn't exist. Please analyse solution first.");
                     }
                 }
             }
@@ -866,6 +866,14 @@ namespace CodeAtlasVSIX
         {
             var scene = UIManager.Instance().GetScene();
             scene.m_layoutType = LayoutType.LAYOUT_NONE;
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.AcquireLock();
+            scene.SaveConfig();
+            scene.ReleaseLock();
         }
     }
 }
