@@ -1730,6 +1730,11 @@ namespace DoxygenDB
             return m_dbFolder + "/index.xml";
         }
 
+        public string GetDoxyFolderPath()
+        {
+            return m_doxyFileFolder;
+        }
+
         public bool IsOpen()
         {
             return m_dbFolder != "";

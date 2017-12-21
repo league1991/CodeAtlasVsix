@@ -202,13 +202,14 @@ namespace CodeAtlasVSIX
             var dbObj = DBManager.Instance().GetDB();
             var mainUI = UIManager.Instance().GetMainUI();
             var dbPath = dbObj.GetDBPath();
-            if (dbPath == null || dbPath == "")
+            var doxyPath = dbObj.GetDoxyFolderPath();
+            if (dbPath == null || dbPath == "" || doxyPath == null || doxyPath == "")
             {
                 mainUI.SetCommandActive(true);
                 return;
             }
 
-            var configPath = dbPath + ".config";
+            var configPath = doxyPath + ".config";
             string jsonStr = "";
             if (File.Exists(configPath))
             {
