@@ -202,15 +202,18 @@ namespace CodeAtlasVSIX
             var dbObj = DBManager.Instance().GetDB();
             var mainUI = UIManager.Instance().GetMainUI();
             var dbPath = dbObj.GetDBPath();
-            var doxyPath = dbObj.GetDoxyFolderPath();
-            if (dbPath == null || dbPath == "" || doxyPath == null || doxyPath == "")
+            var configPath = dbObj.GetConfigPath();
+            if (dbPath == null || dbPath == "" || configPath == null || configPath == "")
             {
                 mainUI.SetCommandActive(true);
                 return;
             }
 
-            var configPath = doxyPath + ".config";
-            string jsonStr = "";
+            string jsonStr = "";            
+            if (!File.Exists(configPath))
+            {
+                configPath = dbPath + ".config";
+            }
             if (File.Exists(configPath))
             {
                 jsonStr = File.ReadAllText(configPath);
@@ -230,7 +233,6 @@ namespace CodeAtlasVSIX
                 var sceneData = js.Deserialize<Dictionary<string, object>>(jsonStr);
 
                 AcquireLock();
-                Logger.Info("Open File: " + configPath);
                 var t0 = DateTime.Now;
                 var t1 = t0;
                 var beginTime = t0;
@@ -409,7 +411,7 @@ namespace CodeAtlasVSIX
 
         public void SaveConfig()
         {
-            var dbPath = DBManager.Instance().GetDB().GetDBPath();
+            var dbPath = DBManager.Instance().GetDB().GetConfigPath();
             if (dbPath == null || dbPath == "")
             {
                 return;
@@ -469,7 +471,7 @@ namespace CodeAtlasVSIX
             {
                 JavaScriptSerializer js = new JavaScriptSerializer();
                 var jsonStr = js.Serialize(jsonDict);
-                File.WriteAllText(dbPath + ".config", jsonStr);
+                File.WriteAllText(dbPath, jsonStr);
             }
             catch (Exception)
             {

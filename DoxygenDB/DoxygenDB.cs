@@ -1735,6 +1735,11 @@ namespace DoxygenDB
             return m_doxyFileFolder;
         }
 
+        public string GetConfigPath()
+        {
+            return m_doxyFileFolder + "/config.ini";
+        }
+
         public bool IsOpen()
         {
             return m_dbFolder != "";
