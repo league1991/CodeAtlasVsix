@@ -1737,7 +1737,7 @@ namespace DoxygenDB
 
         public string GetConfigPath()
         {
-            return m_doxyFileFolder + "/config.ini";
+            return m_doxyFileFolder + "/config.json";
         }
 
         public bool IsOpen()
