@@ -409,12 +409,13 @@ namespace CodeAtlasVSIX
             var srcResult = new DoxygenDB.EntitySearchResult();
             db.SearchAndFilter(srcRequest, out srcResult);
 
-            var tarRequest = new DoxygenDB.EntitySearchRequest(
-                tarName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.MATCH_WORD,
-                tarLongName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
-                tarType, tarFile, tarLine);
-            var tarResult = new DoxygenDB.EntitySearchResult();
-            db.SearchAndFilter(tarRequest, out tarResult);
+            //var tarRequest = new DoxygenDB.EntitySearchRequest(
+            //    tarName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.MATCH_WORD,
+            //    tarLongName, (int)DoxygenDB.SearchOption.MATCH_CASE | (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
+            //    tarType, tarFile, tarLine);
+            //var tarResult = new DoxygenDB.EntitySearchResult();
+            //db.SearchAndFilter(tarRequest, out tarResult);
+            var tarResult = DoShowInAtlas();
 
             DoxygenDB.Entity srcBestEntity, tarBestEntity;
             srcBestEntity = srcResult.bestEntity;
