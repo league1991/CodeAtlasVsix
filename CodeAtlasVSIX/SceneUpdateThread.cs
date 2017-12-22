@@ -228,7 +228,7 @@ namespace CodeAtlasVSIX
             return totalDist;
         }
 
-        struct EdgeOrderData
+        class EdgeOrderData
         {
             public EdgeOrderData(Node node, int order)
             {
@@ -290,7 +290,7 @@ namespace CodeAtlasVSIX
                     {
                         var prevNode = orderList[ithOrder].m_node.GeometryNode;
                         var nextNode = orderList[ithOrder+1].m_node.GeometryNode;
-                        layerSetting.AddUpDownConstraint(prevNode, nextNode);
+                        layerSetting.AddLeftRightConstraint(prevNode, nextNode);
                     }
                 }
             }
