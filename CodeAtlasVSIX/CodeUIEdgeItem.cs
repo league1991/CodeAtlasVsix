@@ -20,10 +20,12 @@ namespace CodeAtlasVSIX
     {
         public int m_order;
         public Point m_point;
-        public OrderData(int order, Point point)
+        public bool m_isVisible;
+        public OrderData(int order, Point point, bool isVisible = true)
         {
             m_order = order;
             m_point = point;
+            m_isVisible = isVisible;
         }
     }
 
@@ -243,7 +245,10 @@ namespace CodeAtlasVSIX
             {
                 if ((m_orderData == null && value != null) ||
                     (m_orderData != null && value == null) ||
-                    (value != null && (m_orderData.m_order != value.m_order || m_orderData.m_point != value.m_point)))
+                    (value != null && 
+                    (m_orderData.m_order != value.m_order ||
+                    m_orderData.m_point != value.m_point ||
+                    m_orderData.m_isVisible != value.m_isVisible)))
                 {
                     m_orderData = value;
                     IsDirty = true;
@@ -520,7 +525,7 @@ namespace CodeAtlasVSIX
                 }
             }
 
-            if (m_orderData != null)
+            if (m_orderData != null && m_orderData.m_isVisible)
             {
                 var formattedText = new FormattedText(m_orderData.m_order.ToString(),
                                                         CultureInfo.CurrentUICulture,

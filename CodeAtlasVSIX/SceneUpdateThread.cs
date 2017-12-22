@@ -228,6 +228,17 @@ namespace CodeAtlasVSIX
             return totalDist;
         }
 
+        struct EdgeOrderData
+        {
+            public EdgeOrderData(Node node, int order)
+            {
+                m_node = node;
+                m_order = order;
+            }
+            public Node m_node;
+            public int m_order;
+        };
+
         void UpdateLayeredLayoutWithComp()
         {
             var scene = UIManager.Instance().GetScene();
@@ -236,22 +247,52 @@ namespace CodeAtlasVSIX
 
             var itemDict = scene.GetItemDict();
             var edgeDict = scene.GetEdgeDict();
+            var nodeDict = new Dictionary<string, Node>();
+            var edgeOrderDict = new Dictionary<string, List<EdgeOrderData>>();     // store edge order
             foreach (var item in itemDict)
             {
                 var node = graph.AddNode(item.Key);
+                nodeDict[item.Key] = node;
             }
             foreach (var edge in edgeDict)
             {
                 var key = edge.Key;
+                var edgeObj = edge.Value;
                 graph.AddEdge(key.Item1, key.Item2);
+                if (!edgeOrderDict.ContainsKey(key.Item1))
+                {
+                    edgeOrderDict[key.Item1] = new List<EdgeOrderData>();
+                }
+                if (edgeObj.OrderData != null && edgeObj.OrderData.m_order > 0)
+                {
+                    var node = nodeDict[key.Item2];
+                    edgeOrderDict[key.Item1].Add(new EdgeOrderData(node, edgeObj.OrderData.m_order));
+                }
+            }
+            // Sort edge order
+            foreach (var item in edgeOrderDict)
+            {
+                item.Value.Sort((x, y) => x.m_order.CompareTo(y.m_order));
             }
             graph.Attr.LayerDirection = LayerDirection.LR;
             graph.CreateGeometryGraph();
+
+            // Set graph settings
             var layerSetting = graph.LayoutAlgorithmSettings as SugiyamaLayoutSettings;
             if (layerSetting != null)
             {
                 layerSetting.LayerSeparation = 120;
                 layerSetting.NodeSeparation = 4;
+                foreach (var orderItem in edgeOrderDict)
+                {
+                    var orderList = orderItem.Value;
+                    for (int ithOrder = 0; ithOrder < orderList.Count-1; ithOrder++)
+                    {
+                        var prevNode = orderList[ithOrder].m_node.GeometryNode;
+                        var nextNode = orderList[ithOrder+1].m_node.GeometryNode;
+                        layerSetting.AddUpDownConstraint(prevNode, nextNode);
+                    }
+                }
             }
             foreach (var msaglNode in graph.GeometryGraph.Nodes)
             {
@@ -357,9 +398,9 @@ namespace CodeAtlasVSIX
                 {
                     edge.OrderData = orderEdge[key];
                 }
-                else
+                else if(edge.OrderData != null)
                 {
-                    edge.OrderData = null;
+                    edge.OrderData.m_isVisible = false;
                 }
             }
         }
