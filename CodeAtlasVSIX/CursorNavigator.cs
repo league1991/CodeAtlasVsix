@@ -592,7 +592,14 @@ namespace CodeAtlasVSIX
                 }
                 EnvDTE.TextSelection ts = document.Selection as EnvDTE.TextSelection;
                 line = ts.CurrentLine;
-                element = docModel.CodeElementFromPoint(ts.ActivePoint, vsCMElement.vsCMElementFunction);
+                try
+                {
+                    element = docModel.CodeElementFromPoint(ts.ActivePoint, vsCMElement.vsCMElementFunction);
+                }
+                catch (Exception e)
+                {
+                    element = null;
+                }
                 return;
             }
             return;

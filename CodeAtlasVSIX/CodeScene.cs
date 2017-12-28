@@ -379,9 +379,9 @@ namespace CodeAtlasVSIX
                 if (m_itemDict.Count == 0)
                 {
                     Logger.Message("Analysis Result is opened.\n\nYou can place the cursor on a function/class/variable and use \"Show In Atlas\" command to show it on the viewport.");
-                    mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate {
-                        mainUI.OnShowInAtlas(null, null);
-                    });
+                    //mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate {
+                    //    mainUI.OnShowInAtlas(null, null);
+                    //});
                 }
             });
             addingThread.Name = "Open DB Thread";
