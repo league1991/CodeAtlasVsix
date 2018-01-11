@@ -309,6 +309,16 @@ namespace CodeAtlasVSIX
                 foreach (var item in codeItemList)
                 {
                     var uname = item as string;
+                    Point targetPos = new Point();
+                    if(uname == null)
+                    {
+                        // New data format
+                        var dataDict = item as Dictionary<string, object>;
+                        uname = dataDict["uname"] as string;
+                        var x = dataDict["posX"];
+                        targetPos.X = Convert.ToDouble(dataDict["posX"]);
+                        targetPos.Y = Convert.ToDouble(dataDict["posY"]);
+                    }
                     if (m_itemDataDict.ContainsKey(uname) && m_itemDataDict[uname].ContainsKey("bookmark"))
                     {
                         var bookmarkItemData = m_itemDataDict[uname];
@@ -316,7 +326,7 @@ namespace CodeAtlasVSIX
                         var file = bookmarkItemData["file"] as string;
                         int line = (int)bookmarkItemData["line"];
                         int column = (int)bookmarkItemData["column"];
-                        _DoAddBookmarkItem(path, file, line, column);
+                        _DoAddBookmarkItem(path, file, line, column, new Dictionary<string, object> { { "targetPos", targetPos } });
                     }
                     else
                     {
@@ -326,7 +336,7 @@ namespace CodeAtlasVSIX
                             continue;
                         }
                         //AddCodeItem(item as string);
-                        _DoAddCodeItem(uname);
+                        _DoAddCodeItem(uname, new Dictionary<string, object> { { "targetPos", targetPos } });
                     }
                     uniqueNameList.Add(uname);
                 }
@@ -417,10 +427,14 @@ namespace CodeAtlasVSIX
                 return;
             }
 
-            var codeItemList = new List<string>();
+            var codeItemList = new List<Dictionary<string, object>>();
             foreach (var item in m_itemDict)
             {
-                codeItemList.Add(item.Key);
+                var itemDataDict = new Dictionary<string, object>();
+                itemDataDict["uname"] = item.Key;
+                itemDataDict["posX"] = item.Value.Pos.X;
+                itemDataDict["posY"] = item.Value.Pos.Y;
+                codeItemList.Add(itemDataDict);
             }
 
             var edgeItemList = new List<List<string>>();

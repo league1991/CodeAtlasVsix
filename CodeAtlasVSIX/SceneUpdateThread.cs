@@ -249,6 +249,7 @@ namespace CodeAtlasVSIX
             var edgeDict = scene.GetEdgeDict();
             var nodeDict = new Dictionary<string, Node>();
             var edgeOrderDict = new Dictionary<string, List<EdgeOrderData>>();     // store edge order
+            var bookmarkOrderDict = new Dictionary<string, List<EdgeOrderData>>();
             foreach (var item in itemDict)
             {
                 var node = graph.AddNode(item.Key);
@@ -268,9 +269,30 @@ namespace CodeAtlasVSIX
                     var node = nodeDict[key.Item2];
                     edgeOrderDict[key.Item1].Add(new EdgeOrderData(node, edgeObj.OrderData.m_order));
                 }
+
+                var srcNode = itemDict[key.Item1];
+                if (srcNode.GetKind() == DoxygenDB.EntKind.PAGE)
+                {
+                    var node = nodeDict[key.Item1];
+
+                    if (!bookmarkOrderDict.ContainsKey(key.Item2))
+                    {
+                        bookmarkOrderDict[key.Item2] = new List<EdgeOrderData>();
+                    }
+
+                    var srcMetric = srcNode.GetMetric();
+                    var file = srcMetric["file"].m_string;
+                    var line = srcMetric["line"].m_int;
+                    long order = (file.GetHashCode() & 0x7fff0000) + line;
+                    bookmarkOrderDict[key.Item2].Add(new EdgeOrderData(node, (int)order));
+                }
             }
             // Sort edge order
             foreach (var item in edgeOrderDict)
+            {
+                item.Value.Sort((x, y) => x.m_order.CompareTo(y.m_order));
+            }
+            foreach (var item in bookmarkOrderDict)
             {
                 item.Value.Sort((x, y) => x.m_order.CompareTo(y.m_order));
             }
@@ -290,6 +312,16 @@ namespace CodeAtlasVSIX
                     {
                         var prevNode = orderList[ithOrder].m_node.GeometryNode;
                         var nextNode = orderList[ithOrder+1].m_node.GeometryNode;
+                        layerSetting.AddLeftRightConstraint(prevNode, nextNode);
+                    }
+                }
+                foreach (var orderItem in bookmarkOrderDict)
+                {
+                    var orderList = orderItem.Value;
+                    for (int ithOrder = 0; ithOrder < orderList.Count - 1; ithOrder++)
+                    {
+                        var prevNode = orderList[ithOrder].m_node.GeometryNode;
+                        var nextNode = orderList[ithOrder + 1].m_node.GeometryNode;
                         layerSetting.AddLeftRightConstraint(prevNode, nextNode);
                     }
                 }
