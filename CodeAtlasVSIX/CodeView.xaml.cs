@@ -65,8 +65,16 @@ namespace CodeAtlasVSIX
 
         public void MoveView(Point center)
         {
-            bool shouldMove = !m_isMouseInView || (DateTime.Now - m_mouseMoveTime).TotalSeconds > 5;
-            if (!shouldMove || !m_isAutoFocus)
+            double speedFactor = 1.0;
+            if (m_isMouseInView)
+            {
+                speedFactor = (DateTime.Now - m_mouseMoveTime).TotalSeconds > 7 ? 1.0 : 0.0;
+            }
+            else
+            {
+                speedFactor = (DateTime.Now - m_mouseMoveTime).TotalSeconds > 2 ? 1.0 : 0.0;
+            }
+            if (speedFactor == 0.0 || !m_isAutoFocus)
             {
                 return;
             }
@@ -89,7 +97,7 @@ namespace CodeAtlasVSIX
                 dist.Normalize();
                 var speedLimit = distLength * 0.25;
                 var minSpeed = 1.0;
-                var offsetLength = Math.Min(Math.Max(minSpeed, speedLimit), distLength);
+                var offsetLength = Math.Min(Math.Max(minSpeed, speedLimit), distLength) * speedFactor;
                 var offset = offsetLength * dist;
                 m_lastMoveOffset = offsetLength;
 
@@ -187,7 +195,8 @@ namespace CodeAtlasVSIX
                 
                 var scene = UIManager.Instance().GetScene();
                 var selectedItems = scene.SelectedItems();
-                if (e.RightButton == System.Windows.Input.MouseButtonState.Pressed)
+                if (e.RightButton == System.Windows.Input.MouseButtonState.Pressed ||
+                    e.MiddleButton== System.Windows.Input.MouseButtonState.Pressed)
                 {
                     CaptureMouse();
                     var element = this.canvas as UIElement;
