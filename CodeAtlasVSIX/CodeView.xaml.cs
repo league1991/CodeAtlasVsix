@@ -72,7 +72,7 @@ namespace CodeAtlasVSIX
             }
             else
             {
-                speedFactor = (DateTime.Now - m_mouseMoveTime).TotalSeconds > 2 ? 1.0 : 0.0;
+                speedFactor = (DateTime.Now - m_mouseMoveTime).TotalSeconds > 1 ? 1.0 : 0.0;
             }
             if (speedFactor == 0.0 || !m_isAutoFocus)
             {
