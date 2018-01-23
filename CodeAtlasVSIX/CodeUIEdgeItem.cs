@@ -40,6 +40,7 @@ namespace CodeAtlasVSIX
         public string m_srcUniqueName;
         public string m_tarUniqueName;
         PathGeometry m_geometry = new PathGeometry();
+        PathGeometry m_schemeGeometry = new PathGeometry();
         bool m_isDirty = false;
         bool m_isSelected = false;
         bool m_isMouseHover = false;
@@ -104,6 +105,7 @@ namespace CodeAtlasVSIX
             this.Fill = Brushes.Transparent;
             this.Stroke = brush;
             this.StrokeThickness = 2.0;
+            this.StrokeLineJoin = PenLineJoin.Bevel;
             BuildGeometry();
 
             Canvas.SetZIndex(this, -1);
@@ -521,7 +523,7 @@ namespace CodeAtlasVSIX
                     pen.DashStyle = new DashStyle(dashPattern, 0.0);
                     pen.DashStyle.Offset = 5.0 * i;
                     pen.Thickness = 2.0;
-                    drawingContext.DrawGeometry(Brushes.Transparent, pen, m_geometry);
+                    drawingContext.DrawGeometry(Brushes.Transparent, pen, m_schemeGeometry);
                 }
             }
 
@@ -559,22 +561,35 @@ namespace CodeAtlasVSIX
                 {
                     return m_geometry;
                 }
+                m_isPathDirty = false;
                 m_p0 = p0;
                 m_p3 = p3;
                 m_p1 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p0.Y);
                 m_p2 = new Point(m_p0.X * 0.5 + m_p3.X * 0.5, m_p3.Y);
 
-                var segment = new BezierSegment(m_p1, m_p2, m_p3, true);                
+                var segment1 = new BezierSegment(m_p1, m_p2, m_p3, true);
+                var segment2 = new BezierSegment(m_p2, m_p1, m_p0, true);
                 var figure = new PathFigure();
                 figure.StartPoint = m_p0;
-                figure.Segments.Add(segment);
-                figure.IsClosed = false;
+                figure.Segments.Add(segment1);
+                figure.Segments.Add(segment2);
+                figure.IsClosed = true;
 
                 m_geometry = new PathGeometry();
                 m_geometry.Figures.Add(figure);
 
+                var schemeFigure = new PathFigure();
+                schemeFigure.StartPoint = m_p0;
+                schemeFigure.Segments.Add(segment1);
+                schemeFigure.IsClosed = false;
+                m_schemeGeometry = new PathGeometry();
+                m_schemeGeometry.Figures.Add(schemeFigure);
+
                 //int endTime = System.Environment.TickCount;
                 //Logger.Debug("edge geometry time:" + (endTime-begTime));
+                //var pen = new Pen();
+                //pen.Thickness = this.StrokeThickness * 0.5;
+                //return m_geometry.GetWidenedPathGeometry(pen);
                 return m_geometry;
             }
         }
