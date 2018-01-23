@@ -582,13 +582,14 @@ namespace CodeAtlasVSIX
                 schemeFigure.StartPoint = m_p0;
                 schemeFigure.Segments.Add(segment1);
                 schemeFigure.IsClosed = false;
+                schemeFigure.IsFilled = false;
                 m_schemeGeometry = new PathGeometry();
                 m_schemeGeometry.Figures.Add(schemeFigure);
 
                 //int endTime = System.Environment.TickCount;
                 //Logger.Debug("edge geometry time:" + (endTime-begTime));
                 //var pen = new Pen();
-                //pen.Thickness = this.StrokeThickness * 0.5;
+                //pen.Thickness = this.StrokeThickness;
                 //return m_geometry.GetWidenedPathGeometry(pen);
                 return m_geometry;
             }
