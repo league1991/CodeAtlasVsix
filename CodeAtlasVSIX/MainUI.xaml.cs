@@ -263,7 +263,18 @@ namespace CodeAtlasVSIX
 
         public void OnShowInAtlas(object sender, ExecutedRoutedEventArgs e)
         {
-            DoShowInAtlas();
+            var result = DoShowInAtlas();
+
+            // Connect edge automatically
+            if (result.bestEntity != null)
+            {
+                var scene = UIManager.Instance().GetScene();
+                var sourceUname = scene.m_customEdgeSource;
+                if (sourceUname != null && sourceUname != "")
+                {
+                    scene.DoAddCustomEdge(sourceUname, result.bestEntity.UniqueName());
+                }
+            }
         }
 
         public DoxygenDB.EntitySearchResult DoShowInAtlas()
@@ -803,13 +814,13 @@ namespace CodeAtlasVSIX
         private void lru10Button_Checked(object sender, RoutedEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();
-            scene.SetLRULimit(10);
+            scene.SetLRULimit(15);
         }
 
         private void lru20Button_Checked(object sender, RoutedEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();
-            scene.SetLRULimit(20);
+            scene.SetLRULimit(30);
         }
 
         private void lru50Button_Checked(object sender, RoutedEventArgs e)

@@ -89,7 +89,7 @@ namespace CodeAtlasVSIX
 
         // LRU
         List<string> m_itemLruQueue = new List<string>();
-        int m_lruMaxLength = 50;
+        int m_lruMaxLength = 30;
         #endregion
 
         public CodeScene()
@@ -1232,35 +1232,72 @@ namespace CodeAtlasVSIX
 
             //if (centerItem.IsFunction())
             {
-                if (mainDirection.X > 0.8)
+                if (Math.Abs(mainDirection.X) > 0.8)
                 {
+                    bool isRight = (mainDirection.X > 0);
                     // Find latest edge to jump to
                     CodeUIEdgeItem bestEdge = null;
                     int bestTimeStamp = 0;
                     CodeUIEdgeItem bestTimeStampEdge = null;
-                    foreach (var item in m_edgeDict)
+                    if (isRight)
                     {
-                        if (item.Key.Item1 == centerItem.GetUniqueName())
+                        foreach (var item in m_edgeDict)
                         {
-                            var edge = item.Value;
-                            if(edge.m_selectTimeStamp > bestTimeStamp)
+                            if (item.Key.Item1 == centerItem.GetUniqueName())
                             {
-                                bestTimeStampEdge = edge;
-                                bestTimeStamp = edge.m_selectTimeStamp;
-                            }
-                            if (edge.OrderData != null && edge.OrderData.m_order == 1 && isInOrder)
-                            {
-                                bestEdge = item.Value;
+                                var edge = item.Value;
+                                if (edge.m_selectTimeStamp > bestTimeStamp)
+                                {
+                                    bestTimeStampEdge = edge;
+                                    bestTimeStamp = edge.m_selectTimeStamp;
+                                }
+                                if (edge.OrderData != null && edge.OrderData.m_order == 1 && isInOrder)
+                                {
+                                    bestEdge = item.Value;
+                                }
                             }
                         }
+                        if (bestTimeStamp >= m_selectTimeStamp - 1 && bestTimeStampEdge != null)
+                        {
+                            return bestTimeStampEdge;
+                        }
+                        if (bestEdge != null)
+                        {
+                            return bestEdge;
+                        }
                     }
-                    if (bestTimeStamp >= m_selectTimeStamp - 1 && bestTimeStampEdge != null)
+                    else
                     {
-                        return bestTimeStampEdge;
-                    }
-                    if (bestEdge != null)
-                    {
-                        return bestEdge;
+                        double bestY = double.MaxValue;
+                        CodeUIEdgeItem bestYEdge = null;
+                        int bestCount = 0;
+                        foreach (var item in m_edgeDict)
+                        {
+                            if (item.Key.Item2 == centerItem.GetUniqueName())
+                            {
+                                var edge = item.Value;
+                                if (edge.m_selectTimeStamp > bestTimeStamp)
+                                {
+                                    bestTimeStampEdge = edge;
+                                    bestTimeStamp = edge.m_selectTimeStamp;
+                                    bestCount++;
+                                }
+                                var leftItem = m_itemDict[item.Key.Item1];
+                                if (leftItem.GetKind() == DoxygenDB.EntKind.PAGE && leftItem.Pos.Y < bestY)
+                                {
+                                    bestYEdge = edge;
+                                    bestY = leftItem.Pos.Y;
+                                }
+                            }
+                        }
+                        if (bestTimeStamp >= m_selectTimeStamp - 1 && bestTimeStampEdge != null)
+                        {
+                            return bestTimeStampEdge;
+                        }
+                        if (bestYEdge != null)
+                        {
+                            return bestYEdge;
+                        }
                     }
                 }
             }
