@@ -2628,6 +2628,7 @@ namespace CodeAtlasVSIX
             AcquireLock();
             var selectedNode = new List<string>(); 
             var selectedEdge = new List<EdgeKey>();
+            Point lastPos = new Point();
             if (selectScheme == false)
             {
                 foreach (var item in m_itemDict)
@@ -2635,6 +2636,7 @@ namespace CodeAtlasVSIX
                     if (item.Value.IsSelected)
                     {
                         selectedNode.Add(item.Key);
+                        lastPos = item.Value.Pos;
                     }
                 }
                 foreach (var item in m_edgeDict)
@@ -2716,6 +2718,11 @@ namespace CodeAtlasVSIX
                     {
                         m_edgeDict[uname].IsSelected = true;
                     }
+                }
+                var items = SelectedItems();
+                if (items.Count == 0)
+                {
+                    SelectNearestItem(lastPos);
                 }
             }
             m_schemeTimeStamp++;
