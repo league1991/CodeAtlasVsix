@@ -46,15 +46,15 @@ namespace CodeAtlasVSIX
 
             m_buttonList.Add(schemeButton0);
             m_buttonList.Add(schemeButton1);
-            //m_buttonList.Add(schemeButton2);
-            //m_buttonList.Add(schemeButton3);
-            //m_buttonList.Add(schemeButton4);
+            m_buttonList.Add(schemeButton2);
+            m_buttonList.Add(schemeButton3);
+            m_buttonList.Add(schemeButton4);
 
-            //m_buttonList.Add(schemeButton5);
-            //m_buttonList.Add(schemeButton6);
-            //m_buttonList.Add(schemeButton7);
-            //m_buttonList.Add(schemeButton8);
-            //m_buttonList.Add(schemeButton9);
+            m_buttonList.Add(schemeButton5);
+            m_buttonList.Add(schemeButton6);
+            m_buttonList.Add(schemeButton7);
+            m_buttonList.Add(schemeButton8);
+            m_buttonList.Add(schemeButton9);
         }
 
         void CheckAndAddFormattedText(int idx)
@@ -128,10 +128,18 @@ namespace CodeAtlasVSIX
                     if (i < nScheme)
                     {
                         button.Visibility = Visibility.Visible;
-                        button.Content = "+";// schemeNameList[i];
-                        button.MinHeight = 5;
-                        button.FontSize = 10;
-                        button.Padding = new Thickness(0.0);
+                        //button.Content = schemeNameList[i];
+                        //button.MinHeight = 0;
+                        //button.FontSize = 12;
+                        //button.Padding = new Thickness(1,-10,0,-10);
+                        button.Margin = new Thickness(0,1,0,1);
+                        button.BorderThickness = new Thickness(6,0,0,0);
+                        button.Background = new SolidColorBrush();
+                        //button.Foreground = Brushes.Moccasin;// new SolidColorBrush(Color.FromArgb(255,255,255,0));
+                        button.Width = m_maxTextWidth + 15;
+                        button.MaxWidth = button.Width;
+                        button.MinWidth = button.Width;
+                        //button.BorderBrush = new SolidColorBrush();
                     }
                     else
                     {
@@ -167,7 +175,7 @@ namespace CodeAtlasVSIX
 
             if (m_schemeNameDict.Count > 0)
             {
-                dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(150, 0, 0, 0)), new Pen(), new Rect(new Point(x- m_rectThickness, y- m_rectThickness), new Size(contentWidth+ m_rectThickness*2, contentHeight+ m_rectThickness*2)));
+                dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(150, 0, 0, 0)), new Pen(), new Rect(new Point(x- m_rectThickness, y- m_rectThickness), new Size(contentWidth+ m_rectThickness*2 + m_lineSpace * 1.5 + 6, contentHeight+ m_rectThickness*2)));
             }
 
             int i = 0;
@@ -184,13 +192,60 @@ namespace CodeAtlasVSIX
 
                 CheckAndAddFormattedText(i);
                 dc.DrawText(m_keyText[i], new Point(x, y-2));
-                x += m_formatWidth + m_lineSpace;
+                x += m_formatWidth + m_lineSpace * 1.3 + 6;
 
                 dc.DrawText(textObj,      new Point(x, y-2));
                 y += m_lineHeight + m_lineSpace;
                 ++i;
             }
             scene.ReleaseLock();
+        }
+
+        public void ShowScheme(int ithScheme, bool isSelected = false)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.ShowIthScheme(ithScheme, isSelected);
+        }
+
+        private void schemeButton0_Click(object sender, RoutedEventArgs e)
+        {
+            ShowScheme(0);
+        }
+        private void schemeButton1_Click(object sender, RoutedEventArgs e)
+        {
+            ShowScheme(1);
+        }
+        private void schemeButton2_Click(object sender, RoutedEventArgs e)
+        {
+            ShowScheme(2);
+        }
+        private void schemeButton3_Click(object sender, RoutedEventArgs e)
+        {
+            ShowScheme(3);
+        }
+        private void schemeButton4_Click(object sender, RoutedEventArgs e)
+        {
+            ShowScheme(4);
+        }
+        private void schemeButton5_Click(object sender, RoutedEventArgs e)
+        {
+            ShowScheme(5);
+        }
+        private void schemeButton6_Click(object sender, RoutedEventArgs e)
+        {
+            ShowScheme(6);
+        }
+        private void schemeButton7_Click(object sender, RoutedEventArgs e)
+        {
+            ShowScheme(7);
+        }
+        private void schemeButton8_Click(object sender, RoutedEventArgs e)
+        {
+            ShowScheme(8);
+        }
+        private void schemeButton9_Click(object sender, RoutedEventArgs e)
+        {
+            ShowScheme(9);
         }
     }
 }
