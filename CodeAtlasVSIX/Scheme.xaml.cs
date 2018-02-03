@@ -33,6 +33,7 @@ namespace CodeAtlasVSIX
         double m_rectThickness = 5.0;
         List<FormattedText> m_keyText = new List<FormattedText>();
         double m_formatWidth = 0.0;
+        List<Button> m_buttonList = new List<Button>();
 
         public Scheme()
         {
@@ -42,6 +43,18 @@ namespace CodeAtlasVSIX
             resMgr.SetStyle();
 
             CheckAndAddFormattedText(5);
+
+            m_buttonList.Add(schemeButton0);
+            m_buttonList.Add(schemeButton1);
+            //m_buttonList.Add(schemeButton2);
+            //m_buttonList.Add(schemeButton3);
+            //m_buttonList.Add(schemeButton4);
+
+            //m_buttonList.Add(schemeButton5);
+            //m_buttonList.Add(schemeButton6);
+            //m_buttonList.Add(schemeButton7);
+            //m_buttonList.Add(schemeButton8);
+            //m_buttonList.Add(schemeButton9);
         }
 
         void CheckAndAddFormattedText(int idx)
@@ -108,6 +121,26 @@ namespace CodeAtlasVSIX
                 //this.MinWidth = this.Width = m_lineHeight + m_colorTextSpace + maxWidth + m_margin * 2;
                 //this.MinHeight = this.Height = m_classNameDict.Count * (m_lineHeight + m_lineSpace) - m_lineSpace + m_margin * 2;
                 //InvalidateArrange();
+
+                for (int i = 0; i < m_buttonList.Count; i++)
+                {
+                    var button = m_buttonList[i];
+                    if (i < nScheme)
+                    {
+                        button.Visibility = Visibility.Visible;
+                        button.Content = "+";// schemeNameList[i];
+                        button.MinHeight = 5;
+                        button.FontSize = 10;
+                        button.Padding = new Thickness(0.0);
+                    }
+                    else
+                    {
+                        button.Visibility = Visibility.Collapsed;
+                    }
+                }
+
+                this.MinHeight = 200;
+                this.MinWidth = 200;
                 InvalidateVisual();
             });
         }
@@ -123,11 +156,11 @@ namespace CodeAtlasVSIX
             double x = m_margin;
             double y = m_margin;
             double contentHeight = 0;
-            var parent = this.Parent as Canvas;
+            contentHeight = (m_lineHeight + m_lineSpace) * m_schemeNameDict.Count - m_lineSpace;
+            var parent = this.Parent as Grid;
             if (parent != null)
             {
-                contentHeight = (m_lineHeight + m_lineSpace) * m_schemeNameDict.Count - m_lineSpace;
-                y = parent.ActualHeight - contentHeight - m_margin;
+                //y = parent.ActualHeight - contentHeight - m_margin;
             }
             var colorSize = new Size(m_lineHeight * 2, 2);
             double contentWidth = m_formatWidth + colorSize.Width + m_maxTextWidth + m_lineSpace;

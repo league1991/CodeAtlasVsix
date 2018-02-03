@@ -16,7 +16,7 @@ namespace CodeAtlasVSIX
     /// Interaction logic for CodeView.xaml.
     /// </summary>
     [ProvideToolboxControl("CodeAtlasVSIX.CodeView", true)]
-    public partial class CodeView : Canvas
+    public partial class CodeView : Grid
     {
         public double scaleValue = 1.0;
         public double m_lastMoveOffset = 0.0;
