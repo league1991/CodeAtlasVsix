@@ -97,11 +97,17 @@ namespace CodeAtlasVSIX
 
             double x = m_margin, y = m_margin;
             var colorSize = new Size(m_lineHeight, m_lineHeight);
+            double contentWidth = m_maxTextWidth + colorSize.Width + m_lineHeight;
+            double contentHeight = (m_lineHeight + m_lineSpace) * m_classNameDict.Count - m_lineSpace;
+            var parent = this.Parent as Grid;
+            if (parent != null)
+            {
+                //y = parent.ActualHeight - contentHeight - m_margin;
+                x = parent.ActualWidth - contentWidth - m_margin;
+            }
 
             if (m_classNameDict.Count > 0)
             {
-                double contentWidth = m_maxTextWidth + colorSize.Width + m_lineHeight;
-                double contentHeight = (m_lineHeight + m_lineSpace) * m_classNameDict.Count - m_lineSpace;
                 dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(150, 0, 0, 0)), new Pen(), new Rect(new Point(x - m_rectThickness, y - m_rectThickness), new Size(contentWidth + m_rectThickness*2, contentHeight + m_rectThickness*2)));
             }
 
