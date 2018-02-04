@@ -136,7 +136,7 @@ namespace CodeAtlasVSIX
                         button.BorderThickness = new Thickness(6,0,0,0);
                         button.Background = new SolidColorBrush();
                         //button.Foreground = Brushes.Moccasin;// new SolidColorBrush(Color.FromArgb(255,255,255,0));
-                        button.Width = m_maxTextWidth + 15;
+                        button.Width = m_maxTextWidth + 9;
                         button.MaxWidth = button.Width;
                         button.MinWidth = button.Width;
                         //button.BorderBrush = new SolidColorBrush();
