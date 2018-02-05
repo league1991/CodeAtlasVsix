@@ -863,6 +863,10 @@ namespace CodeAtlasVSIX
             {
                 IsDirty = true;
             }
+            if (args.RightButton == MouseButtonState.Pressed)
+            {
+                this.ContextMenu = null;
+            }
         }
 
         void MouseUpCallback(object sender, MouseEventArgs args)
