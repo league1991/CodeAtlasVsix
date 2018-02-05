@@ -12,6 +12,6 @@
         </Canvas.RenderTransform>
         <Rectangle x:Name="selectionRect" Fill="#4CFF9D26" Stroke="#FFFF9D26" Width="10" Height="10" Canvas.Left="5" Canvas.Top="5" Visibility="Hidden"/>
     </Canvas>
-    <local:Legend x:Name="legend" Panel.ZIndex="10" Margin="3,0,0,3" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-    <local:Scheme x:Name ="scheme" HorizontalAlignment="Left" VerticalAlignment="Top" Panel.ZIndex="10" Margin="3,3,0,0"/>
+    <local:Legend x:Name="legend" Panel.ZIndex="10" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+    <local:Scheme x:Name ="scheme" HorizontalAlignment="Left" VerticalAlignment="Top" Panel.ZIndex="10" Margin="0"/>
 </Grid>

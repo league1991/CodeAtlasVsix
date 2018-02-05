@@ -59,21 +59,20 @@ namespace CodeAtlasVSIX
 
         void CheckAndAddFormattedText(int idx)
         {
-            if (idx < m_keyText.Count)
+            m_formatWidth = 0;
+            for (int i = 0; i < idx; i++)
             {
-                return;
-            }
-
-            for (int i = m_keyText.Count; i <= idx; i++)
-            {
-                var formattedText = new FormattedText(string.Format("[{0}]", i + 1),
-                                                        CultureInfo.CurrentUICulture,
-                                                        FlowDirection.LeftToRight,
-                                                        new Typeface("arial"),
-                                                        m_fontSize,
-                                                        Brushes.LightSalmon);
-                m_keyText.Add(formattedText);
-                m_formatWidth = Math.Max(m_formatWidth, formattedText.Width);
+                if (i >= m_keyText.Count)
+                {
+                    var formattedText = new FormattedText(string.Format("[{0}]", i + 1),
+                                                            CultureInfo.CurrentUICulture,
+                                                            FlowDirection.LeftToRight,
+                                                            new Typeface("arial"),
+                                                            m_fontSize,
+                                                            Brushes.LightSalmon);
+                    m_keyText.Add(formattedText);
+                }
+                m_formatWidth = Math.Max(m_formatWidth, m_keyText[i].Width);
             }
         }
 
@@ -84,6 +83,8 @@ namespace CodeAtlasVSIX
             var schemeNameList = scene.GetCurrentSchemeList();
             var schemeColorList = scene.GetCurrentSchemeColorList();
             m_schemeNameDict.Clear();
+            m_formatWidth = 0;
+            CheckAndAddFormattedText(schemeNameList.Count);
             for (int i = 0; i < schemeNameList.Count; i++)
             {
                 var schemeName = schemeNameList[i];
@@ -96,6 +97,7 @@ namespace CodeAtlasVSIX
                                                         m_fontSize,
                                                         Brushes.Moccasin);
                 m_schemeNameDict[schemeName] = new Tuple<Color, FormattedText>(schemeColor, formattedText);
+
             }
 
             var nScheme = m_schemeNameDict.Count;
@@ -136,7 +138,7 @@ namespace CodeAtlasVSIX
                         button.BorderThickness = new Thickness(6,0,0,0);
                         button.Background = new SolidColorBrush();
                         //button.Foreground = Brushes.Moccasin;// new SolidColorBrush(Color.FromArgb(255,255,255,0));
-                        button.Width = m_maxTextWidth + 15;
+                        button.Width = m_maxTextWidth + m_formatWidth + 13;
                         button.MaxWidth = button.Width;
                         button.MinWidth = button.Width;
                         //button.BorderBrush = new SolidColorBrush();
@@ -147,8 +149,8 @@ namespace CodeAtlasVSIX
                     }
                 }
 
-                this.MinHeight = 200;
-                this.MinWidth = 200;
+                //this.MinHeight = 200;
+                //this.MinWidth = 200;
                 InvalidateVisual();
             });
         }
@@ -188,11 +190,10 @@ namespace CodeAtlasVSIX
                 x = m_margin;
 
                 dc.DrawRectangle(new SolidColorBrush(color), new Pen(), new Rect(new Point(x, y+4), colorSize));
-                x += colorSize.Width + m_lineSpace;
+                x += colorSize.Width + m_lineSpace * 1.3 + 6;
 
-                CheckAndAddFormattedText(i);
                 dc.DrawText(m_keyText[i], new Point(x, y-2));
-                x += m_formatWidth + m_lineSpace * 1.3 + 6;
+                x += m_formatWidth + m_lineSpace * 0.5;
 
                 dc.DrawText(textObj,      new Point(x, y-2));
                 y += m_lineHeight + m_lineSpace;
