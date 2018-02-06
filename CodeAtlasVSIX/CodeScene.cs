@@ -1807,6 +1807,10 @@ namespace CodeAtlasVSIX
                     deleteEdges.Add(edge.Key);
                 }
             }
+            if (uniqueName == m_customEdgeSource)
+            {
+                m_customEdgeSource = "";
+            }
 
             foreach(var edgeKey in deleteEdges)
             {
