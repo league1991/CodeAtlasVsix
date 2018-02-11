@@ -216,7 +216,14 @@ namespace CodeAtlasVSIX
             }
             if (File.Exists(configPath))
             {
-                jsonStr = File.ReadAllText(configPath);
+                try
+                {
+                    jsonStr = File.ReadAllText(configPath);
+                }
+                catch(System.IO.IOException e)
+                {
+                    Logger.Warning("Cannot read config file.");
+                }
             }
             if (jsonStr == "")
             {

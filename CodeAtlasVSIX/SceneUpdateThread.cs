@@ -82,6 +82,7 @@ namespace CodeAtlasVSIX
 
         void Run()
         {
+            DateTime saveTime = DateTime.Now;
             while (true)
             {
                 var scene = UIManager.Instance().GetScene();
@@ -149,6 +150,11 @@ namespace CodeAtlasVSIX
                         UpdateLegend();
                         EndTimeStamp("Legend");
                         m_selectTimeStamp = scene.m_selectTimeStamp;
+                    }
+
+                    if ((DateTime.Now - saveTime).TotalSeconds > 300 && mainUI.GetCommandActive())
+                    {
+                        scene.SaveConfig();
                     }
 
                     EndTimeStamp("---------------------- end thread ------------------");

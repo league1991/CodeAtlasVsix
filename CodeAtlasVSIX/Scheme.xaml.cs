@@ -141,6 +141,8 @@ namespace CodeAtlasVSIX
                         button.Width = m_maxTextWidth + m_formatWidth + 13;
                         button.MaxWidth = button.Width;
                         button.MinWidth = button.Width;
+                        Style style = button.TryFindResource("SchemeButtonStyle") as Style;
+                        button.Style = style;
                         //button.BorderBrush = new SolidColorBrush();
                     }
                     else
