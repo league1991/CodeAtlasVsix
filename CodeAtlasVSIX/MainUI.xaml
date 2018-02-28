@@ -37,7 +37,11 @@
                     <RadioButton x:Name="graphLayoutButton" Content="Graph Layout" IsChecked="True" Checked="graphLayoutButton_Checked"/>
                     <RadioButton x:Name="forceLayoutButton" Content="Force Layout" Checked="forceLayoutButton_Checked"/>
                     <RadioButton x:Name="noLayoutButton" Content="No Layout" Checked="noLayoutButton_Checked"/>
-                </MenuItem>                
+                </MenuItem>
+                <MenuItem Header="Highlight">
+                    <RadioButton x:Name="highLightRecentButton" Content="Recent Item" IsChecked="True" Checked="highLightRecentButton_Checked"/>
+                    <RadioButton x:Name="highLightBookmark" Content="Bookmark" Checked="highLightBookmark_Checked"/>
+                </MenuItem>
                 <MenuItem Header="Navigation" >
                     <RadioButton x:Name="dynamicNavigationButton" Content="Dynamic Navigation" IsChecked="True" Click="dynamicNavigationButton_Click" />
                     <RadioButton x:Name="staticNavigationButton" Content="Static Navigation" Click="staticNavigationButton_Click"/>

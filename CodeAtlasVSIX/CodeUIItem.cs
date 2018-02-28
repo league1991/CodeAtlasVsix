@@ -51,7 +51,7 @@ namespace CodeAtlasVSIX
         bool m_deselectOnUp = false;
         bool m_isHover = false;
         public int m_selectCounter = 0;
-        public double m_selectTimeStamp = 0;
+        public int m_selectTimeStamp = 0;
         Point m_position = new Point();
         Size m_fontSize = new Size();
         Size m_commentSize = new Size();
@@ -70,6 +70,9 @@ namespace CodeAtlasVSIX
         public static readonly DependencyProperty m_isFadingProperty =
             DependencyProperty.Register("IsFading", typeof(bool), typeof(CodeUIItem),
             new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
+        public static readonly DependencyProperty m_customAlphaProperty =
+            DependencyProperty.Register("CustomAlpha", typeof(int), typeof(CodeUIItem),
+            new FrameworkPropertyMetadata(255, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public CodeUIItem(string uniqueName, Dictionary<string, object> customData)
         {
@@ -460,6 +463,15 @@ namespace CodeAtlasVSIX
             get { return (bool)GetValue(m_isFadingProperty); }
             set {
                 SetValue(m_isFadingProperty, value);
+            }
+        }
+
+        public int CustomAlpha
+        {
+            get { return (int)GetValue(m_customAlphaProperty); }
+            set
+            {
+                SetValue(m_customAlphaProperty, value);
             }
         }
 
@@ -1077,8 +1089,14 @@ namespace CodeAtlasVSIX
 
         protected override void OnRender(DrawingContext drawingContext)
         {
+            var scene = UIManager.Instance().GetScene();
             bool fading = IsFading && !IsSelected;
             byte alpha = (byte)(fading ? 80 : 255);
+            if (scene.m_isHistoryAlpha)
+            {
+                alpha = (byte)(IsSelected ? 255 : CustomAlpha);
+            }
+
             this.Fill.Opacity = (double)alpha / 255.0;
             // Draw highlight first
             if (m_customEdgeMode)

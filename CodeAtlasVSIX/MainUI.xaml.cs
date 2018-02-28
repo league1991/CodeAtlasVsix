@@ -895,5 +895,17 @@ namespace CodeAtlasVSIX
             scene.SaveConfig();
             scene.ReleaseLock();
         }
+
+        private void highLightRecentButton_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.m_isHistoryAlpha = true;
+        }
+
+        private void highLightBookmark_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.m_isHistoryAlpha = false;
+        }
     }
 }

@@ -80,6 +80,7 @@ namespace CodeAtlasVSIX
         public int m_selectTimeStamp = 0;
         public int m_schemeTimeStamp = 0;
         public string m_customEdgeSource = "";
+        public bool m_isHistoryAlpha = true;
 
         // Selection Stack
         List<SelectionRecord> m_selectionStack = new List<SelectionRecord>();
@@ -2768,6 +2769,7 @@ namespace CodeAtlasVSIX
             var edgeSet = new HashSet<EdgeKey>();
             var nodeSet = new HashSet<string>();
             var isFadingMap = new Dictionary<string, bool>();
+            var timeStampList = new List<Tuple<int, string>>();
             foreach (var item in m_itemDict)
             {
                 if (item.Value.IsSelected)
@@ -2775,7 +2777,10 @@ namespace CodeAtlasVSIX
                     nodeSet.Add(item.Key);
                 }
                 isFadingMap[item.Key] = false;
+                timeStampList.Add(new Tuple<int, string>(item.Value.m_selectTimeStamp, item.Key));
             }
+            timeStampList.Sort((x, y) => y.Item1.CompareTo(x.Item1));
+
             foreach (var edgePair in m_edgeDict)
             {
                 var uname = edgePair.Key;
@@ -2866,6 +2871,34 @@ namespace CodeAtlasVSIX
                 foreach (var fadePair in isFadingMap)
                 {
                     m_itemDict[fadePair.Key].IsFading = fadePair.Value;
+                }
+
+                foreach (var item in m_itemDict)
+                {
+                    if (item.Value.CustomAlpha != 80)
+                    {
+                        item.Value.CustomAlpha = 80;
+                    }
+                }
+                int i = 0;
+                int lastTimeStamp = 0;
+                foreach (var item in timeStampList)
+                {
+                    int alpha = 255;// - (255 - 80) * i / 5;
+                    var codeItem = m_itemDict[item.Item2];
+                    if (alpha != codeItem.CustomAlpha)
+                    {
+                        codeItem.CustomAlpha = alpha;
+                    }
+                    if (i==5)
+                    {
+                        break;
+                    }
+                    if (lastTimeStamp != codeItem.m_selectTimeStamp)
+                    {
+                        i++;
+                        lastTimeStamp = codeItem.m_selectTimeStamp;
+                    }
                 }
                 ReleaseLock();
             });
