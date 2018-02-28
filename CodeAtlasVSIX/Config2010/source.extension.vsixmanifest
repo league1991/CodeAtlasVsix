@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Vsix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
+  <Identifier Id="CodeAtlasVSIX2010.Company.a4101e07-2903-4b58-b1e5-ac5941dbf87d">
+    <Name>CodeGraph2010</Name>
+    <Author>Yaobin Ouyang</Author>
+    <Version>1.0.12</Version>
+    <Description xml:space="preserve">A tool to show call graph, inheritance graph and variable usage graph for C/C++, C#, Python and other languages</Description>
+    <Locale>1033</Locale>
+    <License>License.txt</License>
+    <Icon>Resources/logo.png</Icon>
+    <PreviewImage>Resources/thumbnail.png</PreviewImage>
+    <SupportedProducts>
+      <VisualStudio Version="10.0">
+        <Edition>Pro</Edition>
+      </VisualStudio>
+    </SupportedProducts>
+    <SupportedFrameworkRuntimeEdition MinVersion="4.0" />
+  </Identifier>
+  <Content>
+    <VsPackage>|%CurrentProject%;PkgdefProjectOutputGroup|</VsPackage>
+    <MefComponent>|%CurrentProject%|</MefComponent>
+  </Content>
+</Vsix>
