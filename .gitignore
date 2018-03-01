@@ -37,3 +37,8 @@ CodeGraphData/
 *.db
 *.suo
 *.user
+GraphLayout/GraphLayout/Drawing/bin/
+GraphLayout/GraphLayout/Drawing/obj/
+GraphLayout/GraphLayout/MSAGL/bin/
+GraphLayout/GraphLayout/MSAGL/obj/
+_UpgradeReport_Files/
