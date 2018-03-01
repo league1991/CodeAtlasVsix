@@ -48,6 +48,15 @@ namespace CodeAtlasVSIX
         LAYOUT_FORCE = 2,
     };
 
+    public enum HighlightType
+    {
+        HIGHLIGHT_ALL = 0,
+        HIGHLIGHT_LATEST_3 = 1,
+        HIGHLIGHT_LATEST_6 = 2,
+        HIGHLIGHT_LATEST_9 = 3,
+        HIGHLIGHT_BOOKMARK = 4,
+    }
+
     public class CodeScene: DispatcherObject
     {
         #region Data Member
@@ -80,7 +89,7 @@ namespace CodeAtlasVSIX
         public int m_selectTimeStamp = 0;
         public int m_schemeTimeStamp = 0;
         public string m_customEdgeSource = "";
-        public bool m_isHistoryAlpha = true;
+        public HighlightType m_highLightType = HighlightType.HIGHLIGHT_LATEST_6;
 
         // Selection Stack
         List<SelectionRecord> m_selectionStack = new List<SelectionRecord>();
@@ -2868,46 +2877,90 @@ namespace CodeAtlasVSIX
             this.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
                 AcquireLock();
-                foreach (var fadePair in isFadingMap)
+
+                if (m_highLightType == HighlightType.HIGHLIGHT_ALL)
                 {
-                    m_itemDict[fadePair.Key].IsFading = fadePair.Value;
+                    foreach (var item in m_itemDict)
+                    {
+                        if (item.Value.CustomAlpha != 255)
+                        {
+                            item.Value.CustomAlpha = 255;
+                        }
+                    }
+                }
+                else if (m_highLightType == HighlightType.HIGHLIGHT_BOOKMARK)
+                {
+                    foreach (var fadePair in isFadingMap)
+                    {
+                        int alpha = fadePair.Value ? 80 : 255;
+                        var codeItem = m_itemDict[fadePair.Key];
+                        if (codeItem.CustomAlpha != alpha)
+                        {
+                            codeItem.CustomAlpha = alpha;
+                        }
+                    }
+                }
+                else if (m_highLightType == HighlightType.HIGHLIGHT_LATEST_3 ||
+                            m_highLightType == HighlightType.HIGHLIGHT_LATEST_6 ||
+                            m_highLightType == HighlightType.HIGHLIGHT_LATEST_9)
+                {
+                    int maxCount = 3;
+                    if (m_highLightType == HighlightType.HIGHLIGHT_LATEST_3)
+                    {
+                        maxCount = 3;
+                    }
+                    else if (m_highLightType == HighlightType.HIGHLIGHT_LATEST_6)
+                    {
+                        maxCount = 6;
+                    }
+                    else if (m_highLightType == HighlightType.HIGHLIGHT_LATEST_9)
+                    {
+                        maxCount = 9;
+                    }
+
+                    int i = 0;
+                    int lastTimeStamp = 0;
+                    foreach (var item in timeStampList)
+                    {
+                        int alpha = 255;// - (255 - 80) * i / 5;
+                        var codeItem = m_itemDict[item.Item2];
+                        if (i < maxCount)
+                        {
+                            alpha = 255;
+                        }
+                        else
+                        {
+                            alpha = 80;
+                        }
+
+                        if (alpha != codeItem.CustomAlpha)
+                        {
+                            codeItem.CustomAlpha = alpha;
+                        }
+
+                        if (lastTimeStamp != item.Item1)
+                        {
+                            i++;
+                            lastTimeStamp = item.Item1;
+                        }
+                    }
                 }
 
-                foreach (var item in m_itemDict)
-                {
-                    if (item.Value.CustomAlpha != 80)
-                    {
-                        item.Value.CustomAlpha = 80;
-                    }
-                }
-                int i = 0;
-                int lastTimeStamp = 0;
-                foreach (var item in timeStampList)
-                {
-                    int alpha = 255;// - (255 - 80) * i / 5;
-                    var codeItem = m_itemDict[item.Item2];
-                    if (alpha != codeItem.CustomAlpha)
-                    {
-                        codeItem.CustomAlpha = alpha;
-                    }
-                    if (i==5)
-                    {
-                        break;
-                    }
-                    if (lastTimeStamp != codeItem.m_selectTimeStamp)
-                    {
-                        i++;
-                        lastTimeStamp = codeItem.m_selectTimeStamp;
-                    }
-                }
                 ReleaseLock();
             });
+
             if (m_view != null)
             {
                 m_view.InvalidateScheme();
             }
-            
         }
+
+        public void SetHighlightType(HighlightType type)
+        {
+            m_highLightType = type;
+            UpdateCurrentValidScheme();
+        }
+
         #endregion
         public void Invalidate()
         {

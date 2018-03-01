@@ -894,18 +894,34 @@ namespace CodeAtlasVSIX
             scene.AcquireLock();
             scene.SaveConfig();
             scene.ReleaseLock();
-        }
-
-        private void highLightRecentButton_Checked(object sender, RoutedEventArgs e)
-        {
-            var scene = UIManager.Instance().GetScene();
-            scene.m_isHistoryAlpha = true;
-        }
+        }        
 
         private void highLightBookmark_Checked(object sender, RoutedEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();
-            scene.m_isHistoryAlpha = false;
+            scene.SetHighlightType(HighlightType.HIGHLIGHT_BOOKMARK);
+        }
+
+        private void highAllButton_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetHighlightType(HighlightType.HIGHLIGHT_ALL);
+        }
+
+        private void highLightRecent3Button_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetHighlightType(HighlightType.HIGHLIGHT_LATEST_3);
+        }
+        private void highLightRecent6Button_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetHighlightType(HighlightType.HIGHLIGHT_LATEST_6);
+        }
+        private void highLightRecent9Button_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetHighlightType(HighlightType.HIGHLIGHT_LATEST_9);
         }
     }
 }

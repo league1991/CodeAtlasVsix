@@ -513,13 +513,19 @@ namespace CodeAtlasVSIX
             var scene = UIManager.Instance().GetScene();
             scene.AcquireLock();
 
+            var srcNode = scene.GetNode(m_srcUniqueName);
+            var tarNode = scene.GetNode(m_tarUniqueName);
+            int edgeAlpha = 255;// IsSelected ? 255 : Math.Min(srcNode.CustomAlpha, tarNode.CustomAlpha);
+
             int nColor = m_schemeColorList.Count;
             if (nColor > 0)
             {
                 var dashPattern = new List<double> { 5.0, 5.0 * (nColor - 1) };
                 for (int i = 0; i < nColor; i++)
                 {
-                    var pen = new Pen(new SolidColorBrush(m_schemeColorList[i]), 1.5);
+                    Color schemeColor = m_schemeColorList[i];
+                    schemeColor.A = (byte)edgeAlpha;
+                    var pen = new Pen(new SolidColorBrush(schemeColor), 1.5);
                     pen.DashStyle = new DashStyle(dashPattern, 0.0);
                     pen.DashStyle.Offset = 5.0 * i;
                     pen.Thickness = 2.0;

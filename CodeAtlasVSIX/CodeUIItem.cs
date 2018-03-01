@@ -67,9 +67,6 @@ namespace CodeAtlasVSIX
         Geometry m_highLightGeometry = new EllipseGeometry();
         bool m_isInvalidating = false;
         static double s_textGap = 2.0;
-        public static readonly DependencyProperty m_isFadingProperty =
-            DependencyProperty.Register("IsFading", typeof(bool), typeof(CodeUIItem),
-            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
         public static readonly DependencyProperty m_customAlphaProperty =
             DependencyProperty.Register("CustomAlpha", typeof(int), typeof(CodeUIItem),
             new FrameworkPropertyMetadata(255, FrameworkPropertyMetadataOptions.AffectsRender));
@@ -457,15 +454,7 @@ namespace CodeAtlasVSIX
                 }
             }
         }
-
-        public bool IsFading
-        {
-            get { return (bool)GetValue(m_isFadingProperty); }
-            set {
-                SetValue(m_isFadingProperty, value);
-            }
-        }
-
+        
         public int CustomAlpha
         {
             get { return (int)GetValue(m_customAlphaProperty); }
@@ -1090,12 +1079,7 @@ namespace CodeAtlasVSIX
         protected override void OnRender(DrawingContext drawingContext)
         {
             var scene = UIManager.Instance().GetScene();
-            bool fading = IsFading && !IsSelected;
-            byte alpha = (byte)(fading ? 80 : 255);
-            if (scene.m_isHistoryAlpha)
-            {
-                alpha = (byte)(IsSelected ? 255 : CustomAlpha);
-            }
+            byte alpha = (byte)(IsSelected ? 255 : CustomAlpha);
 
             this.Fill.Opacity = (double)alpha / 255.0;
             // Draw highlight first
@@ -1132,7 +1116,7 @@ namespace CodeAtlasVSIX
                 baseX += 12;
                 m_commentText.SetForegroundBrush(new SolidColorBrush(Color.FromArgb(alpha, 10, 10, 10)));
                 drawingContext.DrawText(m_commentText, new Point(baseX + 0.8, baseY + 0.8));
-                var commentColor = fading ? Color.FromArgb(alpha, 136,202,13) : Color.FromArgb(alpha,166,241,27);
+                var commentColor = alpha < 255 ? Color.FromArgb(alpha, 136,202,13) : Color.FromArgb(alpha,166,241,27);
                 m_commentText.SetForegroundBrush(new SolidColorBrush(commentColor));
                 drawingContext.DrawText(m_commentText, new Point(baseX, baseY));
             }
