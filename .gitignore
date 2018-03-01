@@ -33,3 +33,7 @@ Debug
 CodeGraphData/
 /Backup
 /Backup1/CodeAtlasVSIX
+.vs/
+*.db
+*.suo
+*.user
