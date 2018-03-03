@@ -654,6 +654,14 @@ namespace CodeAtlasVSIX
         }
         #endregion
 
+        #region Anchor LRU
+        public void ToggleAnchor(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.ToggleAnchorItem();
+        }
+        #endregion
+
         public SymbolWindow GetSymbolWindow()
         {
             return this.symbolWindow;

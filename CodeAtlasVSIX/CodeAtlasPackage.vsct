@@ -65,6 +65,9 @@
       <Group guid="guidCodeAtlasPackageCmdSet" id="CustomEdgeMenuGroup" priority="0x0600">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
       </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="AnchorMenuGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
     </Groups>
 
     <!--Buttons section. -->
@@ -322,6 +325,13 @@
           <ButtonText>Connect Custom Edge From Source</ButtonText>
         </Strings>
       </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleAnchorCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="AnchorMenuGroup" />
+        <Strings>
+          <ButtonText>Toggle Anchor</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
     <Bitmaps>
@@ -365,6 +375,7 @@
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme5" key1="5" mod1="Control" editor="guidSourceCodeTextEditor" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="CustomSourceCommand" key1="W" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="CustomTargetCommand" key1="E" mod1="ALT" editor="guidVSStd97" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleAnchorCommand" key1="Q" mod1="ALT" editor="guidVSStd97" />
   </KeyBindings>
   
   <Symbols>
@@ -417,6 +428,8 @@
       <IDSymbol name="CustomTargetCommand" value="0x0129" />
       <IDSymbol name="GoUpInOrderCommand" value="0x0130" />
       <IDSymbol name="GoDownInOrderCommand" value="0x0131" />
+      <IDSymbol name="AnchorMenuGroup" value="0x0132" />
+      <IDSymbol name="ToggleAnchorCommand" value="0x0133" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{e8b62cf1-f2d4-4924-a788-7d9f6eb6d635}">

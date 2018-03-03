@@ -112,6 +112,7 @@ namespace CodeAtlasVSIX
             AddCommand(0x0128, mainUI.OnBeginCustomEdge);
             AddCommand(0x0129, mainUI.OnEndCustomEdge);
 
+            AddCommand(0x0133, mainUI.ToggleAnchor);
             UIManager.Instance().GetScene().StartThread();
         }
 

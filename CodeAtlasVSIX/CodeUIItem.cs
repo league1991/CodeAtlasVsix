@@ -70,6 +70,9 @@ namespace CodeAtlasVSIX
         public static readonly DependencyProperty m_customAlphaProperty =
             DependencyProperty.Register("CustomAlpha", typeof(int), typeof(CodeUIItem),
             new FrameworkPropertyMetadata(255, FrameworkPropertyMetadataOptions.AffectsRender));
+        public static readonly DependencyProperty m_isAnchorProperty =
+            DependencyProperty.Register("IsAnchor", typeof(bool), typeof(CodeUIItem),
+            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public CodeUIItem(string uniqueName, Dictionary<string, object> customData)
         {
@@ -464,6 +467,15 @@ namespace CodeAtlasVSIX
             }
         }
 
+        public bool IsAnchor
+        {
+            get { return (bool)GetValue(m_isAnchorProperty); }
+            set
+            {
+                SetValue(m_isAnchorProperty, value);
+            }
+        }
+
         public bool IsInvalidating()
         {
             return m_isInvalidating;
@@ -823,6 +835,7 @@ namespace CodeAtlasVSIX
             _AddContextMenuItem(context, "Mark As Custom Edge Source", mainUI.OnBeginCustomEdge);
             _AddContextMenuItem(context, "Connect Custom Edge From Source", mainUI.OnEndCustomEdge);
             _AddContextMenuItem(context, "Interactive Add Custom Edge", this.OnInteractiveAddCustomEdge);
+            _AddContextMenuItem(context, "Toggle Anchor Item", mainUI.ToggleAnchor);
             this.ContextMenu = context;
         }
 
@@ -1085,10 +1098,14 @@ namespace CodeAtlasVSIX
             // Draw highlight first
             if (m_customEdgeMode)
             {
-                var circumference = GetRadius() * 2.0 * Math.PI;
                 var edgeStroke = new SolidColorBrush(Color.FromArgb(130, 255, 157, 38));
                 var edgePen = new Pen(edgeStroke, 30.0);
                 drawingContext.DrawGeometry(edgeStroke, edgePen, m_highLightGeometry);
+            }
+            if (IsAnchor)
+            {
+                var edgeStroke = new SolidColorBrush(Color.FromArgb(130,226,99,67));
+                drawingContext.DrawGeometry(edgeStroke, new Pen(edgeStroke, 20.0), m_highLightGeometry);
             }
             if (m_highLightGeometry != null && (m_isSelected || m_isHover))
             {

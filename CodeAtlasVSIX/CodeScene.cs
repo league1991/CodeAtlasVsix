@@ -99,6 +99,7 @@ namespace CodeAtlasVSIX
 
         // LRU
         List<string> m_itemLruQueue = new List<string>();
+        HashSet<string> m_anchorSet = new HashSet<string>();   // Do not delete item in anchorList
         int m_lruMaxLength = 50;
         #endregion
 
@@ -305,6 +306,13 @@ namespace CodeAtlasVSIX
                 }
                 t1 = DateTime.Now;
                 Logger.Debug("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
+
+                // edge data
+                var anchorList = sceneData["anchorItem"] as ArrayList;
+                foreach (var item in anchorList)
+                {
+                    m_anchorSet.Add(item as string);
+                }
                 ReleaseLock();
 
                 // extension
@@ -431,6 +439,7 @@ namespace CodeAtlasVSIX
             m_curValidScheme = new List<string>();
             m_curValidSchemeColor = new List<Color>();
             m_customExtension = new Dictionary<string, string>();
+            m_anchorSet = new HashSet<string>();
             ClearSelectionStack();
             ReleaseLock();
             
@@ -488,6 +497,12 @@ namespace CodeAtlasVSIX
                 extensionList.Add(new List<string> { extensionItem.Key, extensionItem.Value });
             }
 
+            List<string> anchorList = new List<string>();
+            foreach (var item in m_anchorSet)
+            {
+                anchorList.Add(item);
+            }
+
             var jsonDict = new Dictionary<string, object> {
                 {"stopItem", m_stopItem},
                 {"codeItem", codeItemList },
@@ -496,6 +511,7 @@ namespace CodeAtlasVSIX
                 {"edgeData", edgeDataList },
                 {"scheme", scheme },
                 {"extension", extensionList},
+                {"anchorItem", anchorList }
             };
 
             try
@@ -1579,15 +1595,76 @@ namespace CodeAtlasVSIX
             m_selectEventConnected = false;
             if(m_itemLruQueue.Count > m_lruMaxLength)
             {
-                while (m_itemLruQueue.Count > m_lruMaxLength)
+                List<string> candidate = new List<string>();
+                for (int i = m_itemLruQueue.Count-1; i >= 0 && m_itemLruQueue.Count - candidate.Count > m_lruMaxLength; i--)
                 {
-                    _DoDeleteCodeItem(m_itemLruQueue[m_lruMaxLength]);
-                    m_itemLruQueue.RemoveAt(m_lruMaxLength);
+                    if (m_anchorSet.Contains(m_itemLruQueue[i]))
+                    {
+                        continue;
+                    }
+                    candidate.Add(m_itemLruQueue[i]);
+                }
+                foreach (var deleteName in candidate)
+                {
+                    _DoDeleteCodeItem(deleteName);
+                    m_itemLruQueue.Remove(deleteName);
                 }
             }
             m_selectEventConnected = true;
         }
 
+        public void AddAnchorItem()
+        {
+            this.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                AcquireLock();
+                var selectedNodes = SelectedNodes();
+                foreach (var item in selectedNodes)
+                {
+                    m_anchorSet.Add(item.GetUniqueName());
+                    item.IsAnchor = true;
+                }
+                ReleaseLock();
+            });
+        }
+
+        public void DeleteAnchorItem()
+        {
+            this.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                AcquireLock();
+                var selectedNodes = SelectedNodes();
+                foreach (var item in selectedNodes)
+                {
+                    m_anchorSet.Remove(item.GetUniqueName());
+                    item.IsAnchor = false;
+                }
+                ReleaseLock();
+            });
+        }
+
+        public void ToggleAnchorItem()
+        {
+            this.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                AcquireLock();
+                var selectedNodes = SelectedNodes();
+                foreach (var item in selectedNodes)
+                {
+                    if (item.IsAnchor)
+                    {
+                        m_anchorSet.Remove(item.GetUniqueName());
+                        item.IsAnchor = false;
+                    }
+                    else
+                    {
+                        m_anchorSet.Add(item.GetUniqueName());
+                        item.IsAnchor = true;
+                    }
+                }
+                ReleaseLock();
+            });
+        }
         public void SetLRULimit(int count)
         {
             AcquireLock();
@@ -1798,6 +1875,7 @@ namespace CodeAtlasVSIX
                 }
                 item.Pos = center;
                 item.SetTargetPos(targetCenter);
+                item.IsAnchor = m_anchorSet.Contains(srcUniqueName);
                 m_isLayoutDirty = true;
                 if (m_itemDict.Count == 1)
                 {
@@ -2892,8 +2970,8 @@ namespace CodeAtlasVSIX
                 {
                     foreach (var fadePair in isFadingMap)
                     {
-                        int alpha = fadePair.Value ? 80 : 255;
                         var codeItem = m_itemDict[fadePair.Key];
+                        int alpha = (fadePair.Value && !codeItem.IsAnchor) ? 80 : 255;
                         if (codeItem.CustomAlpha != alpha)
                         {
                             codeItem.CustomAlpha = alpha;
@@ -2924,7 +3002,7 @@ namespace CodeAtlasVSIX
                     {
                         int alpha = 255;// - (255 - 80) * i / 5;
                         var codeItem = m_itemDict[item.Item2];
-                        if (i < maxCount)
+                        if (i < maxCount || codeItem.IsAnchor)
                         {
                             alpha = 255;
                         }
