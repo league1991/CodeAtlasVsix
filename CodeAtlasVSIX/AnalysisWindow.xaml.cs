@@ -103,5 +103,10 @@ namespace CodeAtlasVSIX
         {
             UIManager.Instance().GetMainUI().OnFastAnalyseProjectsButton(null, null);
         }
+
+        private void expertModeButton_Click(object sender, RoutedEventArgs e)
+        {
+            UIManager.Instance().GetMainUI().OpenDoxywizard("");
+        }
     }
 }

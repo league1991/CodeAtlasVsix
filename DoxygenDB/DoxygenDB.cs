@@ -546,6 +546,7 @@ namespace DoxygenDB
         string m_dbFolder = "";
         string m_doxyFileFolder = "";
         static string s_doxygenExePath = Path.Combine(Path.GetTempPath(), "doxygen.exe");
+        static string s_doxygenWizardPath = Path.Combine(Path.GetTempPath(), "doxywizard.exe");
 
         Dictionary<string, string> m_idToCompoundDict = new Dictionary<string, string>();
         Dictionary<string, List<string>> m_compoundToIdDict = new Dictionary<string, List<string>>();
@@ -563,11 +564,11 @@ namespace DoxygenDB
 
         static bool _CheckAndExtractDoxygenExe()
         {
-            if (s_doxygenExePath == "")
+            if (s_doxygenExePath == "" || s_doxygenWizardPath == "")
             {
                 return false;
             }
-            if (File.Exists(s_doxygenExePath))
+            if (File.Exists(s_doxygenExePath) && File.Exists(s_doxygenWizardPath))
             {
                 return true;
             }
@@ -580,6 +581,15 @@ namespace DoxygenDB
                     using (var resourceToSave = currentAssembly.GetManifestResourceStream(resourceName))
                     {
                         using (var output = File.OpenWrite(s_doxygenExePath))
+                            resourceToSave.CopyTo(output);
+                        resourceToSave.Close();
+                    }
+                }
+                else if (resourceName.ToLower().EndsWith("doxywizard.exe"))
+                {
+                    using (var resourceToSave = currentAssembly.GetManifestResourceStream(resourceName))
+                    {
+                        using (var output = File.OpenWrite(s_doxygenWizardPath))
                             resourceToSave.CopyTo(output);
                         resourceToSave.Close();
                     }
@@ -598,6 +608,22 @@ namespace DoxygenDB
             System.Diagnostics.Process exep = new System.Diagnostics.Process();
             exep.StartInfo.FileName = s_doxygenExePath;
             exep.StartInfo.Arguments = string.Format("-g \"{0}\"", configPath);
+            //exep.StartInfo.CreateNoWindow = true;
+            exep.StartInfo.UseShellExecute = false;
+            exep.Start();
+            exep.WaitForExit();
+            return true;
+        }
+
+        public static bool StartDoxyWizard(string configPath)
+        {
+            if (!_CheckAndExtractDoxygenExe())
+            {
+                return false;
+            }
+            System.Diagnostics.Process exep = new System.Diagnostics.Process();
+            exep.StartInfo.FileName = s_doxygenWizardPath;
+            exep.StartInfo.Arguments = string.Format(" \"{0}\"", configPath);
             //exep.StartInfo.CreateNoWindow = true;
             exep.StartInfo.UseShellExecute = false;
             exep.Start();
@@ -708,7 +734,7 @@ namespace DoxygenDB
             return pathList;
         }
 
-        public static bool GenerateDB(DoxygenDBConfig config)
+        public static bool GenerateDB(DoxygenDBConfig config, bool configOnly = false)
         {
             string configPath = config.m_configPath;
             string projectName = config.m_projectName;
@@ -771,7 +797,12 @@ namespace DoxygenDB
             metaDict["FILE_PATTERNS"] = filePattern;
 
             _WriteDoxyfile(configPath, metaDict);
-            return _AnalyseDoxyfile(configPath);
+
+            if (configOnly == false)
+            {
+                return _AnalyseDoxyfile(configPath);
+            }
+            return true;
         }
 
 

@@ -659,7 +659,7 @@ namespace CodeAtlasVSIX
             return this.symbolWindow;
         }
 
-        bool _AnalyseSolution(bool useClang, bool onlySelectedProjects = false)
+        bool _AnalyseSolution(bool useClang, bool onlySelectedProjects = false, bool analyse = true)
         {
             if (!GetCommandActive())
             {
@@ -742,6 +742,23 @@ namespace CodeAtlasVSIX
                 DBManager.Instance().CloseDB();
                 SetCommandActive(true);
             }
+            return true;
+        }
+
+        public bool OpenDoxywizard(string configPath)
+        {
+            System.Threading.Thread wizardThread = new System.Threading.Thread((ThreadStart)delegate
+            {
+                try
+                {
+                    DoxygenDB.DoxygenDB.StartDoxyWizard("");
+                }
+                catch (Exception)
+                {
+                }
+            });
+            wizardThread.Name = "Wizard Thread";
+            wizardThread.Start();
             return true;
         }
 

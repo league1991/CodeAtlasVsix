@@ -10,6 +10,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="27"/>
             <RowDefinition Height="27"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="27"/>
             <RowDefinition Height="27"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
@@ -27,8 +29,9 @@
         </ComboBox>
         <Button x:Name="addExtensionButton" Content="Add Custom Extension" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,4,0,0" Click="addExtensionButton_Click" />
         <Button x:Name="deleteExtensionButton" Content="Delete Custom Extension" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="deleteExtensionButton_Click" />
-        <Button x:Name="analyseSolutionButton" Content="Analyse Solution" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="analyseSolutionButton_Click" />
-        <Button x:Name="analyseSelectedProjButton" Content="Analyse Selected Projects" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="analyseSelectedProjButton_Click" />
-        <ListBox x:Name="resultList" Margin="0,4,0,0" Grid.Row="3" Grid.ColumnSpan="4" MinHeight="100"/>
+        <Button x:Name="analyseSolutionButton" Content="Analyse Solution" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="analyseSolutionButton_Click" />
+        <Button x:Name="analyseSelectedProjButton" Content="Analyse Selected Projects" Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="analyseSelectedProjButton_Click" />
+        <ListBox x:Name="resultList" Margin="0,4,0,0" Grid.Row="2" Grid.ColumnSpan="4" MinHeight="100"/>
+        <Button x:Name="expertModeButton" Content="Advanced Configurations..." Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="4" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="expertModeButton_Click"/>
     </Grid>
 </UserControl>
