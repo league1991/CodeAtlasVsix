@@ -307,11 +307,14 @@ namespace CodeAtlasVSIX
                 t1 = DateTime.Now;
                 Logger.Debug("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
 
-                // edge data
-                var anchorList = sceneData["anchorItem"] as ArrayList;
-                foreach (var item in anchorList)
+                // anchor data
+                if (sceneData.ContainsKey("anchorItem"))
                 {
-                    m_anchorSet.Add(item as string);
+                    var anchorList = sceneData["anchorItem"] as ArrayList;
+                    foreach (var item in anchorList)
+                    {
+                        m_anchorSet.Add(item as string);
+                    }
                 }
                 ReleaseLock();
 
