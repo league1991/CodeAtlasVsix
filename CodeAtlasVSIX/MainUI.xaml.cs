@@ -482,11 +482,14 @@ namespace CodeAtlasVSIX
         {
             var scene = UIManager.Instance().GetScene();
             var selectedItem = scene.SelectedNodes();
-            if (selectedItem.Count == 1 && selectedItem[0].GetKind() == DoxygenDB.EntKind.PAGE)
+            foreach (var item in selectedItem)
             {
-                scene.ReplaceBookmarkItem(selectedItem[0].GetUniqueName());
+                if (item.GetKind() == DoxygenDB.EntKind.PAGE)
+                {
+                    scene.ReplaceBookmarkItem(item.GetUniqueName());
+                }
             }
-            else
+            if(selectedItem.Count == 1 && selectedItem[0].GetKind() != DoxygenDB.EntKind.PAGE)
             {
                 // m_refSearcher.BeginNewRefSearch();
                 m_refSearcher.BeginNewNormalSearch();

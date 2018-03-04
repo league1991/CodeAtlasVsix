@@ -2151,13 +2151,31 @@ namespace CodeAtlasVSIX
 
             var newItem = selectedItem[0];
             var newUname = newItem.GetUniqueName();
-            foreach (var target in targetEntities)
+            bool isInSourceOrTarget = false;
+            foreach (var entName in sourceEntities)
             {
-                DoAddCustomEdge(newUname, target);
+                if (newUname == entName)
+                {
+                    isInSourceOrTarget = true;
+                }
             }
-            foreach (var source in sourceEntities)
+            foreach (var entName in targetEntities)
             {
-                DoAddCustomEdge(source, newUname);
+                if (newUname == entName)
+                {
+                    isInSourceOrTarget = true;
+                }
+            }
+            if (!isInSourceOrTarget)
+            {
+                foreach (var target in targetEntities)
+                {
+                    DoAddCustomEdge(newUname, target);
+                }
+                foreach (var source in sourceEntities)
+                {
+                    DoAddCustomEdge(source, newUname);
+                }
             }
 
             DeleteCodeItem(uniqueName);

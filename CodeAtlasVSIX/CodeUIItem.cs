@@ -728,9 +728,8 @@ namespace CodeAtlasVSIX
             {
                 MouseClickCallback(sender, args);
             }
-            else
+            else if(args.LeftButton == MouseButtonState.Pressed)
             {
-                //MouseClickCallback(sender, args);
                 MouseDoubleClickCallback(sender, args);
             }
         }
@@ -819,7 +818,14 @@ namespace CodeAtlasVSIX
             {
                 _AddContextMenuItem(context, "Find Bases", mainUI.OnFindBases);
             }
-            _AddContextMenuItem(context, "Find References", mainUI.OnFindUses);
+            if (m_kind == DoxygenDB.EntKind.PAGE)
+            {
+                _AddContextMenuItem(context, "Convert to Symbol", mainUI.OnFindUses);
+            }
+            else
+            {
+                _AddContextMenuItem(context, "Find References", mainUI.OnFindUses);
+            }
             _AddContextMenuItem(context, "Find Members", mainUI.OnFindMembers);
             _AddContextMenuItem(context, "Delete", mainUI.OnDelectSelectedItems);
             _AddContextMenuItem(context, "Delete and Ignore", mainUI.OnDeleteSelectedItemsAndAddToStop);
