@@ -809,24 +809,17 @@ namespace CodeAtlasVSIX
         {
             var mainUI = UIManager.Instance().GetMainUI();
             ContextMenu context = new ContextMenu();
+            _AddContextMenuItem(context, "Find Callers / Usages / Includes", mainUI.OnFindCallers);
+            _AddContextMenuItem(context, "Find Callees / Usages / Includes", mainUI.OnFindCallees);
             if (m_kind == DoxygenDB.EntKind.FUNCTION)
             {
-                _AddContextMenuItem(context, "Find Callers", mainUI.OnFindCallers);
-                _AddContextMenuItem(context, "Find Callees", mainUI.OnFindCallees);
                 _AddContextMenuItem(context, "Find Overrides", mainUI.OnFindOverrides);
             }
             else if(m_kind == DoxygenDB.EntKind.CLASS)
             {
                 _AddContextMenuItem(context, "Find Bases", mainUI.OnFindBases);
             }
-            if (m_kind == DoxygenDB.EntKind.FILE)
-            {
-                _AddContextMenuItem(context, "Find Includes", mainUI.OnFindUses);
-            }
-            else
-            {
-                _AddContextMenuItem(context, "Find References", mainUI.OnFindUses);
-            }
+            _AddContextMenuItem(context, "Find References", mainUI.OnFindUses);
             _AddContextMenuItem(context, "Find Members", mainUI.OnFindMembers);
             _AddContextMenuItem(context, "Delete", mainUI.OnDelectSelectedItems);
             _AddContextMenuItem(context, "Delete and Ignore", mainUI.OnDeleteSelectedItemsAndAddToStop);
