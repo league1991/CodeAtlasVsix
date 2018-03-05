@@ -513,8 +513,8 @@ namespace CodeAtlasVSIX
             var scene = UIManager.Instance().GetScene();
             scene.AcquireLock();
 
-            var srcNode = scene.GetNode(m_srcUniqueName);
-            var tarNode = scene.GetNode(m_tarUniqueName);
+            //var srcNode = scene.GetNode(m_srcUniqueName);
+            //var tarNode = scene.GetNode(m_tarUniqueName);
             int edgeAlpha = 255;// IsSelected ? 255 : Math.Min(srcNode.CustomAlpha, tarNode.CustomAlpha);
 
             int nColor = m_schemeColorList.Count;

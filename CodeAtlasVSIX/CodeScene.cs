@@ -465,77 +465,86 @@ namespace CodeAtlasVSIX
                 return;
             }
 
-            var codeItemList = new List<Dictionary<string, object>>();
-            foreach (var item in m_itemDict)
-            {
-                var itemDataDict = new Dictionary<string, object>();
-                itemDataDict["uname"] = item.Key;
-                itemDataDict["posX"] = item.Value.Pos.X;
-                itemDataDict["posY"] = item.Value.Pos.Y;
-                codeItemList.Add(itemDataDict);
-            }
+            string info = "";
 
-            var edgeItemList = new List<List<string>>();
-            foreach (var item in m_edgeDict)
-            {
-                edgeItemList.Add(new List<string> { item.Key.Item1, item.Key.Item2 });
-            }
-
-            var edgeDataList = new List<List<object>>();
-            foreach (var item in m_edgeDataDict)
-            {
-                edgeDataList.Add(new List<object> { item.Key.Item1, item.Key.Item2, item.Value });
-            }
-
-            var scheme = new Dictionary<string, Dictionary<string, object>>();
-            foreach (var schemeItem in m_scheme)
-            {
-                var schemeValue = schemeItem.Value;
-                var schemeEdgeData = new List<List<object>>();
-                foreach (var edgePair in schemeValue.m_edgeDict)
-                {
-                    schemeEdgeData.Add(new List<object> { edgePair.Key.Item1, edgePair.Key.Item2, edgePair.Value });
-                }
-                var schemeData = new Dictionary<string, object> {
-                    { "node", schemeValue.m_nodeList },
-                    { "edge", schemeEdgeData },
-                };
-                scheme[schemeItem.Key] = schemeData;
-            }
-            
-            var extensionList = new List<List<string>>();
-            foreach (var extensionItem in m_customExtension)
-            {
-                extensionList.Add(new List<string> { extensionItem.Key, extensionItem.Value });
-            }
-
-            List<string> anchorList = new List<string>();
-            foreach (var item in m_anchorSet)
-            {
-                anchorList.Add(item);
-            }
-
-            var jsonDict = new Dictionary<string, object> {
-                {"stopItem", m_stopItem},
-                {"codeItem", codeItemList },
-                {"codeData", m_itemDataDict},
-                {"edgeItem", edgeItemList },
-                {"edgeData", edgeDataList },
-                {"scheme", scheme },
-                {"extension", extensionList},
-                {"anchorItem", anchorList }
-            };
-
+            AcquireLock();
             try
             {
+                var codeItemList = new List<Dictionary<string, object>>();
+                foreach (var item in m_itemDict)
+                {
+                    var itemDataDict = new Dictionary<string, object>();
+                    itemDataDict["uname"] = item.Key;
+                    itemDataDict["posX"] = item.Value.Pos.X;
+                    itemDataDict["posY"] = item.Value.Pos.Y;
+                    codeItemList.Add(itemDataDict);
+                }
+
+                var edgeItemList = new List<List<string>>();
+                foreach (var item in m_edgeDict)
+                {
+                    edgeItemList.Add(new List<string> { item.Key.Item1, item.Key.Item2 });
+                }
+
+                var edgeDataList = new List<List<object>>();
+                foreach (var item in m_edgeDataDict)
+                {
+                    edgeDataList.Add(new List<object> { item.Key.Item1, item.Key.Item2, item.Value });
+                }
+
+                var scheme = new Dictionary<string, Dictionary<string, object>>();
+                foreach (var schemeItem in m_scheme)
+                {
+                    var schemeValue = schemeItem.Value;
+                    var schemeEdgeData = new List<List<object>>();
+                    foreach (var edgePair in schemeValue.m_edgeDict)
+                    {
+                        schemeEdgeData.Add(new List<object> { edgePair.Key.Item1, edgePair.Key.Item2, edgePair.Value });
+                    }
+                    var schemeData = new Dictionary<string, object> {
+                        { "node", schemeValue.m_nodeList },
+                        { "edge", schemeEdgeData },
+                    };
+                    scheme[schemeItem.Key] = schemeData;
+                }
+            
+                var extensionList = new List<List<string>>();
+                foreach (var extensionItem in m_customExtension)
+                {
+                    extensionList.Add(new List<string> { extensionItem.Key, extensionItem.Value });
+                }
+
+                List<string> anchorList = new List<string>();
+                foreach (var item in m_anchorSet)
+                {
+                    anchorList.Add(item);
+                }
+
+                var jsonDict = new Dictionary<string, object> {
+                    {"stopItem", m_stopItem},
+                    {"codeItem", codeItemList },
+                    {"codeData", m_itemDataDict},
+                    {"edgeItem", edgeItemList },
+                    {"edgeData", edgeDataList },
+                    {"scheme", scheme },
+                    {"extension", extensionList},
+                    {"anchorItem", anchorList }
+                };
+
                 JavaScriptSerializer js = new JavaScriptSerializer();
                 var jsonStr = js.Serialize(jsonDict);
                 File.WriteAllText(dbPath, jsonStr);
+
+                info = "Save DB configuration to " + dbPath;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Logger.Info("Save DB configuration failed.");
+                info = "Save DB configuration failed. \n";
+                info += e.Message;
             }
+
+            ReleaseLock();
+            Logger.Info(info);
         }
         #endregion
 
