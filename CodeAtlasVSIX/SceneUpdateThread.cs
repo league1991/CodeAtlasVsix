@@ -152,9 +152,11 @@ namespace CodeAtlasVSIX
                         m_selectTimeStamp = scene.m_selectTimeStamp;
                     }
 
-                    if ((DateTime.Now - saveTime).TotalSeconds > 300 && mainUI.GetCommandActive())
+                    // Save configuration every 3 minutes
+                    if ((DateTime.Now - saveTime).TotalSeconds > 3 * 60 && mainUI.GetCommandActive())
                     {
                         scene.SaveConfig();
+                        saveTime = DateTime.Now;
                     }
 
                     EndTimeStamp("---------------------- end thread ------------------");
