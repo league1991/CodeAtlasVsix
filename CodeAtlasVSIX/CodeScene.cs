@@ -275,45 +275,54 @@ namespace CodeAtlasVSIX
                 foreach (var dataItem in edgeData)
                 {
                     var dataList = dataItem as ArrayList;
-                    var edgeKey = new EdgeKey(dataList[0] as string, dataList[1] as string);
-                    var edgeDataDict = dataList[2] as DataDict;
-                    m_edgeDataDict[edgeKey] = edgeDataDict;
+                    if (dataList.Count == 3)
+                    {
+                        var edgeKey = new EdgeKey(dataList[0] as string, dataList[1] as string);
+                        var edgeDataDict = dataList[2] as DataDict;
+                        m_edgeDataDict[edgeKey] = edgeDataDict;
+                    }
                 }
                 t1 = DateTime.Now;
                 Logger.Debug("--------------Edgedata " + (t1 - t0).TotalMilliseconds.ToString());
                 t0 = t1;
 
                 // scheme
-                var schemeDict = sceneData["scheme"] as Dictionary<string, object>;
-                foreach (var schemeItem in schemeDict)
+                if (sceneData.ContainsKey("scheme"))
                 {
-                    var name = schemeItem.Key;
-                    var schemeData = schemeItem.Value as Dictionary<string, object>;
-                    var nodeList = schemeData["node"] as ArrayList;
-                    var edgeList = schemeData["edge"] as ArrayList;
-                    var schemeObj = new SchemeData();
-                    foreach (var node in nodeList)
+                    var schemeDict = sceneData["scheme"] as Dictionary<string, object>;
+                    foreach (var schemeItem in schemeDict)
                     {
-                        schemeObj.m_nodeList.Add(node as string);
+                        var name = schemeItem.Key;
+                        var schemeData = schemeItem.Value as Dictionary<string, object>;
+                        var nodeList = schemeData["node"] as ArrayList;
+                        var edgeList = schemeData["edge"] as ArrayList;
+                        var schemeObj = new SchemeData();
+                        foreach (var node in nodeList)
+                        {
+                            schemeObj.m_nodeList.Add(node as string);
+                        }
+                        foreach (var item in edgeList)
+                        {
+                            var edgeItem = item as ArrayList;
+                            schemeObj.m_edgeDict[new EdgeKey(edgeItem[0] as string, edgeItem[1] as string)] =
+                                edgeItem[2] as DataDict;
+                        }
+                        m_scheme[name] = schemeObj;
                     }
-                    foreach (var item in edgeList)
-                    {
-                        var edgeItem = item as ArrayList;
-                        schemeObj.m_edgeDict[new EdgeKey(edgeItem[0] as string, edgeItem[1] as string)] =
-                            edgeItem[2] as DataDict;
-                    }
-                    m_scheme[name] = schemeObj;
+                    t1 = DateTime.Now;
+                    Logger.Debug("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
                 }
-                t1 = DateTime.Now;
-                Logger.Debug("--------------AddScheme" + (t1 - t0).TotalMilliseconds.ToString());
 
                 // anchor data
                 if (sceneData.ContainsKey("anchorItem"))
                 {
                     var anchorList = sceneData["anchorItem"] as ArrayList;
-                    foreach (var item in anchorList)
+                    if (anchorList != null)
                     {
-                        m_anchorSet.Add(item as string);
+                        foreach (var item in anchorList)
+                        {
+                            m_anchorSet.Add(item as string);
+                        }
                     }
                 }
                 ReleaseLock();
