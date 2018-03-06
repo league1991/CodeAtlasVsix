@@ -108,6 +108,13 @@ namespace CodeAtlasVSIX
             }
 
             var schemeName = item.m_uniqueName;
+
+            var result = MessageBox.Show(string.Format("Do you want to delete {0}?", schemeName), "Delete Graph", MessageBoxButton.OKCancel);
+            if (result == MessageBoxResult.Cancel)
+            {
+                return;
+            }
+
             var scene = UIManager.Instance().GetScene();
             scene.AcquireLock();
             scene.DeleteScheme(schemeName);
