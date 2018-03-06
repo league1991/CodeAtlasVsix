@@ -2239,6 +2239,7 @@ namespace CodeAtlasVSIX
             {
                 var srcItem = m_itemDict[m_customEdgeSource];
                 srcItem.SetCustomEdgeSourceMode(false);
+                m_customEdgeSource = "";
             }
             return true;
         }
