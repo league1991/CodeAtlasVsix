@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:CodeAtlasVSIX"
              xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="400" Height="Auto" Focusable="True" >
+             d:DesignHeight="300" d:DesignWidth="700" Height="Auto" Focusable="True" >
 
     <DockPanel.Resources>
         <ResourceDictionary>
@@ -64,13 +64,13 @@
     </Grid>
 
     <Grid x:Name="layoutGrid" Focusable="True">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="70*" />
-            <RowDefinition Height="5" />
-            <RowDefinition Height="30*" />
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="70*" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="30*" />
+        </Grid.ColumnDefinitions>
 
-        <TabControl x:Name="tabControl" Grid.Row="2" Margin="0" Style="{DynamicResource TabStyle}">
+        <TabControl x:Name="tabControl" Grid.Column="2" Margin="0" Style="{DynamicResource TabStyle}">
             <TabItem Header="Analysis" Style="{DynamicResource TabItemStyle}">
                 <Grid MinHeight="10">
                     <local:AnalysisWindow x:Name="analysisWindow"/>
@@ -101,9 +101,9 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <GridSplitter x:Name="splitter" Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Style="{DynamicResource GridSplitterStyle}"/>
+        <GridSplitter x:Name="splitter" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Style="{DynamicResource GridSplitterStyle}"/>
 
-        <Grid x:Name="viewGrid" Grid.Row="0" Grid.Column="0">
+        <Grid x:Name="viewGrid" Grid.Column="0" Grid.Row="0">
             <local:CodeView x:Name="codeView" Focusable="True" />
             <Grid x:Name="mask" Visibility="Hidden">
                 <Canvas Grid.Row="0">
