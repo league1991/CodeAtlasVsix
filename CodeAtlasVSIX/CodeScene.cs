@@ -2233,6 +2233,16 @@ namespace CodeAtlasVSIX
             return true;
         }
 
+        public bool CancelCustomEdgeMode()
+        {
+            if (m_customEdgeSource != "" && m_itemDict.ContainsKey(m_customEdgeSource))
+            {
+                var srcItem = m_itemDict[m_customEdgeSource];
+                srcItem.SetCustomEdgeSourceMode(false);
+            }
+            return true;
+        }
+
         public bool EndAddCustomEdge()
         {
             AcquireLock();

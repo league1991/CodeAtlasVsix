@@ -273,6 +273,7 @@ namespace CodeAtlasVSIX
                 if (sourceUname != null && sourceUname != "")
                 {
                     scene.DoAddCustomEdge(sourceUname, result.bestEntity.UniqueName());
+                    scene.CancelCustomEdgeMode();
                 }
             }
         }
