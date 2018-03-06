@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 
 namespace CodeAtlasVSIX
@@ -38,8 +39,19 @@ namespace CodeAtlasVSIX
 
             if (s_outputPane != null)
             {
-                s_outputPane.OutputString(content + "\n");
-                s_outputPane.Activate(); // Brings this pane into view
+                CodeScene scene = UIManager.Instance().GetScene();
+                if (scene != null)
+                {
+                    CodeView codeView = scene.View;
+                    if (codeView != null)
+                    {
+                        codeView.Dispatcher.BeginInvoke((ThreadStart)delegate
+                        {
+                            s_outputPane.OutputString(content + "\n");
+                            s_outputPane.Activate(); // Brings this pane into view
+                        });
+                    }
+                }
             }
             else
             {
