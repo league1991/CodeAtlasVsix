@@ -71,6 +71,7 @@ namespace CodeAtlasVSIX
         List<Color> m_curValidSchemeColor = new List<Color>();
         CodeView m_view = null;
         Dictionary<string, string> m_customExtension = new Dictionary<string, string>();
+        HashSet<string> m_macroSet = new HashSet<string>();
 
         // Thread
         SceneUpdateThread m_updateThread = null;
@@ -340,6 +341,20 @@ namespace CodeAtlasVSIX
                     }
                 }
 
+                // macro
+                if (sceneData.ContainsKey("macro"))
+                {
+                    var macroList = sceneData["macro"] as ArrayList;
+                    foreach (var macro in macroList)
+                    {
+                        var macroStr = macro as string;
+                        if (macroStr != null && macroStr != "")
+                        {
+                            m_macroSet.Add(macroStr);
+                        }
+                    }
+                }
+
                 // code item
                 var codeItemList = sceneData["codeItem"] as ArrayList;
                 var uniqueNameList = new List<string>();
@@ -451,6 +466,7 @@ namespace CodeAtlasVSIX
             m_curValidScheme = new List<string>();
             m_curValidSchemeColor = new List<Color>();
             m_customExtension = new Dictionary<string, string>();
+            m_macroSet = new HashSet<string>();
             m_anchorSet = new HashSet<string>();
             ClearSelectionStack();
             ReleaseLock();
@@ -520,6 +536,12 @@ namespace CodeAtlasVSIX
                     anchorList.Add(item);
                 }
 
+                List<string> macroList = new List<string>();
+                foreach (var item in m_macroSet)
+                {
+                    macroList.Add(item);
+                }
+
                 var jsonDict = new Dictionary<string, object> {
                     {"stopItem", m_stopItem},
                     {"codeItem", codeItemList },
@@ -528,7 +550,8 @@ namespace CodeAtlasVSIX
                     {"edgeData", edgeDataList },
                     {"scheme", scheme },
                     {"extension", extensionList},
-                    {"anchorItem", anchorList }
+                    {"anchorItem", anchorList },
+                    {"macro", macroList }
                 };
 
                 JavaScriptSerializer js = new JavaScriptSerializer();
@@ -1547,6 +1570,29 @@ namespace CodeAtlasVSIX
                 m_waitingItemMove = false;
             }, DispatcherPriority.Send);
         }
+
+        #region Custom Macro
+        public void AddCustomMacro(string macro)
+        {
+            if (macro != null && macro != "")
+            {
+                m_macroSet.Add(macro);
+            }
+        }
+
+        public void DeleteCustomMacro(string macro)
+        {
+            if (macro != null && macro != "" && m_macroSet.Contains(macro))
+            {
+                m_macroSet.Remove(macro);
+            }
+        }
+
+        public HashSet<string> GetCustomMacroSet()
+        {
+            return m_macroSet;
+        }
+        #endregion
 
         #region Custom Extension
         public void AddCustomExtension(string extension, string language)

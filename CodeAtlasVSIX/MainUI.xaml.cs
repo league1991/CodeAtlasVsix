@@ -687,6 +687,7 @@ namespace CodeAtlasVSIX
                 }
                 var scene = UIManager.Instance().GetScene();
                 traverser.SetCustomExtension(scene.GetCustomExtensionDict());
+                traverser.SetCustomMacro(scene.GetCustomMacroSet());
                 traverser.Traverse();
                 var dirList = traverser.GetDirectoryList();
                 var solutionFolder = traverser.GetSolutionFolder();

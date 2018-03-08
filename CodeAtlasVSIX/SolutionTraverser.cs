@@ -138,6 +138,7 @@ namespace CodeAtlasVSIX
         PathNode m_rootNode = new PathNode("root");
         // Dictionary<string, HashSet<string>> m_projectIncludePath = new Dictionary<string, HashSet<string>>();
         Dictionary<string, ProjectInfo> m_projectInfo = new Dictionary<string, ProjectInfo>();
+        HashSet<string> m_customMacroList = new HashSet<string>();
         List<string> m_extensionList = new List<string> {
             ".c", ".cc", ".cxx", ".cpp", ".c++", ".inl",".h", ".hh", ".hxx", ".hpp", ".h++",".inc", 
             ".java", ".ii", ".ixx", ".ipp", ".i++", ".idl", ".ddl", ".odl",
@@ -163,6 +164,14 @@ namespace CodeAtlasVSIX
                     ext = "." + ext;
                 }
                 m_extensionList.Add(ext);
+            }
+        }
+
+        public void SetCustomMacro(HashSet<string> macroSet)
+        {
+            if (macroSet == null)
+            {
+                m_customMacroList = macroSet;
             }
         }
 
@@ -270,6 +279,8 @@ namespace CodeAtlasVSIX
                     res.Add(define);
                 }
             }
+
+            res.UnionWith(m_customMacroList);
             return res.ToList();
         }
 

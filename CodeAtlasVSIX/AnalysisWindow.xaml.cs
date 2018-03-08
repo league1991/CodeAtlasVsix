@@ -29,6 +29,16 @@ namespace CodeAtlasVSIX
         }
     }
 
+    class MacroItem:ListBoxItem
+    {
+        public string m_macro;
+        public MacroItem(string macro)
+        {
+            this.Content = macro;
+            m_macro = macro;
+        }
+    }
+
     /// <summary>
     /// Interaction logic for AnalysisWindow.xaml
     /// </summary>
@@ -93,6 +103,18 @@ namespace CodeAtlasVSIX
                 resultList.Items.Add(new ExtensionItem(item.Key, item.Value));
             }
         }
+        public void UpdateMacroList()
+        {
+            var scene = UIManager.Instance().GetScene();
+            var macroSet = scene.GetCustomMacroSet();
+
+            macroList.Items.Clear();
+            foreach (var item in macroSet)
+            {
+                macroList.Items.Add(new MacroItem(item));
+            }
+        }
+
 
         private void analyseSolutionButton_Click(object sender, RoutedEventArgs e)
         {
@@ -107,6 +129,33 @@ namespace CodeAtlasVSIX
         private void expertModeButton_Click(object sender, RoutedEventArgs e)
         {
             UIManager.Instance().GetMainUI().OpenDoxywizard("");
+        }
+
+        private void addMacroButton_Click(object sender, RoutedEventArgs e)
+        {
+            var text = macroEdit.Text;
+            if (text == "")
+            {
+                return;
+            }
+
+            var scene = UIManager.Instance().GetScene();
+            scene.AddCustomMacro(text);
+            UpdateMacroList();
+        }
+
+        private void deleteMacroButton_Click(object sender, RoutedEventArgs e)
+        {
+            var item = macroList.SelectedItem as MacroItem;
+            if (item == null)
+            {
+                MessageBox.Show("Please select an item to delete.", "Delete Extension");
+                return;
+            }
+
+            var scene = UIManager.Instance().GetScene();
+            scene.DeleteCustomMacro(item.m_macro);
+            UpdateMacroList();
         }
     }
 }
