@@ -34,10 +34,18 @@
         <Button x:Name="deleteExtensionButton" Content="Delete Custom Extension" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="deleteExtensionButton_Click" />
         <ListBox x:Name="resultList" Margin="0,4,0,0" Grid.Row="3" Grid.ColumnSpan="4" />
 
-        <Label x:Name="macrolabel1" Grid.Row="4" Content="Macro" Margin="0" Grid.Column="0" HorizontalAlignment="Left"/>
-        <TextBox x:Name="macroEdit" Grid.Row="4" Margin="0,4,0,0" TextWrapping="Wrap" Grid.Column="1" MinWidth="40" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
-        <Button x:Name="addMacroButton" Content="Add Macro" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="1" Margin="0,4,0,0" Click="addMacroButton_Click" />
-        <Button x:Name="deleteMacroButton" Content="Delete Macro" Grid.Column="4" Grid.Row="4" Grid.ColumnSpan="1" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="deleteMacroButton_Click" />
+        <Grid Grid.Row="4" Grid.ColumnSpan="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MaxWidth="70" Width="Auto" MinWidth="70"/>
+                <ColumnDefinition FrameworkElement.FlowDirection="RightToLeft" Width="5*"/>
+                <ColumnDefinition MaxWidth="100" Width="Auto" MinWidth="70"/>
+                <ColumnDefinition Width="Auto" MaxWidth="100" MinWidth="70"/>
+            </Grid.ColumnDefinitions>
+            <Label x:Name="macrolabel1" Content="Macro" Margin="0" Grid.Column="0" HorizontalAlignment="Left"/>
+            <TextBox x:Name="macroEdit" Margin="0,4,0,0" TextWrapping="Wrap" Grid.Column="1" MinWidth="40" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+            <Button x:Name="addMacroButton" Content="Add Macro" Grid.Column="2" Grid.ColumnSpan="1" Margin="0,4,0,0" Click="addMacroButton_Click" />
+            <Button x:Name="deleteMacroButton" Content="Delete Macro" Grid.Column="4" Grid.ColumnSpan="1" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="deleteMacroButton_Click" />
+        </Grid>
         <ListBox x:Name="macroList" Margin="0,4,0,0" Grid.Row="5" Grid.ColumnSpan="4" />
         
         <Button x:Name="expertModeButton" Content="Advanced Configurations..." Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="6" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="expertModeButton_Click"/>

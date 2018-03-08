@@ -169,7 +169,7 @@ namespace CodeAtlasVSIX
 
         public void SetCustomMacro(HashSet<string> macroSet)
         {
-            if (macroSet == null)
+            if (macroSet != null)
             {
                 m_customMacroList = macroSet;
             }
