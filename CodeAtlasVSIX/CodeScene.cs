@@ -558,7 +558,9 @@ namespace CodeAtlasVSIX
                 var jsonStr = js.Serialize(jsonDict);
                 File.WriteAllText(dbPath, jsonStr);
 
-                info = "Save DB configuration to " + dbPath;
+                var now = DateTime.Now;
+
+                info = "Save DB configuration to " + dbPath + " at " + DateTime.Now.ToString("t");
             }
             catch (Exception e)
             {
