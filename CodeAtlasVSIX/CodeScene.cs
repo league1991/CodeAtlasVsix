@@ -1780,7 +1780,7 @@ namespace CodeAtlasVSIX
             customData["metric"] = metricRes;
             DoxygenDB.EntKind kind = DoxygenDB.EntKind.PAGE;
             customData["kind"] = kind;
-            customData["color"] = Color.FromRgb(201,154,228);
+            customData["color"] = Color.FromRgb(115,184,52);
 
             DataDict itemData;
             m_itemDataDict.TryGetValue(srcUniqueName, out itemData);
