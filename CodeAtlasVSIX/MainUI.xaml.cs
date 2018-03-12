@@ -258,6 +258,7 @@ namespace CodeAtlasVSIX
             analysisWindow.Dispatcher.Invoke((ThreadStart)delegate
             {
                 analysisWindow.UpdateExtensionList();
+                analysisWindow.UpdateMacroList();
             });
         }        
 
