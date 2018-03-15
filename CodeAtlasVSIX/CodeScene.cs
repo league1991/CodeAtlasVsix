@@ -3069,7 +3069,7 @@ namespace CodeAtlasVSIX
                     foreach (var fadePair in isFadingMap)
                     {
                         var codeItem = m_itemDict[fadePair.Key];
-                        int alpha = (fadePair.Value && !codeItem.IsAnchor) ? 80 : 255;
+                        int alpha = (fadePair.Value) ? 80 : 255;
                         if (codeItem.CustomAlpha != alpha)
                         {
                             codeItem.CustomAlpha = alpha;
@@ -3100,7 +3100,7 @@ namespace CodeAtlasVSIX
                     {
                         int alpha = 255;// - (255 - 80) * i / 5;
                         var codeItem = m_itemDict[item.Item2];
-                        if (i < maxCount || codeItem.IsAnchor)
+                        if (i < maxCount)
                         {
                             alpha = 255;
                         }
