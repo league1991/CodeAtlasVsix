@@ -33,6 +33,8 @@ namespace CodeAtlasVSIX
             }
 
             bool res = false;
+#if VS2010
+#else
             res |= SetElementStyle(depObj as TextBox, VsResourceKeys.TextBoxStyleKey);
             res |= SetElementStyle(depObj as Label, VsResourceKeys.ThemedDialogLabelStyleKey);
             res |= SetElementStyle(depObj as Button, VsResourceKeys.ButtonStyleKey);
@@ -43,7 +45,7 @@ namespace CodeAtlasVSIX
             res |= SetElementStyle(depObj as ListBox, VsResourceKeys.ThemedDialogListBoxStyleKey);
             res |= SetElementStyle(depObj as RadioButton, VsResourceKeys.ThemedDialogRadioButtonStyleKey);
             res |= SetElementStyle(depObj as ComboBox, VsResourceKeys.ComboBoxStyleKey);
-
+#endif
             foreach (object logicalChild in LogicalTreeHelper.GetChildren(depObj))
                 WalkDownLogicalTree(logicalChild);
         }

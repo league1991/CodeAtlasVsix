@@ -50,7 +50,7 @@ namespace CodeAtlasVSIX
             ScaleCanvas(scale, position);
         }
 
-        void ScaleCanvas(double scale, Point position)
+        public void ScaleCanvas(double scale, Point position)
         {
             var element = this.canvas as UIElement;
             var transform = element.RenderTransform as MatrixTransform;

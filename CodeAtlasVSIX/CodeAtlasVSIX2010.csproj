@@ -1,44 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.props" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.props')" />
-  <PropertyGroup>
-    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <UseCodebase>true</UseCodebase>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Config\Key.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <ProjectGuid>{8EFC2CBA-9D21-4F04-AC71-26DA2622E24B}</ProjectGuid>
+    <ProjectGuid>{278CC740-4C5A-4CD8-833B-4DB127075BD0}</ProjectGuid>
+    <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CodeAtlasVSIX</RootNamespace>
-    <AssemblyName>CodeAtlasVSIX2010</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <GeneratePkgDefFile>true</GeneratePkgDefFile>
-    <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
-    <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
-    <IncludeDebugSymbolsInLocalVSIXDeployment>true</IncludeDebugSymbolsInLocalVSIXDeployment>
-    <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
-    <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
+    <RootNamespace>Microsoft.CodeAtlasVSIX</RootNamespace>
+    <AssemblyName>CodeAtlasVSIX</AssemblyName>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>Config2010\Key.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;VS2010</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -46,17 +27,105 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;CODE_ANALYSIS,VS2010</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.10.0" />
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop" />
+    <Reference Include="Microsoft.VisualStudio.Shell.10.0">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
+    <Reference Include="Microsoft.VisualStudio.VCCodeModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.VCProjectEngine, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="System.Xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="EnvDTE">
+      <Guid>{80CC9F66-E7D8-4DDD-85B6-D9E6CD0E93E2}</Guid>
+      <VersionMajor>8</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="EnvDTE100">
+      <Guid>{26AD1324-4B7C-44BC-84F8-B86AED45729F}</Guid>
+      <VersionMajor>10</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="EnvDTE80">
+      <Guid>{1A31287A-4D7D-413E-8E32-3B374931BD89}</Guid>
+      <VersionMajor>8</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="EnvDTE90">
+      <Guid>{2CE2370E-D744-4936-A090-3FFFE667B0E1}</Guid>
+      <VersionMajor>9</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.VisualStudio.CommandBars">
+      <Guid>{1CBA492E-7263-47BB-87FE-639000619B15}</Guid>
+      <VersionMajor>8</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="AnalysisWindow.xaml.cs">
+      <SubType>Code</SubType>
       <DependentUpon>AnalysisWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="CodeAtlas.cs" />
     <Compile Include="CodeAtlasCommand.cs" />
-    <Compile Include="CodeAtlasPackage.cs" />
     <Compile Include="CodeScene.cs" />
     <Compile Include="CodeUIEdgeItem.cs" />
     <Compile Include="CodeUIItem.cs" />
@@ -67,20 +136,25 @@
       <DependentUpon>ContactWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="CursorNavigator.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="ReferenceSearcher.cs" />
-    <Compile Include="ResourceSetter.cs" />
-    <Compile Include="SolutionTraverser.cs" />
-    <Compile Include="VSMenuCommand.cs" />
     <Compile Include="DBManager.cs" />
     <Compile Include="Legend.xaml.cs">
       <DependentUpon>Legend.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Logger.cs" />
     <Compile Include="MainUI.xaml.cs">
       <DependentUpon>MainUI.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProvideToolboxControlAttribute.cs" />
+    <Compile Include="ReferenceSearcher.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="CodeAtlasPackage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResourceSetter.cs" />
     <Compile Include="SceneUpdateThread.cs" />
     <Compile Include="Scheme.xaml.cs">
       <DependentUpon>Scheme.xaml</DependentUpon>
@@ -91,178 +165,49 @@
     <Compile Include="SearchWindow.xaml.cs">
       <DependentUpon>SearchWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SolutionTraverser.cs" />
     <Compile Include="SymbolWindow.xaml.cs">
       <DependentUpon>SymbolWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UIManager.cs" />
+    <Compile Include="VSMenuCommand.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Config\Key.snk" />
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VSPackage.resx">
+      <MergeWithCTO>true</MergeWithCTO>
+      <ManifestResourceName>VSPackage</ManifestResourceName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Config2010\Key.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <VSCTCompile Include="CodeAtlasPackage.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
+    </VSCTCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Images_32bit.bmp" />
+    <None Include="Resources\Images_24bit.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\thumbnail.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="Config2010\source.extension.vsixmanifest" />
-    <Content Include="Microsoft.VisualStudio.Shell.14.0.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Microsoft.VisualStudio.Shell.Immutable.14.0.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Resources\facebook.png">
+    <Content Include="LICENSE.txt">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\logo.png">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\thumbnail.png">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Resources\twitter.png">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <VSCTCompile Include="CodeAtlasPackage.vsct">
-      <ResourceName>Menus.ctmenu</ResourceName>
-      <SubType>Designer</SubType>
-    </VSCTCompile>
-    <Content Include="Config\index.html" />
-    <Content Include="LICENSE.txt">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Resources\CodeAtlasCommand.png" />
-    <Content Include="Resources\CodeAtlasPackage.ico">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Config\stylesheet.css" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="EnvDTE100, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="EnvDTE80, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="EnvDTE90, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="Microsoft.Build.Framework" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.VisualStudio.CommandBars, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.Imaging, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.VisualStudio.Imaging.14.3.25407\lib\net45\Microsoft.VisualStudio.Imaging.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\Microsoft.VisualStudio.OLE.Interop.7.10.6070\lib\Microsoft.VisualStudio.OLE.Interop.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shell.14.0, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.VisualStudio.Shell.14.0.14.3.25407\lib\Microsoft.VisualStudio.Shell.14.0.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.VisualStudio.Shell.Immutable.10.0.10.0.30319\lib\net40\Microsoft.VisualStudio.Shell.Immutable.10.0.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.VisualStudio.Shell.Immutable.11.0.11.0.50727\lib\net45\Microsoft.VisualStudio.Shell.Immutable.11.0.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.VisualStudio.Shell.Immutable.12.0.12.0.21003\lib\net45\Microsoft.VisualStudio.Shell.Immutable.12.0.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.14.0, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.VisualStudio.Shell.Immutable.14.0.14.3.25407\lib\net45\Microsoft.VisualStudio.Shell.Immutable.14.0.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\Microsoft.VisualStudio.Shell.Interop.7.10.6071\lib\Microsoft.VisualStudio.Shell.Interop.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shell.Interop.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-      <HintPath>..\packages\Microsoft.VisualStudio.Shell.Interop.10.0.10.0.30319\lib\Microsoft.VisualStudio.Shell.Interop.10.0.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shell.Interop.11.0, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-      <HintPath>..\packages\Microsoft.VisualStudio.Shell.Interop.11.0.11.0.61030\lib\Microsoft.VisualStudio.Shell.Interop.11.0.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shell.Interop.12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-      <HintPath>..\packages\Microsoft.VisualStudio.Shell.Interop.12.0.12.0.30110\lib\Microsoft.VisualStudio.Shell.Interop.12.0.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\Microsoft.VisualStudio.Shell.Interop.8.0.8.0.50727\lib\Microsoft.VisualStudio.Shell.Interop.8.0.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\Microsoft.VisualStudio.Shell.Interop.9.0.9.0.30729\lib\Microsoft.VisualStudio.Shell.Interop.9.0.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.Data, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.Text.Logic, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.Text.UI, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.TextManager.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\Microsoft.VisualStudio.TextManager.Interop.7.10.6070\lib\Microsoft.VisualStudio.TextManager.Interop.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\Microsoft.VisualStudio.TextManager.Interop.8.0.8.0.50727\lib\Microsoft.VisualStudio.TextManager.Interop.8.0.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Threading, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.VisualStudio.Threading.14.1.111\lib\net45\Microsoft.VisualStudio.Threading.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Utilities, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.VisualStudio.Utilities.14.3.25407\lib\net45\Microsoft.VisualStudio.Utilities.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Validation, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.VisualStudio.Validation.14.1.111\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.VCCodeModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.VCProjectEngine, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.ComponentModel.Composition.Registration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Design" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Config\VSPackage.resx">
-      <MergeWithCTO>true</MergeWithCTO>
-      <ManifestResourceName>VSPackage</ManifestResourceName>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="AnalysisWindow.xaml">
@@ -270,64 +215,62 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CodeView.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="ContactWindow.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Legend.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="MainUI.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="ResourceDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Scheme.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="SchemeWindow.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="SearchWindow.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="SymbolWindow.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DoxygenDB\DoxygenDB.csproj">
-      <Project>{11e2bb96-9955-4b10-b8f7-6fd0209fecb5}</Project>
+      <Project>{11E2BB96-9955-4B10-B8F7-6FD0209FECB5}</Project>
       <Name>DoxygenDB</Name>
     </ProjectReference>
     <ProjectReference Include="..\GraphLayout\GraphLayout\Drawing\drawing.csproj">
-      <Project>{b76f8f71-4b00-4242-be36-c9f0732511f7}</Project>
+      <Project>{B76F8F71-4B00-4242-BE36-C9F0732511F7}</Project>
       <Name>drawing</Name>
     </ProjectReference>
     <ProjectReference Include="..\GraphLayout\GraphLayout\MSAGL\Msagl.csproj">
-      <Project>{415d3e3f-7105-46c1-84d2-7ecb34213d92}</Project>
+      <Project>{415D3E3F-7105-46C1-84D2-7ECB34213D92}</Project>
       <Name>Msagl</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
-    </PropertyGroup>
-  </Target>
-  <Import Project="..\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.targets')" />
+  <ItemGroup />
+  <PropertyGroup>
+    <UseCodebase>true</UseCodebase>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\VSSDK\Microsoft.VsSDK.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

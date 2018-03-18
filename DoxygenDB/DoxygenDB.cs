@@ -572,11 +572,21 @@ namespace DoxygenDB
             {
                 return true;
             }
+            // Get current OS version
+            var osInfo = System.Environment.OSVersion;
+            string doxygenName = "doxygen.exe";
+            string doxyWizardName = "doxywizard.exe";
+            if (osInfo.Version.Major < 6)
+            {
+                // Use xp-compatible version
+                doxygenName = "doxygen1.7.1.exe";
+                doxyWizardName = "doxywizard1.7.1.exe";
+            }
             var currentAssembly = Assembly.GetExecutingAssembly();
             var arrResources = currentAssembly.GetManifestResourceNames();
             foreach (var resourceName in arrResources)
             {
-                if (resourceName.ToLower().EndsWith("doxygen.exe"))
+                if (resourceName.ToLower().EndsWith(doxygenName))
                 {
                     using (var resourceToSave = currentAssembly.GetManifestResourceStream(resourceName))
                     {
@@ -585,7 +595,7 @@ namespace DoxygenDB
                         resourceToSave.Close();
                     }
                 }
-                else if (resourceName.ToLower().EndsWith("doxywizard.exe"))
+                else if (resourceName.ToLower().EndsWith(doxyWizardName))
                 {
                     using (var resourceToSave = currentAssembly.GetManifestResourceStream(resourceName))
                     {

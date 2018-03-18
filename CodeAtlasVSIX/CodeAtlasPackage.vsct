@@ -204,7 +204,7 @@
           <ButtonText>Close Analysis Result</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlas" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" />
         <Icon guid="guidImages" id="bmpShowInGraph" />
@@ -219,7 +219,7 @@
           <ButtonText>Show in Graph</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowDefinitionInAtlas" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" />
         <Icon guid="guidImages" id="bmpShowDefinitionInGraph" />
@@ -264,7 +264,7 @@
           <ButtonText>Show All Projects in Graph</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindCallersCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Icon guid="guidImages" id="bmpFindCallers" />
@@ -279,7 +279,7 @@
           <ButtonText>Find Callers / Usages / Includes / Project Dependencies</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindCalleesCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Icon guid="guidImages" id="bmpFindCallees" />
@@ -309,7 +309,7 @@
           <ButtonText>Find Members</ButtonText>
         </Strings>
       </Button>
-    
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindOverridesCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Icon guid="guidImages" id="bmpFindOverrides" />
@@ -324,7 +324,7 @@
           <ButtonText>Find Overrides</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindBasesCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Icon guid="guidImages" id="bmpFindBases" />
@@ -339,7 +339,7 @@
           <ButtonText>Find Bases</ButtonText>
         </Strings>
       </Button>
-    
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindUsesCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Icon guid="guidImages" id="bmpFindReferences" />
@@ -354,7 +354,7 @@
           <ButtonText>Find References / Convert To Symbol</ButtonText>
         </Strings>
       </Button>
-    
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="GoUpCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
         <Icon guid="guidImages" id="bmpGoUp" />
@@ -362,7 +362,7 @@
           <ButtonText>Go Up</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="GoDownCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
         <Icon guid="guidImages" id="bmpGoDown" />
@@ -370,7 +370,7 @@
           <ButtonText>Go Down</ButtonText>
         </Strings>
       </Button>
-    
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="GoUpInOrderCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
         <Icon guid="guidImages" id="bmpGoUpInOrder" />
@@ -378,7 +378,7 @@
           <ButtonText>Go Up in Order</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="GoDownInOrderCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
         <Icon guid="guidImages" id="bmpGoDownInOrder" />
@@ -416,7 +416,7 @@
           <ButtonText>Go to Next Symbol</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="GoLeftCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
         <Icon guid="guidImages" id="bmpGoLeft" />
@@ -424,7 +424,7 @@
           <ButtonText>Go Left</ButtonText>
         </Strings>
       </Button>
-    
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="GoRightCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
         <Icon guid="guidImages" id="bmpGoRight" />
@@ -432,7 +432,7 @@
           <ButtonText>Go Right</ButtonText>
         </Strings>
       </Button>
-    
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="DeleteSelectedItemsCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Icon guid="guidImages" id="bmpDeleteSelectedItems" />
@@ -462,7 +462,7 @@
           <ButtonText>Ignore Selected Items</ButtonText>
         </Strings>
       </Button>
-            
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="DeleteNearbyItemsCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Icon guid="guidImages" id="bmpDeleteNearbyItems" />
@@ -477,7 +477,7 @@
           <ButtonText>Delete Nearby Items</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="AddSimilarItem" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" />
         <Icon guid="guidImages" id="bmpAddSimilarItems" />
@@ -492,42 +492,42 @@
           <ButtonText>Show Similar Items in Graph</ButtonText>
         </Strings>
       </Button>
-        
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme1" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
           <ButtonText>Show Bookmark 1</ButtonText>
         </Strings>
       </Button>
-    
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme2" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
           <ButtonText>Show Bookmark 2</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme3" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
           <ButtonText>Show Bookmark 3</ButtonText>
         </Strings>
       </Button>
-          
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme4" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
           <ButtonText>Show Bookmark 4</ButtonText>
         </Strings>
       </Button>
-    
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowScheme5" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowSchemeMenuGroup" />
         <Strings>
           <ButtonText>Show Bookmark 5</ButtonText>
         </Strings>
       </Button>
-        
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme1" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Icon guid="guidImages" id="bmpToggleBookmark1" />
@@ -542,7 +542,7 @@
           <ButtonText>Toggle Bookmark 1</ButtonText>
         </Strings>
       </Button>
-    
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme2" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Icon guid="guidImages" id="bmpToggleBookmark2" />
@@ -557,7 +557,7 @@
           <ButtonText>Toggle Bookmark 2</ButtonText>
         </Strings>
       </Button>
-    
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme3" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Icon guid="guidImages" id="bmpToggleBookmark3" />
@@ -572,7 +572,7 @@
           <ButtonText>Toggle Bookmark 3</ButtonText>
         </Strings>
       </Button>
-    
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme4" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Icon guid="guidImages" id="bmpToggleBookmark4" />
@@ -587,7 +587,7 @@
           <ButtonText>Toggle Bookmark 4</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleScheme5" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ToggleSchemeMenuGroup" />
         <Icon guid="guidImages" id="bmpToggleBookmark5" />
@@ -602,7 +602,7 @@
           <ButtonText>Toggle Bookmark 5</ButtonText>
         </Strings>
       </Button>
-    
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="CustomSourceCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="CustomEdgeMenuGroup" />
         <Icon guid="guidImages" id="bmpMarkAsCustomEdgeSource" />
@@ -617,7 +617,7 @@
           <ButtonText>Mark As Custom Edge Source</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="CustomTargetCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="CustomEdgeMenuGroup" />
         <Icon guid="guidImages" id="bmpConnectCustomEdgeFromSource" />
@@ -632,7 +632,7 @@
           <ButtonText>Connect Custom Edge From Source</ButtonText>
         </Strings>
       </Button>
-    
+
       <Button guid="guidCodeAtlasPackageCmdSet" id="ToggleAnchorCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="AnchorMenuGroup" />
         <Icon guid="guidImages" id="bmpToggleAnchor" />
@@ -698,10 +698,10 @@
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="CustomTargetCommand" key1="E" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleAnchorCommand" key1="Q" mod1="ALT" editor="guidVSStd97" />
   </KeyBindings>
-  
+
   <Symbols>
     <!-- This is the package guid. -->
-    <GuidSymbol name="guidCodeAtlasPackage" value="{ad6e432c-b58e-4dc8-9893-6e1b412d38c4}" />
+    <GuidSymbol name="guidCodeAtlasPackage" value="{e2937f4e-9b06-40f3-867d-f220d7f8cb87}" />
 
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidCodeAtlasPackageCmdSet" value="{69c47ed5-456c-45d2-8d14-c3dbbce248b3}">
@@ -768,7 +768,7 @@
       <IDSymbol name="OpenDefaultAnalysisResultCommand" value="0x0148" />
     </GuidSymbol>
 
-    <GuidSymbol name="guidImages" value="{e8b62cf1-f2d4-4924-a788-7d9f6eb6d635}">
+    <GuidSymbol name="guidImages" value="{8202f9af-3b44-4d3f-b564-38f03f248dba}" >
       <IDSymbol name="bmpOpenCodeGraphWindow" value="1" />
       <IDSymbol name="bmpAnalyseSolution" value="2" />
       <IDSymbol name="bmpAnalyseSelectedProjects" value="3" />

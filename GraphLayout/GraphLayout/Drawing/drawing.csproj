@@ -12,10 +12,14 @@
     <AssemblyName>Microsoft.Msagl.Drawing</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>DrawingDefs.snk</AssemblyOriginatorKeyFile>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <DelaySign>false</DelaySign>
     <FileUpgradeFlags>
     </FileUpgradeFlags>

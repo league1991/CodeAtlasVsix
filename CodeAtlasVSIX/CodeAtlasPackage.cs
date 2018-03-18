@@ -49,7 +49,7 @@ namespace CodeAtlasVSIX
         /// <summary>
         /// CodeAtlasPackage GUID string.
         /// </summary>
-        public const string PackageGuidString = "ad6e432c-b58e-4dc8-9893-6e1b412d38c4";
+        public const string PackageGuidString = "e2937f4e-9b06-40f3-867d-f220d7f8cb87";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CodeAtlas"/> class.
@@ -131,3 +131,4 @@ namespace CodeAtlasVSIX
         #endregion
     }
 }
+

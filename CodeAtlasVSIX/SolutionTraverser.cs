@@ -355,6 +355,8 @@ namespace CodeAtlasVSIX
                 Logger.Debug("check vc project");
                 if (vcProject != null)
                 {
+#if VS2010
+#else
                     var vccon = vcProject.ActiveConfiguration as VCConfiguration;
                     IVCRulePropertyStorage generalRule = vccon.Rules.Item("ConfigurationDirectories");
                     IVCRulePropertyStorage cppRule = vccon.Rules.Item("CL");
@@ -394,6 +396,7 @@ namespace CodeAtlasVSIX
                         defineSet.Add(item);
                     }
                     projInfo.m_defines = defineSet;
+#endif
                 }
 
             }

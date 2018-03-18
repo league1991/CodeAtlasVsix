@@ -5,7 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CodeAtlasVSIX"
-             xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:vsfx="Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="700" Height="Auto" Focusable="True" SizeChanged="DockPanel_SizeChanged" >
 
@@ -66,8 +66,10 @@
             </MenuItem>
             <MenuItem x:Name="PrevButton" Header="Last" Click="PrevButton_Click"/>
             <MenuItem x:Name="NextButton" Header="Next" Click="NextButton_Click"/>
+            <MenuItem x:Name="ZoominButton" Header="Zoom In" Click="ZoominButton_Click" />
+            <MenuItem x:Name="ZoomoutButton" Header="Zoom Out" Click="ZoomoutButton_Click" />
         </Menu>
-        <TextBox HorizontalAlignment="Right" Margin="0" x:Name="searchBox" Width="150" KeyDown="searchBox_KeyDown" ForceCursor="True"/>
+        <TextBox HorizontalAlignment="Right" Margin="0" x:Name="searchBox" Width="100" KeyDown="searchBox_KeyDown" ForceCursor="True"/>
     </Grid>
 
     <Grid x:Name="layoutGrid" Focusable="True">

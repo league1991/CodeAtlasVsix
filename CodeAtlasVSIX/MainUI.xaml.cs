@@ -1064,6 +1064,17 @@ namespace CodeAtlasVSIX
         {
             m_autoLayout = true;
             AutoLayout(mainUIPanel.RenderSize);
+
+        private void ZoominButton_Click(object sender, RoutedEventArgs e)
+        {
+            var codeView = UIManager.Instance().GetScene().View;
+            codeView.ScaleCanvas(1.1, new Point());
+        }
+
+        private void ZoomoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var codeView = UIManager.Instance().GetScene().View;
+            codeView.ScaleCanvas(1.0/1.1, new Point());
         }
 
         public string GetCustomAnalyseDirectory()

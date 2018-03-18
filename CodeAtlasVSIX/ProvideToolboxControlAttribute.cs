@@ -37,7 +37,11 @@ namespace CodeAtlasVSIX
         {
             if (name == null)
             {
+#if VS2010
+                throw new ArgumentNullException("name");
+#else
                 throw new ArgumentNullException(nameof(name));
+#endif
             }
 
             this.name = name;
@@ -54,7 +58,11 @@ namespace CodeAtlasVSIX
         {
             if (context == null)
             {
+#if VS2010
+                throw new ArgumentNullException("context");
+#else
                 throw new ArgumentNullException(nameof(context));
+#endif
             }
 
             using (Key key = context.CreateKey(string.Format(CultureInfo.InvariantCulture, "{0}\\{1}",
