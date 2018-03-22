@@ -48,7 +48,7 @@ namespace CodeAtlasVSIX
                         codeView.Dispatcher.BeginInvoke((ThreadStart)delegate
                         {
                             s_outputPane.OutputString(content + "\n");
-                            s_outputPane.Activate(); // Brings this pane into view
+                            //s_outputPane.Activate(); // Brings this pane into view
                         });
                     }
                 }
