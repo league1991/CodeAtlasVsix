@@ -22,8 +22,8 @@ namespace CodeAtlasVSIX
     /// </summary>
     public partial class Legend : UserControl
     {
-        Dictionary<string, Tuple<Color, FormattedText>> m_classNameDict = 
-            new Dictionary<string, Tuple<Color, FormattedText>>();
+        SortedDictionary<string, Tuple<Color, FormattedText>> m_classNameDict = 
+            new SortedDictionary<string, Tuple<Color, FormattedText>>();
         double m_margin = 10.0;
         double m_lineHeight = 10.0;
         double m_lineSpace = 3.0;
