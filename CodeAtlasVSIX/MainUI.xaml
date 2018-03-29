@@ -60,7 +60,7 @@
             <MenuItem x:Name="PrevButton" Header="Last" Click="PrevButton_Click"/>
             <MenuItem x:Name="NextButton" Header="Next" Click="NextButton_Click"/>
         </Menu>
-        <TextBox HorizontalAlignment="Right" Margin="0" x:Name="searchBox" Width="100" KeyDown="searchBox_KeyDown" ForceCursor="True"/>
+        <TextBox HorizontalAlignment="Right" Margin="0" x:Name="searchBox" Width="150" KeyDown="searchBox_KeyDown" ForceCursor="True"/>
     </Grid>
 
     <Grid x:Name="layoutGrid" Focusable="True">
