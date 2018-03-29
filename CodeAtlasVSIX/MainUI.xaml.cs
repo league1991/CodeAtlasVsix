@@ -37,6 +37,7 @@ namespace CodeAtlasVSIX
 
         ReferenceSearcher m_refSearcher;
         DateTime m_lastCheckRefTime = DateTime.Now;
+        int m_checkCount = 0;
 
         public MainUI()
         {
@@ -495,6 +496,7 @@ namespace CodeAtlasVSIX
             {
                 // m_refSearcher.BeginNewRefSearch();
                 m_refSearcher.BeginNewNormalSearch();
+                m_checkCount = 0;
             }
         }
 
@@ -506,11 +508,12 @@ namespace CodeAtlasVSIX
         
         public void CheckFindSymbolWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            if ((DateTime.Now - m_lastCheckRefTime).TotalMilliseconds > 1000)
+            if ((DateTime.Now - m_lastCheckRefTime).TotalMilliseconds > 3000)
             {
                 //m_refSearcher.UpdateRefResult();
                 m_refSearcher.UpdateNormalResult();
                 m_lastCheckRefTime = DateTime.Now;
+                m_checkCount++;
             }
         }
 

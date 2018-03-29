@@ -2245,6 +2245,7 @@ namespace CodeAtlasVSIX
             }
 
             DeleteCodeItem(uniqueName);
+            m_isLayoutDirty = false;
             return true;
         }
 
@@ -3069,7 +3070,7 @@ namespace CodeAtlasVSIX
                     foreach (var fadePair in isFadingMap)
                     {
                         var codeItem = m_itemDict[fadePair.Key];
-                        int alpha = (fadePair.Value) ? 80 : 255;
+                        int alpha = (fadePair.Value) ? 120 : 255;
                         if (codeItem.CustomAlpha != alpha)
                         {
                             codeItem.CustomAlpha = alpha;
@@ -3106,7 +3107,7 @@ namespace CodeAtlasVSIX
                         }
                         else
                         {
-                            alpha = 80;
+                            alpha = 120;
                         }
 
                         if (alpha != codeItem.CustomAlpha)
