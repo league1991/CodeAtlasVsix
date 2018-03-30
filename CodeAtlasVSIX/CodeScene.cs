@@ -1659,6 +1659,8 @@ namespace CodeAtlasVSIX
             }
         }
 
+        public int GetLRUMaxLength() { return m_lruMaxLength; }
+
         void RemoveItemLRU()
         {
             m_selectEventConnected = false;

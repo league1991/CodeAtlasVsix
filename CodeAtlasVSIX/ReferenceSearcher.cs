@@ -150,7 +150,7 @@ namespace CodeAtlasVSIX
         }
         private void OnFindDone(vsFindResult findRes, bool cancelled)
         {
-            CheckFindResultWindow();
+            CheckFindResultWindow(false);
             Clear();
         }
 
@@ -161,12 +161,12 @@ namespace CodeAtlasVSIX
                 return;
             }
             m_isFindingReference = true;
-            CheckFindResultWindow();
+            CheckFindResultWindow(true);
             m_count++;
             m_isFindingReference = false;
         }
 
-        void CheckFindResultWindow()
+        void CheckFindResultWindow(bool limitTime)
         {
             //var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
             //var win = dte.Windows.Item(EnvDTE.Constants.vsWindowKindFindResults1);
@@ -201,13 +201,14 @@ namespace CodeAtlasVSIX
 
             StringReader reader = new StringReader(selectionText);
             string strReadline;
-            for (int ithLine = 0; (strReadline = reader.ReadLine()) != null; ++ithLine)
+            var beginTime = DateTime.Now;
+            for (int ithLine = 0, processedLine = 0; (strReadline = reader.ReadLine()) != null; ++ithLine)
             {
                 if (ithLine == 0)
                 {
                     continue;
                 }
-                if (m_processedLine.Contains(strReadline))
+                if (m_processedLine.Contains(strReadline) || m_processedLine.Count > scene.GetLRUMaxLength())
                 {
                     continue;
                 }
@@ -276,6 +277,13 @@ namespace CodeAtlasVSIX
                     scene.DoAddCustomEdge(fileUname, uname);
                 }
                 scene.ReleaseLock();
+                processedLine++;
+
+                double duration = (DateTime.Now - beginTime).TotalMilliseconds;
+                if (duration > 2000 && limitTime)
+                {
+                    break;
+                }
             }
             reader.Close();
         }
