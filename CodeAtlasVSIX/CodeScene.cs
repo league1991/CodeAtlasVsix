@@ -1925,7 +1925,7 @@ namespace CodeAtlasVSIX
                     }
                 }
             }
-            else if (kind == DoxygenDB.EntKind.CLASS)
+            else if (kind == DoxygenDB.EntKind.CLASS || kind == DoxygenDB.EntKind.STRUCT || kind == DoxygenDB.EntKind.TYPEDEF)
             {
                 customData["color"] = CodeUIItem.NameToColor((string)customData["name"]);
             }

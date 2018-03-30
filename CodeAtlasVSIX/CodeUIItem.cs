@@ -227,7 +227,7 @@ namespace CodeAtlasVSIX
 
         public string GetLegendName()
         {
-            if (m_kind == DoxygenDB.EntKind.CLASS)
+            if (IsClassOrStruct() || m_kind == DoxygenDB.EntKind.TYPEDEF)
             {
                 return m_name;
             }
@@ -575,7 +575,7 @@ namespace CodeAtlasVSIX
                 int nFile = m_customData["nFile"].m_int;
                 r = Math.Pow((double)(nDir * 5 + nFile * 2 + 1), 0.4) * 2.5 + 2;
             }
-            else if (m_kind == DoxygenDB.EntKind.CLASS)
+            else if (IsClassOrStruct() || m_kind == DoxygenDB.EntKind.TYPEDEF)
             {
                 r = Math.Pow((double)(m_lines + 1), 0.3) * 3.0 + 2;
             }
@@ -814,7 +814,7 @@ namespace CodeAtlasVSIX
             {
                 _AddContextMenuItem(context, "Find Overrides", mainUI.OnFindOverrides);
             }
-            else if(m_kind == DoxygenDB.EntKind.CLASS)
+            else if(IsClassOrStruct())
             {
                 _AddContextMenuItem(context, "Find Bases", mainUI.OnFindBases);
             }
@@ -1000,11 +1000,26 @@ namespace CodeAtlasVSIX
                 m_geometry.Children.Add(pathGeo);
                 m_highLightGeometry = pathGeo;
             }
-            else if(m_kind == DoxygenDB.EntKind.CLASS)
+            else if(IsClassOrStruct())
             {
                 var figure = new PathFigure();
                 figure.StartPoint = new Point(r, 0.0);
                 figure.Segments.Add(new LineSegment(new Point(0.0, r), true));
+                figure.Segments.Add(new LineSegment(new Point(-r, 0.0), true));
+                figure.Segments.Add(new LineSegment(new Point(0.0, -r), true));
+                figure.IsClosed = true;
+                figure.IsFilled = true;
+                var pathGeo = new PathGeometry();
+                pathGeo.Figures.Add(figure);
+                m_geometry.Children.Add(pathGeo);
+                m_highLightGeometry = pathGeo;
+            }
+            else if (m_kind == DoxygenDB.EntKind.TYPEDEF)
+            {
+                var figure = new PathFigure();
+                figure.StartPoint = new Point(r, 0.0);
+                figure.Segments.Add(new LineSegment(new Point(0.5*r, 0.5*r), true));
+                figure.Segments.Add(new LineSegment(new Point(-0.5 * r, 0.5 * r), true));
                 figure.Segments.Add(new LineSegment(new Point(-r, 0.0), true));
                 figure.Segments.Add(new LineSegment(new Point(0.0, -r), true));
                 figure.IsClosed = true;
