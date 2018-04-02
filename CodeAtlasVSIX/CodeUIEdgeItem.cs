@@ -354,12 +354,15 @@ namespace CodeAtlasVSIX
         {
             var newDownTime = DateTime.Now;
             double duration = (newDownTime - m_mouseDownTime).TotalMilliseconds;
-            m_mouseDownTime = newDownTime;
+            if (args.LeftButton == MouseButtonState.Pressed)
+            {
+                m_mouseDownTime = newDownTime;
+            }
             if (duration > System.Windows.Forms.SystemInformation.DoubleClickTime)
             {
                 MouseClickCallback(sender, args);
             }
-            else
+            else if (args.LeftButton == MouseButtonState.Pressed)
             {
                 MouseDoubleClickCallback(sender, args);
             }
