@@ -303,20 +303,23 @@ namespace CodeAtlasVSIX
             EnvDTE.TextSelection ts = doc.Selection as EnvDTE.TextSelection;
             DoxygenDB.EntitySearchResult result = new DoxygenDB.EntitySearchResult();
 
-            // Create code position
-            if (ts.ActivePoint.AtStartOfLine)
+            // Create code position            
+            bool isWholeLine = ts.AnchorPoint.AtEndOfLine && ts.ActivePoint.AtStartOfLine && ts.AnchorPoint.Line == ts.ActivePoint.Line;
+            int activeLine = ts.ActivePoint.Line;
+            if (isWholeLine)
             {
                 var scene = UIManager.Instance().GetScene();
                 string docPath = doc.FullName;
                 string fileName = doc.Name;
-                int line = ts.ActivePoint.Line;
                 int column = 0;
-                var uname = scene.GetBookmarkUniqueName(docPath, line, column);
-                scene.AddBookmarkItem(docPath, fileName, line, column);
+                var uname = scene.GetBookmarkUniqueName(docPath, activeLine, column);
+                scene.AddBookmarkItem(docPath, fileName, activeLine, column);
                 scene.SelectCodeItem(uname);
+                var entity = new DoxygenDB.Entity(uname, docPath, fileName, "page", new Dictionary<string, DoxygenDB.Variant>());
+                result.candidateList.Add(entity);
+                result.bestEntity = entity;
                 return result;
             }
-
             CursorNavigator.GetCursorWord(ts, out token, out longName, out lineNum);
 
             var searched = false;
@@ -339,6 +342,7 @@ namespace CodeAtlasVSIX
             }
             else
             {
+
                 // Search parent scope
                 Document cursorDoc;
                 CodeElement element;
@@ -358,7 +362,7 @@ namespace CodeAtlasVSIX
             if (!searched && token == null)
             {
                 var fileName = doc.Name;
-                var fullPath = doc.FullName.Replace("\\","/");
+                var fullPath = doc.FullName.Replace("\\", "/");
                 result = SearchAndAddToScene(fileName, (int)DoxygenDB.SearchOption.MATCH_WORD,
                             fileName, (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
                             "file", fullPath, 0);
