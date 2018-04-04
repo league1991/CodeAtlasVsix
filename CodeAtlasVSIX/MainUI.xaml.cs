@@ -301,8 +301,23 @@ namespace CodeAtlasVSIX
             string longName = null;
             int lineNum = 0;
             EnvDTE.TextSelection ts = doc.Selection as EnvDTE.TextSelection;
-            CursorNavigator.GetCursorWord(ts, out token, out longName, out lineNum);
             DoxygenDB.EntitySearchResult result = new DoxygenDB.EntitySearchResult();
+
+            // Create code position
+            if (ts.ActivePoint.AtStartOfLine)
+            {
+                var scene = UIManager.Instance().GetScene();
+                string docPath = doc.FullName;
+                string fileName = doc.Name;
+                int line = ts.ActivePoint.Line;
+                int column = 0;
+                var uname = scene.GetBookmarkUniqueName(docPath, line, column);
+                scene.AddBookmarkItem(docPath, fileName, line, column);
+                scene.SelectCodeItem(uname);
+                return result;
+            }
+
+            CursorNavigator.GetCursorWord(ts, out token, out longName, out lineNum);
 
             var searched = false;
             if (token != null)
