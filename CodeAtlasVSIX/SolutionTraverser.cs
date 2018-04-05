@@ -11,6 +11,39 @@ using System.Threading.Tasks;
 
 namespace CodeAtlasVSIX
 {
+    public class ProjectData
+    {
+        public string m_uniqueName = "";
+        public string m_name = "";
+        public string m_path = "";
+        public ProjectData(string uname, string name, string path)
+        {
+            m_uniqueName = uname;
+            m_name = name;
+            m_path = path;
+        }
+
+        static public List<ProjectData> GetSelectedProject()
+        {
+            List<ProjectData> result = new List<ProjectData>();
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            var activeProjects = dte.ActiveSolutionProjects as Array;
+            if (activeProjects != null)
+            {
+                foreach (var item in activeProjects)
+                {
+                    var project = item as Project;
+                    if (project != null)
+                    {
+                        result.Add(new ProjectData(project.UniqueName, project.Name, project.FileName));
+                    }
+                }
+            }
+            return result;
+        }
+
+    }
+
     public class SolutionTraverser
     {
         public void Traverse()
@@ -126,6 +159,10 @@ namespace CodeAtlasVSIX
             public HashSet<string> m_includePath = new HashSet<string>();
             public HashSet<string> m_defines = new HashSet<string>();
             public string m_language = "";
+
+            public string m_name = "";
+            public string m_path = "";
+            public string m_uniqueName = "";
         }
 
         string m_solutionName = "";
@@ -353,6 +390,9 @@ namespace CodeAtlasVSIX
                 if (codeModel != null)
                 {
                     var projInfo = FindProjectInfo(project.UniqueName);
+                    projInfo.m_name = project.Name;
+                    projInfo.m_uniqueName = project.UniqueName;
+                    projInfo.m_path = project.FullName;
                     if (codeModel.Language == CodeModelLanguageConstants.vsCMLanguageCSharp)
                     {
                         projInfo.m_language = "csharp";
