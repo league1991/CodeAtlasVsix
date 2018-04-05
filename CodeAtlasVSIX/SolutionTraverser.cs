@@ -11,38 +11,7 @@ using System.Threading.Tasks;
 
 namespace CodeAtlasVSIX
 {
-    public class ProjectData
-    {
-        public string m_uniqueName = "";
-        public string m_name = "";
-        public string m_path = "";
-        public ProjectData(string uname, string name, string path)
-        {
-            m_uniqueName = uname;
-            m_name = name;
-            m_path = path;
-        }
-
-        static public List<ProjectData> GetSelectedProject()
-        {
-            List<ProjectData> result = new List<ProjectData>();
-            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
-            var activeProjects = dte.ActiveSolutionProjects as Array;
-            if (activeProjects != null)
-            {
-                foreach (var item in activeProjects)
-                {
-                    var project = item as Project;
-                    if (project != null)
-                    {
-                        result.Add(new ProjectData(project.UniqueName, project.Name, project.FileName));
-                    }
-                }
-            }
-            return result;
-        }
-
-    }
+    
 
     public class SolutionTraverser
     {
@@ -159,10 +128,6 @@ namespace CodeAtlasVSIX
             public HashSet<string> m_includePath = new HashSet<string>();
             public HashSet<string> m_defines = new HashSet<string>();
             public string m_language = "";
-
-            public string m_name = "";
-            public string m_path = "";
-            public string m_uniqueName = "";
         }
 
         string m_solutionName = "";
@@ -352,29 +317,10 @@ namespace CodeAtlasVSIX
 
         protected override bool BeforeTraverseProject(Project project)
         {
-            //var propertyIter = project.Properties.GetEnumerator();
-            //while (propertyIter.MoveNext() && false)
-            //{
-            //    var item = propertyIter.Current as Property;
-            //    if (item == null)
-            //    {
-            //        continue;
-            //    }
-
-            //    string propName = item.Name;
-            //    string propValue = "";
-            //    try
-            //    {
-            //        propValue = item.Value.ToString();
-            //    }
-            //    catch
-            //    {
-
-            //    }
-            //    Logger.WriteLine("   " + propName + ":" + propValue);
-            //}
             try
             {
+                var projInfo = FindProjectInfo(project.UniqueName);
+
                 // Skip unselected projects
                 if (m_onlySelectedProjects)
                 {
@@ -389,10 +335,6 @@ namespace CodeAtlasVSIX
                 var codeModel = project.CodeModel;
                 if (codeModel != null)
                 {
-                    var projInfo = FindProjectInfo(project.UniqueName);
-                    projInfo.m_name = project.Name;
-                    projInfo.m_uniqueName = project.UniqueName;
-                    projInfo.m_path = project.FullName;
                     if (codeModel.Language == CodeModelLanguageConstants.vsCMLanguageCSharp)
                     {
                         projInfo.m_language = "csharp";
@@ -441,7 +383,6 @@ namespace CodeAtlasVSIX
                         projectInc.Add(path);
                         Logger.Debug("include path:" + path);
                     }
-                    var projInfo = FindProjectInfo(project.UniqueName);
                     projInfo.m_includePath = projectInc;
 
                     // Parsing define
@@ -455,70 +396,6 @@ namespace CodeAtlasVSIX
                     projInfo.m_defines = defineSet;
                 }
 
-                //foreach (VCConfiguration vccon in vcProject.Configurations)
-                //{
-                //    string ruleStr = "ConfigurationDirectories";
-                //    IVCRulePropertyStorage generalRule = vccon.Rules.Item(ruleStr);
-                //    IVCRulePropertyStorage cppRule = vccon.Rules.Item("CL");
-
-                //    string addIncPath = cppRule.GetEvaluatedPropertyValue("AdditionalIncludeDirectories");
-
-                //    string incPath = generalRule.GetEvaluatedPropertyValue("IncludePath");
-                //    string outputPath = vccon.OutputDirectory;
-
-                //    //vccon.OutputDirectory = "$(test)";
-                //    //string test1 = generalRule.GetEvaluatedPropertyValue(2);
-                //    //string incPath = generalRule.GetEvaluatedPropertyValue("IncludePath");
-                //    //string name = generalRule.GetEvaluatedPropertyValue("TargetName");
-                //    Logger.WriteLine("include path:" + incPath);
-                //}
-
-                //dynamic propertySheet = vcConfig.PropertySheets;
-                //IVCCollection propertySheetCollection = propertySheet as IVCCollection;
-                //foreach (var item in propertySheetCollection)
-                //{
-                //    var vcPropertySheet = item as VCPropertySheet;
-                //    if (vcPropertySheet != null)
-                //    {
-                //        foreach(var rule in vcPropertySheet.Rules)
-                //        {
-                //            var vcRule = rule as IVCRulePropertyStorage;
-                //            if (vcRule != null)
-                //            {
-                //                vcRule.GetEvaluatedPropertyValue()
-                //            }
-                //        }
-                //    }
-                //}
-                //var config = vcProject.ActiveConfiguration;
-                //if (config != null)
-                //{
-                //    var configProps = config.Properties;
-                //    var configPropIter = configProps.GetEnumerator();
-                //    while (configPropIter.MoveNext())
-                //    {
-                //        var configProp = configPropIter.Current as Property;
-                //        var configName = configProp.Name;
-                //        var configVal = "";
-                //        try
-                //        {
-                //            configVal = configProp.Value.ToString();
-                //        }
-                //        catch
-                //        {
-                //        }
-                //        Logger.WriteLine("  " + configName + ":" + configVal);
-                //    }
-
-                //    //Logger.WriteLine("group----------------------------");
-                //    //var groups = config.OutputGroups;
-                //    //var groupIter = groups.GetEnumerator();
-                //    //while (groupIter.MoveNext())
-                //    //{
-                //    //    var group = groupIter.Current as OutputGroup;
-                //    //    group.
-                //    //}
-                //}
             }
             catch
             {
@@ -577,8 +454,123 @@ namespace CodeAtlasVSIX
             }
             return true;
         }
+        
     }
 
+    public class ProjectDB:SolutionTraverser
+    {
+        public class ProjectInfo
+        {
+            public HashSet<string> m_lowerProjects = new HashSet<string>();
+            public HashSet<string> m_higherProjects = new HashSet<string>();
+
+            public string m_name = "";
+            public string m_path = "";
+            public string m_vsUniqueName = "";
+            public int m_itemCount = 0;
+        }
+
+        Dictionary<string, ProjectInfo> m_projectInfo = new Dictionary<string, ProjectInfo>();
+
+        public ProjectInfo GetProjectInfo(string uname)
+        {
+            if (m_projectInfo.ContainsKey(uname))
+            {
+                return m_projectInfo[uname];
+            }
+            return null;
+        }
+
+        ProjectInfo FindProjectInfo(string name)
+        {
+            if (!m_projectInfo.ContainsKey(name))
+            {
+                m_projectInfo[name] = new ProjectInfo();
+            }
+            return m_projectInfo[name];
+        }
+
+        static public List<string> GetSelectedProject()
+        {
+            List<string> result = new List<string>();
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            var activeProjects = dte.ActiveSolutionProjects as Array;
+            if (activeProjects != null)
+            {
+                foreach (var item in activeProjects)
+                {
+                    var project = item as Project;
+                    if (project != null)
+                    {
+                        result.Add(project.FullName);
+                    }
+                }
+            }
+            return result;
+        }
+
+        protected override bool BeforeTraverseProject(Project project)
+        {
+            try
+            {
+                var projInfo = FindProjectInfo(project.FullName);
+                projInfo.m_name = project.Name;
+                projInfo.m_vsUniqueName = project.UniqueName;
+                projInfo.m_path = project.FullName;
+            }
+            catch
+            {
+                Logger.Debug("project error-------------");
+            }
+            return true;
+        }
+
+        protected override bool BeforeTraverseProjectItem(ProjectItem projectItem)
+        {
+            var project = projectItem.ContainingProject;
+            if (project != null && project.FullName != "")
+            {
+                var projectInfo = FindProjectInfo(project.FullName);
+                projectInfo.m_itemCount++;
+            }
+            return true;
+        }
+
+        protected override void AfterTraverseSolution(Solution solution)
+        {
+            base.AfterTraverseSolution(solution);
+            var build = solution.SolutionBuild;
+            if (build != null && build.BuildDependencies != null)
+            {
+                foreach (var dp in build.BuildDependencies)
+                {
+                    var dependency = dp as BuildDependency;
+                    if (dependency == null || dependency.Project == null)
+                    {
+                        continue;
+                    }
+
+                    var tarProj = dependency.Project;
+                    object[] requiredProjects = dependency.RequiredProjects as object[];
+                    if (m_projectInfo.ContainsKey(tarProj.FullName) && requiredProjects != null)
+                    {
+                        var tarProjData = m_projectInfo[tarProj.FullName];
+                        for (int i = 0; i < requiredProjects.Length; i++)
+                        {
+                            var srcProj = requiredProjects[i] as Project;
+                            if (srcProj == null || !m_projectInfo.ContainsKey(srcProj.FullName))
+                            {
+                                continue;
+                            }
+                            var srcProjData = m_projectInfo[srcProj.FullName];
+                            tarProjData.m_lowerProjects.Add(srcProj.FullName);
+                            srcProjData.m_higherProjects.Add(tarProj.FullName);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     public class ProjectCounter : SolutionTraverser
     {

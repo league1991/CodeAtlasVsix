@@ -38,6 +38,11 @@
           <ButtonText>Code Graph</ButtonText>
         </Strings>
       </Menu>
+      <!--<Menu guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE" priority="0x0000" type="Context">
+        <Strings>
+          <ButtonText>Code Graph</ButtonText>
+        </Strings>
+      </Menu>-->
     </Menus>
 
     <Groups>
@@ -67,6 +72,9 @@
       </Group>
       <Group guid="guidCodeAtlasPackageCmdSet" id="AnchorMenuGroup" priority="0x0600">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="TopLevelMenu" />
+      </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="ProjectMenuGroup" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
       </Group>
     </Groups>
 
@@ -119,14 +127,21 @@
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlas" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" />
         <Strings>
-          <ButtonText>Show In Graph</ButtonText>
+          <ButtonText>Show in Graph</ButtonText>
         </Strings>
       </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="ShowDefinitionInAtlas" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" />
         <Strings>
-          <ButtonText>Show Definition In Graph</ButtonText>
+          <ButtonText>Show Definition in Graph</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowProjectCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" />
+        <Strings>
+          <ButtonText>Show Selected Projects in Graph</ButtonText>
         </Strings>
       </Button>
       
@@ -189,14 +204,14 @@
       <Button guid="guidCodeAtlasPackageCmdSet" id="GoUpInOrderCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
         <Strings>
-          <ButtonText>Go Up In Order</ButtonText>
+          <ButtonText>Go Up in Order</ButtonText>
         </Strings>
       </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="GoDownInOrderCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
         <Strings>
-          <ButtonText>Go Down In Order</ButtonText>
+          <ButtonText>Go Down in Order</ButtonText>
         </Strings>
       </Button>
       
@@ -332,6 +347,13 @@
           <ButtonText>Toggle Anchor</ButtonText>
         </Strings>
       </Button>
+    
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowProjectCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ProjectMenuGroup" />
+        <Strings>
+          <ButtonText>Show in Graph</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
     <Bitmaps>
@@ -376,6 +398,7 @@
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="CustomSourceCommand" key1="W" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="CustomTargetCommand" key1="E" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleAnchorCommand" key1="Q" mod1="ALT" editor="guidVSStd97" />
+    <!--<KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowProjectCommand" key1="F" mod1="ALT" editor="guidSolutionExplorer" />-->
   </KeyBindings>
   
   <Symbols>
@@ -430,6 +453,8 @@
       <IDSymbol name="GoDownInOrderCommand" value="0x0131" />
       <IDSymbol name="AnchorMenuGroup" value="0x0132" />
       <IDSymbol name="ToggleAnchorCommand" value="0x0133" />
+      <IDSymbol name="ProjectMenuGroup" value="0x0134" />
+      <IDSymbol name="ShowProjectCommand" value="0x0135" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{e8b62cf1-f2d4-4924-a788-7d9f6eb6d635}">

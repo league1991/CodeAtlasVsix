@@ -126,6 +126,12 @@ namespace CodeAtlasVSIX
             {
                 m_color = Color.FromRgb(125,215,249);
             }
+            else if (m_kind == DoxygenDB.EntKind.GROUP)
+            {
+                // Visual Studio project
+                m_customData["nFile"] = new Variant((int)customData["nFile"]);
+                m_color = Color.FromRgb(50,62,146);
+            }
 
             if (m_kind == DoxygenDB.EntKind.FUNCTION || m_kind == DoxygenDB.EntKind.VARIABLE)
             {
@@ -238,6 +244,10 @@ namespace CodeAtlasVSIX
             if (m_kind == DoxygenDB.EntKind.FILE)
             {
                 return "[ File ]";
+            }
+            if (m_kind == DoxygenDB.EntKind.GROUP)
+            {
+                return "[ Project ]";
             }
             if (m_kind == DoxygenDB.EntKind.PAGE)
             {
@@ -575,6 +585,11 @@ namespace CodeAtlasVSIX
                 int nFile = m_customData["nFile"].m_int;
                 r = Math.Pow((double)(nDir * 5 + nFile * 2 + 1), 0.4) * 2.5 + 2;
             }
+            else if (m_kind == DoxygenDB.EntKind.GROUP)
+            {
+                int nFile = m_customData["nFile"].m_int;
+                r = Math.Pow((double)(nFile * 2 + 1), 0.4) * 2.5 + 2;
+            }
             else if (IsClassOrStruct() || m_kind == DoxygenDB.EntKind.TYPEDEF)
             {
                 r = Math.Pow((double)(m_lines + 1), 0.3) * 3.0 + 2;
@@ -852,6 +867,17 @@ namespace CodeAtlasVSIX
                 {
                 }
             }
+            else if (m_kind == DoxygenDB.EntKind.GROUP)
+            {
+                try
+                {
+                    var folder = System.IO.Path.GetDirectoryName(m_longName);
+                    System.Diagnostics.Process.Start(folder);
+                }
+                catch (Exception)
+                {
+                }
+            }
             else
             {
                 UIManager.Instance().GetScene().ShowInEditor();
@@ -1029,7 +1055,7 @@ namespace CodeAtlasVSIX
                 m_geometry.Children.Add(pathGeo);
                 m_highLightGeometry = pathGeo;
             }
-            else if (m_kind == DoxygenDB.EntKind.FILE)
+            else if (m_kind == DoxygenDB.EntKind.FILE || m_kind == DoxygenDB.EntKind.GROUP)
             {
                 var rect = new RectangleGeometry(new Rect(new Point(-r, -r), new Point(r, r)));
                 m_geometry.Children.Add(rect);

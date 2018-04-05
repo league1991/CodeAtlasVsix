@@ -476,11 +476,15 @@ namespace CodeAtlasVSIX
         {
             _FindRefs("callby", "function, method");
             _FindRefs("useby", "function, method, class, struct, file", false);
+            var scene = UIManager.Instance().GetScene();
+            scene.AddProjectDependencies();
         }
         public void OnFindCallees(object sender, ExecutedRoutedEventArgs e)
         {
             _FindRefs("call", "function, method", true);
             _FindRefs("use", "variable,object,file", true, 1);
+            var scene = UIManager.Instance().GetScene();
+            scene.AddProjectDependencies();
         }
         public void OnFindMembers(object sender, ExecutedRoutedEventArgs e)
         {
@@ -686,6 +690,18 @@ namespace CodeAtlasVSIX
         {
             var scene = UIManager.Instance().GetScene();
             scene.ToggleAnchorItem();
+        }
+        #endregion
+
+        #region Project
+        public void ShowProject(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            var selectedProjects = ProjectDB.GetSelectedProject();
+            foreach (var item in selectedProjects)
+            {
+                scene.AddProject(item);
+            }
         }
         #endregion
 

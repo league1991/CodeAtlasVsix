@@ -72,6 +72,7 @@ namespace CodeAtlasVSIX
         CodeView m_view = null;
         Dictionary<string, string> m_customExtension = new Dictionary<string, string>();
         HashSet<string> m_macroSet = new HashSet<string>();
+        ProjectDB m_projectDB = new ProjectDB();  
 
         // Thread
         SceneUpdateThread m_updateThread = null;
@@ -246,6 +247,8 @@ namespace CodeAtlasVSIX
             mainUI.SetCommandActive(false);
             m_updateThread.SetForceSleepTime(100);
 
+            m_projectDB.Traverse();
+
             System.Threading.Thread addingThread = new System.Threading.Thread((ThreadStart)delegate
             {
                 JavaScriptSerializer js = new JavaScriptSerializer();
@@ -380,6 +383,11 @@ namespace CodeAtlasVSIX
                         int column = (int)bookmarkItemData["column"];
                         _DoAddBookmarkItem(path, file, line, column, new Dictionary<string, object> { { "targetPos", targetPos } });
                     }
+                    else if (m_itemDataDict.ContainsKey(uname) && m_itemDataDict[uname].ContainsKey("project"))
+                    {
+                        var projectItemData = m_itemDataDict[uname];
+                        _DoAddProject(uname, new Dictionary<string, object> { { "targetPos", targetPos } });
+                    }
                     else
                     {
                         var entity = dbObj.SearchFromUniqueName(uname);
@@ -468,6 +476,7 @@ namespace CodeAtlasVSIX
             m_customExtension = new Dictionary<string, string>();
             m_macroSet = new HashSet<string>();
             m_anchorSet = new HashSet<string>();
+            m_projectDB = new ProjectDB();
             ClearSelectionStack();
             ReleaseLock();
             
@@ -1823,6 +1832,84 @@ namespace CodeAtlasVSIX
             });
             return true;
         }
+
+        bool _DoAddProject(string srcUniqueName, DataDict data = null)
+        {
+            if (m_itemDict.ContainsKey(srcUniqueName))
+            {
+                return false;
+            }
+            if (m_stopItem.ContainsKey(srcUniqueName))
+            {
+                return false;
+            }
+            var projInfo = m_projectDB.GetProjectInfo(srcUniqueName);
+            if (projInfo == null)
+            {
+                return false;
+            }
+            var dbObj = DBManager.Instance().GetDB();
+            if (data == null)
+            {
+                data = new DataDict();
+            }
+
+            // Build custom data
+            var customData = new Dictionary<string, object>();
+            //customData["name"] = string.Format("{0}({1})", file, line);
+            customData["name"] = string.Format("{0}", projInfo.m_name);
+            customData["longName"] = projInfo.m_path;
+            customData["comment"] = GetComment(srcUniqueName);
+            customData["kindName"] = "page";
+            var metricRes = new Dictionary<string, DoxygenDB.Variant>();
+            metricRes["file"] = new DoxygenDB.Variant(projInfo.m_path);
+            metricRes["line"] = new DoxygenDB.Variant(0);
+            metricRes["column"] = new DoxygenDB.Variant(0);
+            customData["metric"] = metricRes;
+            DoxygenDB.EntKind kind = DoxygenDB.EntKind.GROUP;
+            customData["kind"] = kind;
+            customData["color"] = Color.FromRgb(115, 184, 52);
+            customData["nFile"] = projInfo.m_itemCount;
+
+            DataDict itemData;
+            m_itemDataDict.TryGetValue(srcUniqueName, out itemData);
+            if (itemData == null)
+            {
+                itemData = new DataDict();
+                m_itemDataDict[srcUniqueName] = itemData;
+            }
+            AddOrReplaceDict(itemData, "project", true);
+            AddOrReplaceDict(itemData, "path", projInfo.m_path);
+            AddOrReplaceDict(itemData, "file", projInfo.m_path);
+            AddOrReplaceDict(itemData, "vsUniqueName", projInfo.m_vsUniqueName);
+
+            // Add CodeUIItem
+            this.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                AcquireLock();
+                var item = new CodeUIItem(srcUniqueName, customData);
+                m_itemDict[srcUniqueName] = item;
+                m_view.canvas.Children.Add(item);
+                Point center;
+                GetSelectedCenter(out center);
+                Point target = center;
+                item.Pos = center;
+                if (data.ContainsKey("targetPos"))
+                {
+                    target = (Point)data["targetPos"];
+                }
+                item.SetTargetPos(target);
+                m_isLayoutDirty = true;
+                if (m_itemDict.Count == 1)
+                {
+                    SelectOneItem(item);
+                }
+                m_schemeTimeStamp++;
+                ReleaseLock();
+            });
+            return true;
+        }
+
         bool _DoAddCodeItem(string srcUniqueName, DataDict data = null)
         {
             // Logger.WriteLine("Add Code Item:" + srcUniqueName);
@@ -2077,6 +2164,44 @@ namespace CodeAtlasVSIX
             var uniqueName = GetBookmarkUniqueName(path, line, column);
             UpdateLRU(new List<string> { uniqueName });
             RemoveItemLRU();
+            ReleaseLock();
+        }
+
+        public void AddProject(string uname, DataDict data = null)
+        {
+            AcquireLock();
+            _DoAddProject(uname, data);
+            UpdateLRU(new List<string> { uname });
+            RemoveItemLRU();
+            ReleaseLock();
+        }
+
+        public void AddProjectDependencies()
+        {
+            var codeItems = SelectedNodes();
+            AcquireLock();
+            foreach (var item in codeItems)
+            {
+                if (item.GetKind() != DoxygenDB.EntKind.GROUP)
+                {
+                    continue;
+                }
+                var info = m_projectDB.GetProjectInfo(item.GetUniqueName());
+                if (info == null)
+                {
+                    continue;
+                }
+                foreach (var lowUname in info.m_lowerProjects)
+                {
+                    AddProject(lowUname);
+                    DoAddCustomEdge(item.GetUniqueName(), lowUname);
+                }
+                foreach (var highUname in info.m_higherProjects)
+                {
+                    AddProject(highUname);
+                    DoAddCustomEdge(highUname, item.GetUniqueName());
+                }
+            }
             ReleaseLock();
         }
 
