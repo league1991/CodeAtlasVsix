@@ -698,10 +698,13 @@ namespace CodeAtlasVSIX
         {
             var scene = UIManager.Instance().GetScene();
             var selectedProjects = ProjectDB.GetSelectedProject();
+            scene.AcquireLock();
             foreach (var item in selectedProjects)
             {
                 scene.AddProject(item);
+                scene.SelectCodeItem(item);
             }
+            scene.ReleaseLock();
         }
         #endregion
 
