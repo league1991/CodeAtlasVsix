@@ -857,11 +857,22 @@ namespace CodeAtlasVSIX
         {
             var scene = UIManager.Instance().GetScene();
             scene.SelectCodeItem(this.m_uniqueName);
-            if (m_kind == DoxygenDB.EntKind.DIR || m_kind == DoxygenDB.EntKind.GROUP)
+            if (m_kind == DoxygenDB.EntKind.DIR)
             {
                 try
                 {
                     System.Diagnostics.Process.Start(m_longName);
+                }
+                catch (Exception)
+                {
+                }
+            }
+            else if (m_kind == DoxygenDB.EntKind.GROUP)
+            {
+                try
+                {
+                    var folder = System.IO.Path.GetDirectoryName(m_longName);
+                    System.Diagnostics.Process.Start(folder);
                 }
                 catch (Exception)
                 {
