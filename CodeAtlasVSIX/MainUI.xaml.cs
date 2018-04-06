@@ -706,6 +706,14 @@ namespace CodeAtlasVSIX
             }
             scene.ReleaseLock();
         }
+
+        public void ShowAllProjects(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.AcquireLock();
+            scene.AddAllProjectDependencies();
+            scene.ReleaseLock();
+        }
         #endregion
 
         public SymbolWindow GetSymbolWindow()

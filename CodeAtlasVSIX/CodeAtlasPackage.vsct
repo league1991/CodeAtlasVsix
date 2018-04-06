@@ -143,19 +143,26 @@
         <Strings>
           <ButtonText>Show Selected Projects in Graph</ButtonText>
         </Strings>
+      </Button>      
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="ShowAllProjectCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="ShowInAtlasMenuGroup" />
+        <Strings>
+          <ButtonText>Show All Projects in Graph</ButtonText>
+        </Strings>
       </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindCallersCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
-          <ButtonText>Find Callers / Usages / Includes</ButtonText>
+          <ButtonText>Find Callers / Usages / Includes / Project Dependencies</ButtonText>
         </Strings>
       </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="FindCalleesCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="SymbolMenuGroup" />
         <Strings>
-          <ButtonText>Find Callees / Usages / Includes</ButtonText>
+          <ButtonText>Find Callees / Usages / Includes / Project Dependencies</ButtonText>
         </Strings>
       </Button>    
       
@@ -398,7 +405,6 @@
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="CustomSourceCommand" key1="W" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="CustomTargetCommand" key1="E" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ToggleAnchorCommand" key1="Q" mod1="ALT" editor="guidVSStd97" />
-    <!--<KeyBinding guid="guidCodeAtlasPackageCmdSet" id="ShowProjectCommand" key1="F" mod1="ALT" editor="guidSolutionExplorer" />-->
   </KeyBindings>
   
   <Symbols>
@@ -455,6 +461,7 @@
       <IDSymbol name="ToggleAnchorCommand" value="0x0133" />
       <IDSymbol name="ProjectMenuGroup" value="0x0134" />
       <IDSymbol name="ShowProjectCommand" value="0x0135" />
+      <IDSymbol name="ShowAllProjectCommand" value="0x0136" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{e8b62cf1-f2d4-4924-a788-7d9f6eb6d635}">

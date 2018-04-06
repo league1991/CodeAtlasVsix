@@ -823,8 +823,8 @@ namespace CodeAtlasVSIX
         {
             var mainUI = UIManager.Instance().GetMainUI();
             ContextMenu context = new ContextMenu();
-            _AddContextMenuItem(context, "Find Callers / Usages / Includes", mainUI.OnFindCallers);
-            _AddContextMenuItem(context, "Find Callees / Usages / Includes", mainUI.OnFindCallees);
+            _AddContextMenuItem(context, "Find Callers / Usages / Includes / Project Dependencies", mainUI.OnFindCallers);
+            _AddContextMenuItem(context, "Find Callees / Usages / Includes / Project Dependencies", mainUI.OnFindCallees);
             if (m_kind == DoxygenDB.EntKind.FUNCTION)
             {
                 _AddContextMenuItem(context, "Find Overrides", mainUI.OnFindOverrides);
@@ -857,22 +857,11 @@ namespace CodeAtlasVSIX
         {
             var scene = UIManager.Instance().GetScene();
             scene.SelectCodeItem(this.m_uniqueName);
-            if (m_kind == DoxygenDB.EntKind.DIR)
+            if (m_kind == DoxygenDB.EntKind.DIR || m_kind == DoxygenDB.EntKind.GROUP)
             {
                 try
                 {
                     System.Diagnostics.Process.Start(m_longName);
-                }
-                catch (Exception)
-                {
-                }
-            }
-            else if (m_kind == DoxygenDB.EntKind.GROUP)
-            {
-                try
-                {
-                    var folder = System.IO.Path.GetDirectoryName(m_longName);
-                    System.Diagnostics.Process.Start(folder);
                 }
                 catch (Exception)
                 {
@@ -1055,11 +1044,29 @@ namespace CodeAtlasVSIX
                 m_geometry.Children.Add(pathGeo);
                 m_highLightGeometry = pathGeo;
             }
-            else if (m_kind == DoxygenDB.EntKind.FILE || m_kind == DoxygenDB.EntKind.GROUP)
+            else if (m_kind == DoxygenDB.EntKind.FILE)
             {
                 var rect = new RectangleGeometry(new Rect(new Point(-r, -r), new Point(r, r)));
                 m_geometry.Children.Add(rect);
                 m_highLightGeometry = rect;
+            }
+            else if (m_kind == DoxygenDB.EntKind.GROUP)
+            {
+                var figure = new PathFigure();
+                figure.StartPoint = new Point(r, r);
+                figure.Segments.Add(new LineSegment(new Point(-r, r), true));
+                figure.Segments.Add(new LineSegment(new Point(-r, -r), true));
+                figure.Segments.Add(new LineSegment(new Point(-r * 0.5, -r), true));
+                figure.Segments.Add(new LineSegment(new Point(-r * 0.5, -r * 0), true));
+                figure.Segments.Add(new LineSegment(new Point(r * 0.5, -r * 0), true));
+                figure.Segments.Add(new LineSegment(new Point(r * 0.5, -r), true));
+                figure.Segments.Add(new LineSegment(new Point(r, -r), true));
+                figure.IsClosed = true;
+                figure.IsFilled = true;
+                var pathGeo = new PathGeometry();
+                pathGeo.Figures.Add(figure);
+                m_geometry.Children.Add(pathGeo);
+                m_highLightGeometry = pathGeo;
             }
             else if (m_kind == DoxygenDB.EntKind.DIR)
             {

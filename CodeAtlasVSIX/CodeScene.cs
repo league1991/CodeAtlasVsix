@@ -2205,6 +2205,32 @@ namespace CodeAtlasVSIX
             ReleaseLock();
         }
 
+        public void AddAllProjectDependencies()
+        {
+            var projectList = m_projectDB.GetAllProjects();
+            AcquireLock();
+            foreach (var item in projectList)
+            {
+                var info = m_projectDB.GetProjectInfo(item);
+                if (info == null)
+                {
+                    continue;
+                }
+                AddProject(item);
+                foreach (var lowUname in info.m_lowerProjects)
+                {
+                    AddProject(lowUname);
+                    DoAddCustomEdge(item, lowUname);
+                }
+                foreach (var highUname in info.m_higherProjects)
+                {
+                    AddProject(highUname);
+                    DoAddCustomEdge(highUname, item);
+                }
+            }
+            ReleaseLock();
+        }
+
         public void AddSimilarCodeItem()
         {
             var itemList = SelectedItems();

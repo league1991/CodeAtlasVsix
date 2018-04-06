@@ -490,6 +490,16 @@ namespace CodeAtlasVSIX
             return m_projectInfo[name];
         }
 
+        public List<string> GetAllProjects()
+        {
+            List<string> result = new List<string>();
+            foreach (var item in m_projectInfo)
+            {
+                result.Add(item.Key);
+            }
+            return result;
+        }
+
         static public List<string> GetSelectedProject()
         {
             List<string> result = new List<string>();
