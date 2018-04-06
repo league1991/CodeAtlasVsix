@@ -588,7 +588,7 @@ namespace CodeAtlasVSIX
             else if (m_kind == DoxygenDB.EntKind.GROUP)
             {
                 int nFile = m_customData["nFile"].m_int;
-                r = Math.Pow((double)(nFile * 2 + 1), 0.4) * 2.5 + 2;
+                r = Math.Pow((double)(nFile * 2 + 1), 0.3) * 2.5 + 2;
             }
             else if (IsClassOrStruct() || m_kind == DoxygenDB.EntKind.TYPEDEF)
             {
