@@ -268,7 +268,7 @@ namespace CodeAtlasVSIX
             var result = DoShowInAtlas();
 
             // Connect edge automatically
-            if (result.bestEntity != null)
+            if (result != null && result.bestEntity != null)
             {
                 var scene = UIManager.Instance().GetScene();
                 var sourceUname = scene.m_customEdgeSource;

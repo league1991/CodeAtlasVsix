@@ -404,7 +404,7 @@ namespace CodeAtlasVSIX
 
         static FileCodeModel GetFileCodeModel(Document document)
         {
-            if (UseCodeModel() == false)
+            if (document == null || UseCodeModel() == false)
             {
                 return null;
             }

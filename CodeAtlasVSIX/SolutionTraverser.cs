@@ -504,17 +504,23 @@ namespace CodeAtlasVSIX
         {
             List<string> result = new List<string>();
             var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
-            var activeProjects = dte.ActiveSolutionProjects as Array;
-            if (activeProjects != null)
+            try
             {
-                foreach (var item in activeProjects)
+                var activeProjects = dte.ActiveSolutionProjects as Array;
+                if (activeProjects != null)
                 {
-                    var project = item as Project;
-                    if (project != null)
+                    foreach (var item in activeProjects)
                     {
-                        result.Add(project.FullName);
+                        var project = item as Project;
+                        if (project != null)
+                        {
+                            result.Add(project.FullName);
+                        }
                     }
                 }
+            }
+            catch (Exception)
+            {
             }
             return result;
         }
