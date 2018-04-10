@@ -1068,15 +1068,18 @@ namespace CodeAtlasVSIX
                 figure.StartPoint = new Point(r, r);
                 figure.Segments.Add(new LineSegment(new Point(-r, r), true));
                 figure.Segments.Add(new LineSegment(new Point(-r, -r * 0.2), true));
-                figure.Segments.Add(new LineSegment(new Point(r, -r * 0.2), true));
-                figure.IsClosed = true;
-                figure.IsFilled = true;
-                pathGeo.Figures.Add(figure);
-                figure = new PathFigure();
-                figure.StartPoint = new Point(r, -r * 0.5);
+                figure.Segments.Add(new LineSegment(new Point(-r * 0.7, -r * 0.2), true));
+                figure.Segments.Add(new LineSegment(new Point(-r * 0.7, -r * 0.5), true));
                 figure.Segments.Add(new LineSegment(new Point(-r, -r * 0.5), true));
                 figure.Segments.Add(new LineSegment(new Point(-r, -r), true));
+
                 figure.Segments.Add(new LineSegment(new Point(r, -r), true));
+                figure.Segments.Add(new LineSegment(new Point(r, -r * 0.5), true));
+                figure.Segments.Add(new LineSegment(new Point(r * 0.7, -r * 0.5), true));
+                figure.Segments.Add(new LineSegment(new Point(r * 0.7, -r * 0.2), true));
+                figure.Segments.Add(new LineSegment(new Point(r, -r * 0.2), true));
+
+                figure.Segments.Add(new LineSegment(new Point(r, r), true));
                 figure.IsClosed = true;
                 figure.IsFilled = true;
                 pathGeo.Figures.Add(figure);
