@@ -130,7 +130,7 @@ namespace CodeAtlasVSIX
             {
                 // Visual Studio project
                 m_customData["nFile"] = new Variant((int)customData["nFile"]);
-                m_color = Color.FromRgb(50,62,146);
+                m_color = Color.FromRgb(185,117,181);
             }
 
             if (m_kind == DoxygenDB.EntKind.FUNCTION || m_kind == DoxygenDB.EntKind.VARIABLE)
@@ -1063,18 +1063,22 @@ namespace CodeAtlasVSIX
             }
             else if (m_kind == DoxygenDB.EntKind.GROUP)
             {
+                var pathGeo = new PathGeometry();
                 var figure = new PathFigure();
                 figure.StartPoint = new Point(r, r);
                 figure.Segments.Add(new LineSegment(new Point(-r, r), true));
+                figure.Segments.Add(new LineSegment(new Point(-r, -r * 0.2), true));
+                figure.Segments.Add(new LineSegment(new Point(r, -r * 0.2), true));
+                figure.IsClosed = true;
+                figure.IsFilled = true;
+                pathGeo.Figures.Add(figure);
+                figure = new PathFigure();
+                figure.StartPoint = new Point(r, -r * 0.5);
+                figure.Segments.Add(new LineSegment(new Point(-r, -r * 0.5), true));
                 figure.Segments.Add(new LineSegment(new Point(-r, -r), true));
-                figure.Segments.Add(new LineSegment(new Point(-r * 0.5, -r), true));
-                figure.Segments.Add(new LineSegment(new Point(-r * 0.5, -r * 0), true));
-                figure.Segments.Add(new LineSegment(new Point(r * 0.5, -r * 0), true));
-                figure.Segments.Add(new LineSegment(new Point(r * 0.5, -r), true));
                 figure.Segments.Add(new LineSegment(new Point(r, -r), true));
                 figure.IsClosed = true;
                 figure.IsFilled = true;
-                var pathGeo = new PathGeometry();
                 pathGeo.Figures.Add(figure);
                 m_geometry.Children.Add(pathGeo);
                 m_highLightGeometry = pathGeo;

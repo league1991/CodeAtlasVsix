@@ -432,6 +432,10 @@ namespace CodeAtlasVSIX
 
         void MouseMoveCallback(object sender, MouseEventArgs args)
         {
+            if (args.RightButton == MouseButtonState.Pressed)
+            {
+                this.ContextMenu = null;
+            }
         }
 
         void MouseUpCallback(object sender, MouseEventArgs e)
