@@ -247,11 +247,13 @@ namespace CodeAtlasVSIX
             mainUI.SetCommandActive(false);
             m_updateThread.SetForceSleepTime(100);
 
-            m_projectDB.Traverse();
+            //m_projectDB.Traverse();
 
             System.Threading.Thread addingThread = new System.Threading.Thread((ThreadStart)delegate
             {
+                m_projectDB.Traverse();
                 JavaScriptSerializer js = new JavaScriptSerializer();
+                js.MaxJsonLength = 100 * 1024 * 1024 * 2; // 100 M characters
                 var sceneData = js.Deserialize<Dictionary<string, object>>(jsonStr);
 
                 AcquireLock();
@@ -564,6 +566,7 @@ namespace CodeAtlasVSIX
                 };
 
                 JavaScriptSerializer js = new JavaScriptSerializer();
+                js.MaxJsonLength = 100 * 1024 * 1024 * 2; // 100 M characters
                 var jsonStr = js.Serialize(jsonDict);
                 File.WriteAllText(dbPath, jsonStr);
 
