@@ -116,6 +116,9 @@ namespace CodeAtlasVSIX
 
             AddCommand(0x0135, mainUI.ShowProject);
             AddCommand(0x0136, mainUI.ShowAllProjects);
+
+            AddCommand(0x0145, mainUI.PrevButton_Click);
+            AddCommand(0x0146, mainUI.NextButton_Click);
             UIManager.Instance().GetScene().StartThread();
         }
 

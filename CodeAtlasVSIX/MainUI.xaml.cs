@@ -921,13 +921,13 @@ namespace CodeAtlasVSIX
             scene.SetLRULimit(200);
         }
 
-        private void PrevButton_Click(object sender, RoutedEventArgs e)
+        public void PrevButton_Click(object sender, RoutedEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();
             scene.SelectLast();
         }
 
-        private void NextButton_Click(object sender, RoutedEventArgs e)
+        public void NextButton_Click(object sender, RoutedEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();
             scene.SelectNext();

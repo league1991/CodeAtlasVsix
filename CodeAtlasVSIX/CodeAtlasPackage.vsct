@@ -88,6 +88,9 @@
       <Group guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbarGroup" priority="0x0600">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbar" />  
       </Group>
+      <Group guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbarAnalysisGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbar" />
+      </Group>
       <Group guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbarAddGroup" priority="0x0600">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbar" />  
       </Group>
@@ -97,10 +100,10 @@
       <Group guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbarFindGroup" priority="0x0600">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbar" />  
       </Group>
-      <Group guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbarBookmarkGroup" priority="0x0600">
-        <Parent guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbar" />  
+      <Group guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbarNavigationGroup" priority="0x0600">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbar" />
       </Group>
-      <Group guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbarAnalysisGroup" priority="0x0600">
+      <Group guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbarBookmarkGroup" priority="0x0600">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbar" />  
       </Group>
       <Group guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbarEdgeGroup" priority="0x0600">
@@ -375,6 +378,36 @@
           <ButtonText>Go Down in Order</ButtonText>
         </Strings>
       </Button>
+
+      <Button guid="guidCodeAtlasPackageCmdSet" id="GoLastCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
+        <Icon guid="guidImages" id="bmpGoLast" />
+        <Strings>
+          <ButtonText>Go to Last Symbol</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidCodeAtlasPackageCmdSet" id="GoLastCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbarNavigationGroup" />
+        <Icon guid="guidImages" id="bmpGoLast" />
+        <Strings>
+          <ButtonText>Go to Last Symbol</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="GoNextCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
+        <Icon guid="guidImages" id="bmpGoNext" />
+        <Strings>
+          <ButtonText>Go to Next Symbol</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidCodeAtlasPackageCmdSet" id="GoNextCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbarNavigationGroup" />
+        <Icon guid="guidImages" id="bmpGoNext" />
+        <Strings>
+          <ButtonText>Go to Next Symbol</ButtonText>
+        </Strings>
+      </Button>
       
       <Button guid="guidCodeAtlasPackageCmdSet" id="GoLeftCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="NavigationMenuGroup" />
@@ -630,11 +663,13 @@
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="FindBasesCommand" key1="B" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="FindUsesCommand" key1="U" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoUpCommand" key1="I" mod1="ALT" editor="guidSourceCodeTextEditor" />
-    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoDownCommand" key1="K" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoDownCommand" key1="K" mod1="ALT" editor="guidSourceCodeTextEditor" />    
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoUpInOrderCommand" key1="I" mod1="Control Alt" editor="guidSourceCodeTextEditor" />
-    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoDownInOrderCommand" key1="K" mod1="Control Alt" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoDownInOrderCommand" key1="K" mod1="Control Alt" editor="guidSourceCodeTextEditor" />    
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoLeftCommand" key1="J" mod1="ALT" editor="guidSourceCodeTextEditor" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoRightCommand" key1="L" mod1="ALT" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoLastCommand" key1="J" mod1="Control Alt" editor="guidSourceCodeTextEditor" />
+    <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="GoNextCommand" key1="L" mod1="Control Alt" editor="guidSourceCodeTextEditor" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="DeleteSelectedItemsCommand" key1="VK_DELETE" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="IgnoreSelectedItemsCommand" key1="N" mod1="ALT" editor="guidVSStd97" />
     <KeyBinding guid="guidCodeAtlasPackageCmdSet" id="DeleteNearbyItemsCommand" key1="D" mod1="ALT" editor="guidVSStd97" />
@@ -713,12 +748,15 @@
       <IDSymbol name="ShowAllProjectCommand" value="0x0136" />
       <IDSymbol name="CodeAtlasToolbar" value="0x0137" />
       <IDSymbol name="CodeAtlasToolbarGroup" value="0x0138" />
-      <IDSymbol name="CodeAtlasToolbarAddGroup" value="0x0139" />
-      <IDSymbol name="CodeAtlasToolbarDeleteGroup" value="0x0140" />
-      <IDSymbol name="CodeAtlasToolbarFindGroup" value="0x0141" />
-      <IDSymbol name="CodeAtlasToolbarBookmarkGroup" value="0x0142" />
-      <IDSymbol name="CodeAtlasToolbarAnalysisGroup" value="0x0143" />
+      <IDSymbol name="CodeAtlasToolbarAnalysisGroup" value="0x0139" />
+      <IDSymbol name="CodeAtlasToolbarAddGroup" value="0x0140" />
+      <IDSymbol name="CodeAtlasToolbarDeleteGroup" value="0x0141" />
+      <IDSymbol name="CodeAtlasToolbarFindGroup" value="0x0142" />
+      <IDSymbol name="CodeAtlasToolbarBookmarkGroup" value="0x0143" />
       <IDSymbol name="CodeAtlasToolbarEdgeGroup" value="0x0144" />
+      <IDSymbol name="GoLastCommand" value="0x0145" />
+      <IDSymbol name="GoNextCommand" value="0x0146" />
+      <IDSymbol name="CodeAtlasToolbarNavigationGroup" value="0x0147" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{e8b62cf1-f2d4-4924-a788-7d9f6eb6d635}">
