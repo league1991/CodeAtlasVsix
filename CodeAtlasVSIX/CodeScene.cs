@@ -486,8 +486,9 @@ namespace CodeAtlasVSIX
 
         public void SaveConfig()
         {
-            var dbPath = DBManager.Instance().GetDB().GetConfigPath();
-            if (dbPath == null || dbPath == "")
+            var db = DBManager.Instance().GetDB();
+            var dbPath = db.GetConfigPath();
+            if (db.GetDoxyFolderPath() == null || db.GetDoxyFolderPath() == "" || dbPath == null || dbPath == "")
             {
                 return;
             }
