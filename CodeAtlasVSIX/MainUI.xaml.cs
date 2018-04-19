@@ -34,6 +34,7 @@ namespace CodeAtlasVSIX
         public Package m_package;
         // Switch for all commands
         bool m_isCommandEnable = true;
+        bool m_autoLayout = true;
 
         ReferenceSearcher m_refSearcher;
         DateTime m_lastCheckRefTime = DateTime.Now;
@@ -853,36 +854,55 @@ namespace CodeAtlasVSIX
             return dynamicNavigationButton.IsChecked == true;
         }
 
-        private void layoutButton_Click(object sender, RoutedEventArgs e)
+        private void MakeHorizontal()
         {
-            bool isVertical = layoutGrid.RowDefinitions.Count != 0;
-            if (isVertical)
+            if (layoutGrid == null || layoutGrid.RowDefinitions.Count == 0)
             {
-                layoutGrid.RowDefinitions.Clear();
-                layoutGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(70, GridUnitType.Star) });
-                layoutGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(5.0) });
-                layoutGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(30, GridUnitType.Star) });
-                splitter.Width = 5;
-                splitter.Height = System.Double.NaN;
-                Grid.SetRow(splitter, 0);
-                Grid.SetColumn(splitter, 1);
+                return;
+            }
+            layoutGrid.RowDefinitions.Clear();
+            layoutGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(70, GridUnitType.Star) });
+            layoutGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(5.0) });
+            layoutGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(30, GridUnitType.Star) });
+            splitter.Width = 5;
+            splitter.Height = System.Double.NaN;
+            Grid.SetRow(splitter, 0);
+            Grid.SetColumn(splitter, 1);
 
-                Grid.SetRow(tabControl, 0);
-                Grid.SetColumn(tabControl, 2);
+            Grid.SetRow(tabControl, 0);
+            Grid.SetColumn(tabControl, 2);
+        }
+
+        private void MakeVertical()
+        {
+            if (layoutGrid == null || layoutGrid.RowDefinitions.Count != 0)
+            {
+                return;
+            }
+            layoutGrid.ColumnDefinitions.Clear();
+            layoutGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(70, GridUnitType.Star) });
+            layoutGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(5.0) });
+            layoutGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(30, GridUnitType.Star) });
+            splitter.Height = 5;
+            splitter.Width = System.Double.NaN;
+            Grid.SetRow(splitter, 1);
+            Grid.SetColumn(splitter, 0);
+
+            Grid.SetRow(tabControl, 2);
+            Grid.SetColumn(tabControl, 0);
+        }
+
+        private void AutoLayout(Size newSize)
+        {
+            bool isVerticalNew = newSize.Height > newSize.Width;
+
+            if (isVerticalNew)
+            {
+                MakeVertical();
             }
             else
             {
-                layoutGrid.ColumnDefinitions.Clear();
-                layoutGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(70, GridUnitType.Star) });
-                layoutGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(5.0) });
-                layoutGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(30, GridUnitType.Star) });
-                splitter.Height = 5;
-                splitter.Width = System.Double.NaN;
-                Grid.SetRow(splitter, 1);
-                Grid.SetColumn(splitter, 0);
-
-                Grid.SetRow(tabControl, 2);
-                Grid.SetColumn(tabControl, 0);
+                MakeHorizontal();
             }
         }
 
@@ -1002,6 +1022,34 @@ namespace CodeAtlasVSIX
         {
             var scene = UIManager.Instance().GetScene();
             scene.SetHighlightType(HighlightType.HIGHLIGHT_LATEST_9);
+        }
+
+        private void DockPanel_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (m_autoLayout == false)
+            {
+                return;
+            }
+
+            AutoLayout(e.NewSize);
+        }
+
+        private void horizontalButton_Checked(object sender, RoutedEventArgs e)
+        {
+            m_autoLayout = false;
+            MakeHorizontal();
+        }
+
+        private void verticalButton_Checked(object sender, RoutedEventArgs e)
+        {
+            m_autoLayout = false;
+            MakeVertical();
+        }
+
+        private void autoButton_Checked(object sender, RoutedEventArgs e)
+        {
+            m_autoLayout = true;
+            AutoLayout(mainUIPanel.RenderSize);
         }
     }
 }

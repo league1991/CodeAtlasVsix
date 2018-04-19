@@ -39,7 +39,7 @@ namespace CodeAtlasVSIX
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#110", "#112", "1.2.1", IconResourceID = 400)] // Info on this package for Help/About
+    [InstalledProductRegistration("#110", "#112", "1.2.2", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(CodeAtlas))]
     [Guid(CodeAtlasPackage.PackageGuidString)]
@@ -107,6 +107,7 @@ namespace CodeAtlasVSIX
             AddCommand(0x011d, mainUI.OnFastAnalyseSolutionButton);
             AddCommand(0x011e, mainUI.OnFastAnalyseProjectsButton);
             AddCommand(0x0124, mainUI.OnOpen);
+            AddCommand(0x0148, mainUI.OnOpenDefault);
             AddCommand(0x0125, mainUI.OnClose);
 
             AddCommand(0x0128, mainUI.OnBeginCustomEdge);

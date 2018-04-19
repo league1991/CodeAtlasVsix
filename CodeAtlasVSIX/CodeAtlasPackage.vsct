@@ -174,11 +174,19 @@
           <ButtonText>Open Analysis Result</ButtonText>
         </Strings>
       </Button>
-      <Button guid="guidCodeAtlasPackageCmdSet" id="OpenAnalysisResultCommand" priority="0x0100" type="Button">
+      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="OpenDefaultAnalysisResultCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCodeAtlasPackageCmdSet" id="DBMenuGroup" />
+        <Icon guid="guidImages" id="bmpOpenAnalysisResult" />
+        <Strings>
+          <ButtonText>Open Default Analysis Result</ButtonText>
+        </Strings>
+      </Button>      
+      <Button guid="guidCodeAtlasPackageCmdSet" id="OpenDefaultAnalysisResultCommand" priority="0x0100" type="Button">
         <Parent guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbarAnalysisGroup" />
         <Icon guid="guidImages" id="bmpOpenAnalysisResult" />
         <Strings>
-          <ButtonText>Open Analysis Result</ButtonText>
+          <ButtonText>Open Default Analysis Result</ButtonText>
         </Strings>
       </Button>
 
@@ -757,6 +765,7 @@
       <IDSymbol name="GoLastCommand" value="0x0145" />
       <IDSymbol name="GoNextCommand" value="0x0146" />
       <IDSymbol name="CodeAtlasToolbarNavigationGroup" value="0x0147" />
+      <IDSymbol name="OpenDefaultAnalysisResultCommand" value="0x0148" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{e8b62cf1-f2d4-4924-a788-7d9f6eb6d635}">

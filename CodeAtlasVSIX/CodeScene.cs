@@ -1821,6 +1821,7 @@ namespace CodeAtlasVSIX
                 GetSelectedCenter(out center);
                 Point target = center;
                 item.Pos = center;
+                item.IsAnchor = m_anchorSet.Contains(srcUniqueName);
                 if (data.ContainsKey("targetPos"))
                 {
                     target = (Point)data["targetPos"];
@@ -1898,6 +1899,7 @@ namespace CodeAtlasVSIX
                 GetSelectedCenter(out center);
                 Point target = center;
                 item.Pos = center;
+                item.IsAnchor = m_anchorSet.Contains(srcUniqueName);
                 if (data.ContainsKey("targetPos"))
                 {
                     target = (Point)data["targetPos"];

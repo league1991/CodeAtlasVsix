@@ -1,4 +1,5 @@
 ﻿<DockPanel x:Class="CodeAtlasVSIX.MainUI"
+           x:Name="mainUIPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,7 +7,7 @@
              xmlns:local="clr-namespace:CodeAtlasVSIX"
              xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="700" Height="Auto" Focusable="True" >
+             d:DesignHeight="300" d:DesignWidth="700" Height="Auto" Focusable="True" SizeChanged="DockPanel_SizeChanged" >
 
     <DockPanel.Resources>
         <ResourceDictionary>
@@ -31,7 +32,11 @@
                 <MenuItem x:Name="FastAnalyseProjectsButton" Header="Analyse Selected Projects" Click="OnFastAnalyseProjectsButton"/>
             </MenuItem>
             <MenuItem Header="Settings">
-                <MenuItem x:Name="layoutButton" Header="Horizontal/Vertical" Click="layoutButton_Click" />
+                <MenuItem Header="UI Layout">
+                    <RadioButton x:Name="horizontalButton" Content="Horizontal" Checked="horizontalButton_Checked"/>
+                    <RadioButton x:Name="verticalButton" Content="Vertical" Checked="verticalButton_Checked"/>
+                    <RadioButton x:Name="autoButton" Content="Auto" IsChecked="True" Checked="autoButton_Checked"/>
+                </MenuItem>
                 <MenuItem x:Name="autoFocusButton" Header="Auto Focus" IsCheckable="True" IsChecked="True" Click="autoFocusButton_Click"/>
                 <MenuItem Header="Layout">
                     <RadioButton x:Name="graphLayoutButton" Content="Graph Layout" IsChecked="True" Checked="graphLayoutButton_Checked"/>
