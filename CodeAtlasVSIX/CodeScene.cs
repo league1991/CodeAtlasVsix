@@ -3276,9 +3276,9 @@ namespace CodeAtlasVSIX
 
                         if (lastTimeStamp != item.Item1)
                         {
-                            i++;
                             lastTimeStamp = item.Item1;
                         }
+                        i++;
                     }
                 }
 
