@@ -730,6 +730,7 @@ namespace CodeAtlasVSIX
             }
             try
             {
+                Logger.Info("Analysis Begin.");
                 SetCommandActive(false);
                 var traverser = new ProjectFileCollector();
                 if (onlySelectedProjects)
@@ -749,7 +750,12 @@ namespace CodeAtlasVSIX
                     return false;
                 }
                 string doxyFolder = solutionFolder + "/CodeGraphData";
+                if (analysisWindow.customDirectoryEdit.Text != null || analysisWindow.customDirectoryEdit.Text != "")
+                {
+                    doxyFolder = analysisWindow.customDirectoryEdit.Text;
+                }
                 CheckOrCreateFolder(doxyFolder);
+                Logger.Info("Folder: " + doxyFolder);
 
                 // Use selected projects as postfix
                 string postFix = "";
@@ -1050,6 +1056,29 @@ namespace CodeAtlasVSIX
         {
             m_autoLayout = true;
             AutoLayout(mainUIPanel.RenderSize);
+        }
+
+        public string GetCustomAnalyseDirectory()
+        {
+            var ofd = new System.Windows.Forms.FolderBrowserDialog();
+            
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            if (dte != null)
+            {
+                Solution solution = dte.Solution;
+                var solutionFile = solution.FileName;
+                if (solutionFile != "")
+                {
+                    var doxyFolder = System.IO.Path.GetDirectoryName(solutionFile);
+                    CheckOrCreateFolder(doxyFolder);
+                    ofd.SelectedPath = doxyFolder;
+                }
+            }
+            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                return ofd.SelectedPath;
+            }
+            return "";
         }
     }
 }

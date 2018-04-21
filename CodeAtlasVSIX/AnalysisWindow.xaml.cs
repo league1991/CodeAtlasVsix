@@ -157,5 +157,14 @@ namespace CodeAtlasVSIX
             scene.DeleteCustomMacro(item.m_macro);
             UpdateMacroList();
         }
+
+        private void customDirectoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            var directory = UIManager.Instance().GetMainUI().GetCustomAnalyseDirectory();
+            if (directory != "")
+            {
+                customDirectoryEdit.Text = directory;
+            }
+        }
     }
 }
