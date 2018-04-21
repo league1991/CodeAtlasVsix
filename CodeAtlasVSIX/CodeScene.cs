@@ -912,6 +912,7 @@ namespace CodeAtlasVSIX
                         count++;
                     }
                 }
+                ShowInEditor();
                 if (count > 0)
                 {
                     m_selectTimeStamp += 1;
@@ -948,6 +949,7 @@ namespace CodeAtlasVSIX
                         count++;
                     }
                 }
+                ShowInEditor();
                 if (count > 0)
                 {
                     m_selectTimeStamp += 1;
