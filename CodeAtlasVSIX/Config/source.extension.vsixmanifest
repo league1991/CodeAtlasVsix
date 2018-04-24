@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="CodeAtlasVSIX.Company.df5456fb-08ea-4256-b5ff-ecdb3a512ad3" Version="1.2.3" Language="en-US" Publisher="Yaobin Ouyang" />
+        <Identity Id="CodeAtlasVSIX.Company.df5456fb-08ea-4256-b5ff-ecdb3a512ad3" Version="1.2.4" Language="en-US" Publisher="Yaobin Ouyang" />
         <DisplayName>Code Graph</DisplayName>
         <Description xml:space="preserve">Visualize call graph, inheritance graph and variable usage graph for C/C++, C#, Python and other languages.</Description>
         <MoreInfo>https://marketplace.visualstudio.com/items?itemName=YaobinOuyang.CodeAtlas</MoreInfo>
