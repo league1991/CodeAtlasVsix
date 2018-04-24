@@ -750,7 +750,7 @@ namespace CodeAtlasVSIX
                     return false;
                 }
                 string doxyFolder = solutionFolder + "/CodeGraphData";
-                if (analysisWindow.customDirectoryEdit.Text != null || analysisWindow.customDirectoryEdit.Text != "")
+                if (analysisWindow.customDirectoryEdit.Text != null && analysisWindow.customDirectoryEdit.Text != "")
                 {
                     doxyFolder = analysisWindow.customDirectoryEdit.Text;
                 }
