@@ -749,11 +749,12 @@ namespace CodeAtlasVSIX
                     SetCommandActive(true);
                     return false;
                 }
-                string doxyFolder = solutionFolder + "/CodeGraphData";
+                string doxyFolder = solutionFolder;
                 if (analysisWindow.customDirectoryEdit.Text != null && analysisWindow.customDirectoryEdit.Text != "")
                 {
                     doxyFolder = analysisWindow.customDirectoryEdit.Text;
                 }
+                doxyFolder += "/CodeGraphData";
                 CheckOrCreateFolder(doxyFolder);
                 Logger.Info("Folder: " + doxyFolder);
 
