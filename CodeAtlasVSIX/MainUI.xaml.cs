@@ -947,6 +947,13 @@ namespace CodeAtlasVSIX
             scene.SetLRULimit(200);
         }
 
+        private void lru500Button_Checked(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Code Graph will be slow while layouting too many items.", "Warning");
+            var scene = UIManager.Instance().GetScene();
+            scene.SetLRULimit(500);
+        }
+
         public void PrevButton_Click(object sender, RoutedEventArgs e)
         {
             var scene = UIManager.Instance().GetScene();

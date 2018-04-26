@@ -60,6 +60,7 @@
                     <RadioButton x:Name="lru50Button" Content="Show 50 Items" Checked="lru50Button_Checked" IsChecked="True" />
                     <RadioButton x:Name="lru100Button" Content="Show 100 Items" Checked="lru100Button_Checked"/>
                     <RadioButton x:Name="lru200Button" Content="Show 200 Items" Checked="lru200Button_Checked"/>
+                    <RadioButton x:Name="lru500Button" Content="Show 500 Items" Checked="lru500Button_Checked"/>
                 </MenuItem>
             </MenuItem>
             <MenuItem x:Name="PrevButton" Header="Last" Click="PrevButton_Click"/>
