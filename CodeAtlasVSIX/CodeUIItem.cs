@@ -751,10 +751,10 @@ namespace CodeAtlasVSIX
 
         void MouseClickCallback(object sender, MouseEventArgs args)
         {
+            var scene = UIManager.Instance().GetScene();
             if (args.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
             {
                 bool isClean = !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl));
-                var scene = UIManager.Instance().GetScene();
                 if (m_isSelected)
                 {
                     m_deselectOnUp = true;
@@ -764,8 +764,17 @@ namespace CodeAtlasVSIX
                     scene.SelectCodeItem(this.m_uniqueName, isClean);
                 }
             }
+            else if (args.MiddleButton == System.Windows.Input.MouseButtonState.Pressed)
+            {
+                this.Dispatcher.BeginInvoke((ThreadStart)delegate
+                {
+                    var mainUI = UIManager.Instance().GetMainUI();
+                    OnInteractiveAddCustomEdge(null, null);
+                }, DispatcherPriority.Input);
+            }
             else if (args.RightButton == System.Windows.Input.MouseButtonState.Pressed)
             {
+                scene.SelectCodeItem(this.m_uniqueName, true);
                 _BuildContextMenu();
             }
             CaptureMouse();
@@ -1206,6 +1215,8 @@ namespace CodeAtlasVSIX
             {
                 var p0 = new Point(GetRightSlotOffset(), 0);
                 var p3 = Mouse.GetPosition(this);
+                p3.X += p3.X > p0.X ? -1 : 1;
+                p3.Y += p3.Y > p0.Y ? -1 : 1;
                 var p1 = new Point(p0.X * 0.5 + p3.X * 0.5, p0.Y);
                 var p2 = new Point(p0.X * 0.5 + p3.X * 0.5, p3.Y);
 

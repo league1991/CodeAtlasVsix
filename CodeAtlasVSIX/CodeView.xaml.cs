@@ -195,8 +195,7 @@ namespace CodeAtlasVSIX
                 
                 var scene = UIManager.Instance().GetScene();
                 var selectedItems = scene.SelectedItems();
-                if (e.RightButton == System.Windows.Input.MouseButtonState.Pressed ||
-                    e.MiddleButton== System.Windows.Input.MouseButtonState.Pressed)
+                if (e.RightButton == System.Windows.Input.MouseButtonState.Pressed)
                 {
                     CaptureMouse();
                     var element = this.canvas as UIElement;
