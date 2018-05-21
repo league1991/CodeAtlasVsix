@@ -2,12 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Threading;
 using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace CodeAtlasVSIX
@@ -267,6 +269,31 @@ namespace CodeAtlasVSIX
         {
             InvalidateLegend();
             InvalidateScheme();
+        }
+
+        public void ExportToPng(string filePath)
+        {
+            if (filePath == null) return;
+
+            var surface = this.background;
+
+            Size size = new Size(this.ActualWidth, this.ActualHeight);
+
+            RenderTargetBitmap renderBitmap =
+            new RenderTargetBitmap(
+            (int)size.Width*300/96,
+            (int)size.Height*300/96,
+            300d,
+            300d,
+            PixelFormats.Pbgra32);
+            renderBitmap.Render(surface);
+
+            using (FileStream outStream = new FileStream(filePath, FileMode.Create))
+            {
+                PngBitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+                encoder.Save(outStream);
+            }
         }
     }
 }

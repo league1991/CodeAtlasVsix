@@ -1088,5 +1088,22 @@ namespace CodeAtlasVSIX
             }
             return "";
         }
+
+        private void SaveScreenShot_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.SaveFileDialog saveFileDialog = new Microsoft.Win32.SaveFileDialog();
+            string localFilePath = "", fileNameExt = "", newFileName = "", FilePath = "";
+            saveFileDialog.Filter = "png files(*.png)|*.png";
+            saveFileDialog.DefaultExt = "png";
+            saveFileDialog.AddExtension = true;
+            saveFileDialog.FilterIndex = 2;
+            saveFileDialog.RestoreDirectory = true;
+            bool? result = saveFileDialog.ShowDialog();
+            if (result == true)
+            {
+                localFilePath = saveFileDialog.FileName.ToString();
+                this.codeView.ExportToPng(localFilePath);
+            }
+        }
     }
 }
