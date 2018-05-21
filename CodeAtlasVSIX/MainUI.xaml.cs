@@ -1064,6 +1064,7 @@ namespace CodeAtlasVSIX
         {
             m_autoLayout = true;
             AutoLayout(mainUIPanel.RenderSize);
+        }
 
         private void ZoominButton_Click(object sender, RoutedEventArgs e)
         {
