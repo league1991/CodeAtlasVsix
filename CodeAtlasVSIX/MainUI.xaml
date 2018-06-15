@@ -44,12 +44,16 @@
                     <RadioButton x:Name="forceLayoutButton" Content="Force Layout" Checked="forceLayoutButton_Checked"/>
                     <RadioButton x:Name="noLayoutButton" Content="No Layout" Checked="noLayoutButton_Checked"/>
                 </MenuItem>
-                <MenuItem Header="Highlight">
+                <MenuItem Header="Item Highlight">
                     <RadioButton x:Name="highAllButton" Content="All Items" Checked="highAllButton_Checked"/>
                     <RadioButton x:Name="highLightRecent3Button" Content="Latest 3 Items" Checked="highLightRecent3Button_Checked"/>
                     <RadioButton x:Name="highLightRecent6Button" Content="Latest 6 Items" IsChecked="True" Checked="highLightRecent6Button_Checked"/>
                     <RadioButton x:Name="highLightRecent9Button" Content="Latest 9 Items" Checked="highLightRecent9Button_Checked"/>
                     <RadioButton x:Name="highLightBookmark" Content="Bookmark" Checked="highLightBookmark_Checked"/>
+                </MenuItem>
+                <MenuItem Header="Bookmark Highlight">
+                    <RadioButton x:Name="highAllSchemeButton" Content="All Nodes" Checked="highAllSchemeButton_Checked"/>
+                    <RadioButton x:Name="highSelectedSchemeButton" Content="Selected Node" IsChecked="True" Checked="highSelectedSchemeButton_Checked" />
                 </MenuItem>
                 <MenuItem Header="Navigation" >
                     <RadioButton x:Name="dynamicNavigationButton" Content="Dynamic Navigation" IsChecked="True" Click="dynamicNavigationButton_Click" />

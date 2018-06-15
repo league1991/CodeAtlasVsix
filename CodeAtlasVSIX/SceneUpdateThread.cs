@@ -152,8 +152,8 @@ namespace CodeAtlasVSIX
                         m_selectTimeStamp = scene.m_selectTimeStamp;
                     }
 
-                    // Save configuration every 5 minutes
-                    if ((DateTime.Now - saveTime).TotalSeconds > 5 * 60 && mainUI.GetCommandActive())
+                    // Save configuration every 10 minutes
+                    if ((DateTime.Now - saveTime).TotalSeconds > 10 * 60 && mainUI.GetCommandActive())
                     {
                         scene.SaveConfig();
                         saveTime = DateTime.Now;

@@ -1105,5 +1105,17 @@ namespace CodeAtlasVSIX
                 this.codeView.ExportToPng(localFilePath);
             }
         }
+
+        private void highSelectedSchemeButton_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetSchemeHighlightType(SchemeHighlightType.SCHEME_HIGHLIGHT_SELECTED);
+        }
+
+        private void highAllSchemeButton_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.SetSchemeHighlightType(SchemeHighlightType.SCHEME_HIGHLIGHT_ALL);
+        }
     }
 }

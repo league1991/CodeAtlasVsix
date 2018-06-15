@@ -57,6 +57,12 @@ namespace CodeAtlasVSIX
         HIGHLIGHT_BOOKMARK = 4,
     }
 
+    public enum SchemeHighlightType
+    {
+        SCHEME_HIGHLIGHT_ALL = 0,
+        SCHEME_HIGHLIGHT_SELECTED = 1,
+    }
+
     public class CodeScene: DispatcherObject
     {
         #region Data Member
@@ -90,6 +96,7 @@ namespace CodeAtlasVSIX
         public bool m_waitingItemMove = false;
         public int m_selectTimeStamp = 0;
         public int m_schemeTimeStamp = 0;
+        public SchemeHighlightType m_schemeHighlight = SchemeHighlightType.SCHEME_HIGHLIGHT_SELECTED;
         public string m_customEdgeSource = "";
         public HighlightType m_highLightType = HighlightType.HIGHLIGHT_LATEST_6;
 
@@ -3119,7 +3126,7 @@ namespace CodeAtlasVSIX
             var timeStampList = new List<Tuple<int, string>>();
             foreach (var item in m_itemDict)
             {
-                if (item.Value.IsSelected)
+                if (m_schemeHighlight == SchemeHighlightType.SCHEME_HIGHLIGHT_ALL || item.Value.IsSelected)
                 {
                     nodeSet.Add(item.Key);
                 }
@@ -3299,6 +3306,11 @@ namespace CodeAtlasVSIX
             UpdateCurrentValidScheme();
         }
 
+        public void SetSchemeHighlightType(SchemeHighlightType type)
+        {
+            m_schemeHighlight = type;
+            UpdateCurrentValidScheme();
+        }
         #endregion
         public void Invalidate()
         {
