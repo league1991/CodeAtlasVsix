@@ -64,6 +64,7 @@ namespace CodeAtlasVSIX
         Color m_color = new Color();
         bool m_customEdgeMode = false;
         bool m_interCustomEdgeMode = false;
+        bool m_contextMenuMode = false;
         Geometry m_highLightGeometry = new EllipseGeometry();
         bool m_isInvalidating = false;
         static double s_textGap = 2.0;
@@ -774,8 +775,7 @@ namespace CodeAtlasVSIX
             }
             else if (args.RightButton == System.Windows.Input.MouseButtonState.Pressed)
             {
-                scene.SelectCodeItem(this.m_uniqueName, true);
-                _BuildContextMenu();
+                m_contextMenuMode = true;
             }
             CaptureMouse();
             dragStart = args.GetPosition(this);
@@ -915,6 +915,7 @@ namespace CodeAtlasVSIX
             {
                 this.ContextMenu = null;
             }
+            m_contextMenuMode = false;
         }
 
         void MouseUpCallback(object sender, MouseEventArgs args)
@@ -942,6 +943,12 @@ namespace CodeAtlasVSIX
                     scene.DoAddCustomEdge(this.m_uniqueName, uiItem.GetUniqueName());
                 }
                 SetInteractiveCustomEdgeSourceMode(false);
+            }
+            if (m_contextMenuMode)
+            {
+                scene.SelectCodeItem(this.m_uniqueName, true);
+                _BuildContextMenu();
+                m_contextMenuMode = false;
             }
         }
 
