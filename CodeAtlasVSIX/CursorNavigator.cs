@@ -95,6 +95,13 @@ namespace CodeAtlasVSIX
                         UpdateBodyCode(codeItem, codeElement);
 
                         var startPnt = codeElement.StartPoint;
+                        var endPnt = codeElement.EndPoint;
+
+                        TextSelection ts = document.Selection as TextSelection;
+                        if (ts != null && ts.TopPoint.GreaterThan(startPnt) && ts.BottomPoint.LessThan(endPnt))
+                        {
+                            return true;
+                        }
                         if (CheckAndMoveTo(startPnt, document))
                         {
                             return true;
