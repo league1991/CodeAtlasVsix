@@ -100,7 +100,7 @@ namespace CodeAtlasVSIX
                         TextSelection ts = document.Selection as TextSelection;
                         if (ts != null && ts.TopPoint.GreaterThan(startPnt) && ts.BottomPoint.LessThan(endPnt))
                         {
-                            return true;
+                            startPnt = ts.TopPoint;
                         }
                         if (CheckAndMoveTo(startPnt, document))
                         {
