@@ -262,6 +262,20 @@ namespace CodeAtlasVSIX
                 analysisWindow.UpdateExtensionList();
                 analysisWindow.UpdateMacroList();
             });
+
+            this.Dispatcher.Invoke((ThreadStart)delegate
+            {
+                var scene = UIManager.Instance().GetScene();
+                switch (scene.m_layoutType)
+                {
+                    case LayoutType.LAYOUT_FORCE:
+                        forceLayoutButton.IsChecked = true; break;
+                    case LayoutType.LAYOUT_GRAPH:
+                        graphLayoutButton.IsChecked = true; break;
+                    case LayoutType.LAYOUT_NONE:
+                        noLayoutButton.IsChecked = true; break;
+                }
+            });
         }        
 
         public void OnShowInAtlas(object sender, ExecutedRoutedEventArgs e)

@@ -268,6 +268,12 @@ namespace CodeAtlasVSIX
                 var t1 = t0;
                 var beginTime = t0;
 
+                if (sceneData.ContainsKey("config"))
+                {
+                    var configData = sceneData["config"] as Dictionary<string, object>;
+                    m_layoutType = (LayoutType)configData["layout"];
+                }
+
                 // Stop item
                 var stopItemData = sceneData["stopItem"] as Dictionary<string, object>;
                 foreach (var item in stopItemData)
@@ -561,6 +567,10 @@ namespace CodeAtlasVSIX
                     macroList.Add(item);
                 }
 
+                var configData = new Dictionary<string, object> {
+                        { "layout", m_layoutType },
+                    };
+
                 var jsonDict = new Dictionary<string, object> {
                     {"stopItem", m_stopItem},
                     {"codeItem", codeItemList },
@@ -570,7 +580,8 @@ namespace CodeAtlasVSIX
                     {"scheme", scheme },
                     {"extension", extensionList},
                     {"anchorItem", anchorList },
-                    {"macro", macroList }
+                    {"macro", macroList },
+                    {"config", configData }
                 };
 
                 JavaScriptSerializer js = new JavaScriptSerializer();
