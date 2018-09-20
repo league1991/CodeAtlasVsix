@@ -178,6 +178,11 @@ namespace CodeAtlasVSIX
                         MoveTo(fileName, line, column);
                         return;
                     }
+                    if (codeItem.GetKind() == DoxygenDB.EntKind.FILE)
+                    {
+                        OpenFile(fileName);
+                        return;
+                    }
                     res = ShowItemDefinition(codeItem, fileName);
                     searchToken = codeItem.GetName();
                 }
