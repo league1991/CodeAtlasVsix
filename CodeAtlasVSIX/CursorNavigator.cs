@@ -153,6 +153,29 @@ namespace CodeAtlasVSIX
             return funcText;
         }
 
+        static public void GetCursorPosition(out string path, out int line, out int column)
+        {
+            path = "";
+            line = column = -1;
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            Document doc = null;
+            if (dte != null)
+            {
+                doc = dte.ActiveDocument;
+            }
+            if (doc == null)
+            {
+                return;
+            }
+            path = doc.Path;
+            EnvDTE.TextSelection ts = doc.Selection as EnvDTE.TextSelection;
+            if (ts != null)
+            {
+                line = ts.ActivePoint.Line;
+                column = ts.ActivePoint.DisplayColumn;
+            }
+        }
+
         public void Navigate(object item)
         {
             if (m_dte == null)

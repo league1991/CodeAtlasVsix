@@ -295,7 +295,7 @@ namespace CodeAtlasVSIX
             }
         }
 
-        public DoxygenDB.EntitySearchResult DoShowInAtlas()
+        public DoxygenDB.EntitySearchResult DoShowInAtlas(bool showCodePosition = true)
         {
             if (!GetCommandActive())
             {
@@ -318,25 +318,28 @@ namespace CodeAtlasVSIX
             EnvDTE.TextSelection ts = doc.Selection as EnvDTE.TextSelection;
             DoxygenDB.EntitySearchResult result = new DoxygenDB.EntitySearchResult();
 
-            // Create code position            
-            bool isWholeLine = ts.AnchorPoint.AtEndOfLine && ts.ActivePoint.AtStartOfLine && ts.AnchorPoint.Line == ts.ActivePoint.Line;
-            int activeLine = ts.ActivePoint.Line;
-            if (isWholeLine)
+            // Create code position
+            if (showCodePosition)
             {
-                var scene = UIManager.Instance().GetScene();
-                string docPath = doc.FullName;
-                string fileName = doc.Name;
-                int column = 0;
-                var uname = scene.GetBookmarkUniqueName(docPath, activeLine, column);
-                scene.AddBookmarkItem(docPath, fileName, activeLine, column);
-                scene.SelectCodeItem(uname);
-                var entity = new DoxygenDB.Entity(uname, docPath, fileName, "page", new Dictionary<string, DoxygenDB.Variant>());
-                result.candidateList.Add(entity);
-                result.bestEntity = entity;
-                return result;
+                bool isWholeLine = ts.AnchorPoint.AtEndOfLine && ts.ActivePoint.AtStartOfLine && ts.AnchorPoint.Line == ts.ActivePoint.Line;
+                int activeLine = ts.ActivePoint.Line;
+                if (isWholeLine)
+                {
+                    var scene = UIManager.Instance().GetScene();
+                    string docPath = doc.FullName;
+                    string fileName = doc.Name;
+                    int column = 0;
+                    var uname = scene.GetBookmarkUniqueName(docPath, activeLine, column);
+                    scene.AddBookmarkItem(docPath, fileName, activeLine, column);
+                    scene.SelectCodeItem(uname);
+                    var entity = new DoxygenDB.Entity(uname, docPath, fileName, "page", new Dictionary<string, DoxygenDB.Variant>());
+                    result.candidateList.Add(entity);
+                    result.bestEntity = entity;
+                    return result;
+                }
             }
-            CursorNavigator.GetCursorWord(ts, out token, out longName, out lineNum);
 
+            CursorNavigator.GetCursorWord(ts, out token, out longName, out lineNum);
             var searched = false;
             if (token != null)
             {
@@ -1130,6 +1133,24 @@ namespace CodeAtlasVSIX
         {
             var scene = UIManager.Instance().GetScene();
             scene.SetSchemeHighlightType(SchemeHighlightType.SCHEME_HIGHLIGHT_ALL);
+        }
+
+        private void syncToNone_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.m_traceCursorUpdate = SyncToEditorType.SYNC_NONE;
+        }
+
+        private void syncToCursor_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.m_traceCursorUpdate = SyncToEditorType.SYNC_CURSOR;
+        }
+
+        private void syncToCursorCallerCallee_Checked(object sender, RoutedEventArgs e)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.m_traceCursorUpdate = SyncToEditorType.SYNC_CURSOR_CALLER_CALLEE;
         }
     }
 }

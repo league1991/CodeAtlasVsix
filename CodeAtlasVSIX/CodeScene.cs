@@ -48,6 +48,13 @@ namespace CodeAtlasVSIX
         LAYOUT_FORCE = 2,
     };
 
+    public enum SyncToEditorType
+    {
+        SYNC_NONE = 0,
+        SYNC_CURSOR = 1,
+        SYNC_CURSOR_CALLER_CALLEE = 2,
+    }
+
     public enum HighlightType
     {
         HIGHLIGHT_ALL = 0,
@@ -86,6 +93,7 @@ namespace CodeAtlasVSIX
         
         // Layout/UI Status
         public bool m_isLayoutDirty = false;
+        public SyncToEditorType m_traceCursorUpdate = SyncToEditorType.SYNC_NONE;
         public LayoutType m_layoutType = LayoutType.LAYOUT_GRAPH;
         public bool m_isInvalidate = false;
         bool m_isSourceCandidate = true;

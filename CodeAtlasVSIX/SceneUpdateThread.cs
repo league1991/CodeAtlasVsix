@@ -28,6 +28,8 @@ namespace CodeAtlasVSIX
         //int m_edgeNum = 0;
         bool m_abort = false;
         int m_timeStamp = 0;
+        string m_curDocPath = "";
+        int m_curDocline = -1;
 
         public SceneUpdateThread(CodeScene scene)
         {
@@ -98,6 +100,12 @@ namespace CodeAtlasVSIX
                     EndTimeStamp("++++++++++++++++++++ begin thread ++++++++++++++++++++");
 
                     m_timeStamp = System.Environment.TickCount;
+
+                    if (scene.m_traceCursorUpdate != SyncToEditorType.SYNC_NONE)
+                    {
+                        TraceCursor();
+                    }
+
                     int layoutTime = 0;
                     if (scene.m_isLayoutDirty)
                     {
@@ -130,7 +138,6 @@ namespace CodeAtlasVSIX
                     UpdateCallOrder();
                     int callOrderTime = EndTimeStamp("Call Order");
                     scene.ReleaseLock();
-                    //Thread.Sleep(m_sleepTime / 2 + callOrderTime);
 
                     scene.AcquireLock();
                     if (m_selectTimeStamp != scene.m_selectTimeStamp || m_schemeTimeStamp != scene.m_schemeTimeStamp)
@@ -246,6 +253,32 @@ namespace CodeAtlasVSIX
             public Node m_node;
             public int m_order;
         };
+
+        void TraceCursor()
+        {
+            var mainUI = UIManager.Instance().GetMainUI();
+            var scene = UIManager.Instance().GetScene();
+            mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate
+            {
+                string curPath;
+                int curLine, curCol;
+                CursorNavigator.GetCursorPosition(out curPath, out curLine, out curCol);
+                if (curPath != m_curDocPath || curLine != m_curDocline)
+                {
+                    if (Math.Abs(curLine - m_curDocline) > 1)
+                    {
+                        mainUI.DoShowInAtlas(false);
+                        if (scene.m_traceCursorUpdate == SyncToEditorType.SYNC_CURSOR_CALLER_CALLEE)
+                        {
+                            mainUI.OnFindCallers(null, null);
+                            mainUI.OnFindCallees(null, null);
+                        }
+                    }
+                    m_curDocPath = curPath;
+                    m_curDocline = curLine;
+                }
+            }, DispatcherPriority.Loaded);
+        }
 
         void UpdateLayeredLayoutWithComp()
         {

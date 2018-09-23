@@ -39,6 +39,11 @@
                     <RadioButton x:Name="autoButton" Content="Auto" IsChecked="True" Checked="autoButton_Checked"/>
                 </MenuItem>
                 <MenuItem x:Name="autoFocusButton" Header="Auto Focus" IsCheckable="True" IsChecked="True" Click="autoFocusButton_Click"/>
+                <MenuItem Header="Sync With Editor">
+                    <RadioButton x:Name="syncToNone" Content="Do not Sync" IsChecked="True" Checked="syncToNone_Checked" />
+                    <RadioButton x:Name="syncToCursor" Content="Sync With Cursor" Checked="syncToCursor_Checked" />
+                    <RadioButton x:Name="syncToCursorCallerCallee" Content="Sync With Cursor and Show Invocations" Checked="syncToCursorCallerCallee_Checked" />
+                </MenuItem>
                 <MenuItem Header="Layout">
                     <RadioButton x:Name="graphLayoutButton" Content="Graph Layout" IsChecked="True" Checked="graphLayoutButton_Checked"/>
                     <RadioButton x:Name="forceLayoutButton" Content="Force Layout" Checked="forceLayoutButton_Checked"/>
