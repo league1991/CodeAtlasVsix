@@ -425,11 +425,22 @@ namespace CodeAtlasVSIX
                 return;
             }
 
+            Window window = null;
+            if(m_dte.Solution != null)
+            {
+                var projItem = m_dte.Solution.FindProjectItem(filePath);
+                if (projItem != null && !projItem.IsOpen)
+                {
+                    window = projItem.Open();
+                }
+            }
             //foreach (Window win in m_dte.Documents.Cast<Document>()
             //                     .FirstOrDefault(s => s.FullName == filePath).Windows)
             //    win.Close();
-
-            var window = m_dte.ItemOperations.OpenFile(fileName, EnvDTE.Constants.vsViewKindCode);
+            if (window == null)
+            {
+                window = m_dte.ItemOperations.OpenFile(fileName, EnvDTE.Constants.vsViewKindCode);
+            }
             if (window != null)
             {
                 window.Visible = true;
