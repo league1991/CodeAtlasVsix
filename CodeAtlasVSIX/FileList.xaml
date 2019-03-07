@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="CodeAtlasVSIX.FileList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CodeAtlasVSIX"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" Width="600">
+    <Grid x:Name="listGrid" Margin="9" VerticalAlignment="Bottom">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="13"/>
+            <RowDefinition Height="13"/>
+            <RowDefinition Height="13"/>
+            <RowDefinition Height="13"/>
+            <RowDefinition Height="13"/>
+
+            <RowDefinition Height="13"/>
+            <RowDefinition Height="13"/>
+            <RowDefinition Height="13"/>
+            <RowDefinition Height="13"/>
+            <RowDefinition Height="13"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="schemeButton0" Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Left" HorizontalAlignment="Left" Visibility="Hidden" Click="schemeButton0_Click"  />
+        <Button x:Name="schemeButton1" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Left" HorizontalAlignment="Left" Visibility="Hidden" Click="schemeButton1_Click"  />
+        <Button x:Name="schemeButton2" Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Left" HorizontalAlignment="Left" Visibility="Hidden" Click="schemeButton2_Click"  />
+        <Button x:Name="schemeButton3" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Left" HorizontalAlignment="Left" Visibility="Hidden" Click="schemeButton3_Click"  />
+        <Button x:Name="schemeButton4" Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Left" HorizontalAlignment="Left" Visibility="Hidden" Click="schemeButton4_Click"  />
+
+        <Button x:Name="schemeButton5" Grid.Row="5" Grid.Column="1" HorizontalContentAlignment="Left" HorizontalAlignment="Left" Visibility="Hidden" Click="schemeButton5_Click"  />
+        <Button x:Name="schemeButton6" Grid.Row="6" Grid.Column="1" HorizontalContentAlignment="Left" HorizontalAlignment="Left" Visibility="Hidden" Click="schemeButton6_Click"  />
+        <Button x:Name="schemeButton7" Grid.Row="7" Grid.Column="1" HorizontalContentAlignment="Left" HorizontalAlignment="Left" Visibility="Hidden" Click="schemeButton7_Click"  />
+        <Button x:Name="schemeButton8" Grid.Row="8" Grid.Column="1" HorizontalContentAlignment="Left" HorizontalAlignment="Left" Visibility="Hidden" Click="schemeButton8_Click"  />
+        <Button x:Name="schemeButton9" Grid.Row="9" Grid.Column="1" HorizontalContentAlignment="Left" HorizontalAlignment="Left" Visibility="Hidden" Click="schemeButton9_Click" />
+    </Grid>
+</UserControl>

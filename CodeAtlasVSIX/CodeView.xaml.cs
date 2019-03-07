@@ -260,6 +260,14 @@ namespace CodeAtlasVSIX
             scene.ReleaseLock();
         }
 
+        public void InvalidateFileList()
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.AcquireLock();
+            fileList.BuildFileListLegend();
+            scene.ReleaseLock();
+        }
+
         protected override void OnRender(DrawingContext dc)
         {
             base.OnRender(dc);

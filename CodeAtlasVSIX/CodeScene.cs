@@ -85,7 +85,10 @@ namespace CodeAtlasVSIX
         CodeView m_view = null;
         Dictionary<string, string> m_customExtension = new Dictionary<string, string>();
         HashSet<string> m_macroSet = new HashSet<string>();
-        ProjectDB m_projectDB = new ProjectDB();  
+        ProjectDB m_projectDB = new ProjectDB();
+        List<string> m_curFileListLRU = new List<string>();
+        bool m_isFileListDirty = true;
+        int m_curFileListMaxLength = 10;
 
         // Thread
         SceneUpdateThread m_updateThread = null;
@@ -1785,7 +1788,57 @@ namespace CodeAtlasVSIX
             ReleaseLock();
         }
         #endregion
-        
+
+        #region FileLRU
+        public void UpdateFileList(string filePath)
+        {
+            int idx = m_curFileListLRU.FindIndex(x => x == filePath);
+            m_isFileListDirty = (idx != 0);
+            if (idx == -1)
+            {
+                if (m_curFileListLRU.Count >= m_curFileListMaxLength)
+                {
+                    m_curFileListLRU.RemoveAt(m_curFileListLRU.Count-1);
+                }
+            }
+            else
+            {
+                m_curFileListLRU.RemoveAt(idx);
+            }
+
+            m_curFileListLRU.Insert(0, filePath);
+        }
+
+        public List<string> GetFileList()
+        {
+            return m_curFileListLRU;
+        }
+
+        public bool IsFileListDirty()
+        {
+            return m_isFileListDirty;
+        }
+
+        public void CleanFileListDirty()
+        {
+            m_isFileListDirty = false;
+        }
+
+        public void ShowIthFile(int idx)
+        {
+            if (idx >= 0 && idx < m_curFileListLRU.Count)
+            {
+                var filePath = m_curFileListLRU[idx];
+
+                if (File.Exists(filePath))
+                {
+                    CursorNavigator nav = new CursorNavigator();
+                    nav.OpenFile(filePath);
+                }
+            }
+        }
+        #endregion
+
         #region Add/Delete Item and Edge
         public string GetBookmarkUniqueName(string path, int line, int column)
         {

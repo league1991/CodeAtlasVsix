@@ -167,7 +167,7 @@ namespace CodeAtlasVSIX
             {
                 return;
             }
-            path = doc.Path;
+            path = doc.FullName;
             EnvDTE.TextSelection ts = doc.Selection as EnvDTE.TextSelection;
             if (ts != null)
             {
@@ -415,7 +415,7 @@ namespace CodeAtlasVSIX
             return offset;
         }
 
-        void OpenFile(string fileName)
+        public void OpenFile(string fileName)
         {
             var filePath = fileName.Replace('/', '\\');
             if (m_dte.get_IsOpenFile(EnvDTE.Constants.vsViewKindCode, filePath))

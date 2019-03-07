@@ -14,4 +14,5 @@
     </Canvas>
     <local:Legend x:Name="legend" Panel.ZIndex="10" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
     <local:Scheme x:Name ="scheme" HorizontalAlignment="Left" VerticalAlignment="Top" Panel.ZIndex="10" Margin="0"/>
+    <local:FileList x:Name ="fileList" HorizontalAlignment="Left" VerticalAlignment="Bottom" Panel.ZIndex="10" Margin="0"/>
 </Grid>

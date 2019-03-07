@@ -100,11 +100,8 @@ namespace CodeAtlasVSIX
                     EndTimeStamp("++++++++++++++++++++ begin thread ++++++++++++++++++++");
 
                     m_timeStamp = System.Environment.TickCount;
-
-                    if (scene.m_traceCursorUpdate != SyncToEditorType.SYNC_NONE)
-                    {
-                        TraceCursor();
-                    }
+                    
+                    TraceCursor();
 
                     int layoutTime = 0;
                     if (scene.m_isLayoutDirty)
@@ -151,13 +148,9 @@ namespace CodeAtlasVSIX
                     scene.UpdateCandidateEdge();
                     EndTimeStamp("Candidate Edge");
 
-                    if (m_selectTimeStamp != scene.m_selectTimeStamp)
-                    {
-                        BeginTimeStamp();
-                        UpdateLegend();
-                        EndTimeStamp("Legend");
-                        m_selectTimeStamp = scene.m_selectTimeStamp;
-                    }
+                    BeginTimeStamp();
+                    UpdateLegend();
+                    EndTimeStamp("Legend");
 
                     // Save configuration every 10 minutes
                     if ((DateTime.Now - saveTime).TotalSeconds > 10 * 60 && mainUI.GetCommandActive())
@@ -256,8 +249,8 @@ namespace CodeAtlasVSIX
 
         void TraceCursor()
         {
-            var mainUI = UIManager.Instance().GetMainUI();
             var scene = UIManager.Instance().GetScene();
+            var mainUI = UIManager.Instance().GetMainUI();
             mainUI.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
                 string curPath;
@@ -265,15 +258,19 @@ namespace CodeAtlasVSIX
                 CursorNavigator.GetCursorPosition(out curPath, out curLine, out curCol);
                 if (curPath != m_curDocPath || curLine != m_curDocline)
                 {
-                    if (Math.Abs(curLine - m_curDocline) > 1)
+                    if (scene.m_traceCursorUpdate != SyncToEditorType.SYNC_NONE)
                     {
-                        mainUI.DoShowInAtlas(false);
-                        if (scene.m_traceCursorUpdate == SyncToEditorType.SYNC_CURSOR_CALLER_CALLEE)
+                        if (Math.Abs(curLine - m_curDocline) > 1)
                         {
-                            mainUI.OnFindCallers(null, null);
-                            mainUI.OnFindCallees(null, null);
+                            mainUI.DoShowInAtlas(false);
+                            if (scene.m_traceCursorUpdate == SyncToEditorType.SYNC_CURSOR_CALLER_CALLEE)
+                            {
+                                mainUI.OnFindCallers(null, null);
+                                mainUI.OnFindCallees(null, null);
+                            }
                         }
                     }
+                    scene.UpdateFileList(curPath);
                     m_curDocPath = curPath;
                     m_curDocline = curLine;
                 }
@@ -396,8 +393,17 @@ namespace CodeAtlasVSIX
             var scene = UIManager.Instance().GetScene();
             if (scene.View != null)
             {
-                scene.View.InvalidateLegend();
-                scene.View.InvalidateScheme();
+                if (m_selectTimeStamp != scene.m_selectTimeStamp)
+                {
+                    scene.View.InvalidateLegend();
+                    scene.View.InvalidateScheme();
+                }
+                m_selectTimeStamp = scene.m_selectTimeStamp;
+                if (scene.IsFileListDirty())
+                {
+                    scene.View.InvalidateFileList();
+                    scene.CleanFileListDirty();
+                }
             }
         }
 
