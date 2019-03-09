@@ -84,51 +84,54 @@ namespace CodeAtlasVSIX
             m_schemeNameDict.Clear();
             m_formatWidth = 0;
             CheckAndAddFormattedText(schemeNameList.Count);
-            for (int i = 0; i < schemeNameList.Count; i++)
-            {
-                var schemeName = schemeNameList[i];
-                int idx = schemeName.LastIndexOf('/');
-                if (idx != -1)
-                {
-                    schemeName = schemeName.Substring(idx + 1);
-                }
-                idx = schemeName.LastIndexOf('\\');
-                if (idx != -1)
-                {
-                    schemeName = schemeName.Substring(idx + 1);
-                }
-                var schemeColor = Color.FromRgb(125, 215, 249);
-
-                var formattedText = new FormattedText(schemeName,
-                                                        CultureInfo.CurrentUICulture,
-                                                        FlowDirection.LeftToRight,
-                                                        new Typeface("arial"),
-                                                        m_fontSize,
-                                                        Brushes.Moccasin);
-                m_schemeNameDict[schemeName] = new Tuple<Color, FormattedText>(schemeColor, formattedText);
-
-            }
-
-            var nScheme = m_schemeNameDict.Count;
-            //if (nScheme == 0)
-            //{
-            //    //this.Visibility = Visibility.Hidden;
-            //    return;
-            //}
-
-            var maxWidth = 0.0;
-            foreach (var item in m_schemeNameDict)
-            {
-                var className = item.Key;
-                var textObj = item.Value.Item2;
-                var classSize = new Size(textObj.Width, textObj.Height);
-                maxWidth = Math.Max(maxWidth, textObj.Width);
-            }
-
-            m_maxTextWidth = maxWidth;
 
             this.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
+                int maxDuration = 0;
+                for (int i = 0; i < schemeNameList.Count; i++)
+                {
+                    maxDuration = Math.Max(maxDuration, schemeNameList[i].m_duration);
+                }
+
+                for (int i = 0; i < schemeNameList.Count; i++)
+                {
+                    var schemeName = schemeNameList[i].m_path;
+                    int duration = schemeNameList[i].m_duration;
+                    double ratio = (double)duration / (double)maxDuration;
+
+                    int idx = schemeName.LastIndexOf('/');
+                    if (idx != -1)
+                    {
+                        schemeName = schemeName.Substring(idx + 1);
+                    }
+                    idx = schemeName.LastIndexOf('\\');
+                    if (idx != -1)
+                    {
+                        schemeName = schemeName.Substring(idx + 1);
+                    }
+                    var schemeColor = Color.FromRgb(125, 215, 249);
+                    byte alpha = (byte)(50 * (1 - ratio) + 255 * ratio);
+
+                    var formattedText = new FormattedText(schemeName,
+                                                            CultureInfo.CurrentUICulture,
+                                                            FlowDirection.LeftToRight,
+                                                            new Typeface("arial"),
+                                                            m_fontSize,
+                                                            new SolidColorBrush(Color.FromArgb(alpha, 255, 228, 181)));
+                    m_schemeNameDict[schemeName] = new Tuple<Color, FormattedText>(schemeColor, formattedText);
+                }
+
+                var nScheme = m_schemeNameDict.Count;
+                var maxWidth = 0.0;
+                foreach (var item in m_schemeNameDict)
+                {
+                    var className = item.Key;
+                    var textObj = item.Value.Item2;
+                    var classSize = new Size(textObj.Width, textObj.Height);
+                    maxWidth = Math.Max(maxWidth, textObj.Width);
+                }
+
+                m_maxTextWidth = maxWidth;
                 //this.MinWidth = this.Width = m_lineHeight + m_colorTextSpace + maxWidth + m_margin * 2;
                 //this.MinHeight = this.Height = m_classNameDict.Count * (m_lineHeight + m_lineSpace) - m_lineSpace + m_margin * 2;
                 //InvalidateArrange();

@@ -41,6 +41,17 @@ namespace CodeAtlasVSIX
         public SelectionRecord(EdgeKey edgeKey) { m_edgeList.Add(edgeKey); }
     }
 
+    public class FileListItem
+    {
+        public string m_path;
+        public int m_duration;
+        public FileListItem(string path, int duration)
+        {
+            m_path = path;
+            m_duration = duration;
+        }
+    }
+
     public enum LayoutType
     {
         LAYOUT_NONE = 0,
@@ -86,12 +97,13 @@ namespace CodeAtlasVSIX
         Dictionary<string, string> m_customExtension = new Dictionary<string, string>();
         HashSet<string> m_macroSet = new HashSet<string>();
         ProjectDB m_projectDB = new ProjectDB();
-        List<string> m_curFileListLRU = new List<string>();
+        List<FileListItem> m_curFileListLRU = new List<FileListItem>();
         bool m_isFileListDirty = true;
         int m_curFileListMaxLength = 10;
+        int m_fileListTimeStamp = System.Environment.TickCount;
 
-        // Thread
-        SceneUpdateThread m_updateThread = null;
+         // Thread
+         SceneUpdateThread m_updateThread = null;
         object m_lockObj = new object();
         
         // Layout/UI Status
@@ -1792,8 +1804,16 @@ namespace CodeAtlasVSIX
         #region FileLRU
         public void UpdateFileList(string filePath)
         {
-            int idx = m_curFileListLRU.FindIndex(x => x == filePath);
+            if (m_curFileListLRU.Count > 0)
+            {
+                int firstTime = System.Environment.TickCount - m_fileListTimeStamp;
+                var item = m_curFileListLRU[0];
+                item.m_duration += firstTime;
+            }
+
+            int idx = m_curFileListLRU.FindIndex(x => x.m_path == filePath);
             m_isFileListDirty = (idx != 0);
+            int duration = 0;
             if (idx == -1)
             {
                 if (m_curFileListLRU.Count >= m_curFileListMaxLength)
@@ -1803,13 +1823,14 @@ namespace CodeAtlasVSIX
             }
             else
             {
+                duration = m_curFileListLRU[idx].m_duration;
                 m_curFileListLRU.RemoveAt(idx);
             }
-
-            m_curFileListLRU.Insert(0, filePath);
+            m_fileListTimeStamp = System.Environment.TickCount;
+            m_curFileListLRU.Insert(0, new FileListItem(filePath, duration));
         }
 
-        public List<string> GetFileList()
+        public List<FileListItem> GetFileList()
         {
             return m_curFileListLRU;
         }
@@ -1828,7 +1849,7 @@ namespace CodeAtlasVSIX
         {
             if (idx >= 0 && idx < m_curFileListLRU.Count)
             {
-                var filePath = m_curFileListLRU[idx];
+                var filePath = m_curFileListLRU[idx].m_path;
 
                 if (File.Exists(filePath))
                 {

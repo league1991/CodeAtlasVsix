@@ -417,34 +417,41 @@ namespace CodeAtlasVSIX
 
         public void OpenFile(string fileName)
         {
-            var filePath = fileName.Replace('/', '\\');
-            if (m_dte.get_IsOpenFile(EnvDTE.Constants.vsViewKindCode, filePath))
+            try
             {
-                Document doc = m_dte.Documents.Item(filePath);
-                doc.Activate();
-                return;
-            }
-
-            Window window = null;
-            if(m_dte.Solution != null)
-            {
-                var projItem = m_dte.Solution.FindProjectItem(filePath);
-                if (projItem != null && !projItem.IsOpen)
+                var filePath = fileName.Replace('/', '\\');
+                if (m_dte.get_IsOpenFile(EnvDTE.Constants.vsViewKindCode, filePath))
                 {
-                    window = projItem.Open();
+                    Document doc = m_dte.Documents.Item(filePath);
+                    doc.Activate();
+                    return;
+                }
+
+                Window window = null;
+                if (m_dte.Solution != null)
+                {
+                    var projItem = m_dte.Solution.FindProjectItem(filePath);
+                    if (projItem != null && !projItem.IsOpen)
+                    {
+                        window = projItem.Open();
+                    }
+                }
+                //foreach (Window win in m_dte.Documents.Cast<Document>()
+                //                     .FirstOrDefault(s => s.FullName == filePath).Windows)
+                //    win.Close();
+                if (window == null)
+                {
+                    window = m_dte.ItemOperations.OpenFile(fileName, EnvDTE.Constants.vsViewKindCode);
+                }
+                if (window != null)
+                {
+                    window.Visible = true;
+                    window.Activate();
                 }
             }
-            //foreach (Window win in m_dte.Documents.Cast<Document>()
-            //                     .FirstOrDefault(s => s.FullName == filePath).Windows)
-            //    win.Close();
-            if (window == null)
+            catch (Exception)
             {
-                window = m_dte.ItemOperations.OpenFile(fileName, EnvDTE.Constants.vsViewKindCode);
-            }
-            if (window != null)
-            {
-                window.Visible = true;
-                window.Activate();
+                return;
             }
         }
 
