@@ -87,7 +87,7 @@ namespace CodeAtlasVSIX
 
             this.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
-                int maxDuration = 0;
+                int maxDuration = 1;
                 for (int i = 0; i < schemeNameList.Count; i++)
                 {
                     maxDuration = Math.Max(maxDuration, schemeNameList[i].m_duration);
@@ -97,7 +97,7 @@ namespace CodeAtlasVSIX
                 {
                     var schemeName = schemeNameList[i].m_path;
                     int duration = schemeNameList[i].m_duration;
-                    double ratio = (double)duration / (double)maxDuration;
+                    double ratio = Math.Pow((double)duration / (double)maxDuration, 0.25);
 
                     int idx = schemeName.LastIndexOf('/');
                     if (idx != -1)
