@@ -82,7 +82,7 @@ namespace CodeAtlasVSIX
             var h = ((hashVal) & 0xffff) / 65535.0;
             var s = ((hashVal >> 16) & 0xff) / 255.0;
             var l = ((hashVal >> 24) & 0xff) / 255.0;
-            return CodeUIItem.HSLToRGB(h, 0.7 + s * 0.2, 0.7 + l * 0.15);
+            return CodeUIItem.HSLToRGB(h, 0.7 + s * 0.2, 0.75 + l * 0.15);
         }
 
         public void BuildFileListLegend()
