@@ -76,6 +76,15 @@ namespace CodeAtlasVSIX
             }
         }
 
+        public static Color NameToColor(string name)
+        {
+            uint hashVal = (uint)name.GetHashCode();
+            var h = ((hashVal) & 0xffff) / 65535.0;
+            var s = ((hashVal >> 16) & 0xff) / 255.0;
+            var l = ((hashVal >> 24) & 0xff) / 255.0;
+            return CodeUIItem.HSLToRGB(h, 0.7 + s * 0.2, 0.7 + l * 0.15);
+        }
+
         public void BuildFileListLegend()
         {
             var scene = UIManager.Instance().GetScene();
@@ -109,15 +118,20 @@ namespace CodeAtlasVSIX
                     {
                         schemeName = schemeName.Substring(idx + 1);
                     }
-                    var schemeColor = Color.FromRgb(125, 215, 249);
-                    byte alpha = (byte)(50 * (1 - ratio) + 255 * ratio);
+
+                    idx = schemeName.IndexOf('.');
+                    string colorName = schemeName;
+                    if(idx != -1)
+                        colorName = schemeName.Substring(0, idx);
+                    Color schemeColor = FileList.NameToColor(colorName);
+                    //schemeColor.A = (byte)(50 * (1 - ratio) + 255 * ratio);
 
                     var formattedText = new FormattedText(schemeName,
                                                             CultureInfo.CurrentUICulture,
                                                             FlowDirection.LeftToRight,
                                                             new Typeface("arial"),
                                                             m_fontSize,
-                                                            new SolidColorBrush(Color.FromArgb(alpha, 255, 228, 181)));
+                                                            new SolidColorBrush(schemeColor));
                     m_schemeNameDict[schemeName] = new Tuple<Color, FormattedText>(schemeColor, formattedText);
                 }
 
