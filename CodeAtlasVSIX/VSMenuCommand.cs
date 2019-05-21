@@ -44,7 +44,7 @@ namespace CodeAtlasVSIX.Commands
         {
             get
             {
-                return this.package;
+                return package;
             }
         }
 
