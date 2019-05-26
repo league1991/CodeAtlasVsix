@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="CodeAtlasVSIX.Company.df5456fb-08ea-4256-b5ff-ecdb3a512ad3" Version="1.3.5" Language="en-US" Publisher="Yaobin Ouyang" />
+        <Identity Id="CodeGraph.bab506ab-08ae-41c5-b31c-6e8b1ff3293b" Version="1.3.5" Language="en-US" Publisher="Yiubun Auyeung" />
         <DisplayName>Code Graph</DisplayName>
         <Description xml:space="preserve">Visualize call graph, inheritance graph and variable usage graph for C/C++, C#, Python and other languages.</Description>
-        <MoreInfo>https://marketplace.visualstudio.com/items?itemName=YaobinOuyang.CodeAtlas</MoreInfo>
         <License>LICENSE.txt</License>
         <Icon>Resources/logo.png</Icon>
         <PreviewImage>Resources/thumbnail.png</PreviewImage>
@@ -14,9 +13,6 @@
         <InstallationTarget Version="[16.0,17.0)" Id="Microsoft.VisualStudio.Pro" />
         <InstallationTarget Version="[16.0,17.0)" Id="Microsoft.VisualStudio.Enterprise" />
         <InstallationTarget Version="[16.0,17.0)" Id="Microsoft.VisualStudio.IntegratedShell" />
-        <InstallationTarget Id="Microsoft.VisualStudio.VSWinExpress" Version="[16.0, 17.0)" />
-        <InstallationTarget Id="Microsoft.VisualStudio.VWDExpress" Version="[16.0, 17.0)" />
-        <InstallationTarget Id="Microsoft.VisualStudio.VSWinDesktopExpress" Version="[16.0, 17.0)" />
     </Installation>
     <Dependencies>
         <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.0,)" />
