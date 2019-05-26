@@ -18,6 +18,8 @@ using Microsoft.Win32;
 using System.Windows.Input;
 using EnvDTE;
 using EnvDTE80;
+using System.Threading;
+using Task = System.Threading.Tasks.Task;
 
 namespace CodeAtlasVSIX
 {
@@ -38,13 +40,13 @@ namespace CodeAtlasVSIX
     /// To get loaded into VS, the package must be referred by &lt;Asset Type="Microsoft.VisualStudio.VsPackage" ...&gt; in .vsixmanifest file.
     /// </para>
     /// </remarks>
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.3.5", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(CodeAtlas))]
     [Guid(CodeAtlasPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    public sealed class CodeAtlasPackage : Package
+    public sealed class CodeAtlasPackage : AsyncPackage
     {
         /// <summary>
         /// CodeAtlasPackage GUID string.
@@ -68,10 +70,14 @@ namespace CodeAtlasVSIX
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
         /// </summary>
-        protected override void Initialize()
+        protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            CodeAtlasCommand.Initialize(this);
-            base.Initialize();
+            // When initialized asynchronously, the current thread may be a background thread at this point.
+            // Do any initialization that requires the UI thread after switching to the UI thread.
+            await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
+            await CodeAtlasCommand.InitializeAsync(this);
+            //base.Initialize();
             var mainUI = UIManager.Instance().GetMainUI();
             mainUI.SetPackage(this);
             AddCommand(0x0103, mainUI.OnFindCallers);

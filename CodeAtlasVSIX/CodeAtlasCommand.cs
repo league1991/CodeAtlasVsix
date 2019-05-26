@@ -7,8 +7,11 @@
 using System;
 using System.ComponentModel.Design;
 using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Task = System.Threading.Tasks.Task;
 
 namespace CodeAtlasVSIX
 {
@@ -30,23 +33,19 @@ namespace CodeAtlasVSIX
         /// <summary>
         /// VS Package that provides this command, not null.
         /// </summary>
-        private readonly Package package;
+        private readonly AsyncPackage package;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CodeAtlasCommand"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
-        private CodeAtlasCommand(Package package)
+        private CodeAtlasCommand(AsyncPackage package, OleMenuCommandService commandService)
         {
-            if (package == null)
-            {
-                throw new ArgumentNullException("package");
-            }
+            this.package = package ?? throw new ArgumentNullException(nameof(package));
+            commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 
             this.package = package;
-
-            OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (commandService != null)
             {
                 var menuCommandID = new CommandID(CommandSet, CommandId);
@@ -67,7 +66,7 @@ namespace CodeAtlasVSIX
         /// <summary>
         /// Gets the service provider from the owner package.
         /// </summary>
-        private IServiceProvider ServiceProvider
+        private Microsoft.VisualStudio.Shell.IAsyncServiceProvider ServiceProvider
         {
             get
             {
@@ -75,13 +74,15 @@ namespace CodeAtlasVSIX
             }
         }
 
-        /// <summary>
-        /// Initializes the singleton instance of the command.
-        /// </summary>
-        /// <param name="package">Owner package, not null.</param>
-        public static void Initialize(Package package)
+
+        public static async Task InitializeAsync(AsyncPackage package)
         {
-            Instance = new CodeAtlasCommand(package);
+            // Switch to the main thread - the call to AddCommand in Command1's constructor requires
+            // the UI thread.
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
+
+            OleMenuCommandService commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
+            Instance = new CodeAtlasCommand(package, commandService);
         }
 
         /// <summary>
