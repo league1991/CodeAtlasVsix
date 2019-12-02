@@ -161,7 +161,14 @@ namespace CodeAtlasVSIX
             Document doc = null;
             if (dte != null)
             {
-                doc = dte.ActiveDocument;
+                try
+                {
+                    doc = dte.ActiveDocument;
+                }
+                catch (Exception)
+                {
+                    return;
+                }
             }
             if (doc == null)
             {

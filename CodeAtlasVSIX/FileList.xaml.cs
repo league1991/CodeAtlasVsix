@@ -106,7 +106,7 @@ namespace CodeAtlasVSIX
                 {
                     var schemeName = schemeNameList[i].m_path;
                     int duration = schemeNameList[i].m_duration;
-                    double ratio = Math.Pow((double)duration / (double)maxDuration, 0.25);
+                    double ratio = Math.Pow((double)duration / (double)maxDuration, 1.0);
 
                     int idx = schemeName.LastIndexOf('/');
                     if (idx != -1)
@@ -123,15 +123,15 @@ namespace CodeAtlasVSIX
                     string colorName = schemeName;
                     if(idx != -1)
                         colorName = schemeName.Substring(0, idx);
-                    Color schemeColor = FileList.NameToColor(colorName);
-                    //schemeColor.A = (byte)(50 * (1 - ratio) + 255 * ratio);
+                    var schemeColor = Color.FromRgb(125, 215, 249);
+                    byte alpha = (byte)(50 * (1 - ratio) + 255 * ratio);
 
                     var formattedText = new FormattedText(schemeName,
                                                             CultureInfo.CurrentUICulture,
                                                             FlowDirection.LeftToRight,
                                                             new Typeface("arial"),
                                                             m_fontSize,
-                                                            new SolidColorBrush(schemeColor));
+                                                            new SolidColorBrush(Color.FromArgb(alpha, 255, 228, 181)));
                     m_schemeNameDict[schemeName] = new Tuple<Color, FormattedText>(schemeColor, formattedText);
                 }
 
