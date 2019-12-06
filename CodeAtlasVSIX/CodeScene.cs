@@ -1808,7 +1808,7 @@ namespace CodeAtlasVSIX
             {
                 foreach (var fileRecord in m_curFileListLRU)
                 {
-                    fileRecord.m_duration = (int)(fileRecord.m_duration * 0.9);
+                    fileRecord.m_duration = (int)(fileRecord.m_duration * 0.95);
                 }
                 int firstTime = System.Environment.TickCount - m_fileListTimeStamp;
                 var item = m_curFileListLRU[0];
