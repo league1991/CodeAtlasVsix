@@ -97,16 +97,26 @@ namespace CodeAtlasVSIX
             this.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
                 int maxDuration = 1;
+                int minDuration = int.MaxValue;
+                int totalDuration = 0;
                 for (int i = 0; i < schemeNameList.Count; i++)
                 {
-                    maxDuration = Math.Max(maxDuration, schemeNameList[i].m_duration);
+                    int duration = schemeNameList[i].m_duration;
+                    maxDuration = Math.Max(maxDuration, duration);
+                    minDuration = Math.Min(minDuration, duration);
+                    totalDuration += duration;
                 }
+
+                //double avgDuration = ((double)totalDuration) / schemeNameList.Count;
+                //double avgRatio = Math.Min(1.0, Math.Max(0.05, (avgDuration - minDuration) / (maxDuration - minDuration + 1)));
+                //double avgPower = Math.Log(0.5, avgRatio);
 
                 for (int i = 0; i < schemeNameList.Count; i++)
                 {
                     var schemeName = schemeNameList[i].m_path;
                     int duration = schemeNameList[i].m_duration;
-                    double ratio = Math.Pow((double)duration / (double)maxDuration, 1.0);
+                    double ratio = (double)(duration - minDuration) / (maxDuration - minDuration + 0.0001);
+                    //ratio = Math.Pow(ratio, avgPower);
 
                     int idx = schemeName.LastIndexOf('/');
                     if (idx != -1)
@@ -124,7 +134,7 @@ namespace CodeAtlasVSIX
                     if(idx != -1)
                         colorName = schemeName.Substring(0, idx);
                     var schemeColor = Color.FromRgb(125, 215, 249);
-                    byte alpha = (byte)(50 * (1 - ratio) + 255 * ratio);
+                    byte alpha = (byte)(100 * (1 - ratio) + 255 * ratio);
 
                     var formattedText = new FormattedText(schemeName,
                                                             CultureInfo.CurrentUICulture,
