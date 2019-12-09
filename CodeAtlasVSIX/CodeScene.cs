@@ -1804,18 +1804,22 @@ namespace CodeAtlasVSIX
         #region FileLRU
         public void UpdateFileList(string filePath)
         {
+            int idx = m_curFileListLRU.FindIndex(x => x.m_path == filePath);
             if (m_curFileListLRU.Count > 0)
             {
-                foreach (var fileRecord in m_curFileListLRU)
+                for(int ithRecord = 0; ithRecord < m_curFileListLRU.Count; ithRecord++)
                 {
-                    fileRecord.m_duration = (int)(fileRecord.m_duration * 0.95);
+                    if (ithRecord != idx)
+                    {
+                        var fileRecord = m_curFileListLRU[ithRecord];
+                        fileRecord.m_duration = (int)(fileRecord.m_duration * 0.95);
+                    }
                 }
                 int firstTime = System.Environment.TickCount - m_fileListTimeStamp;
                 var item = m_curFileListLRU[0];
                 item.m_duration += firstTime;
             }
 
-            int idx = m_curFileListLRU.FindIndex(x => x.m_path == filePath);
             m_isFileListDirty = (idx != 0);
             int duration = 0;
             if (idx == -1)
