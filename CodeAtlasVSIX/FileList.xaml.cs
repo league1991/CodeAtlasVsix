@@ -96,15 +96,25 @@ namespace CodeAtlasVSIX
 
             this.Dispatcher.BeginInvoke((ThreadStart)delegate
             {
-                int maxDuration = 1;
-                int minDuration = int.MaxValue;
+                double maxDuration = 0;
+                double minDuration = double.MaxValue;
                 int totalDuration = 0;
+                var sortPlace = new List<int>();
                 for (int i = 0; i < schemeNameList.Count; i++)
                 {
-                    int duration = schemeNameList[i].m_duration;
+                    double duration = schemeNameList[i].m_duration;
                     maxDuration = Math.Max(maxDuration, duration);
                     minDuration = Math.Min(minDuration, duration);
-                    totalDuration += duration;
+                    //totalDuration += duration;
+                    int nGreater = 0;
+                    for (int j = 0; j < schemeNameList.Count; j++)
+                    {
+                        if (schemeNameList[j].m_duration > duration)
+                        {
+                            nGreater++;
+                        }
+                    }
+                    sortPlace.Add(nGreater);
                 }
 
                 //double avgDuration = ((double)totalDuration) / schemeNameList.Count;
@@ -114,9 +124,9 @@ namespace CodeAtlasVSIX
                 for (int i = 0; i < schemeNameList.Count; i++)
                 {
                     var schemeName = schemeNameList[i].m_path;
-                    int duration = schemeNameList[i].m_duration;
-                    double ratio = (double)(duration - minDuration) / (maxDuration - minDuration + 0.0001);
-                    //ratio = Math.Pow(ratio, avgPower);
+                    double duration = schemeNameList[i].m_duration;
+                    double ratio = 1 - sortPlace[i] / (double)schemeNameList.Count;// (double)(duration - minDuration) / (maxDuration - minDuration + 0.0001);
+                    ratio = Math.Pow(ratio, 3);
 
                     int idx = schemeName.LastIndexOf('/');
                     if (idx != -1)
@@ -129,11 +139,13 @@ namespace CodeAtlasVSIX
                         schemeName = schemeName.Substring(idx + 1);
                     }
 
-                    idx = schemeName.IndexOf('.');
-                    string colorName = schemeName;
-                    if(idx != -1)
-                        colorName = schemeName.Substring(0, idx);
                     var schemeColor = Color.FromRgb(125, 215, 249);
+                    idx = schemeName.IndexOf('.');
+                    if (idx != -1)
+                    {
+                        string colorName = schemeName.Substring(idx);
+                        schemeColor = NameToColor(colorName);
+                    }
                     byte alpha = (byte)(100 * (1 - ratio) + 255 * ratio);
 
                     var formattedText = new FormattedText(schemeName,
@@ -141,7 +153,7 @@ namespace CodeAtlasVSIX
                                                             FlowDirection.LeftToRight,
                                                             new Typeface("arial"),
                                                             m_fontSize,
-                                                            new SolidColorBrush(Color.FromArgb(alpha, 255, 228, 181)));
+                                                            new SolidColorBrush(Color.FromArgb(alpha, schemeColor.R, schemeColor.G, schemeColor.B)));
                     m_schemeNameDict[schemeName] = new Tuple<Color, FormattedText>(schemeColor, formattedText);
                 }
 
