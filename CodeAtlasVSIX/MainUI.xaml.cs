@@ -487,6 +487,14 @@ namespace CodeAtlasVSIX
                 scene.SelectCodeItem(tarBestEntity.m_id);
                 scene.ReleaseLock();
             }
+            else if (tarBestEntity != null && scene.m_customEdgeSource != null && scene.m_customEdgeSource != "")
+            {
+                scene.AcquireLock();
+                scene.DoAddCustomEdge(scene.m_customEdgeSource, tarBestEntity.m_id);
+                scene.CancelCustomEdgeMode();
+                scene.SelectCodeItem(tarBestEntity.m_id);
+                scene.ReleaseLock();
+            }
         }
 
         #region Find References

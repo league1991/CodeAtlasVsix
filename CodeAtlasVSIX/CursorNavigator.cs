@@ -58,7 +58,7 @@ namespace CodeAtlasVSIX
 
         static bool UseCodeModel()
         {
-            return !DBManager.Instance().IsBigSolution() &&
+            return //!DBManager.Instance().IsBigSolution() &&
                 UIManager.Instance().GetMainUI().IsDynamicNavigation();
         }
 
