@@ -17,8 +17,14 @@ namespace CodeAtlasVSIX
         DoxygenDB.DoxygenDB m_db;
         bool m_isBigSolution = false;
 
-        void FindSolutionScale()
+        void FindSolutionScale(string path)
         {
+            if (path.EndsWith("Result_dummy.graph"))
+            {
+                m_isBigSolution = true;
+                return;
+            }
+
             m_isBigSolution = false;
             var counter = new ProjectCounter();
             counter.Traverse();
@@ -59,7 +65,7 @@ namespace CodeAtlasVSIX
                 return;
             }
 
-            FindSolutionScale();
+            FindSolutionScale(path);
 
             m_db = new DoxygenDB.DoxygenDB();
             m_db.Open(path, m_isBigSolution);

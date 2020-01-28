@@ -792,6 +792,10 @@ namespace CodeAtlasVSIX
                         postFix += "_" + item;
                     }
                 }
+                else if (dummyDB)
+                {
+                    postFix = "_dummy";
+                }
                 else
                 {
                     postFix = "_solution";
