@@ -419,7 +419,16 @@ namespace CodeAtlasVSIX
                         var file = bookmarkItemData["file"] as string;
                         int line = (int)bookmarkItemData["line"];
                         int column = (int)bookmarkItemData["column"];
-                        _DoAddBookmarkItem(path, file, line, column, new Dictionary<string, object> { { "targetPos", targetPos } });
+                        var dataDict = new Dictionary<string, object> { { "targetPos", targetPos } };
+                        if (bookmarkItemData.ContainsKey("displayName"))
+                        {
+                            var displayName = bookmarkItemData["displayName"] as string;
+                            if (displayName != "")
+                            {
+                                dataDict["displayName"] = displayName;
+                            }
+                        }
+                        _DoAddBookmarkItem(path, file, line, column, dataDict);
                     }
                     else if (m_itemDataDict.ContainsKey(uname) && m_itemDataDict[uname].ContainsKey("project"))
                     {
@@ -1895,6 +1904,7 @@ namespace CodeAtlasVSIX
             var customData = new Dictionary<string, object>();
             //customData["name"] = string.Format("{0}({1})", file, line);
             customData["name"] = string.Format("{0}", file);
+            customData["displayName"] = data.ContainsKey("displayName") ? data["displayName"] : "";
             customData["longName"] = srcUniqueName;
             customData["comment"] = GetComment(srcUniqueName);
             customData["kindName"] = "page";
@@ -1919,6 +1929,7 @@ namespace CodeAtlasVSIX
             AddOrReplaceDict(itemData, "file", file);
             AddOrReplaceDict(itemData, "line", line);
             AddOrReplaceDict(itemData, "column", column);
+            AddOrReplaceDict(itemData, "displayName", customData["displayName"]);
 
             // Add CodeUIItem
             this.Dispatcher.Invoke((ThreadStart)delegate

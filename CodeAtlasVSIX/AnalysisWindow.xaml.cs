@@ -114,7 +114,12 @@ namespace CodeAtlasVSIX
                 macroList.Items.Add(new MacroItem(item));
             }
         }
+        
 
+        private void analyseDummySolutionButton_Click(object sender, RoutedEventArgs e)
+        {
+            UIManager.Instance().GetMainUI().OnAnalyseDummySolutionButton(null, null);
+        }
 
         private void analyseSolutionButton_Click(object sender, RoutedEventArgs e)
         {

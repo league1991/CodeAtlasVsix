@@ -15,6 +15,18 @@ namespace CodeAtlasVSIX
 
     public class SolutionTraverser
     {
+        public string GetSolutionPath()
+        {
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            if (dte == null)
+            {
+                return "";
+            }
+
+            Solution solution = dte.Solution;
+            return solution.FileName;
+        }
+
         public void Traverse()
         {
             var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;

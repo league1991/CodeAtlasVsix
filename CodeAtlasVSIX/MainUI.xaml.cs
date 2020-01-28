@@ -25,6 +25,7 @@ using System.Windows.Shapes;
 
 namespace CodeAtlasVSIX
 {
+    using DataDict = Dictionary<string, object>;
     /// <summary>
     /// MainUI.xaml 的交互逻辑
     /// </summary>
@@ -318,26 +319,6 @@ namespace CodeAtlasVSIX
             EnvDTE.TextSelection ts = doc.Selection as EnvDTE.TextSelection;
             DoxygenDB.EntitySearchResult result = new DoxygenDB.EntitySearchResult();
 
-            // Create code position
-            if (showCodePosition)
-            {
-                bool isWholeLine = ts.AnchorPoint.AtEndOfLine && ts.ActivePoint.AtStartOfLine && ts.AnchorPoint.Line == ts.ActivePoint.Line;
-                int activeLine = ts.ActivePoint.Line;
-                if (isWholeLine)
-                {
-                    var scene = UIManager.Instance().GetScene();
-                    string docPath = doc.FullName;
-                    string fileName = doc.Name;
-                    int column = 0;
-                    var uname = scene.GetBookmarkUniqueName(docPath, activeLine, column);
-                    scene.AddBookmarkItem(docPath, fileName, activeLine, column);
-                    scene.SelectCodeItem(uname);
-                    var entity = new DoxygenDB.Entity(uname, docPath, fileName, "page", new Dictionary<string, DoxygenDB.Variant>());
-                    result.candidateList.Add(entity);
-                    result.bestEntity = entity;
-                    return result;
-                }
-            }
 
             CursorNavigator.GetCursorWord(ts, out token, out longName, out lineNum);
             var searched = false;
@@ -384,6 +365,32 @@ namespace CodeAtlasVSIX
                 result = SearchAndAddToScene(fileName, (int)DoxygenDB.SearchOption.MATCH_WORD,
                             fileName, (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
                             "file", fullPath, 0);
+            }
+
+
+            // Create code position
+            bool isWholeLine = ts.AnchorPoint.AtEndOfLine && ts.ActivePoint.AtStartOfLine && ts.AnchorPoint.Line == ts.ActivePoint.Line;
+            bool isResultEmpty = (result.bestEntity == null) && (result.candidateList.Count == 0);
+            if (showCodePosition && (isWholeLine || isResultEmpty))
+            {
+                DataDict dataDict = new DataDict();
+                if (token != null)
+                {
+                    dataDict["displayName"] = token;
+                }
+
+                int activeLine = ts.ActivePoint.Line;
+                var scene = UIManager.Instance().GetScene();
+                string docPath = doc.FullName;
+                string fileName = doc.Name;
+                int column = 0;
+                var uname = scene.GetBookmarkUniqueName(docPath, activeLine, column);
+                scene.AddBookmarkItem(docPath, fileName, activeLine, column, dataDict);
+                scene.SelectCodeItem(uname);
+                var entity = new DoxygenDB.Entity(uname, docPath, fileName, "page", new Dictionary<string, DoxygenDB.Variant>());
+                result.candidateList.Add(entity);
+                result.bestEntity = entity;
+                return result;
             }
             return result;
         }
@@ -739,7 +746,7 @@ namespace CodeAtlasVSIX
             return this.symbolWindow;
         }
 
-        bool _AnalyseSolution(bool useClang, bool onlySelectedProjects = false, bool analyse = true)
+        bool _AnalyseSolution(bool useClang, bool onlySelectedProjects = false, bool dummyDB = false)
         {
             if (!GetCommandActive())
             {
@@ -761,7 +768,7 @@ namespace CodeAtlasVSIX
                 var dirList = traverser.GetDirectoryList();
                 var solutionFolder = traverser.GetSolutionFolder();
 
-                if (dirList.Count == 0 || solutionFolder == "")
+                if ((dummyDB == false && dirList.Count == 0) || solutionFolder == "")
                 {
                     SetCommandActive(true);
                     return false;
@@ -793,10 +800,13 @@ namespace CodeAtlasVSIX
 
                 DoxygenDB.DoxygenDBConfig config = new DoxygenDB.DoxygenDBConfig();
                 config.m_configPath = doxyFolder + "/Result" + postFix + ".graph";
-                config.m_inputFolders = dirList;
+                if (dummyDB == false)
+                {
+                    config.m_inputFolders = dirList;
+                    config.m_includePaths = traverser.GetAllIncludePath();
+                }
                 config.m_outputDirectory = doxyFolder + "/Result" + postFix;
                 config.m_projectName = traverser.GetSolutionName() + postFix;
-                config.m_includePaths = traverser.GetAllIncludePath();
                 config.m_defines = traverser.GetAllDefines();
                 config.m_useClang = useClang;
                 config.m_mainLanguage = traverser.GetMainLanguage();
@@ -863,6 +873,11 @@ namespace CodeAtlasVSIX
         public void OnFastAnalyseProjectsButton(object sender, RoutedEventArgs e)
         {
             _AnalyseSolution(false, true);
+        }
+
+        public void OnAnalyseDummySolutionButton(object sender, RoutedEventArgs e)
+        {
+            _AnalyseSolution(false, false, true);
         }
 
         private void dynamicNavigationButton_Click(object sender, RoutedEventArgs e)
