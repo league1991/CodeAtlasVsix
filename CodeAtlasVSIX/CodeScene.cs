@@ -281,7 +281,10 @@ namespace CodeAtlasVSIX
 
             System.Threading.Thread addingThread = new System.Threading.Thread((ThreadStart)delegate
             {
-                m_projectDB.Traverse();
+                if (!dbPath.EndsWith("Result_dummy/xml/index.xml"))
+                {
+                    m_projectDB.Traverse();
+                }
                 JavaScriptSerializer js = new JavaScriptSerializer();
                 js.MaxJsonLength = 100 * 1024 * 1024 * 2; // 100 M characters
                 var sceneData = js.Deserialize<Dictionary<string, object>>(jsonStr);
