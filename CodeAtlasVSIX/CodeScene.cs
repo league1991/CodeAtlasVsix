@@ -281,7 +281,7 @@ namespace CodeAtlasVSIX
 
             System.Threading.Thread addingThread = new System.Threading.Thread((ThreadStart)delegate
             {
-                if (!dbPath.EndsWith("Result_dummy/xml/index.xml"))
+                if (!dbPath.Contains("Result_dummy") && !dbPath.Contains("Result_files"))
                 {
                     m_projectDB.Traverse();
                 }

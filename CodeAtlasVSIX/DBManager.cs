@@ -19,7 +19,7 @@ namespace CodeAtlasVSIX
 
         void FindSolutionScale(string path)
         {
-            if (path.EndsWith("Result_dummy.graph"))
+            if (path.Contains("Result_dummy.graph") || path.Contains("Result_files.graph"))
             {
                 m_isBigSolution = true;
                 return;

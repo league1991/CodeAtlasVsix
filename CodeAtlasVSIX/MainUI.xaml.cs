@@ -41,6 +41,14 @@ namespace CodeAtlasVSIX
         DateTime m_lastCheckRefTime = DateTime.Now;
         int m_checkCount = 0;
 
+        enum AnalyseType
+        {
+            ANALYSE_SOLUTION = 0,
+            ANALYSE_SELECTED_PROJECTS = 1,
+            ANALYSE_DUMMY = 2,
+            ANALYSE_OPENED_FILES = 3,
+        }
+
         public MainUI()
         {
             InitializeComponent();
@@ -319,6 +327,26 @@ namespace CodeAtlasVSIX
             EnvDTE.TextSelection ts = doc.Selection as EnvDTE.TextSelection;
             DoxygenDB.EntitySearchResult result = new DoxygenDB.EntitySearchResult();
 
+            // Create code position
+            if (showCodePosition)
+            {
+                bool isWholeLine = ts.AnchorPoint.AtEndOfLine && ts.ActivePoint.AtStartOfLine && ts.AnchorPoint.Line == ts.ActivePoint.Line;
+                int activeLine = ts.ActivePoint.Line;
+                if (isWholeLine)
+                {
+                    var scene = UIManager.Instance().GetScene();
+                    string docPath = doc.FullName;
+                    string fileName = doc.Name;
+                    int column = 0;
+                    var uname = scene.GetBookmarkUniqueName(docPath, activeLine, column);
+                    scene.AddBookmarkItem(docPath, fileName, activeLine, column);
+                    scene.SelectCodeItem(uname);
+                    var entity = new DoxygenDB.Entity(uname, docPath, fileName, "page", new Dictionary<string, DoxygenDB.Variant>());
+                    result.candidateList.Add(entity);
+                    result.bestEntity = entity;
+                    return result;
+                }
+            }
 
             CursorNavigator.GetCursorWord(ts, out token, out longName, out lineNum);
             var searched = false;
@@ -369,29 +397,29 @@ namespace CodeAtlasVSIX
 
 
             // Create code position
-            bool isWholeLine = ts.AnchorPoint.AtEndOfLine && ts.ActivePoint.AtStartOfLine && ts.AnchorPoint.Line == ts.ActivePoint.Line;
-            bool isResultEmpty = (result.bestEntity == null) && (result.candidateList.Count == 0);
-            if (showCodePosition && (isWholeLine || isResultEmpty))
-            {
-                DataDict dataDict = new DataDict();
-                if (token != null)
-                {
-                    dataDict["displayName"] = token;
-                }
+            //bool isWholeLine = ts.AnchorPoint.AtEndOfLine && ts.ActivePoint.AtStartOfLine && ts.AnchorPoint.Line == ts.ActivePoint.Line;
+            //bool isResultEmpty = (result.bestEntity == null) && (result.candidateList.Count == 0);
+            //if (showCodePosition && (isWholeLine || isResultEmpty))
+            //{
+            //    DataDict dataDict = new DataDict();
+            //    if (token != null)
+            //    {
+            //        dataDict["displayName"] = token;
+            //    }
 
-                int activeLine = ts.ActivePoint.Line;
-                var scene = UIManager.Instance().GetScene();
-                string docPath = doc.FullName;
-                string fileName = doc.Name;
-                int column = 0;
-                var uname = scene.GetBookmarkUniqueName(docPath, activeLine, column);
-                scene.AddBookmarkItem(docPath, fileName, activeLine, column, dataDict);
-                scene.SelectCodeItem(uname);
-                var entity = new DoxygenDB.Entity(uname, docPath, fileName, "page", new Dictionary<string, DoxygenDB.Variant>());
-                result.candidateList.Add(entity);
-                result.bestEntity = entity;
-                return result;
-            }
+            //    int activeLine = ts.ActivePoint.Line;
+            //    var scene = UIManager.Instance().GetScene();
+            //    string docPath = doc.FullName;
+            //    string fileName = doc.Name;
+            //    int column = 0;
+            //    var uname = scene.GetBookmarkUniqueName(docPath, activeLine, column);
+            //    scene.AddBookmarkItem(docPath, fileName, activeLine, column, dataDict);
+            //    scene.SelectCodeItem(uname);
+            //    var entity = new DoxygenDB.Entity(uname, docPath, fileName, "page", new Dictionary<string, DoxygenDB.Variant>());
+            //    result.candidateList.Add(entity);
+            //    result.bestEntity = entity;
+            //    return result;
+            //}
             return result;
         }
 
@@ -754,7 +782,7 @@ namespace CodeAtlasVSIX
             return this.symbolWindow;
         }
 
-        bool _AnalyseSolution(bool useClang, bool onlySelectedProjects = false, bool dummyDB = false)
+        bool _AnalyseSolution(bool useClang, AnalyseType type = AnalyseType.ANALYSE_SOLUTION)
         {
             if (!GetCommandActive())
             {
@@ -765,9 +793,17 @@ namespace CodeAtlasVSIX
                 Logger.Info("Analysis Begin.");
                 SetCommandActive(false);
                 var traverser = new ProjectFileCollector();
-                if (onlySelectedProjects)
+                if (type == AnalyseType.ANALYSE_SELECTED_PROJECTS)
                 {
                     traverser.SetToSelectedProjects();
+                }
+                if (type == AnalyseType.ANALYSE_OPENED_FILES)
+                {
+                    traverser.SetIncludeScope(ProjectFileCollector.IncludeScope.INCLUDE_OPEN_FOLDERS);
+                }
+                else
+                {
+                    traverser.SetIncludeScope(ProjectFileCollector.IncludeScope.INCLUDE_PROJECT_FOLDERS);
                 }
                 var scene = UIManager.Instance().GetScene();
                 traverser.SetCustomExtension(scene.GetCustomExtensionDict());
@@ -776,7 +812,7 @@ namespace CodeAtlasVSIX
                 var dirList = traverser.GetDirectoryList();
                 var solutionFolder = traverser.GetSolutionFolder();
 
-                if ((dummyDB == false && dirList.Count == 0) || solutionFolder == "")
+                if ((type == AnalyseType.ANALYSE_DUMMY && dirList.Count == 0) || solutionFolder == "")
                 {
                     SetCommandActive(true);
                     return false;
@@ -792,7 +828,7 @@ namespace CodeAtlasVSIX
 
                 // Use selected projects as postfix
                 string postFix = "";
-                if (onlySelectedProjects)
+                if (type == AnalyseType.ANALYSE_SELECTED_PROJECTS)
                 {
                     var projectNameList = traverser.GetSelectedProjectName();
                     foreach (string item in projectNameList)
@@ -800,9 +836,13 @@ namespace CodeAtlasVSIX
                         postFix += "_" + item;
                     }
                 }
-                else if (dummyDB)
+                else if (type == AnalyseType.ANALYSE_DUMMY)
                 {
                     postFix = "_dummy";
+                }
+                else if (type == AnalyseType.ANALYSE_OPENED_FILES)
+                {
+                    postFix = "_files";
                 }
                 else
                 {
@@ -812,7 +852,7 @@ namespace CodeAtlasVSIX
 
                 DoxygenDB.DoxygenDBConfig config = new DoxygenDB.DoxygenDBConfig();
                 config.m_configPath = doxyFolder + "/Result" + postFix + ".graph";
-                if (dummyDB == false)
+                if (type != AnalyseType.ANALYSE_DUMMY)
                 {
                     config.m_inputFolders = dirList;
                     config.m_includePaths = traverser.GetAllIncludePath();
@@ -884,12 +924,17 @@ namespace CodeAtlasVSIX
 
         public void OnFastAnalyseProjectsButton(object sender, RoutedEventArgs e)
         {
-            _AnalyseSolution(false, true);
+            _AnalyseSolution(false, AnalyseType.ANALYSE_SELECTED_PROJECTS);
         }
 
         public void OnAnalyseDummySolutionButton(object sender, RoutedEventArgs e)
         {
-            _AnalyseSolution(false, false, true);
+            _AnalyseSolution(false, AnalyseType.ANALYSE_DUMMY);
+        }
+
+        public void OnAnalyseFilesSolutionButton(object sender, RoutedEventArgs e)
+        {
+            _AnalyseSolution(false, AnalyseType.ANALYSE_OPENED_FILES);
         }
 
         private void dynamicNavigationButton_Click(object sender, RoutedEventArgs e)

@@ -120,6 +120,10 @@ namespace CodeAtlasVSIX
         {
             UIManager.Instance().GetMainUI().OnAnalyseDummySolutionButton(null, null);
         }
+        private void analyseFilesSolutionButton_Click(object sender, RoutedEventArgs e)
+        {
+            UIManager.Instance().GetMainUI().OnAnalyseFilesSolutionButton(null, null);
+        }
 
         private void analyseSolutionButton_Click(object sender, RoutedEventArgs e)
         {
