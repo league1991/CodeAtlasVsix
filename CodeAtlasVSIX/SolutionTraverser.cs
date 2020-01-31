@@ -142,6 +142,13 @@ namespace CodeAtlasVSIX
             public string m_language = "";
         }
 
+        public enum IncludeScope
+        {
+            INCLUDE_PROJECT_FOLDERS = 0,
+            INCLUDE_OPEN_FOLDERS = 1,
+            INCLUDE_NONE=2,
+        };
+        IncludeScope m_includeScope = IncludeScope.INCLUDE_PROJECT_FOLDERS;
         string m_solutionName = "";
         string m_solutionPath = "";
         bool m_onlySelectedProjects = false;
@@ -317,12 +324,39 @@ namespace CodeAtlasVSIX
             return m_solutionName;
         }
 
+        public void SetIncludeScope(IncludeScope scope)
+        {
+            m_includeScope = scope;
+        }
+
         protected override bool BeforeTraverseSolution(Solution solution)
         {
             m_solutionPath = solution.FileName;
             if (m_solutionPath != "")
             {
                 m_solutionName = System.IO.Path.GetFileNameWithoutExtension(m_solutionPath);
+            }
+
+            if (m_includeScope == IncludeScope.INCLUDE_OPEN_FOLDERS)
+            {
+                var dte = solution.DTE;
+                foreach (Document doc in dte.Documents)
+                {
+                    string fileName = doc.FullName;
+                    m_fileList.Add(fileName);
+
+                    var ext = System.IO.Path.GetExtension(fileName).ToLower();
+                    foreach (var extension in m_extensionList)
+                    {
+                        if (ext == extension)
+                        {
+                            var directory = System.IO.Path.GetDirectoryName(fileName);
+                            directory = directory.Replace('\\', '/');
+                            m_directoryList.Add(directory);
+                            break;
+                        }
+                    }
+                }
             }
             return true;
         }
@@ -432,24 +466,12 @@ namespace CodeAtlasVSIX
             if (itemKind == Constants.vsProjectItemKindPhysicalFolder)
             {
             }
-            else if (itemKind == Constants.vsProjectItemKindPhysicalFile)
+            else if (itemKind == Constants.vsProjectItemKindPhysicalFile && m_includeScope == IncludeScope.INCLUDE_PROJECT_FOLDERS)
             {
                 for (short i = 0; i < item.FileCount; i++)
                 {
                     string fileName = item.FileNames[i];
                     m_fileList.Add(fileName);
-                    //Logger.WriteLine(fileName);
-
-                    //var pathComponents = fileName.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-                    //PathNode node = m_rootNode;
-                    //foreach (var pathComp in pathComponents)
-                    //{
-                    //    if (!node.m_children.ContainsKey(pathComp))
-                    //    {
-                    //        node.m_children[pathComp] = new PathNode(pathComp);
-                    //    }
-                    //    node = node.m_children[pathComp];
-                    //}
 
                     var ext = System.IO.Path.GetExtension(fileName).ToLower();
                     foreach (var extension in m_extensionList)
