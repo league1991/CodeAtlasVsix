@@ -79,10 +79,9 @@ namespace CodeAtlasVSIX
         public static Color NameToColor(string name)
         {
             uint hashVal = (uint)name.GetHashCode();
-            var h = ((hashVal) & 0xffff) / 65535.0;
-            var s = ((hashVal >> 16) & 0xff) / 255.0;
-            var l = ((hashVal >> 24) & 0xff) / 255.0;
-            return CodeUIItem.HSLToRGB(h, 0.7 + s * 0.2, 0.75 + l * 0.15);
+            hashVal = ((hashVal) & 0xff) ^ ((hashVal >> 8) & 0xff) ^ ((hashVal >> 16) & 0xff) ^ ((hashVal >> 24) & 0xff);
+            var h = ((hashVal) & 0xffff) / 255.0;
+            return CodeUIItem.HSLToRGB(h, 0.8, 0.8);
         }
 
         public void BuildFileListLegend()
@@ -143,7 +142,7 @@ namespace CodeAtlasVSIX
                     idx = schemeName.IndexOf('.');
                     if (idx != -1)
                     {
-                        string colorName = schemeName.Substring(idx);
+                        string colorName = schemeName.Substring(idx+1);
                         schemeColor = NameToColor(colorName);
                     }
                     byte alpha = (byte)(100 * (1 - ratio) + 255 * ratio);
