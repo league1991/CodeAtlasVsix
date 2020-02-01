@@ -329,13 +329,13 @@ namespace CodeAtlasVSIX
                             }
                             if (bestColumn != -1)
                             {
-                                ts.MoveTo(bestLine, bestColumn);
+                                ts.MoveToLineAndOffset(bestLine, bestColumn);
                                 res = true;
                             }
 
                             if (res == false)
                             {
-                                ts.MoveTo(line, column);
+                                ts.MoveToLineAndOffset(line, column);
                                 //ts.GotoLine(line);
                             }
                         }
@@ -400,7 +400,7 @@ namespace CodeAtlasVSIX
                     }
                     if (ts != null && line > 0 && textDoc != null)
                     {
-                        ts.MoveTo(line, column);
+                        ts.MoveToLineAndOffset(line, column);
                     }
                 }
                 catch (Exception)

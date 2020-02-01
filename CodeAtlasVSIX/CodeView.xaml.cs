@@ -67,14 +67,14 @@ namespace CodeAtlasVSIX
 
         public void MoveView(Point center)
         {
-            double speedFactor = 1.0;
+            double speedFactor = 0.15f;
             if (m_isMouseInView)
             {
-                speedFactor = (DateTime.Now - m_mouseMoveTime).TotalSeconds > 7 ? 1.0 : 0.0;
+                speedFactor = (DateTime.Now - m_mouseMoveTime).TotalSeconds > 7 ? 0.15f : 0.0;
             }
             else
             {
-                speedFactor = (DateTime.Now - m_mouseMoveTime).TotalSeconds > 1 ? 1.0 : 0.0;
+                speedFactor = (DateTime.Now - m_mouseMoveTime).TotalSeconds > 1 ? 0.15f : 0.0;
             }
             if (speedFactor == 0.0 || !m_isAutoFocus)
             {
@@ -89,6 +89,12 @@ namespace CodeAtlasVSIX
                 var centerPnt = new Point(ActualWidth * 0.5, ActualHeight * 0.5);
                 var currentPnt = matrix.Transform(center);
 
+                float padding = 0.2f;
+                if (currentPnt.X > ActualWidth * padding && currentPnt.X < ActualWidth * (1- padding) &&
+                    currentPnt.Y > ActualHeight * padding && currentPnt.Y < ActualHeight * (1 - padding))
+                {
+                    return;
+                }
                 var dist = centerPnt - currentPnt;
                 var distLength = dist.Length / transform.Matrix.M11;
                 if (distLength < 2.0)
