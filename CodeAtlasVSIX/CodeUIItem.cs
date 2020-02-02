@@ -92,7 +92,7 @@ namespace CodeAtlasVSIX
             m_kind = (DoxygenDB.EntKind)customData["kind"];
             ToolTip = m_longName;
             m_metric = (Dictionary<string, DoxygenDB.Variant>)customData["metric"];
-            BuildDisplayName(customData);
+            BuildDisplayName(m_name);
             var comment = scene.GetComment(m_uniqueName);
             UpdateComment(comment);
             m_kindName = (string)customData["kindName"];
@@ -261,10 +261,9 @@ namespace CodeAtlasVSIX
             return m_customData["className"].m_string;
         }
 
-        void BuildDisplayName(Dictionary<string, object> customData)
+        void BuildDisplayName(string name)
         {
             m_displayName = "";
-            string name = customData.ContainsKey("displayName") ? (string)customData["displayName"] : m_name;
 
             string pattern = @"[A-Z]*[a-z0-9]*_*";
             var nameList = Regex.Matches(
@@ -273,7 +272,7 @@ namespace CodeAtlasVSIX
                 RegexOptions.ExplicitCapture
                 );
 
-            if (m_kind == DoxygenDB.EntKind.PAGE && !customData.ContainsKey("displayName"))
+            if (m_kind == DoxygenDB.EntKind.PAGE)
             {
                 string fileNameStr = name;
                 int dotIdx = name.LastIndexOf('.');
