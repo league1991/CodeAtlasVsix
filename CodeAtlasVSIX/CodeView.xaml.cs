@@ -90,7 +90,7 @@ namespace CodeAtlasVSIX
                 var currentPnt = matrix.Transform(center);
 
                 var dist = new Vector(0, 0);
-                double paddingWidth = Math.Min(ActualWidth * 0.2f, 200.0f);
+                double paddingWidth = Math.Min(ActualWidth * 0.2f, 100.0f);
                 if (currentPnt.X < paddingWidth)
                 {
                     dist.X = paddingWidth - currentPnt.X;
@@ -99,7 +99,7 @@ namespace CodeAtlasVSIX
                 {
                     dist.X = ActualWidth - paddingWidth - currentPnt.X;
                 }
-                double paddingHeight = Math.Min(ActualHeight * 0.2f, 200.0f);
+                double paddingHeight = Math.Min(ActualHeight * 0.2f, 100.0f);
                 if (currentPnt.Y < paddingHeight)
                 {
                     dist.Y = paddingHeight - currentPnt.Y;
