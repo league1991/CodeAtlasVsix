@@ -124,8 +124,8 @@ namespace CodeAtlasVSIX
                 {
                     var schemeName = schemeNameList[i].m_path;
                     double duration = schemeNameList[i].m_duration;
-                    double ratio = 1 - sortPlace[i] / (double)schemeNameList.Count;// (double)(duration - minDuration) / (maxDuration - minDuration + 0.0001);
-                    ratio = Math.Pow(ratio, 3);
+                    double ratio = (double)(duration - minDuration) / (maxDuration - minDuration + 0.0001); //1 - sortPlace[i] / (double)schemeNameList.Count;// 
+                    //ratio = Math.Pow(ratio, 0.1);
 
                     int idx = schemeName.LastIndexOf('/');
                     if (idx != -1)
@@ -145,7 +145,7 @@ namespace CodeAtlasVSIX
                         string colorName = schemeName.Substring(idx+1);
                         schemeColor = NameToColor(colorName);
                     }
-                    byte alpha = (byte)(100 * (1 - ratio) + 255 * ratio);
+                    byte alpha = (byte)(150 * (1 - ratio) + 255 * ratio);
 
                     var formattedText = new FormattedText(schemeName,
                                                             CultureInfo.CurrentUICulture,
