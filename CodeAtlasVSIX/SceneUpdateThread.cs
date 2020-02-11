@@ -30,6 +30,7 @@ namespace CodeAtlasVSIX
         int m_timeStamp = 0;
         string m_curDocPath = "";
         int m_curDocline = -1;
+        int m_lastTraceTickCount = System.Environment.TickCount;
 
         public SceneUpdateThread(CodeScene scene)
         {
@@ -270,9 +271,14 @@ namespace CodeAtlasVSIX
                             }
                         }
                     }
+                }
+
+                if (curPath != m_curDocPath || curLine != m_curDocline || System.Environment.TickCount - m_lastTraceTickCount > 30*1000)
+                {
                     scene.UpdateFileList(curPath);
                     m_curDocPath = curPath;
                     m_curDocline = curLine;
+                    m_lastTraceTickCount = System.Environment.TickCount;
                 }
             }, DispatcherPriority.Loaded);
         }
@@ -399,10 +405,10 @@ namespace CodeAtlasVSIX
                     scene.View.InvalidateScheme();
                 }
                 m_selectTimeStamp = scene.m_selectTimeStamp;
-                if (scene.IsFileListDirty())
+                //if (scene.IsFileListDirty())
                 {
                     scene.View.InvalidateFileList();
-                    scene.CleanFileListDirty();
+                    //scene.CleanFileListDirty();
                 }
             }
         }
