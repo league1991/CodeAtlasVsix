@@ -211,6 +211,10 @@ namespace CodeAtlasVSIX
                     var doxyFolder = System.IO.Path.GetDirectoryName(solutionFile) + "\\CodeGraphData";
                     CheckOrCreateFolder(doxyFolder);
                     var doxyPath = doxyFolder + "\\Result_solution.graph";
+                    if (!File.Exists(doxyPath))
+                    {
+                        doxyPath = doxyFolder + "\\Result_files.graph";
+                    }
                     if (File.Exists(doxyPath))
                     {
                         if (DBManager.Instance().GetDB().IsOpen())
@@ -222,7 +226,7 @@ namespace CodeAtlasVSIX
                     }
                     else
                     {
-                        Logger.Warning(doxyPath + " doesn't exist. Please analyse solution first.");
+                        Logger.Warning(doxyPath + " doesn't exist. Please analyse solution or files first.");
                     }
                 }
             }
