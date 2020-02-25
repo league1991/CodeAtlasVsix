@@ -89,7 +89,6 @@ namespace CodeAtlasVSIX
             var scene = UIManager.Instance().GetScene();
             var itemDict = scene.GetItemDict();
             var schemeNameList = scene.GetFileList();
-            m_schemeNameDict.Clear();
             m_formatWidth = 0;
             CheckAndAddFormattedText(schemeNameList.Count);
 
@@ -120,12 +119,14 @@ namespace CodeAtlasVSIX
                 //double avgRatio = Math.Min(1.0, Math.Max(0.05, (avgDuration - minDuration) / (maxDuration - minDuration + 1)));
                 //double avgPower = Math.Log(0.5, avgRatio);
 
+                scene.AcquireLock();
+                m_schemeNameDict.Clear();
                 for (int i = 0; i < schemeNameList.Count; i++)
                 {
                     var schemeName = schemeNameList[i].m_path;
                     double duration = schemeNameList[i].m_duration;
-                    double ratio = (double)(duration - minDuration) / (maxDuration - minDuration + 0.0001); //1 - sortPlace[i] / (double)schemeNameList.Count;// 
-                    //ratio = Math.Pow(ratio, 0.1);
+                    double ratio = 1 - sortPlace[i] / (double)schemeNameList.Count;// 
+                    ratio = Math.Pow(ratio, 3);
 
                     int idx = schemeName.LastIndexOf('/');
                     if (idx != -1)
@@ -155,7 +156,6 @@ namespace CodeAtlasVSIX
                                                             new SolidColorBrush(Color.FromArgb(alpha, schemeColor.R, schemeColor.G, schemeColor.B)));
                     m_schemeNameDict[schemeName] = new Tuple<Color, FormattedText>(schemeColor, formattedText);
                 }
-
                 var nScheme = m_schemeNameDict.Count;
                 var maxWidth = 0.0;
                 foreach (var item in m_schemeNameDict)
@@ -165,6 +165,7 @@ namespace CodeAtlasVSIX
                     var classSize = new Size(textObj.Width, textObj.Height);
                     maxWidth = Math.Max(maxWidth, textObj.Width);
                 }
+                scene.ReleaseLock();
 
                 m_maxTextWidth = maxWidth;
                 //this.MinWidth = this.Width = m_lineHeight + m_colorTextSpace + maxWidth + m_margin * 2;

@@ -622,6 +622,34 @@ namespace CodeAtlasVSIX
                 JavaScriptSerializer js = new JavaScriptSerializer();
                 js.MaxJsonLength = 100 * 1024 * 1024 * 2; // 100 M characters
                 var jsonStr = js.Serialize(jsonDict);
+                if (File.Exists(dbPath))
+                {
+                    string backupPath = "";
+                    long earlistTime = DateTime.Now.Ticks;
+                    for (int i = 0; i < 10; i++)
+                    {
+                        string ithBackupPath = string.Format("{0}-backup{1}", dbPath, i);
+                        if (File.Exists(ithBackupPath))
+                        {
+                            long backupTicks = File.GetLastWriteTime(ithBackupPath).Ticks;
+                            if (backupTicks < earlistTime)
+                            {
+                                earlistTime = backupTicks;
+                                backupPath = ithBackupPath;
+                            }
+                        }
+                        else
+                        {
+                            backupPath = ithBackupPath;
+                            break;
+                        }
+                    }
+                    if (backupPath != "")
+                    {
+                        string oldConfig = File.ReadAllText(dbPath);
+                        File.WriteAllText(backupPath, oldConfig);
+                    }
+                }
                 File.WriteAllText(dbPath, jsonStr);
 
                 var now = DateTime.Now;
@@ -1819,14 +1847,14 @@ namespace CodeAtlasVSIX
             int idx = m_curFileListLRU.FindIndex(x => x.m_path == filePath);
             if (m_curFileListLRU.Count > 0)
             {
-                //for(int ithRecord = 0; ithRecord < m_curFileListLRU.Count; ithRecord++)
-                //{
-                //    if (ithRecord != idx)
-                //    {
-                //        var fileRecord = m_curFileListLRU[ithRecord];
-                //        fileRecord.m_duration = fileRecord.m_duration * 0.95;
-                //    }
-                //}
+                for (int ithRecord = 0; ithRecord < m_curFileListLRU.Count; ithRecord++)
+                {
+                    if (ithRecord != idx)
+                    {
+                        var fileRecord = m_curFileListLRU[ithRecord];
+                        fileRecord.m_duration = fileRecord.m_duration * 0.95;
+                    }
+                }
                 int firstTime = System.Environment.TickCount - m_fileListTimeStamp;
                 var item = m_curFileListLRU[0];
                 item.m_duration += (double)firstTime;
