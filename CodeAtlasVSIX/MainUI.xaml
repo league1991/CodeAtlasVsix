@@ -35,9 +35,9 @@
             </MenuItem>
             <MenuItem Header="Settings">
                 <MenuItem Header="UI Layout">
-                    <RadioButton x:Name="horizontalButton" Content="Horizontal" Checked="horizontalButton_Checked"/>
-                    <RadioButton x:Name="verticalButton" Content="Vertical" Checked="verticalButton_Checked"/>
-                    <RadioButton x:Name="autoButton" Content="Auto" IsChecked="True" Checked="autoButton_Checked"/>
+                    <RadioButton x:Name="horizontalButton" Content="Horizontal" Checked="HorizontalButton_Checked"/>
+                    <RadioButton x:Name="verticalButton" Content="Vertical" Checked="VerticalButton_Checked"/>
+                    <RadioButton x:Name="autoButton" Content="Auto" IsChecked="True" Checked="AutoButton_Checked"/>
                 </MenuItem>
                 <MenuItem x:Name="autoFocusButton" Header="Auto Focus" IsCheckable="True" IsChecked="True" Click="autoFocusButton_Click"/>
                 <MenuItem Header="Sync With Editor">
