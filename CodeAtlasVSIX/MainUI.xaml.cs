@@ -26,6 +26,7 @@ using System.Windows.Shapes;
 namespace CodeAtlasVSIX
 {
     using DataDict = Dictionary<string, object>;
+
     /// <summary>
     /// MainUI.xaml 的交互逻辑
     /// </summary>
@@ -35,7 +36,6 @@ namespace CodeAtlasVSIX
         public Package m_package;
         // Switch for all commands
         bool m_isCommandEnable = true;
-        bool m_autoLayout = true;
 
         ReferenceSearcher m_refSearcher;
         DateTime m_lastCheckRefTime = DateTime.Now;
@@ -48,6 +48,15 @@ namespace CodeAtlasVSIX
             ANALYSE_DUMMY = 2,
             ANALYSE_OPENED_FILES = 3,
         }
+
+        public enum UILayoutType
+        {
+            UILAYOUT_HORIZONTAL = 0,
+            UILAYOUT_VERTICAL = 1,
+            UILAYOUT_AUTO = 2,
+        };
+
+        public UILayoutType m_uiLayout = UILayoutType.UILAYOUT_AUTO;
 
         public MainUI()
         {
@@ -287,6 +296,21 @@ namespace CodeAtlasVSIX
                         graphLayoutButton.IsChecked = true; break;
                     case LayoutType.LAYOUT_NONE:
                         noLayoutButton.IsChecked = true; break;
+                }
+
+                switch (m_uiLayout)
+                {
+                    case MainUI.UILayoutType.UILAYOUT_HORIZONTAL:
+                        HorizontalButton_Checked();
+                        break;
+                    case MainUI.UILayoutType.UILAYOUT_VERTICAL:
+                        VerticalButton_Checked();
+                        break;
+                    case MainUI.UILayoutType.UILAYOUT_AUTO:
+                        AutoButton_Checked();
+                        break;
+                    default:
+                        break;
                 }
             });
         }        
@@ -1133,7 +1157,7 @@ namespace CodeAtlasVSIX
 
         private void DockPanel_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (m_autoLayout == false)
+            if (m_uiLayout != UILayoutType.UILAYOUT_AUTO)
             {
                 return;
             }
@@ -1141,21 +1165,21 @@ namespace CodeAtlasVSIX
             AutoLayout(e.NewSize);
         }
 
-        private void horizontalButton_Checked(object sender, RoutedEventArgs e)
+        public void HorizontalButton_Checked(object sender = null, RoutedEventArgs e = null)
         {
-            m_autoLayout = false;
+            m_uiLayout = UILayoutType.UILAYOUT_HORIZONTAL;
             MakeHorizontal();
         }
 
-        private void verticalButton_Checked(object sender, RoutedEventArgs e)
+        public void VerticalButton_Checked(object sender = null, RoutedEventArgs e = null)
         {
-            m_autoLayout = false;
+            m_uiLayout = UILayoutType.UILAYOUT_VERTICAL;
             MakeVertical();
         }
 
-        private void autoButton_Checked(object sender, RoutedEventArgs e)
+        public void AutoButton_Checked(object sender = null, RoutedEventArgs e = null)
         {
-            m_autoLayout = true;
+            m_uiLayout = UILayoutType.UILAYOUT_AUTO;
             AutoLayout(mainUIPanel.RenderSize);
         }
 

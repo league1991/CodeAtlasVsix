@@ -289,6 +289,8 @@ namespace CodeAtlasVSIX
                 js.MaxJsonLength = 100 * 1024 * 1024 * 2; // 100 M characters
                 var sceneData = js.Deserialize<Dictionary<string, object>>(jsonStr);
 
+                MainUI.UILayoutType uiLayout = MainUI.UILayoutType.UILAYOUT_AUTO;
+
                 AcquireLock();
                 var t0 = DateTime.Now;
                 var t1 = t0;
@@ -298,6 +300,10 @@ namespace CodeAtlasVSIX
                 {
                     var configData = sceneData["config"] as Dictionary<string, object>;
                     m_layoutType = (LayoutType)configData["layout"];
+                    if (configData.ContainsKey("uilayout"))
+                    {
+                        uiLayout = (MainUI.UILayoutType)configData["uilayout"];
+                    }
                 }
 
                 // Stop item
@@ -494,6 +500,7 @@ namespace CodeAtlasVSIX
 
                 // Activeate commands
                 mainUI.SetCommandActive(true);
+                mainUI.m_uiLayout = uiLayout;
                 mainUI.UpdateUI();
                 m_updateThread.ClearForceSleepTime();
                 if (m_itemDict.Count == 0)
@@ -534,6 +541,8 @@ namespace CodeAtlasVSIX
 
         public void SaveConfig()
         {
+            var mainUI = UIManager.Instance().GetMainUI();
+            var uiLayout = mainUI.m_uiLayout;
             var db = DBManager.Instance().GetDB();
             var dbPath = db.GetConfigPath();
             if (db.GetDoxyFolderPath() == null || db.GetDoxyFolderPath() == "" || dbPath == null || dbPath == "")
@@ -604,6 +613,7 @@ namespace CodeAtlasVSIX
 
                 var configData = new Dictionary<string, object> {
                         { "layout", m_layoutType },
+                        { "uilayout", uiLayout },
                     };
 
                 var jsonDict = new Dictionary<string, object> {
