@@ -276,19 +276,25 @@ namespace CodeAtlasVSIX
             {
                 string fileNameStr = name;
                 int dotIdx = name.LastIndexOf('.');
-                string extStr = "";
-                if (dotIdx != -1)
+                //string extStr = "";
+                //if (dotIdx != -1)
+                //{
+                //    extStr = name.Substring(dotIdx);
+                //    fileNameStr = name.Substring(0, dotIdx);
+                //}
+                //if (fileNameStr.Length > 8)
+                //{
+                //    fileNameStr = fileNameStr.Substring(0, 8) + "..";
+                //}
+                if(fileNameStr.Length > 10)
                 {
-                    extStr = name.Substring(dotIdx);
-                    fileNameStr = name.Substring(0, dotIdx);
-                }
-                if (fileNameStr.Length > 8)
-                {
-                    fileNameStr = fileNameStr.Substring(0, 8) + "..";
+                    string headStr = fileNameStr.Substring(0, 3);
+                    string tailStr = fileNameStr.Substring(fileNameStr.Length - 7, 7);
+                    fileNameStr = headStr + ".." + tailStr;
                 }
                 int line = m_metric["line"].m_int;
                 string lineStr = string.Format("({0})", line);
-                m_displayName = fileNameStr + extStr + lineStr;
+                m_displayName = fileNameStr + lineStr;
             }
             else
             {

@@ -360,7 +360,7 @@ namespace CodeAtlasVSIX
             {
                 bool isWholeLine = ts.AnchorPoint.AtEndOfLine && ts.ActivePoint.AtStartOfLine && ts.AnchorPoint.Line == ts.ActivePoint.Line;
                 int activeLine = ts.ActivePoint.Line;
-                if (isWholeLine)
+                if (isWholeLine && ts.Text.Length > 0)
                 {
                     var scene = UIManager.Instance().GetScene();
                     string docPath = doc.FullName;
@@ -374,6 +374,17 @@ namespace CodeAtlasVSIX
                     result.bestEntity = entity;
                     return result;
                 }
+            }
+
+            // Search the whole document
+            if ( ts.AnchorPoint.AtStartOfDocument && ts.ActivePoint.AtEndOfDocument)
+            {
+                var fileName = doc.Name;
+                var fullPath = doc.FullName.Replace("\\", "/");
+                result = SearchAndAddToScene(fileName, (int)DoxygenDB.SearchOption.MATCH_WORD,
+                            fileName, (int)DoxygenDB.SearchOption.DB_CONTAINS_WORD,
+                            "file", fullPath, 0);
+                return result;
             }
 
             CursorNavigator.GetCursorWord(ts, out token, out longName, out lineNum);
