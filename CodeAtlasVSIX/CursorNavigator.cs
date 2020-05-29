@@ -291,8 +291,9 @@ namespace CodeAtlasVSIX
                         if (ts != null && line > 0 && textDoc != null)
                         {
                             var formatStr = string.Format(@"\b{0}\b", searchToken);
-                            int beginLine = Math.Max(1, line - 30);
-                            int endLine = line + 31;
+                            int searchLines = 500;
+                            int beginLine = Math.Max(1, line - searchLines);
+                            int endLine = line + searchLines+1;
                             int endOffset = 1;
                             if (endLine > textDoc.EndPoint.Line)
                             {
