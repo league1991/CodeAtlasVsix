@@ -456,9 +456,11 @@ namespace CodeAtlasVSIX
         public static Color NameToColor(string name)
         {
             uint hashVal = (uint)name.GetHashCode();
-            var h = (((hashVal ^ (hashVal >> 8)) & 0xff)) / 255.0;
-            var s = ((hashVal >> 16) & 0xff) / 255.0;
-            var l = ((hashVal >> 24) & 0xff) / 255.0;
+            double hashValF = Math.PI * (hashVal & 0xffffff00);
+            var h = hashValF - Math.Floor(hashValF);
+            //var h = (((hashVal ^ (hashVal >> 8)) & 0xff)) / 255.0;
+            var s = ((hashVal >> 4) & 0xf) / 16.0;
+            var l = ((hashVal >> 0) & 0xf) / 16.0;
             return HSLToRGB(h, 0.35 + s * 0.3, 0.4 + l * 0.15);
         }
 

@@ -22,8 +22,8 @@ namespace CodeAtlasVSIX
     /// </summary>
     public partial class FileList : UserControl
     {
-        Dictionary<string, Tuple<Color, FormattedText>> m_schemeNameDict =
-            new Dictionary<string, Tuple<Color, FormattedText>>();
+        List<Tuple<Color, FormattedText, string>> m_schemeNameDict =
+            new List<Tuple<Color, FormattedText, string>>();
         double m_margin = 10.0;
         double m_lineHeight = 10.0;
         double m_lineSpace = 3.0;
@@ -79,8 +79,9 @@ namespace CodeAtlasVSIX
         public static Color NameToColor(string name)
         {
             uint hashVal = (uint)name.GetHashCode();
-            hashVal = ((hashVal) & 0xff) ^ ((hashVal >> 8) & 0xff) ^ ((hashVal >> 16) & 0xff) ^ ((hashVal >> 24) & 0xff);
-            var h = ((hashVal) & 0xffff) / 255.0;
+            //hashVal = ((hashVal) & 0xffff) ^ ((hashVal >> 8) & 0xff) ^ ((hashVal >> 16) & 0xff) ^ ((hashVal >> 24) & 0xff);
+            double hashValF = Math.PI * hashVal;
+            var h = hashValF - Math.Floor(hashValF);// ((hashVal) & 0xffff) / 255.0;
             return CodeUIItem.HSLToRGB(h, 0.8, 0.8);
         }
 
@@ -123,7 +124,8 @@ namespace CodeAtlasVSIX
                 m_schemeNameDict.Clear();
                 for (int i = 0; i < schemeNameList.Count; i++)
                 {
-                    var schemeName = schemeNameList[i].m_path;
+                    var schemeLongName = schemeNameList[i].m_path;
+                    var schemeName = schemeLongName;
                     double duration = schemeNameList[i].m_duration;
                     double ratio = 1 - sortPlace[i] / (double)schemeNameList.Count;// 
                     ratio = Math.Pow(ratio, 3);
@@ -154,14 +156,14 @@ namespace CodeAtlasVSIX
                                                             new Typeface("arial"),
                                                             m_fontSize,
                                                             new SolidColorBrush(Color.FromArgb(alpha, schemeColor.R, schemeColor.G, schemeColor.B)));
-                    m_schemeNameDict[schemeName] = new Tuple<Color, FormattedText>(schemeColor, formattedText);
+                    m_schemeNameDict.Add(new Tuple<Color, FormattedText, string>(schemeColor, formattedText, schemeName));
                 }
                 var nScheme = m_schemeNameDict.Count;
                 var maxWidth = 0.0;
                 foreach (var item in m_schemeNameDict)
                 {
-                    var className = item.Key;
-                    var textObj = item.Value.Item2;
+                    var className = item.Item3;
+                    var textObj = item.Item2;
                     var classSize = new Size(textObj.Width, textObj.Height);
                     maxWidth = Math.Max(maxWidth, textObj.Width);
                 }
@@ -239,9 +241,9 @@ namespace CodeAtlasVSIX
             int i = 0;
             foreach (var item in m_schemeNameDict)
             {
-                var className = item.Key;
-                var color = item.Value.Item1;
-                var textObj = item.Value.Item2;
+                var className = item.Item3;
+                var color = item.Item1;
+                var textObj = item.Item2;
 
                 x = m_margin;
 
