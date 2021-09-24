@@ -40,10 +40,11 @@
       </Menu>
       <Menu guid="guidCodeAtlasPackageCmdSet" id="CodeAtlasToolbar" type="Toolbar">
         <CommandFlag>DefaultDocked</CommandFlag>
-        <CommandFlag>AlwaysCreate</CommandFlag>  
+        <CommandFlag>AlwaysCreate</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>  
-            <ButtonText>Code Graph</ButtonText>  
-            <CommandName>Code Graph</CommandName>  
+            <ButtonText>Code Graph</ButtonText>
+            <CommandName>Code Graph</CommandName>
         </Strings>  
       </Menu>
       <!--<Menu guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE" priority="0x0000" type="Context">
