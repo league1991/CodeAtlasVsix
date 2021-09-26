@@ -49,12 +49,22 @@ namespace CodeAtlasVSIX
             m_buttonList.Add(schemeButton2);
             m_buttonList.Add(schemeButton3);
             m_buttonList.Add(schemeButton4);
-
             m_buttonList.Add(schemeButton5);
             m_buttonList.Add(schemeButton6);
             m_buttonList.Add(schemeButton7);
             m_buttonList.Add(schemeButton8);
             m_buttonList.Add(schemeButton9);
+
+            m_buttonList.Add(toggleSchemeButton0);
+            m_buttonList.Add(toggleSchemeButton1);
+            m_buttonList.Add(toggleSchemeButton2);
+            m_buttonList.Add(toggleSchemeButton3);
+            m_buttonList.Add(toggleSchemeButton4);
+            m_buttonList.Add(toggleSchemeButton5);
+            m_buttonList.Add(toggleSchemeButton6);
+            m_buttonList.Add(toggleSchemeButton7);
+            m_buttonList.Add(toggleSchemeButton8);
+            m_buttonList.Add(toggleSchemeButton9);
         }
 
         void CheckAndAddFormattedText(int idx)
@@ -127,20 +137,22 @@ namespace CodeAtlasVSIX
                 for (int i = 0; i < m_buttonList.Count; i++)
                 {
                     var button = m_buttonList[i];
-                    if (i < nScheme)
+                    int row = i % 10;
+                    bool isToggleButton = i >= 10;
+                    if (row < nScheme)
                     {
                         button.Visibility = Visibility.Visible;
                         //button.Content = schemeNameList[i];
                         //button.MinHeight = 0;
                         //button.FontSize = 12;
                         //button.Padding = new Thickness(1,-10,0,-10);
-                        button.Margin = new Thickness(0,1,0,1);
-                        button.BorderThickness = new Thickness(6,0,0,0);
+                        button.Margin = new Thickness(0,0,0,0);
+                        button.BorderThickness = new Thickness(1, 1, 1, 1);
                         button.Background = new SolidColorBrush();
                         //button.Foreground = Brushes.Moccasin;// new SolidColorBrush(Color.FromArgb(255,255,255,0));
-                        button.Width = m_maxTextWidth + m_formatWidth + 13;
-                        button.MaxWidth = button.Width;
-                        button.MinWidth = button.Width;
+                        //button.Width = m_maxTextWidth + m_formatWidth + 13;
+                        //button.MaxWidth = button.Width;
+                        //button.MinWidth = button.Width;
                         Style style = button.TryFindResource("SchemeButtonStyle") as Style;
                         button.Style = style;
                         //button.BorderBrush = new SolidColorBrush();
@@ -177,9 +189,10 @@ namespace CodeAtlasVSIX
             var colorSize = new Size(m_lineHeight * 2, 2);
             double contentWidth = m_formatWidth + colorSize.Width + m_maxTextWidth + m_lineSpace;
 
+            double buttonWidth = 19;
             if (m_schemeNameDict.Count > 0)
             {
-                dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(150, 0, 0, 0)), new Pen(), new Rect(new Point(x- m_rectThickness, y- m_rectThickness), new Size(contentWidth+ m_rectThickness*2 + m_lineSpace * 1.5 + 6, contentHeight+ m_rectThickness*2)));
+                dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(150, 0, 0, 0)), new Pen(), new Rect(new Point(x- m_rectThickness, y- m_rectThickness), new Size(contentWidth+ m_rectThickness*2 + m_lineSpace * 1.5 + buttonWidth + 6, contentHeight+ m_rectThickness*2)));
             }
 
             int i = 0;
@@ -192,7 +205,7 @@ namespace CodeAtlasVSIX
                 x = m_margin;
 
                 dc.DrawRectangle(new SolidColorBrush(color), new Pen(), new Rect(new Point(x, y+4), colorSize));
-                x += colorSize.Width + m_lineSpace * 1.3 + 6;
+                x += colorSize.Width + m_lineSpace * 1.3 + buttonWidth + 6;
 
                 dc.DrawText(m_keyText[i], new Point(x, y-2));
                 x += m_formatWidth + m_lineSpace * 0.5;
@@ -208,6 +221,12 @@ namespace CodeAtlasVSIX
         {
             var scene = UIManager.Instance().GetScene();
             scene.ShowIthScheme(ithScheme, isSelected);
+        }
+
+        public void ToggleEdgeToScheme(int ithScheme)
+        {
+            var scene = UIManager.Instance().GetScene();
+            scene.ToggleSelectedEdgeToScheme(ithScheme);
         }
 
         private void schemeButton0_Click(object sender, RoutedEventArgs e)
@@ -249,6 +268,47 @@ namespace CodeAtlasVSIX
         private void schemeButton9_Click(object sender, RoutedEventArgs e)
         {
             ShowScheme(9);
+        }
+
+        private void toggleSchemeButton0_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleEdgeToScheme(0);
+        }
+        private void toggleSchemeButton1_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleEdgeToScheme(1);
+        }
+        private void toggleSchemeButton2_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleEdgeToScheme(2);
+        }
+        private void toggleSchemeButton3_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleEdgeToScheme(3);
+        }
+        private void toggleSchemeButton4_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleEdgeToScheme(4);
+        }
+        private void toggleSchemeButton5_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleEdgeToScheme(5);
+        }
+        private void toggleSchemeButton6_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleEdgeToScheme(6);
+        }
+        private void toggleSchemeButton7_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleEdgeToScheme(7);
+        }
+        private void toggleSchemeButton8_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleEdgeToScheme(8);
+        }
+        private void toggleSchemeButton9_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleEdgeToScheme(9);
         }
     }
 }
