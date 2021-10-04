@@ -145,15 +145,19 @@ namespace CodeAtlasVSIX
                         //button.MinHeight = 0;
                         //button.FontSize = 12;
                         //button.Padding = new Thickness(1,-10,0,-10);
-                        button.Margin = new Thickness(0,0,0,0);
-                        button.BorderThickness = isToggleButton ? new Thickness(1, 1, 1, 1) : new Thickness(8,1,1,1);
-                        button.Background = new SolidColorBrush();
+                        button.Margin = new Thickness(0,1,0,1);
+                        button.BorderThickness = isToggleButton ? new Thickness(1, 1, 1, 1) : new Thickness(6,0,0,0);
                         //button.Foreground = Brushes.Moccasin;// new SolidColorBrush(Color.FromArgb(255,255,255,0));
-                        if (!isToggleButton)
+                        if (isToggleButton)
+                        {
+                            button.Background = new SolidColorBrush();
+                        }
+                        else
                         {
                             button.Width = m_maxTextWidth + m_formatWidth + m_buttonWidthOffset;
                             button.MaxWidth = button.Width;
                             button.MinWidth = button.Width;
+                            button.Background = new SolidColorBrush((i % 2 != 0) ? Color.FromArgb(0, 0, 0, 0) : Color.FromArgb(25, 255, 255, 255));
                         }
                         Style style = button.TryFindResource("SchemeButtonStyle") as Style;
                         button.Style = style;
@@ -172,7 +176,7 @@ namespace CodeAtlasVSIX
         }
 
         double m_buttonWidthOffset = 18;
-        double m_numberOffset = 20;
+        double m_numberOffset = 18;
         double m_textOffset = -18;
 
         protected override void OnRender(DrawingContext dc)
