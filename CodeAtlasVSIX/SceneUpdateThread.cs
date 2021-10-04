@@ -405,10 +405,10 @@ namespace CodeAtlasVSIX
                     scene.View.InvalidateScheme();
                 }
                 m_selectTimeStamp = scene.m_selectTimeStamp;
-                //if (scene.IsFileListDirty())
+                if (scene.IsFileListDirty())
                 {
                     scene.View.InvalidateFileList();
-                    //scene.CleanFileListDirty();
+                    scene.CleanFileListDirty();
                 }
             }
         }
