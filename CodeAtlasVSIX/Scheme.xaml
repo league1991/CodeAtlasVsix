@@ -8,10 +8,9 @@
              d:DesignHeight="300" Width="600">
     <Grid Margin="9">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="23"/>
+            <ColumnDefinition Width="22"/>
             <ColumnDefinition Width="13"/>
-            <ColumnDefinition Width="13"/>
-            <ColumnDefinition />
+            <ColumnDefinition x:Name="showButtonColumn"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="13"/>
@@ -27,26 +26,27 @@
             <RowDefinition Height="13"/>
             <RowDefinition Height="13"/>
         </Grid.RowDefinitions>
-        <Button x:Name="schemeButton0" Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="schemeButton0_Click" Content="S" FontFamily="Arial" FontSize="10" ToolTip="Show this bookmark" />
-        <Button x:Name="schemeButton1" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="schemeButton1_Click" Content="S" FontFamily="Arial" FontSize="10" ToolTip="Show this bookmark"/>
-        <Button x:Name="schemeButton2" Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="schemeButton2_Click" Content="S" FontFamily="Arial" FontSize="10" ToolTip="Show this bookmark"/>
-        <Button x:Name="schemeButton3" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="schemeButton3_Click" Content="S" FontFamily="Arial" FontSize="10" ToolTip="Show this bookmark"/>
-        <Button x:Name="schemeButton4" Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="schemeButton4_Click" Content="S" FontFamily="Arial" FontSize="10" ToolTip="Show this bookmark"/>
-        <Button x:Name="schemeButton5" Grid.Row="5" Grid.Column="1" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="schemeButton5_Click" Content="S" FontFamily="Arial" FontSize="10" ToolTip="Show this bookmark"/>
-        <Button x:Name="schemeButton6" Grid.Row="6" Grid.Column="1" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="schemeButton6_Click" Content="S" FontFamily="Arial" FontSize="10" ToolTip="Show this bookmark"/>
-        <Button x:Name="schemeButton7" Grid.Row="7" Grid.Column="1" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="schemeButton7_Click" Content="S" FontFamily="Arial" FontSize="10" ToolTip="Show this bookmark"/>
-        <Button x:Name="schemeButton8" Grid.Row="8" Grid.Column="1" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="schemeButton8_Click" Content="S" FontFamily="Arial" FontSize="10" ToolTip="Show this bookmark"/>
-        <Button x:Name="schemeButton9" Grid.Row="9" Grid.Column="1" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="schemeButton9_Click" Content="S" FontFamily="Arial" FontSize="10" ToolTip="Show this bookmark"/>
+        
+        <Button x:Name="schemeButton0" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Click="schemeButton0_Click" Content="" ToolTip="Show this bookmark" />
+        <Button x:Name="schemeButton1" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Click="schemeButton1_Click" Content="" ToolTip="Show this bookmark"/>
+        <Button x:Name="schemeButton2" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Click="schemeButton2_Click" Content="" ToolTip="Show this bookmark"/>
+        <Button x:Name="schemeButton3" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Click="schemeButton3_Click" Content="" ToolTip="Show this bookmark"/>
+        <Button x:Name="schemeButton4" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Click="schemeButton4_Click" Content="" ToolTip="Show this bookmark"/>
+        <Button x:Name="schemeButton5" Grid.Row="5" Grid.Column="2" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Click="schemeButton5_Click" Content="" ToolTip="Show this bookmark"/>
+        <Button x:Name="schemeButton6" Grid.Row="6" Grid.Column="2" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Click="schemeButton6_Click" Content="" ToolTip="Show this bookmark"/>
+        <Button x:Name="schemeButton7" Grid.Row="7" Grid.Column="2" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Click="schemeButton7_Click" Content="" ToolTip="Show this bookmark"/>
+        <Button x:Name="schemeButton8" Grid.Row="8" Grid.Column="2" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Click="schemeButton8_Click" Content="" ToolTip="Show this bookmark"/>
+        <Button x:Name="schemeButton9" Grid.Row="9" Grid.Column="2" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Click="schemeButton9_Click" Content="" ToolTip="Show this bookmark"/>
 
-        <Button x:Name="toggleSchemeButton0" Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="toggleSchemeButton0_Click" Content="T" FontSize="10" FontFamily="Arial" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
-        <Button x:Name="toggleSchemeButton1" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="toggleSchemeButton1_Click" Content="T" FontSize="10" FontFamily="Arial" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
-        <Button x:Name="toggleSchemeButton2" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="toggleSchemeButton2_Click" Content="T" FontSize="10" FontFamily="Arial" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
-        <Button x:Name="toggleSchemeButton3" Grid.Row="3" Grid.Column="2" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="toggleSchemeButton3_Click" Content="T" FontSize="10" FontFamily="Arial" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
-        <Button x:Name="toggleSchemeButton4" Grid.Row="4" Grid.Column="2" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="toggleSchemeButton4_Click" Content="T" FontSize="10" FontFamily="Arial" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
-        <Button x:Name="toggleSchemeButton5" Grid.Row="5" Grid.Column="2" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="toggleSchemeButton5_Click" Content="T" FontSize="10" FontFamily="Arial" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
-        <Button x:Name="toggleSchemeButton6" Grid.Row="6" Grid.Column="2" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="toggleSchemeButton6_Click" Content="T" FontSize="10" FontFamily="Arial" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
-        <Button x:Name="toggleSchemeButton7" Grid.Row="7" Grid.Column="2" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="toggleSchemeButton7_Click" Content="T" FontSize="10" FontFamily="Arial" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
-        <Button x:Name="toggleSchemeButton8" Grid.Row="8" Grid.Column="2" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="toggleSchemeButton8_Click" Content="T" FontSize="10" FontFamily="Arial" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
-        <Button x:Name="toggleSchemeButton9" Grid.Row="9" Grid.Column="2" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Visibility="Visible" Click="toggleSchemeButton9_Click" Content="T" FontSize="10" FontFamily="Arial" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
+        <Button x:Name="toggleSchemeButton0" Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Margin="0" HorizontalAlignment="Center" Click="toggleSchemeButton0_Click" Content="+" FontSize="9" FontFamily="Tahoma" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
+        <Button x:Name="toggleSchemeButton1" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Margin="0" HorizontalAlignment="Center" Click="toggleSchemeButton1_Click" Content="+" FontSize="9" FontFamily="Tahoma" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
+        <Button x:Name="toggleSchemeButton2" Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Margin="0" HorizontalAlignment="Center" Click="toggleSchemeButton2_Click" Content="+" FontSize="9" FontFamily="Tahoma" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
+        <Button x:Name="toggleSchemeButton3" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Margin="0" HorizontalAlignment="Center" Click="toggleSchemeButton3_Click" Content="+" FontSize="9" FontFamily="Tahoma" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
+        <Button x:Name="toggleSchemeButton4" Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Margin="0" HorizontalAlignment="Center" Click="toggleSchemeButton4_Click" Content="+" FontSize="9" FontFamily="Tahoma" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
+        <Button x:Name="toggleSchemeButton5" Grid.Row="5" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Margin="0" HorizontalAlignment="Center" Click="toggleSchemeButton5_Click" Content="+" FontSize="9" FontFamily="Tahoma" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
+        <Button x:Name="toggleSchemeButton6" Grid.Row="6" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Margin="0" HorizontalAlignment="Center" Click="toggleSchemeButton6_Click" Content="+" FontSize="9" FontFamily="Tahoma" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
+        <Button x:Name="toggleSchemeButton7" Grid.Row="7" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Margin="0" HorizontalAlignment="Center" Click="toggleSchemeButton7_Click" Content="+" FontSize="9" FontFamily="Tahoma" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
+        <Button x:Name="toggleSchemeButton8" Grid.Row="8" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Margin="0" HorizontalAlignment="Center" Click="toggleSchemeButton8_Click" Content="+" FontSize="9" FontFamily="Tahoma" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
+        <Button x:Name="toggleSchemeButton9" Grid.Row="9" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Margin="0" HorizontalAlignment="Center" Click="toggleSchemeButton9_Click" Content="+" FontSize="9" FontFamily="Tahoma" ToolTip="Add edge to this bookmark, or delete edge from this bookmark" />
     </Grid>
 </UserControl>

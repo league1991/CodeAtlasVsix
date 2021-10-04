@@ -133,7 +133,6 @@ namespace CodeAtlasVSIX
                 //this.MinWidth = this.Width = m_lineHeight + m_colorTextSpace + maxWidth + m_margin * 2;
                 //this.MinHeight = this.Height = m_classNameDict.Count * (m_lineHeight + m_lineSpace) - m_lineSpace + m_margin * 2;
                 //InvalidateArrange();
-
                 for (int i = 0; i < m_buttonList.Count; i++)
                 {
                     var button = m_buttonList[i];
@@ -147,12 +146,15 @@ namespace CodeAtlasVSIX
                         //button.FontSize = 12;
                         //button.Padding = new Thickness(1,-10,0,-10);
                         button.Margin = new Thickness(0,0,0,0);
-                        button.BorderThickness = new Thickness(1, 1, 1, 1);
+                        button.BorderThickness = isToggleButton ? new Thickness(1, 1, 1, 1) : new Thickness(8,1,1,1);
                         button.Background = new SolidColorBrush();
                         //button.Foreground = Brushes.Moccasin;// new SolidColorBrush(Color.FromArgb(255,255,255,0));
-                        //button.Width = m_maxTextWidth + m_formatWidth + 13;
-                        //button.MaxWidth = button.Width;
-                        //button.MinWidth = button.Width;
+                        if (!isToggleButton)
+                        {
+                            button.Width = m_maxTextWidth + m_formatWidth + m_buttonWidthOffset;
+                            button.MaxWidth = button.Width;
+                            button.MinWidth = button.Width;
+                        }
                         Style style = button.TryFindResource("SchemeButtonStyle") as Style;
                         button.Style = style;
                         //button.BorderBrush = new SolidColorBrush();
@@ -168,6 +170,10 @@ namespace CodeAtlasVSIX
                 InvalidateVisual();
             });
         }
+
+        double m_buttonWidthOffset = 18;
+        double m_numberOffset = 20;
+        double m_textOffset = -18;
 
         protected override void OnRender(DrawingContext dc)
         {
@@ -205,10 +211,10 @@ namespace CodeAtlasVSIX
                 x = m_margin;
 
                 dc.DrawRectangle(new SolidColorBrush(color), new Pen(), new Rect(new Point(x, y+4), colorSize));
-                x += colorSize.Width + m_lineSpace * 1.3 + buttonWidth + 6;
+                x += colorSize.Width + m_lineSpace * 1.3 + m_numberOffset;
 
                 dc.DrawText(m_keyText[i], new Point(x, y-2));
-                x += m_formatWidth + m_lineSpace * 0.5;
+                x += m_formatWidth + m_lineSpace * 0.5 + buttonWidth + m_textOffset;
 
                 dc.DrawText(textObj,      new Point(x, y-2));
                 y += m_lineHeight + m_lineSpace;
