@@ -82,7 +82,7 @@ namespace CodeAtlasVSIX
             //hashVal = ((hashVal) & 0xffff) ^ ((hashVal >> 8) & 0xff) ^ ((hashVal >> 16) & 0xff) ^ ((hashVal >> 24) & 0xff);
             double hashValF = Math.PI * hashVal;
             var h = hashValF - Math.Floor(hashValF);// ((hashVal) & 0xffff) / 255.0;
-            return CodeUIItem.HSLToRGB(h, 0.8, 0.8);
+            return CodeUIItem.HSLToRGB(h, 1.0, 0.75);
         }
 
         public void BuildFileListLegend()
@@ -127,8 +127,9 @@ namespace CodeAtlasVSIX
                     var schemeLongName = schemeNameList[i].m_path;
                     var schemeName = schemeLongName;
                     double duration = schemeNameList[i].m_duration;
-                    double ratio = 1 - sortPlace[i] / (double)schemeNameList.Count;// 
-                    ratio = Math.Pow(ratio, 3);
+                    //double ratio = 1 - sortPlace[i] / (double)schemeNameList.Count;// 
+                    double ratio = (duration - minDuration) / (maxDuration - minDuration + 1);
+                    //ratio = Math.Pow(ratio, 3);
 
                     int idx = schemeName.LastIndexOf('/');
                     if (idx != -1)
@@ -148,7 +149,7 @@ namespace CodeAtlasVSIX
                         string colorName = schemeName.Substring(idx+1);
                         schemeColor = NameToColor(colorName);
                     }
-                    byte alpha = (byte)(150 * (1 - ratio) + 255 * ratio);
+                    byte alpha = (byte)(120 * (1 - ratio) + 255 * ratio);
 
                     var formattedText = new FormattedText(schemeName,
                                                             CultureInfo.CurrentUICulture,
