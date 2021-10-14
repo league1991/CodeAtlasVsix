@@ -1857,17 +1857,17 @@ namespace CodeAtlasVSIX
             int idx = m_curFileListLRU.FindIndex(x => x.m_path == filePath);
             if (m_curFileListLRU.Count > 0)
             {
-                for (int ithRecord = 0; ithRecord < m_curFileListLRU.Count; ithRecord++)
-                {
-                    if (ithRecord != idx)
-                    {
-                        var fileRecord = m_curFileListLRU[ithRecord];
-                        fileRecord.m_duration = fileRecord.m_duration * 0.95;
-                    }
-                }
                 int firstTime = System.Environment.TickCount - m_fileListTimeStamp;
                 var item = m_curFileListLRU[0];
                 item.m_duration += (double)firstTime;
+                //for (int ithRecord = 1; ithRecord < m_curFileListLRU.Count; ithRecord++)
+                //{
+                //    if (ithRecord != idx)
+                //    {
+                //        var fileRecord = m_curFileListLRU[ithRecord];
+                //        fileRecord.m_duration = Math.Max(0, fileRecord.m_duration - firstTime * 0.2);// fileRecord.m_duration * 0.95;
+                //    }
+                //}
             }
 
             m_isFileListDirty = (idx != 0) || (System.Environment.TickCount - m_fileListTimeStamp) > 29 * 1000;
