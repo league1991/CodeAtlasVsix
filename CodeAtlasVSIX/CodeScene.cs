@@ -44,8 +44,8 @@ namespace CodeAtlasVSIX
     public class FileListItem
     {
         public string m_path;
-        public double m_duration;
-        public FileListItem(string path, double duration)
+        public int m_duration;
+        public FileListItem(string path, int duration)
         {
             m_path = path;
             m_duration = duration;
@@ -1854,24 +1854,24 @@ namespace CodeAtlasVSIX
         #region FileLRU
         public void UpdateFileList(string filePath)
         {
+            const int second = 1000;
+            const int minute = second * 60;
             int idx = m_curFileListLRU.FindIndex(x => x.m_path == filePath);
             if (m_curFileListLRU.Count > 0)
             {
                 int firstTime = System.Environment.TickCount - m_fileListTimeStamp;
                 var item = m_curFileListLRU[0];
-                item.m_duration += (double)firstTime;
-                //for (int ithRecord = 1; ithRecord < m_curFileListLRU.Count; ithRecord++)
-                //{
-                //    if (ithRecord != idx)
-                //    {
-                //        var fileRecord = m_curFileListLRU[ithRecord];
-                //        fileRecord.m_duration = Math.Max(0, fileRecord.m_duration - firstTime * 0.2);// fileRecord.m_duration * 0.95;
-                //    }
-                //}
+                int maxDuration = 15 * minute;
+                item.m_duration = Math.Min(maxDuration, item.m_duration + firstTime);
+                for (int ithRecord = 1; ithRecord < m_curFileListLRU.Count; ithRecord++)
+                {
+                    var fileRecord = m_curFileListLRU[ithRecord];
+                    fileRecord.m_duration = (int)Math.Max(0, fileRecord.m_duration * 0.95);
+                }
             }
 
-            m_isFileListDirty = (idx != 0) || (System.Environment.TickCount - m_fileListTimeStamp) > 29 * 1000;
-            double duration = 0;
+            m_isFileListDirty = (idx != 0) || (System.Environment.TickCount - m_fileListTimeStamp) > 29 * second;
+            int duration = 0;
             if (idx == -1)
             {
                 if (m_curFileListLRU.Count >= m_curFileListMaxLength)
@@ -1879,13 +1879,16 @@ namespace CodeAtlasVSIX
                     m_curFileListLRU.RemoveAt(m_curFileListLRU.Count-1);
                 }
             }
-            else
+            else if(idx != 0)
             {
                 duration = m_curFileListLRU[idx].m_duration;
                 m_curFileListLRU.RemoveAt(idx);
             }
+            if (idx != 0)
+            {
+                m_curFileListLRU.Insert(0, new FileListItem(filePath, duration));
+            }
             m_fileListTimeStamp = System.Environment.TickCount;
-            m_curFileListLRU.Insert(0, new FileListItem(filePath, duration));
         }
 
         public List<FileListItem> GetFileList()

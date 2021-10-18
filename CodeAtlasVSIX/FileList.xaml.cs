@@ -79,10 +79,10 @@ namespace CodeAtlasVSIX
         public static Color NameToColor(string name)
         {
             uint hashVal = (uint)name.GetHashCode();
-            //hashVal = ((hashVal) & 0xffff) ^ ((hashVal >> 8) & 0xff) ^ ((hashVal >> 16) & 0xff) ^ ((hashVal >> 24) & 0xff);
+            //hashVal = ((hashVal) & 0xff) ^ ((hashVal >> 8) & 0xff) ^ ((hashVal >> 16) & 0xff) ^ ((hashVal >> 24) & 0xff);
             double hashValF = Math.PI * hashVal;
             var h = hashValF - Math.Floor(hashValF);// ((hashVal) & 0xffff) / 255.0;
-            return CodeUIItem.HSLToRGB(h, 1.0, 0.75);
+            return CodeUIItem.HSLToRGB(h, 1.0, 0.7);
         }
 
         public void BuildFileListLegend()
@@ -143,13 +143,13 @@ namespace CodeAtlasVSIX
                     }
 
                     var schemeColor = Color.FromRgb(125, 215, 249);
-                    idx = schemeName.IndexOf('.');
+                    idx = schemeName.LastIndexOf('.');
                     if (idx != -1)
                     {
                         string colorName = schemeName.Substring(idx+1);
                         schemeColor = NameToColor(colorName);
                     }
-                    byte alpha = (byte)(120 * (1 - ratio) + 255 * ratio);
+                    byte alpha = (byte)(150 * (1 - ratio) + 255 * ratio);
 
                     var formattedText = new FormattedText(schemeName,
                                                             CultureInfo.CurrentUICulture,
