@@ -1870,7 +1870,7 @@ namespace CodeAtlasVSIX
                 }
             }
 
-            m_isFileListDirty = (idx != 0) || (System.Environment.TickCount - m_fileListTimeStamp) > 29 * second;
+            m_isFileListDirty = (idx != 0) || (System.Environment.TickCount - m_fileListTimeStamp) > 10 * second;
             int duration = 0;
             if (idx == -1)
             {
