@@ -97,7 +97,7 @@ namespace CodeAtlasVSIX
             {
                 double maxDuration = 0;
                 double minDuration = double.MaxValue;
-                int totalDuration = 0;
+                //int totalDuration = 0;
                 var sortPlace = new List<int>();
                 for (int i = 0; i < schemeNameList.Count; i++)
                 {
@@ -127,9 +127,9 @@ namespace CodeAtlasVSIX
                     var schemeLongName = schemeNameList[i].m_path;
                     var schemeName = schemeLongName;
                     //double duration = schemeNameList[i].m_duration;
-                    double ratio = 1 - sortPlace[i] / (double)schemeNameList.Count;// 
+                    double ratio = 1 - sortPlace[i] / (double)(schemeNameList.Count - 1 + 0.001);// 
                     //double ratio = (duration - minDuration) / (maxDuration - minDuration + 1e-5);
-                    ratio = Math.Pow(ratio, 2);
+                    ratio = Math.Pow(ratio, 3);
 
                     int idx = schemeName.LastIndexOf('/');
                     if (idx != -1)

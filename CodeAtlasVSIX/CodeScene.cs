@@ -44,8 +44,8 @@ namespace CodeAtlasVSIX
     public class FileListItem
     {
         public string m_path;
-        public int m_duration;
-        public FileListItem(string path, int duration)
+        public double m_duration;
+        public FileListItem(string path, double duration)
         {
             m_path = path;
             m_duration = duration;
@@ -1859,9 +1859,9 @@ namespace CodeAtlasVSIX
             int idx = m_curFileListLRU.FindIndex(x => x.m_path == filePath);
             if (m_curFileListLRU.Count > 0)
             {
-                int firstTime = System.Environment.TickCount - m_fileListTimeStamp;
+                double firstTime = System.Environment.TickCount - m_fileListTimeStamp;
                 var item = m_curFileListLRU[0];
-                int maxDuration = 15 * minute;
+                double maxDuration = 60 * minute;
                 item.m_duration = Math.Min(maxDuration, item.m_duration + firstTime);
                 for (int ithRecord = 1; ithRecord < m_curFileListLRU.Count; ithRecord++)
                 {
@@ -1871,7 +1871,7 @@ namespace CodeAtlasVSIX
             }
 
             m_isFileListDirty = (idx != 0) || (System.Environment.TickCount - m_fileListTimeStamp) > 10 * second;
-            int duration = 0;
+            double duration = 0;
             if (idx == -1)
             {
                 if (m_curFileListLRU.Count >= m_curFileListMaxLength)
