@@ -17,6 +17,8 @@
             <RowDefinition Height="27"/>
             <RowDefinition Height="50*"/>
             <RowDefinition Height="27"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="27"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -33,8 +35,8 @@
                 <ColumnDefinition FrameworkElement.FlowDirection="RightToLeft" Width="5*"/>
                 <ColumnDefinition Width="Auto" MaxWidth="80" MinWidth="80"/>
             </Grid.ColumnDefinitions>
-            <Label x:Name="customDirectoryLabel" Grid.Row="0" Content="Custom Directory" HorizontalAlignment="Left" Margin="-2,0,0,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch" Padding="5,4.7,5,5" />
-            <TextBox x:Name="customDirectoryEdit" Grid.Row="0" Margin="0,4,0,0" TextWrapping="Wrap" Grid.Column="1" MinWidth="40" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+            <Label x:Name="customDirectoryLabel" Grid.Row="0" Content="Custom Output Directory" HorizontalAlignment="Left" Margin="-2,0,0,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch" Padding="5,4.7,5,5" />
+            <TextBox x:Name="customDirectoryEdit" Grid.Row="0" Margin="0,4,0,0" TextWrapping="NoWrap" AcceptsReturn="False" Grid.Column="1" MinWidth="40" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
             <Button x:Name="customDirectoryButton" Content="Browse..." Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="customDirectoryButton_Click" />
         </Grid>
         <Button x:Name="analyseSolutionButton" Content="Analyse Solution" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="analyseSolutionButton_Click" />
@@ -42,7 +44,7 @@
         <!--<Button x:Name="analyseDummySolutionButton" Content="Analyse Dummy" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="analyseDummySolutionButton_Click" />-->
         <Button x:Name="analyseFilesSolutionButton" Content="Analyse Opened Files" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="analyseFilesSolutionButton_Click" />
         <Label x:Name="extensionLabel" Grid.Row="3" Content="Extension" HorizontalAlignment="Left" Margin="-2,0,0,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch" Padding="5,4.7,5,5" />
-        <TextBox x:Name="extensionEdit" Grid.Row="3" Margin="0,4,0,0" TextWrapping="Wrap" Grid.Column="1" MinWidth="40" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+        <TextBox x:Name="extensionEdit" Grid.Row="3" Margin="0,4,0,0" TextWrapping="NoWrap" AcceptsReturn="False" Grid.Column="1" MinWidth="40" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
         <Label x:Name="label1" Grid.Row="3" Content="Language" Margin="0" Grid.Column="2" HorizontalAlignment="Left"/>
         <ComboBox x:Name="languageEdit" Grid.Row="3" Margin="0,4,0,0" Grid.Column="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" SelectedIndex="0" />
         <Button x:Name="addExtensionButton" Content="Add Custom Extension" Grid.Row="4" Grid.ColumnSpan="2" Margin="0,4,0,0" Click="addExtensionButton_Click" />
@@ -57,12 +59,27 @@
                 <ColumnDefinition Width="Auto" MaxWidth="100" MinWidth="70"/>
             </Grid.ColumnDefinitions>
             <Label x:Name="macrolabel1" Content="Macro" Margin="0" Grid.Column="0" HorizontalAlignment="Left"/>
-            <TextBox x:Name="macroEdit" Margin="0,4,0,0" TextWrapping="Wrap" Grid.Column="1" MinWidth="40" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+            <TextBox x:Name="macroEdit" Margin="0,4,0,0" TextWrapping="NoWrap" AcceptsReturn="False" Grid.Column="1" MinWidth="40" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
             <Button x:Name="addMacroButton" Content="Add Macro" Grid.Column="2" Grid.ColumnSpan="1" Margin="0,4,0,0" Click="addMacroButton_Click" />
             <Button x:Name="deleteMacroButton" Content="Delete Macro" Grid.Column="4" Grid.ColumnSpan="1" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="deleteMacroButton_Click" />
         </Grid>
         <ListBox x:Name="macroList" Margin="0,4,0,0" Grid.Row="7" Grid.ColumnSpan="4" />
+
+        <Grid Grid.Row="8" Grid.ColumnSpan="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MaxWidth="135" Width="Auto" MinWidth="70"/>
+                <ColumnDefinition FrameworkElement.FlowDirection="RightToLeft" Width="5*"/>
+                <ColumnDefinition MaxWidth="100" Width="Auto" MinWidth="70"/>
+                <ColumnDefinition Width="Auto" MaxWidth="100" MinWidth="70"/>
+            </Grid.ColumnDefinitions>
+            <Label x:Name="inputDirectoryLabel" Content="Custom Input Directory" Margin="0" Grid.Column="0" HorizontalAlignment="Left"/>
+            <TextBox x:Name="inputDirectoryEdit" Margin="0,4,0,0" TextWrapping="NoWrap" AcceptsReturn="False" Grid.Column="1" MinWidth="40" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+            <Button x:Name="addInputDirectoryButton" Content="Add Directory" Grid.Column="2" Grid.ColumnSpan="1" Margin="0,4,0,0" Click="addInputDirectoryButton_Click" />
+            <Button x:Name="deleteInputDirectoryButton" Content="Delete Directory" Grid.Column="4" Grid.ColumnSpan="1" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="deleteInputDirectoryButton_Click" />
+        </Grid>
         
-        <Button x:Name="expertModeButton" Content="Advanced Configurations..." Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="8" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="expertModeButton_Click"/>
+        <ListBox x:Name="inputDirectoryList" Margin="0,4,0,0" Grid.Row="9" Grid.ColumnSpan="4" />
+        
+        <Button x:Name="expertModeButton" Content="Advanced Configurations..." Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="10" HorizontalContentAlignment="Center" Margin="0,4,0,0" Click="expertModeButton_Click"/>
     </Grid>
 </UserControl>

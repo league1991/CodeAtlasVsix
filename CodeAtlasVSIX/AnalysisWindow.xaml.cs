@@ -38,6 +38,15 @@ namespace CodeAtlasVSIX
             m_macro = macro;
         }
     }
+    class InputDirectoryItem : ListBoxItem
+    {
+        public string m_path;
+        public InputDirectoryItem(string path)
+        {
+            this.Content = path;
+            m_path = path;
+        }
+    }
 
     /// <summary>
     /// Interaction logic for AnalysisWindow.xaml
@@ -114,7 +123,18 @@ namespace CodeAtlasVSIX
                 macroList.Items.Add(new MacroItem(item));
             }
         }
-        
+        public void UpdateInputDirectoryList()
+        {
+            var scene = UIManager.Instance().GetScene();
+            var directorySet = scene.GetCustomInputDirectorySet();
+
+            inputDirectoryList.Items.Clear();
+            foreach (var item in directorySet)
+            {
+                inputDirectoryList.Items.Add(new InputDirectoryItem(item));
+            }
+        }
+
 
         private void analyseDummySolutionButton_Click(object sender, RoutedEventArgs e)
         {
@@ -158,7 +178,7 @@ namespace CodeAtlasVSIX
             var item = macroList.SelectedItem as MacroItem;
             if (item == null)
             {
-                MessageBox.Show("Please select an item to delete.", "Delete Extension");
+                MessageBox.Show("Please select an item to delete.", "Delete Macro");
                 return;
             }
 
@@ -174,6 +194,33 @@ namespace CodeAtlasVSIX
             {
                 customDirectoryEdit.Text = directory;
             }
+        }
+
+        private void addInputDirectoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            var text = inputDirectoryEdit.Text;
+            if (text == "")
+            {
+                return;
+            }
+
+            var scene = UIManager.Instance().GetScene();
+            scene.AddCustomInputDirectory(text);
+            UpdateInputDirectoryList();
+        }
+
+        private void deleteInputDirectoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            var item = inputDirectoryList.SelectedItem as InputDirectoryItem;
+            if (item == null)
+            {
+                MessageBox.Show("Please select an item to delete.", "Delete Directory");
+                return;
+            }
+
+            var scene = UIManager.Instance().GetScene();
+            scene.DeleteCustomInputDirectory(item.m_path);
+            UpdateInputDirectoryList();
         }
     }
 }

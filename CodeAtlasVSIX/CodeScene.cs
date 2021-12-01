@@ -96,6 +96,7 @@ namespace CodeAtlasVSIX
         CodeView m_view = null;
         Dictionary<string, string> m_customExtension = new Dictionary<string, string>();
         HashSet<string> m_macroSet = new HashSet<string>();
+        HashSet<string> m_inputDirectorySet = new HashSet<string>();
         ProjectDB m_projectDB = new ProjectDB();
         List<FileListItem> m_curFileListLRU = new List<FileListItem>();
         bool m_isFileListDirty = true;
@@ -405,6 +406,20 @@ namespace CodeAtlasVSIX
                     }
                 }
 
+                // input directory
+                if (sceneData.ContainsKey("inputDirectory"))
+                {
+                    var directoryList = sceneData["inputDirectory"] as ArrayList;
+                    foreach (var path in directoryList)
+                    {
+                        var pathStr = path as string;
+                        if (pathStr != null && pathStr != "")
+                        {
+                            m_inputDirectorySet.Add(pathStr);
+                        }
+                    }
+                }
+
                 // code item
                 var codeItemList = sceneData["codeItem"] as ArrayList;
                 var uniqueNameList = new List<string>();
@@ -532,6 +547,7 @@ namespace CodeAtlasVSIX
             m_curValidSchemeColor = new List<Color>();
             m_customExtension = new Dictionary<string, string>();
             m_macroSet = new HashSet<string>();
+            m_inputDirectorySet = new HashSet<string>();
             m_anchorSet = new HashSet<string>();
             m_projectDB = new ProjectDB();
             ClearSelectionStack();
@@ -611,6 +627,12 @@ namespace CodeAtlasVSIX
                     macroList.Add(item);
                 }
 
+                List<string> inputDirectoryList = new List<string>();
+                foreach (var item in m_inputDirectorySet)
+                {
+                    inputDirectoryList.Add(item);
+                }
+
                 var configData = new Dictionary<string, object> {
                         { "layout", m_layoutType },
                         { "uilayout", uiLayout },
@@ -626,6 +648,7 @@ namespace CodeAtlasVSIX
                     {"extension", extensionList},
                     {"anchorItem", anchorList },
                     {"macro", macroList },
+                    {"inputDirectory", inputDirectoryList },
                     {"config", configData }
                 };
 
@@ -1699,6 +1722,29 @@ namespace CodeAtlasVSIX
         public HashSet<string> GetCustomMacroSet()
         {
             return m_macroSet;
+        }
+        #endregion
+
+        #region Custom Input Directory
+        public void AddCustomInputDirectory(string path)
+        {
+            if (path != null && path != "")
+            {
+                m_inputDirectorySet.Add(path);
+            }
+        }
+
+        public void DeleteCustomInputDirectory(string path)
+        {
+            if (path != null && path != "" && m_inputDirectorySet.Contains(path))
+            {
+                m_inputDirectorySet.Remove(path);
+            }
+        }
+
+        public HashSet<string> GetCustomInputDirectorySet()
+        {
+            return m_inputDirectorySet;
         }
         #endregion
 

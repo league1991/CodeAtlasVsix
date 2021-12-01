@@ -283,6 +283,7 @@ namespace CodeAtlasVSIX
             {
                 analysisWindow.UpdateExtensionList();
                 analysisWindow.UpdateMacroList();
+                analysisWindow.UpdateInputDirectoryList();
             });
 
             this.Dispatcher.Invoke((ThreadStart)delegate
@@ -849,6 +850,11 @@ namespace CodeAtlasVSIX
                 traverser.SetCustomMacro(scene.GetCustomMacroSet());
                 traverser.Traverse();
                 var dirList = traverser.GetDirectoryList();
+                var customInputDir = scene.GetCustomInputDirectorySet();
+                foreach (var item in customInputDir)
+                {
+                    dirList.Add(item);
+                }
                 var solutionFolder = traverser.GetSolutionFolder();
 
                 if ((type == AnalyseType.ANALYSE_DUMMY && dirList.Count == 0) || solutionFolder == "")
