@@ -271,13 +271,13 @@ namespace CodeAtlasVSIX
                             }
                         }
                     }
+                    m_curDocline = curLine;
                 }
 
-                if (curPath != m_curDocPath || curLine != m_curDocline || System.Environment.TickCount - m_lastTraceTickCount > 30*1000)
+                if (curPath != m_curDocPath || System.Environment.TickCount - m_lastTraceTickCount > 20*1000)
                 {
                     scene.UpdateFileList(curPath);
                     m_curDocPath = curPath;
-                    m_curDocline = curLine;
                     m_lastTraceTickCount = System.Environment.TickCount;
                 }
             }, DispatcherPriority.Loaded);

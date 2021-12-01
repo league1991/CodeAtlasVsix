@@ -1866,11 +1866,14 @@ namespace CodeAtlasVSIX
                 for (int ithRecord = 1; ithRecord < m_curFileListLRU.Count; ithRecord++)
                 {
                     var fileRecord = m_curFileListLRU[ithRecord];
-                    fileRecord.m_duration = (int)Math.Max(0, fileRecord.m_duration * 0.95);
+                    if (fileRecord.m_duration > 1.0)
+                    {
+                        fileRecord.m_duration = (int)Math.Max(0, fileRecord.m_duration * 0.98);
+                    }
                 }
             }
 
-            m_isFileListDirty = (idx != 0) || (System.Environment.TickCount - m_fileListTimeStamp) > 10 * second;
+            m_isFileListDirty = (idx != 0) || (System.Environment.TickCount - m_fileListTimeStamp) > 20 * second;
             double duration = 0;
             if (idx == -1)
             {
