@@ -1334,7 +1334,7 @@ namespace DoxygenDB
                                 //_ParseRefLocation(compoundChild, out filePath, out startLine);
                                 filePath = "";
                                 startLine = 0;
-                                var refItem = new IndexRefItem(includedId, compoundId, "include", filePath, startLine);
+                                var refItem = new IndexRefItem(compoundId, includedId, "include", filePath, startLine);
                                 includedItem.AddRefItem(refItem);
                                 compoundItem.AddRefItem(refItem);
                             }
@@ -1350,7 +1350,7 @@ namespace DoxygenDB
                                 //_ParseRefLocation(compoundChild, out filePath, out startLine);
                                 filePath = "";
                                 startLine = 0;
-                                var refItem = new IndexRefItem(compoundId, includingId, "include", filePath, startLine);
+                                var refItem = new IndexRefItem(includingId, compoundId, "include", filePath, startLine);
                                 includingItem.AddRefItem(refItem);
                                 compoundItem.AddRefItem(refItem);
                             }
