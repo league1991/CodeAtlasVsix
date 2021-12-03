@@ -1905,7 +1905,7 @@ namespace CodeAtlasVSIX
             int idx = m_curFileListLRU.FindIndex(x => x.m_path == filePath);
             if (m_curFileListLRU.Count > 0)
             {
-                double firstTime = System.Environment.TickCount - m_fileListTimeStamp;
+                double firstTime = Math.Min(Math.Max(0, System.Environment.TickCount - m_fileListTimeStamp), 1 * minute);
                 var item = m_curFileListLRU[0];
                 double maxDuration = 60 * minute;
                 item.m_duration = Math.Min(maxDuration, item.m_duration + firstTime);
