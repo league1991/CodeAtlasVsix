@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="CodeGraph.bab506ab-08ae-41c5-b31c-6e8b1ff3293b" Version="1.3.35" Language="en-US" Publisher="Yiubun Auyeung" />
+        <Identity Id="CodeGraph.bab506ab-08ae-41c5-b31c-6e8b1ff3293b" Version="1.3.36" Language="en-US" Publisher="Yiubun Auyeung" />
         <DisplayName>Code Graph</DisplayName>
         <Description xml:space="preserve">Visualize call graph, inheritance graph and variable usage graph for C/C++, C#, Python and other languages.</Description>
         <License>LICENSE.txt</License>
