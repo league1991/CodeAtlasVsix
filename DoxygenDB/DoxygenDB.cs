@@ -756,7 +756,7 @@ namespace DoxygenDB
             metaDict["EXTRACT_LOCAL_METHODS"] = new List<string> { "YES" };
             metaDict["EXTRACT_ANON_NSPACES"] = new List<string> { "YES" };
             metaDict["INPUT"] = toPathList(inputFolders);
-            metaDict["RECURSIVE"] = new List<string> { "NO" };
+            metaDict["RECURSIVE"] = new List<string> { "YES" };
             metaDict["SOURCE_BROWSER"] = new List<string> { "YES" };
             metaDict["REFERENCED_BY_RELATION"] = new List<string> { "YES" };
             metaDict["REFERENCES_RELATION"] = new List<string> { "YES" };
@@ -765,8 +765,7 @@ namespace DoxygenDB
             metaDict["GENERATE_XML"] = new List<string> { "YES" };
             metaDict["CLASS_DIAGRAMS"] = new List<string> { "NO" };
             metaDict["CLANG_ASSISTED_PARSING"] = new List<string> { config.m_useClang ? "YES" : "NO"};
-            metaDict["INCLUDE_PATH"] = toPathList(config.m_includePaths); 
-            //metaDict["CPP_CLI_SUPPORT"] = new List<string> { "NO" };
+            metaDict["INCLUDE_PATH"] = toPathList(config.m_includePaths);
             metaDict["ALLEXTERNALS"] = new List<string> { "YES" };
             metaDict["PREDEFINED"] = config.m_defines;
 
